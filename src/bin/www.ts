@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+require('dotenv').config();
 const app = require('../app');
 const debug = require('debug')('game-upload-dev:server');
 const http = require('http');

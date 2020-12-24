@@ -1,16 +1,16 @@
 import createError from 'http-errors';
 import express from 'express';
+import session from 'express-session';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import sassMiddleware from 'node-sass-middleware';
 
-//TODO：正しい型に置き換え
 interface ResponseError extends Error { 
   status?: number; 
 } 
 const logger = require('morgan');
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
 
 const app = express();
 
@@ -20,6 +20,16 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(session({
+  secret: process.env.SESSION_SECRET!,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: false, //TODO：https通信にする時はtrueにする。
+    maxAge: 1000 * 60 * 30,
+  }
+}));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(sassMiddleware({
@@ -31,7 +41,7 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

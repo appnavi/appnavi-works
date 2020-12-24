@@ -1,8 +1,9 @@
 import express from 'express';
 const router = express.Router();
+import {onlyIfAuthorized} from '../services/auth';
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', onlyIfAuthorized, function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
