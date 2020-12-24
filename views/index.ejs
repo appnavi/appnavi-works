@@ -1,20 +1,128 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node File Uploads</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style>
+    #dropzone {
+      background-color: #cfc;
+      border: solid 3px #9c9;
+      color: #9c9;
+      min-height: 50px;
+      padding: 20px;
+      text-shadow: 1px 1px 0 #fff;
+    }
+
+    #items:empty::before {
+      color: #ccc;
+      content: "(File counts will be shown here.)";
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>File Upload</h1>
     <form action="/upload" method="POST" enctype="multipart/form-data">
-      <label for="creator_id">作者ID</label>
-      <input type="text" name="creator_id">
-      <label for="game_id">ゲームID</label>
-      <input type="text" name="game_id">
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="creator_name" type="text" class="validate" name="creator_id">
+          <label for="creator_name">作者ID</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="game_name" type="text" class="validate" name="game_id">
+          <label for="game_name">ゲームID</label>
+        </div>
+      </div>
       <input type="file" webkitdirectory name="game">
-      <button type="submit">SUBMIT</button>
+      <div id="dropzone" effectAllowed="move">ゲームをここにドラッグ＆ドロップ</div>
+      <button type="submit" class="btn">Submit</button>
     </form>
-    <a href="/auth/logout">ログアウト</a>
-  </body>
+  </div>
+  <script>
+    //https://codepen.io/anon/pen/gBJrOP
+    // Drop handler function to get all files
+    async function getAllFileEntries(dataTransferItemList) {
+      let fileEntries = [];
+      // Use BFS to traverse entire directory/file structure
+      let queue = [];
+      // Unfortunately dataTransferItemList is not iterable i.e. no forEach
+      for (let i = 0; i < dataTransferItemList.length; i++) {
+        queue.push(dataTransferItemList[i].webkitGetAsEntry());
+      }
+      while (queue.length > 0) {
+        let entry = queue.shift();
+        if (entry.isFile) {
+          fileEntries.push(entry);
+        } else if (entry.isDirectory) {
+          let reader = entry.createReader();
+          queue.push(...await readAllDirectoryEntries(reader));
+        }
+      }
+      return fileEntries;
+    }
+
+    // Get all the entries (files or sub-directories) in a directory by calling readEntries until it returns empty array
+    async function readAllDirectoryEntries(directoryReader) {
+      let entries = [];
+      let readEntries = await readEntriesPromise(directoryReader);
+      while (readEntries.length > 0) {
+        entries.push(...readEntries);
+        readEntries = await readEntriesPromise(directoryReader);
+      }
+      return entries;
+    }
+
+    // Wrap readEntries in a promise to make working with readEntries easier
+    async function readEntriesPromise(directoryReader) {
+      try {
+        return await new Promise((resolve, reject) => {
+          directoryReader.readEntries(resolve, reject);
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    async function getFile(fileEntry) {
+      //https://stackoverflow.com/a/53113059
+      try {
+        return await new Promise((resolve, reject) => fileEntry.file(resolve, reject));
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+
+    var elDrop = document.getElementById('dropzone');
+
+    elDrop.addEventListener('dragover', function (event) {
+      event.preventDefault();
+    });
+
+    elDrop.addEventListener('drop', async function (event) {
+      event.preventDefault();
+      let items = await getAllFileEntries(event.dataTransfer.items);
+      console.log(items);
+      const dt = new DataTransfer();
+      Promise.all(
+        items.map(async (fileEntry) => {
+          //TODO：webkitRelativePathが空になる問題の対応を考える
+          const file = await getFile(fileEntry);
+          dt.items.add(file);          
+        })
+      ).then(() => {
+        document.querySelector('input[name="game"]').files = dt.files;
+        console.log(document.querySelector('input[name="game"]').files);
+      });
+    });
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+
 </html>
