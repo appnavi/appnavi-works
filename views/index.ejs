@@ -7,6 +7,14 @@
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <label for="creator_id">作者ID</label>
+      <input type="text" name="creator_id">
+      <label for="game_id">ゲームID</label>
+      <input type="text" name="game_id">
+      <input type="file" webkitdirectory name="game">
+      <button type="submit">SUBMIT</button>
+    </form>
     <a href="/auth/logout">ログアウト</a>
   </body>
 </html>
