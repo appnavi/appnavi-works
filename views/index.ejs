@@ -25,10 +25,18 @@
       </div>
       <div class="input-field file-field-frame">
         <div class="placeholder">
-          ここにフォルダをドラッグ＆ドロップするか、クリックしてフォルダを選択
-          <div class="file-count">0個のファイル</div>
+          <h6>
+            ここにフォルダをドロップ
+          </h6>
+          <div>または</div>
+          <h6>
+            クリックしてフォルダを選択
+          </h6>
         </div>
-        <input class="file-path validate" type="file" name="game" webkitdirectory  required aria-required />
+        <input class="file-path validate" type="file" name="game" webkitdirectory required aria-required />
+      </div>
+      <div class="file-count"></div>
+      <div class="chilps file-chips">
       </div>
       <button type="submit" class="btn">Submit</button>
     </form>
@@ -38,7 +46,8 @@
     const fileFieldFrame = document.querySelector(
       ".input-field.file-field-frame"
     );
-    const fileCount = fileFieldFrame.querySelector(".file-count");
+    const fileCount = document.querySelector('.file-count');
+    const fileChips = document.querySelector('.file-chips');
     filesField.addEventListener("dragenter", (event) => {
       fileFieldFrame.classList.add("drag");
     });
@@ -49,12 +58,17 @@
       fileFieldFrame.classList.remove("drag");
     });
     filesField.addEventListener('change', (event) => {
+      fileChips.innerHTML = '';
       const dt = new DataTransfer();
       Array.from(filesField.files).filter((file) => {
         const directories = file.webkitRelativePath.split('/');
         //隠しフォルダ内のファイルを除去
         return directories.find((dir) => dir.startsWith('.')) === undefined;
       }).forEach((file) => {
+        const chip = document.createElement('div');
+        chip.classList.add('chip');
+        chip.innerHTML = file.name;
+        fileChips.appendChild(chip);
         dt.items.add(file);
       });
       filesField.files = dt.files;
