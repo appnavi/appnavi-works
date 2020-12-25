@@ -27,6 +27,7 @@ a {
     height: 100%;
     display: flex;
     justify-content: center;
-    align-items: center; }
+    align-items: center;
+    flex-direction: column; }
 
 /*# sourceMappingURL=style.css.map */

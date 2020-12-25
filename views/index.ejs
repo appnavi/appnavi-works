@@ -33,29 +33,28 @@
         <div class="input-field file-field-frame">
           <div class="placeholder">
             ここにフォルダをドラッグ＆ドロップするか、クリックしてフォルダを選択
+            <div class="file-count">0個のファイル</div>
           </div>
           <input
-          class="file-path validate"
-          type="file"
-          name="game"
-          webkitdirectory
+            class="file-path validate"
+            type="file"
+            name="game"
+            webkitdirectory
           />
         </div>
         <button type="submit" class="btn">Submit</button>
       </form>
     </div>
     <script>
-      //TODO：Delete this debug code
-      document
-        .querySelector('input[name="game"]')
-        .addEventListener("change", (event) => {
-          console.log(event.target.files);
-        });
-      //-------
       const filesField = document.querySelector('input[name="game"]');
       const fileFieldFrame = document.querySelector(
         ".input-field.file-field-frame"
       );
+      const fileCount = fileFieldFrame.querySelector(".file-count");
+      filesField.addEventListener("change", (event) => {
+        fileCount.innerHTML = `${event.target.files.length}個のファイル`;
+      });
+
       filesField.addEventListener("dragenter", (event) => {
         fileFieldFrame.classList.add("drag");
       });
