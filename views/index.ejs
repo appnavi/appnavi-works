@@ -1,76 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Node File Uploads</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-    />
-    <link rel="stylesheet" href="./stylesheets/style.css" />
-  </head>
 
-  <body>
-    <div class="container">
-      <h1>File Upload</h1>
-      <form action="/upload" method="POST" enctype="multipart/form-data">
-        <div class="row">
-          <div class="input-field col s6">
-            <input
-              id="creator_name"
-              type="text"
-              class="validate"
-              name="creator_id"
-            />
-            <label for="creator_name">作者ID</label>
-          </div>
-          <div class="input-field col s6">
-            <input id="game_name" type="text" class="validate" name="game_id" />
-            <label for="game_name">ゲームID</label>
-          </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Node File Uploads</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+  <link rel="stylesheet" href="./stylesheets/style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>File Upload</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="creator_name" type="text" class="validate" name="creator_id" required aria-required />
+          <label for="creator_name">作者ID</label>
         </div>
-        <div class="input-field file-field-frame">
-          <div class="placeholder">
-            ここにフォルダをドラッグ＆ドロップするか、クリックしてフォルダを選択
-            <div class="file-count">0個のファイル</div>
-          </div>
-          <input
-            class="file-path validate"
-            type="file"
-            name="game"
-            webkitdirectory
-          />
+        <div class="input-field col s6">
+          <input id="game_name" type="text" class="validate" name="game_id" required aria-required />
+          <label for="game_name">ゲームID</label>
         </div>
-        <button type="submit" class="btn">Submit</button>
-      </form>
-    </div>
-    <script>
-      const filesField = document.querySelector('input[name="game"]');
-      const fileFieldFrame = document.querySelector(
-        ".input-field.file-field-frame"
-      );
-      const fileCount = fileFieldFrame.querySelector(".file-count");
-      filesField.addEventListener("change", (event) => {
-        fileCount.innerHTML = `${event.target.files.length}個のファイル`;
+      </div>
+      <div class="input-field file-field-frame">
+        <div class="placeholder">
+          ここにフォルダをドラッグ＆ドロップするか、クリックしてフォルダを選択
+          <div class="file-count">0個のファイル</div>
+        </div>
+        <input class="file-path validate" type="file" name="game" webkitdirectory  required aria-required />
+      </div>
+      <button type="submit" class="btn">Submit</button>
+    </form>
+  </div>
+  <script>
+    const filesField = document.querySelector('input[name="game"]');
+    const fileFieldFrame = document.querySelector(
+      ".input-field.file-field-frame"
+    );
+    const fileCount = fileFieldFrame.querySelector(".file-count");
+    filesField.addEventListener("dragenter", (event) => {
+      fileFieldFrame.classList.add("drag");
+    });
+    filesField.addEventListener("dragleave", (event) => {
+      fileFieldFrame.classList.remove("drag");
+    });
+    filesField.addEventListener("drop", (event) => {
+      fileFieldFrame.classList.remove("drag");
+    });
+    filesField.addEventListener('change', (event) => {
+      const dt = new DataTransfer();
+      Array.from(filesField.files).filter((file) => {
+        const directories = file.webkitRelativePath.split('/');
+        //隠しフォルダ内のファイルを除去
+        return directories.find((dir) => dir.startsWith('.')) === undefined;
+      }).forEach((file) => {
+        dt.items.add(file);
       });
+      filesField.files = dt.files;
+      fileCount.innerHTML = `${dt.items.length}個のファイル`;
+    });
+  </script>
 
-      filesField.addEventListener("dragenter", (event) => {
-        fileFieldFrame.classList.add("drag");
-      });
-      filesField.addEventListener("dragleave", (event) => {
-        fileFieldFrame.classList.remove("drag");
-      });
-      filesField.addEventListener("drop", (event) => {
-        fileFieldFrame.classList.remove("drag");
-      });
-    </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
 
-    <script
-      src="https://code.jquery.com/jquery-3.5.1.min.js"
-      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  </body>
 </html>
