@@ -48,7 +48,12 @@ router.post(
   onlyIfAuthorized,
   upload.array("game"),
   function (req, res, next) {
-    const fileCounts = req.files?.length ?? 0;
+    const files = req.files;
+    if(!(files instanceof Array)){
+      res.status(400).end();
+      return;
+    }
+    const fileCounts = files.length;
     if(fileCounts === 0){
       res.status(500).send('アップロードするファイルがありません。');
       return;
