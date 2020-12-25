@@ -8,21 +8,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
     />
-    <style>
-      #dropzone {
-        background-color: #cfc;
-        border: solid 3px #9c9;
-        color: #9c9;
-        min-height: 50px;
-        padding: 20px;
-        text-shadow: 1px 1px 0 #fff;
-      }
-
-      #items:empty::before {
-        color: #ccc;
-        content: "(File counts will be shown here.)";
-      }
-    </style>
+    <link rel="stylesheet" href="./stylesheets/style.css" />
   </head>
 
   <body>
@@ -44,89 +30,40 @@
             <label for="game_name">ゲームID</label>
           </div>
         </div>
-        <input type="file" webkitdirectory name="game" />
-        <div id="dropzone" effectAllowed="move">
-          ゲームをここにドラッグ＆ドロップ
+        <div class="input-field file-field-frame">
+          <div class="placeholder">
+            ここにフォルダをドラッグ＆ドロップするか、クリックしてフォルダを選択
+          </div>
+          <input
+          class="file-path validate"
+          type="file"
+          name="game"
+          webkitdirectory
+          />
         </div>
         <button type="submit" class="btn">Submit</button>
       </form>
     </div>
     <script>
-      //https://codepen.io/anon/pen/gBJrOP
-      // Drop handler function to get all files
-      async function getAllFileEntries(dataTransferItemList) {
-        let fileEntries = [];
-        // Use BFS to traverse entire directory/file structure
-        let queue = [];
-        // Unfortunately dataTransferItemList is not iterable i.e. no forEach
-        for (let i = 0; i < dataTransferItemList.length; i++) {
-          queue.push(dataTransferItemList[i].webkitGetAsEntry());
-        }
-        while (queue.length > 0) {
-          let entry = queue.shift();
-          if (entry.isFile) {
-            fileEntries.push(entry);
-          } else if (entry.isDirectory) {
-            let reader = entry.createReader();
-            queue.push(...(await readAllDirectoryEntries(reader)));
-          }
-        }
-        return fileEntries;
-      }
-
-      // Get all the entries (files or sub-directories) in a directory by calling readEntries until it returns empty array
-      async function readAllDirectoryEntries(directoryReader) {
-        let entries = [];
-        let readEntries = await readEntriesPromise(directoryReader);
-        while (readEntries.length > 0) {
-          entries.push(...readEntries);
-          readEntries = await readEntriesPromise(directoryReader);
-        }
-        return entries;
-      }
-
-      // Wrap readEntries in a promise to make working with readEntries easier
-      async function readEntriesPromise(directoryReader) {
-        try {
-          return await new Promise((resolve, reject) => {
-            directoryReader.readEntries(resolve, reject);
-          });
-        } catch (err) {
-          console.log(err);
-        }
-      }
-      async function getFile(fileEntry) {
-        //https://stackoverflow.com/a/53113059
-        try {
-          return await new Promise((resolve, reject) =>
-            fileEntry.file(resolve, reject)
-          );
-        } catch (err) {
-          console.log(err);
-        }
-      }
-
-      var elDrop = document.getElementById("dropzone");
-
-      elDrop.addEventListener("dragover", function (event) {
-        event.preventDefault();
-      });
-
-      elDrop.addEventListener("drop", async function (event) {
-        event.preventDefault();
-        let items = await getAllFileEntries(event.dataTransfer.items);
-        console.log(items);
-        const dt = new DataTransfer();
-        Promise.all(
-          items.map(async (fileEntry) => {
-            //TODO：webkitRelativePathが空になる問題の対応を考える
-            const file = await getFile(fileEntry);
-            dt.items.add(file);
-          })
-        ).then(() => {
-          document.querySelector('input[name="game"]').files = dt.files;
-          console.log(document.querySelector('input[name="game"]').files);
+      //TODO：Delete this debug code
+      document
+        .querySelector('input[name="game"]')
+        .addEventListener("change", (event) => {
+          console.log(event.target.files);
         });
+      //-------
+      const filesField = document.querySelector('input[name="game"]');
+      const fileFieldFrame = document.querySelector(
+        ".input-field.file-field-frame"
+      );
+      filesField.addEventListener("dragenter", (event) => {
+        fileFieldFrame.classList.add("drag");
+      });
+      filesField.addEventListener("dragleave", (event) => {
+        fileFieldFrame.classList.remove("drag");
+      });
+      filesField.addEventListener("drop", (event) => {
+        fileFieldFrame.classList.remove("drag");
       });
     </script>
 
