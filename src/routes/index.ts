@@ -50,7 +50,7 @@ router.post(
   function (req, res, next) {
     const fileCounts = req.files?.length ?? 0;
     if(fileCounts === 0){
-      res.send('アップロードするファイルがありません。');
+      res.status(500).send('アップロードするファイルがありません。');
       return;
     }
     res.send("ゲームのアップロードに成功しました。");
