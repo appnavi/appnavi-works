@@ -14,9 +14,8 @@ a {
   .file-field-frame > input {
     opacity: 0;
     width: 100%;
-    height: 100%; }
-    .file-field-frame > input:hover {
-      cursor: pointer; }
+    height: 100%;
+    cursor: pointer; }
   .file-field-frame > .placeholder {
     position: absolute;
     top: 0;
