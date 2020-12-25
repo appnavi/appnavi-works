@@ -4,6 +4,7 @@ import session from 'express-session';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import sassMiddleware from 'node-sass-middleware';
+import {ensureAuthenticated} from './services/auth';
 
 const logger = require('morgan');
 const indexRouter = require('./routes/index');
@@ -37,6 +38,9 @@ app.use(sassMiddleware({
 }));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/games',express.static(path.join(__dirname, '../uploads')));
+app.use('/test', ensureAuthenticated);
+app.use('/test',express.static(path.join(__dirname, '../tests')));
+
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
