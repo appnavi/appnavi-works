@@ -8,7 +8,7 @@ declare module "express-session" {
   }
 }
 
-function onlyIfAuthorized(
+function ensureAuthenticated(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
@@ -29,4 +29,4 @@ function isLogIn(req: express.Request) {
   const decoded: any = jwt.verify(token, process.env["JWT_SECRET"]!);
   return decoded["accessToken"] === accessToken;
 }
-export { onlyIfAuthorized, isLogIn };
+export { ensureAuthenticated, isLogIn };

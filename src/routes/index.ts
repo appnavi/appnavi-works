@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { ensureAuthenticated } from "../services/auth";
 
 const storage = multer.diskStorage({
   destination: (req, file, next) => {
@@ -37,15 +38,14 @@ var upload = multer({
   },
 });
 const router = express.Router();
-import { onlyIfAuthorized } from "../services/auth";
 
 /* GET home page. */
-router.get("/", onlyIfAuthorized, function (req, res, next) {
+router.get("/", ensureAuthenticated, function (req, res, next) {
   res.render("index", { title: "Express" });
 });
 router.post(
   "/upload",
-  onlyIfAuthorized,
+  ensureAuthenticated,
   upload.array("game"),
   function (req, res, next) {
     const files = req.files;
