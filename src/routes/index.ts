@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
     callback(null, path.basename(file.originalname));
   },
 });
-var upload = multer({
+const upload = multer({
   storage: storage,
   preservePath: true,
   fileFilter: (req, file, cb) => {
