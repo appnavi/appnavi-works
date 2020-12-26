@@ -36,18 +36,16 @@ function validateUpload(
     return false;
   }
   const gameDir = getGameDir(req);
-  console.log(`ext:${fs.existsSync(gameDir)}`);
-  if (!fs.existsSync(gameDir)) {
-    return true;
-  }
-  if (!req.body["overwrites_existing"]) {
-    next(
-      new Error(
-        "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
-      ),
-      "",
-    );
-    return false;
+  if (fs.existsSync(gameDir)) {
+    if (req.body["overwrites_existing"] !== 'on') {
+      next(
+        new Error(
+          "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
+        ),
+        "",
+      );
+      return false;
+    }
   }
 
   req.body["validationParams"] = jwt.sign(
