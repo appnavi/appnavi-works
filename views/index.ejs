@@ -55,9 +55,17 @@
           <input class="file-path validate" type="file" name="game" webkitdirectory required aria-required />
         </div>
         <div class="divider"></div>
-        <p class="file-count">0個のファイル</p>
-        <div class="chilps file-chips">
-        </div>
+        <ul class="collapsible">
+          <li>
+            <div class="collapsible-header">
+              <i class="material-icons">keyboard_arrow_down</i>
+              <span class="file-count">0個のファイル</span>
+            </div>
+            <div class="collapsible-body">
+              <div class="chilps file-chips"></div>
+            </div>
+          </li>
+        </ul>
       </div>
       <div class="row center">
         <button type="submit" class="btn">アップロードする</button>
@@ -82,12 +90,22 @@
     </div>
     <div class="footer-copyright">
       <div class="container">
-      © 2020 Juris710
+        © 2020 Juris710
       </div>
     </div>
   </footer>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      M.Collapsible.init(document.querySelector('.collapsible'), {
+        onOpenStart: (elm) => {
+          elm.querySelector('.collapsible-header>.material-icons').innerHTML = 'keyboard_arrow_up';
+        },
+        onCloseStart: (elm) => {
+          elm.querySelector('.collapsible-header>.material-icons').innerHTML = 'keyboard_arrow_down';
+        },
+      });
+    });
     const filesField = document.querySelector('input[name="game"]');
     const fileFieldFrame = document.querySelector(
       ".input-field.file-field-frame"
@@ -119,6 +137,7 @@
       });
       filesField.files = dt.files;
       fileCount.innerHTML = `${dt.items.length}個のファイル`;
+      //TODO：chipからCollection(https://materializecss.com/collections.html)に変更
     });
   </script>
 
