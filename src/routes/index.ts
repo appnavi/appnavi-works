@@ -3,7 +3,11 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { ensureAuthenticated } from "../services/auth";
-
+function getGameDir(req: express.Request): string{
+  const creator_id = req.body["creator_id"];
+  const game_id = req.body["game_id"];
+  return path.join("uploads", creator_id, game_id );
+}
 const storage = multer.diskStorage({
   destination: (req, file, next) => {
     const folders = path.dirname(file.originalname).split("/");
@@ -19,7 +23,7 @@ const storage = multer.diskStorage({
       next(new Error("作者IDまたはゲームIDが指定されていません。"), "");
       return;
     }
-    const dir = path.join("uploads", creator_id, game_id, ...folders);
+    const dir = path.join(getGameDir(req), ...folders);
     fs.mkdirSync(dir, { recursive: true });
     next(null, dir);
   },
