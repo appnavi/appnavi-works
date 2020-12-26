@@ -21,7 +21,7 @@
   <div class="container">
     <h3 class="header">ゲームを投稿する</h3>
     <form action="/upload" method="POST" enctype="multipart/form-data">
-      <div class="row">
+      <div class="row card-panel">
         <div class="input-field">
           <input id="creator_name" type="text" class="validate" name="creator_id" required aria-required />
           <label for="creator_name">作者ID</label>
@@ -31,20 +31,22 @@
           <label for="game_name">ゲームID</label>
         </div>
       </div>
-      <div class="input-field file-field-frame">
-        <div class="placeholder">
-          <h6>
-            ここにフォルダをドロップ
-          </h6>
-          <div>または</div>
-          <h6>
-            クリックしてフォルダを選択
-          </h6>
+      <div class="row card-panel">
+        <div class="input-field file-field-frame">
+          <div class="placeholder">
+            <h6>
+              ここにフォルダをドロップ
+            </h6>
+            <div>または</div>
+            <h6>
+              クリックしてフォルダを選択
+            </h6>
+          </div>
+          <input class="file-path validate" type="file" name="game" webkitdirectory required aria-required />
         </div>
-        <input class="file-path validate" type="file" name="game" webkitdirectory required aria-required />
-      </div>
-      <p class="file-count"></p>
-      <div class="chilps file-chips">
+        <p class="file-count"></p>
+        <div class="chilps file-chips">
+        </div>
       </div>
       <div class="row center">
         <button type="submit" class="btn">アップロードする</button>
