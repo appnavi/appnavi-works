@@ -2,27 +2,68 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import jwt from "jsonwebtoken";
+
 import { ensureAuthenticated } from "../services/auth";
-function getGameDir(req: express.Request): string{
+function getGameDir(req: express.Request): string {
   const creator_id = req.body["creator_id"];
   const game_id = req.body["game_id"];
-  return path.join("uploads", creator_id, game_id );
+  return path.join("uploads", creator_id, game_id);
+}
+function validateUpload(
+  req: express.Request,
+  next: (error: Error | null, destination: string) => void,
+): boolean {
+  const validationParams = req.body["validationParams"];
+  if (validationParams) {
+    const decoded: any = jwt.verify(
+      validationParams,
+      process.env["JWT_SECRET"]!,
+    );
+    if (decoded.alreadyValidated) {
+      return true;
+    }
+  }
+  const creatorId = req.body["creator_id"];
+  const gameId = req.body["game_id"];
+  if (
+    typeof creatorId !== "string" ||
+    creatorId.length == 0 ||
+    typeof gameId !== "string" ||
+    gameId.length == 0
+  ) {
+    next(new Error("作者IDまたはゲームIDが指定されていません。"), "");
+    return false;
+  }
+  const gameDir = getGameDir(req);
+  console.log(`ext:${fs.existsSync(gameDir)}`);
+  if (!fs.existsSync(gameDir)) {
+    return true;
+  }
+  if (!req.body["overwrites_existing"]) {
+    next(
+      new Error(
+        "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
+      ),
+      "",
+    );
+    return false;
+  }
+
+  req.body["validationParams"] = jwt.sign(
+    { alreadyValidated: true },
+    process.env["JWT_SECRET"]!,
+  );
+  return true;
 }
 const storage = multer.diskStorage({
   destination: (req, file, next) => {
-    const folders = path.dirname(file.originalname).split("/");
-    folders.shift();
-    const creator_id = req.body["creator_id"];
-    const game_id = req.body["game_id"];
-    if (
-      typeof creator_id !== "string" ||
-      creator_id.length == 0 ||
-      typeof game_id !== "string" ||
-      game_id.length == 0
-    ) {
-      next(new Error("作者IDまたはゲームIDが指定されていません。"), "");
+    const isValid = validateUpload(req, next);
+    if (!isValid) {
       return;
     }
+    const folders = path.dirname(file.originalname).split("/");
+    folders.shift();
     const dir = path.join(getGameDir(req), ...folders);
     fs.mkdirSync(dir, { recursive: true });
     next(null, dir);
@@ -53,13 +94,13 @@ router.post(
   upload.array("game"),
   function (req, res, next) {
     const files = req.files;
-    if(!(files instanceof Array)){
+    if (!(files instanceof Array)) {
       res.status(400).end();
       return;
     }
     const fileCounts = files.length;
-    if(fileCounts === 0){
-      res.status(500).send('アップロードするファイルがありません。');
+    if (fileCounts === 0) {
+      res.status(500).send("アップロードするファイルがありません。");
       return;
     }
     res.send("ゲームのアップロードに成功しました。");
