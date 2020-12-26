@@ -20,7 +20,7 @@ function ensureAuthenticated(
   res.redirect("/auth");
 }
 
-function isLogIn(req: express.Request) {
+function isLogIn(req: express.Request): boolean {
   const token = req.session.token;
   const accessToken = req.session.oauth?.accessToken;
   if (token == null || accessToken == null) {
