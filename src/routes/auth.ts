@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 router.get('/redirect', (req, res) => {
   const code = req.query.code;
   if (!code) {
-    res.redirect('/');
+    res.redirect('/auth');
     return;
   }
   const options = {
