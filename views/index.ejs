@@ -10,15 +10,20 @@
 </head>
 
 <body>
+  <nav>
+    <div class="nav-wrapper">
+      <div class="brand-logo">アプリNavi</div>
+    </div>
+  </nav>
   <div class="container">
-    <h1>File Upload</h1>
+    <h3 class="header">ゲームを投稿する</h3>
     <form action="/upload" method="POST" enctype="multipart/form-data">
       <div class="row">
-        <div class="input-field col s6">
+        <div class="input-field">
           <input id="creator_name" type="text" class="validate" name="creator_id" required aria-required />
           <label for="creator_name">作者ID</label>
         </div>
-        <div class="input-field col s6">
+        <div class="input-field">
           <input id="game_name" type="text" class="validate" name="game_id" required aria-required />
           <label for="game_name">ゲームID</label>
         </div>
@@ -35,10 +40,12 @@
         </div>
         <input class="file-path validate" type="file" name="game" webkitdirectory required aria-required />
       </div>
-      <div class="file-count"></div>
+      <p class="file-count"></p>
       <div class="chilps file-chips">
       </div>
-      <button type="submit" class="btn">Submit</button>
+      <div class="row center">
+        <button type="submit" class="btn">アップロードする</button>
+      </div>
     </form>
   </div>
   <script>
