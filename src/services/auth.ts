@@ -9,32 +9,32 @@ declare module "express-session" {
     redirectToken: string;
   }
 }
-function setRedirect(req: express.Request){
+function setRedirect(req: express.Request) {
   req.session.redirect = {
     url: req.originalUrl,
   };
   req.session.redirectToken = jwt.sign(
     { url: req.originalUrl },
-    process.env["JWT_SECRET"]!,
-    );
-  }
-  
-function redirect(req: express.Request, res: express.Response){
+    process.env["JWT_SECRET"]!
+  );
+}
+
+function redirect(req: express.Request, res: express.Response) {
   const rediretUrl = req.session.redirect?.url;
   const token = req.session.redirectToken;
-  if(token && rediretUrl){
-    const decoded: any = jwt.verify(token,process.env["JWT_SECRET"]!);
-    if(decoded.url === rediretUrl){
+  if (token && rediretUrl) {
+    const decoded: any = jwt.verify(token, process.env["JWT_SECRET"]!);
+    if (decoded.url === rediretUrl) {
       res.redirect(rediretUrl);
       return;
     }
   }
-  res.redirect('/');
+  res.redirect("/");
 }
 function ensureAuthenticated(
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction,
+  next: express.NextFunction
 ) {
   if (isAuthenticated(req)) {
     next();

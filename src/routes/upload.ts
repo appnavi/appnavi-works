@@ -19,13 +19,13 @@ function getWebglDir(req: express.Request): string {
 }
 function validateWebglUpload(
   req: express.Request,
-  next: (error: Error | null, destination: string) => void,
+  next: (error: Error | null, destination: string) => void
 ): boolean {
   const validationParams = req.body["validationParams"];
   if (validationParams) {
     const decoded: any = jwt.verify(
       validationParams,
-      process.env["JWT_SECRET"]!,
+      process.env["JWT_SECRET"]!
     );
     if (decoded.alreadyValidated) {
       return true;
@@ -44,12 +44,12 @@ function validateWebglUpload(
   }
   const gameDir = getWebglDir(req);
   if (fs.existsSync(gameDir)) {
-    if (req.body["overwrites_existing"] !== 'on') {
+    if (req.body["overwrites_existing"] !== "on") {
       next(
         new Error(
-          "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
+          "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください"
         ),
-        "",
+        ""
       );
       return false;
     }
@@ -57,7 +57,7 @@ function validateWebglUpload(
 
   req.body["validationParams"] = jwt.sign(
     { alreadyValidated: true },
-    process.env["JWT_SECRET"]!,
+    process.env["JWT_SECRET"]!
   );
   return true;
 }
@@ -103,10 +103,10 @@ router.post(
       res.status(500).send("アップロードするファイルがありません。");
       return;
     }
-    res.render('upload-success', {
-      path: `/games/${getWebglDir(req)}`
+    res.render("upload-success", {
+      path: `/games/${getWebglDir(req)}`,
     });
-  },
+  }
 );
 
 module.exports = router;
