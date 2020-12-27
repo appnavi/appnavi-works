@@ -5,7 +5,7 @@ import { isAuthenticated, redirect } from "../services/auth";
 const router = express.Router();
 
 /* GET home page. */
-router.get("/", function (req, res, next) {
+router.get("/", function (req, res) {
   if (isAuthenticated(req)) {
     res.redirect("/");
     return;
@@ -35,7 +35,7 @@ router.get("/redirect", (req, res) => {
       accessToken: JSONresponse.authed_user.access_token,
     };
     req.session.oauth = oauth;
-    req.session.token = jwt.sign(oauth, process.env.JWT_SECRET!);
+    req.session.token = jwt.sign(oauth, process.env.JWT_SECRET ?? "");
     redirect(req, res);
   });
 });
@@ -46,4 +46,4 @@ router.all("/logout", (req, res) => {
   res.redirect("/auth");
 });
 
-module.exports = router;
+export { router };

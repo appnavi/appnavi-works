@@ -4,11 +4,11 @@ import session from "express-session";
 import path from "path";
 import cookieParser from "cookie-parser";
 import sassMiddleware from "node-sass-middleware";
+import { router as indexRouter } from "./routes/index";
+import { router as authRouter } from "./routes/auth";
+import { router as uploadRouter } from "./routes/upload";
 
 const logger = require("morgan");
-const indexRouter = require("./routes/index");
-const authRouter = require("./routes/auth");
-const uploadRouter = require("./routes/upload");
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(
   session({
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.SESSION_SECRET ?? "",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -59,12 +59,7 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (
-  err: any,
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
+app.use(function (err: any, req: express.Request, res: express.Response) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.status = err.status;

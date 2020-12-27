@@ -9,21 +9,21 @@ declare module "express-session" {
     redirectToken: string;
   }
 }
-function setRedirect(req: express.Request) {
+function setRedirect(req: express.Request): void {
   req.session.redirect = {
     url: req.originalUrl,
   };
   req.session.redirectToken = jwt.sign(
     { url: req.originalUrl },
-    process.env["JWT_SECRET"]!
+    process.env["JWT_SECRET"] ?? ""
   );
 }
 
-function redirect(req: express.Request, res: express.Response) {
+function redirect(req: express.Request, res: express.Response): void {
   const rediretUrl = req.session.redirect?.url;
   const token = req.session.redirectToken;
   if (token && rediretUrl) {
-    const decoded: any = jwt.verify(token, process.env["JWT_SECRET"]!);
+    const decoded: any = jwt.verify(token, process.env["JWT_SECRET"] ?? "");
     if (decoded.url === rediretUrl) {
       res.redirect(rediretUrl);
       return;
@@ -35,7 +35,7 @@ function ensureAuthenticated(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
-) {
+): void {
   if (isAuthenticated(req)) {
     next();
     return;
@@ -50,7 +50,7 @@ function isAuthenticated(req: express.Request): boolean {
   if (token == null || accessToken == null) {
     return false;
   }
-  const decoded: any = jwt.verify(token, process.env["JWT_SECRET"]!);
+  const decoded: any = jwt.verify(token, process.env["JWT_SECRET"] ?? "");
   return decoded["accessToken"] === accessToken;
 }
 

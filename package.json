@@ -10,8 +10,8 @@
     "eslint": "eslint src/**/*.ts",
     "eslint:fix": "eslint src/**/*.ts --fix",
     "lint": "npm-run-all eslint check-types",
-    "format": "prettier --write 'src/**/*.{js,ts,json}'",
-    "lint:fix": "npm-run-all eslint:fix check-types format"
+    "format": "prettier --write src/**/*.{js,ts,json}",
+    "lint:fix": "npm-run-all check-types format eslint:fix"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

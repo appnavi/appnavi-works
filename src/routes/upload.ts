@@ -7,7 +7,7 @@ import { ensureAuthenticated } from "../services/auth";
 
 const router = express.Router();
 
-router.get("/", ensureAuthenticated, function (req, res, next) {
+router.get("/", ensureAuthenticated, function (req, res) {
   res.render("upload");
 });
 
@@ -25,7 +25,7 @@ function validateWebglUpload(
   if (validationParams) {
     const decoded: any = jwt.verify(
       validationParams,
-      process.env["JWT_SECRET"]!
+      process.env["JWT_SECRET"] ?? ""
     );
     if (decoded.alreadyValidated) {
       return true;
@@ -57,7 +57,7 @@ function validateWebglUpload(
 
   req.body["validationParams"] = jwt.sign(
     { alreadyValidated: true },
-    process.env["JWT_SECRET"]!
+    process.env["JWT_SECRET"] ?? ""
   );
   return true;
 }
@@ -92,7 +92,7 @@ router.post(
   "/webgl",
   ensureAuthenticated,
   webglUpload.array("game"),
-  function (req, res, next) {
+  function (req, res) {
     const files = req.files;
     if (!(files instanceof Array)) {
       res.status(400).end();
@@ -109,4 +109,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export { router };
