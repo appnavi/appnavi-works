@@ -3,24 +3,48 @@ import jwt from "jsonwebtoken";
 
 declare module "express-session" {
   interface SessionData {
-    token: string,
-    oauth: {accessToken: string}
+    token: string;
+    oauth: { accessToken: string };
+    redirect: { url: string };
+    redirectToken: string;
   }
 }
-
+function setRedirect(req: express.Request){
+  req.session.redirect = {
+    url: req.originalUrl,
+  };
+  req.session.redirectToken = jwt.sign(
+    { url: req.originalUrl },
+    process.env["JWT_SECRET"]!,
+    );
+  }
+  
+function redirect(req: express.Request, res: express.Response){
+  const rediretUrl = req.session.redirect?.url;
+  const token = req.session.redirectToken;
+  if(token && rediretUrl){
+    const decoded: any = jwt.verify(token,process.env["JWT_SECRET"]!);
+    if(decoded.url === rediretUrl){
+      res.redirect(rediretUrl);
+      return;
+    }
+  }
+  res.redirect('/');
+}
 function ensureAuthenticated(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) {
-  if (isLogIn(req)) {
+  if (isAuthenticated(req)) {
     next();
     return;
   }
+  setRedirect(req);
   res.redirect("/auth");
 }
 
-function isLogIn(req: express.Request): boolean {
+function isAuthenticated(req: express.Request): boolean {
   const token = req.session.token;
   const accessToken = req.session.oauth?.accessToken;
   if (token == null || accessToken == null) {
@@ -29,4 +53,5 @@ function isLogIn(req: express.Request): boolean {
   const decoded: any = jwt.verify(token, process.env["JWT_SECRET"]!);
   return decoded["accessToken"] === accessToken;
 }
-export { ensureAuthenticated, isLogIn };
+
+export { ensureAuthenticated, isAuthenticated, redirect };
