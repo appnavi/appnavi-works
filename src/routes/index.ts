@@ -101,7 +101,9 @@ router.post(
       res.status(500).send("アップロードするファイルがありません。");
       return;
     }
-    res.send("ゲームのアップロードに成功しました。");
+    res.render('upload-success', {
+      path: `/games/${req.body['creator_id']}/${req.body['game_id']}`
+    });
   },
 );
 
