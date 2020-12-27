@@ -62,7 +62,8 @@
               <span class="file-count">0個のファイル</span>
             </div>
             <div class="collapsible-body">
-              <div class="chilps file-chips"></div>
+              <ul class="collection file-list">
+              </ul>
             </div>
           </li>
         </ul>
@@ -111,7 +112,7 @@
       ".input-field.file-field-frame"
     );
     const fileCount = document.querySelector('.file-count');
-    const fileChips = document.querySelector('.file-chips');
+    const fileList = document.querySelector('.file-list');
     filesField.addEventListener("dragenter", (event) => {
       fileFieldFrame.classList.add("drag");
     });
@@ -122,29 +123,36 @@
       fileFieldFrame.classList.remove("drag");
     });
     filesField.addEventListener('change', (event) => {
-      fileChips.innerHTML = '';
+      fileList.innerHTML = '';
       document.querySelector('.message-hidden-folder-files').style.display = 'none';
+      const filePaths = [];
       const dt = new DataTransfer();
       Array.from(filesField.files).filter((file) => {
         const directories = file.webkitRelativePath.split('/');
         //隠しフォルダ内のファイルを除去
         return directories.find((dir) => dir.startsWith('.')) === undefined;
       }).forEach((file) => {
-        const chip = document.createElement('div');
-        chip.classList.add('chip');
-        chip.innerHTML = file.name;
-        fileChips.appendChild(chip);
+        filePaths.push(file.webkitRelativePath);
         dt.items.add(file);
       });
+
       const fileCountBefore = filesField.files.length;
       const fileCountAfter = dt.files.length;
-      if(fileCountBefore > fileCountAfter){
+      if (fileCountBefore > fileCountAfter) {
         document.querySelector('.message-hidden-folder-files').style.display = 'block';
       }
+      
       filesField.files = dt.files;
 
+      filePaths.sort();
+      filePaths.forEach((path)=>{
+        const li = document.createElement('li');
+        li.classList.add('collection-item');
+        li.innerHTML = path;
+        fileList.appendChild(li);
+      });
+
       fileCount.innerHTML = `${dt.items.length}個のファイル`;
-      //TODO：chipからCollection(https://materializecss.com/collections.html)に変更
     });
   </script>
 
