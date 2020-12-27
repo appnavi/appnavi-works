@@ -62,8 +62,11 @@
               <span class="file-count">0個のファイル</span>
             </div>
             <div class="collapsible-body">
-              <ul class="collection file-list">
-              </ul>
+              <div class="file-list-header">http://localhost:3000/<span class="creator_id">(作者ID)</span>/<span
+                  class="game_id">(ゲームID)</span>/</div>
+              <div class="file-list">
+
+              </div>
             </div>
           </li>
         </ul>
@@ -107,6 +110,22 @@
         },
       });
     });
+    const creatorIdInput = document.querySelector('input[name="creator_id"]');
+    creatorIdInput.addEventListener('change', (ev) => {
+      let creatorId = creatorIdInput.value;
+      if (creatorId.length == 0) {
+        creatorId = '(作者ID)';
+      }
+      document.querySelector('.file-list-header>.creator_id').innerHTML = creatorId;
+    });
+    const gameIdInput = document.querySelector('input[name="game_id"]');
+    gameIdInput.addEventListener('change', (ev) => {
+      let gameId = gameIdInput.value;
+      if (gameId.length == 0) {
+        gameId = '(ゲームID)';
+      }
+      document.querySelector('.file-list-header>.game_id').innerHTML = gameId;
+    });
     const filesField = document.querySelector('input[name="game"]');
     const fileFieldFrame = document.querySelector(
       ".input-field.file-field-frame"
@@ -132,7 +151,7 @@
         //隠しフォルダ内のファイルを除去
         return directories.find((dir) => dir.startsWith('.')) === undefined;
       }).forEach((file) => {
-        filePaths.push(file.webkitRelativePath);
+        filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ''));
         dt.items.add(file);
       });
 
@@ -141,15 +160,27 @@
       if (fileCountBefore > fileCountAfter) {
         document.querySelector('.message-hidden-folder-files').style.display = 'block';
       }
-      
+
       filesField.files = dt.files;
 
       filePaths.sort();
-      filePaths.forEach((path)=>{
-        const li = document.createElement('li');
-        li.classList.add('collection-item');
-        li.innerHTML = path;
-        fileList.appendChild(li);
+      filePaths.forEach((path) => {
+        let parent = fileList;
+        path.split('/').forEach((section) => {
+          let p_ul = Array.from(parent.childNodes).find((node) => node.tagName === 'UL');
+          if (!p_ul) {
+            p_ul = document.createElement('ul');
+            parent.appendChild(p_ul);
+          }
+          let li = Array.from(p_ul.childNodes).find((node) => node.tagName === 'LI' && node.getAttribute('name') == section);
+          if (!li) {
+            li = document.createElement('li');
+            li.innerHTML = section;
+            li.setAttribute('name', section);
+            p_ul.appendChild(li);
+          }
+          parent = li;
+        });
       });
 
       fileCount.innerHTML = `${dt.items.length}個のファイル`;

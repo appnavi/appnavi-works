@@ -1,3 +1,4 @@
+@charset "UTF-8";
 a {
   color: #00b7ff; }
 
@@ -33,5 +34,45 @@ body {
 
 main {
   flex: 1 0 auto; }
+
+.file-list {
+  /*親要素*/
+  position: relative;
+  background: white;
+  line-height: 1.5; }
+  .file-list ul {
+    /*親フォルダ*/
+    padding-left: 5px;
+    list-style: none; }
+    .file-list ul li {
+      /*ファイル名部分*/
+      position: relative;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      padding-left: 15px;
+      box-sizing: border-box; }
+    .file-list ul li:before {
+      /*横線*/
+      position: absolute;
+      top: 15px;
+      left: 0;
+      width: 10px;
+      height: 1px;
+      margin: auto;
+      content: "";
+      background-color: #666; }
+    .file-list ul li:after {
+      /*縦線*/
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 1px;
+      height: 100%;
+      content: "";
+      background-color: #666; }
+    .file-list ul li:last-child:after {
+      /*これ以下は別フォルダになる事を明示する為、少しだけ離す*/
+      height: 15px; }
 
 /*# sourceMappingURL=style.css.map */
