@@ -5,14 +5,14 @@ import { isAuthenticated, redirect } from "../services/auth";
 const router = express.Router();
 
 /* GET home page. */
-router.get("/", function (req, res) {
+router.get("/", function (req, res, _) {
   if (isAuthenticated(req)) {
     res.redirect("/");
     return;
   }
   res.render("login");
 });
-router.get("/redirect", (req, res) => {
+router.get("/redirect", (req, res, _) => {
   const code = req.query.code;
   if (!code) {
     res.redirect("/auth");
@@ -40,7 +40,7 @@ router.get("/redirect", (req, res) => {
   });
 });
 
-router.all("/logout", (req, res) => {
+router.all("/logout", (req, res, _) => {
   req.session.token = undefined;
   req.session.oauth = undefined;
   res.redirect("/auth");

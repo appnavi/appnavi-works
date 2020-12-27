@@ -7,7 +7,7 @@ import { ensureAuthenticated } from "../services/auth";
 
 const router = express.Router();
 
-router.get("/", ensureAuthenticated, function (req, res) {
+router.get("/", ensureAuthenticated, function (req, res, _) {
   res.render("upload");
 });
 
@@ -92,7 +92,7 @@ router.post(
   "/webgl",
   ensureAuthenticated,
   webglUpload.array("game"),
-  function (req, res) {
+  function (req, res, _) {
     const files = req.files;
     if (!(files instanceof Array)) {
       res.status(400).end();
