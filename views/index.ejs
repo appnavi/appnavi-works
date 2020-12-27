@@ -39,7 +39,7 @@
         </p>
       </div>
       <div class="row card-panel">
-        <blockquote>
+        <blockquote class="message-hidden-folder-files" style="display: none;">
           隠しフォルダ(.gitなど)内のフォルダはアップロードされません。
         </blockquote>
         <div class="input-field file-field-frame">
@@ -123,6 +123,7 @@
     });
     filesField.addEventListener('change', (event) => {
       fileChips.innerHTML = '';
+      document.querySelector('.message-hidden-folder-files').style.display = 'none';
       const dt = new DataTransfer();
       Array.from(filesField.files).filter((file) => {
         const directories = file.webkitRelativePath.split('/');
@@ -135,7 +136,13 @@
         fileChips.appendChild(chip);
         dt.items.add(file);
       });
+      const fileCountBefore = filesField.files.length;
+      const fileCountAfter = dt.files.length;
+      if(fileCountBefore > fileCountAfter){
+        document.querySelector('.message-hidden-folder-files').style.display = 'block';
+      }
       filesField.files = dt.files;
+
       fileCount.innerHTML = `${dt.items.length}個のファイル`;
       //TODO：chipからCollection(https://materializecss.com/collections.html)に変更
     });
