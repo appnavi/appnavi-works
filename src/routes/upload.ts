@@ -7,32 +7,34 @@ import { ensureAuthenticated } from "../services/auth";
 
 const router = express.Router();
 
-router.get("/", ensureAuthenticated, function (req, res, _) {
+router.get("/", ensureAuthenticated, function (req, res) {
   res.render("upload");
 });
 
 //WebGLのアップロード
 function getWebglDir(req: express.Request): string {
-  const creator_id = req.body["creator_id"];
-  const game_id = req.body["game_id"];
+  const body = req.body as Record<string, unknown>;
+  const creator_id = body["creator_id"] as string;
+  const game_id = body["game_id"] as string;
   return path.join(creator_id, game_id, "webgl");
 }
 function validateWebglUpload(
   req: express.Request,
   next: (error: Error | null, destination: string) => void
 ): boolean {
-  const validationParams = req.body["validationParams"];
+  const body = req.body as Record<string, unknown>;
+  const validationParams = body["validationParams"] as string;
   if (validationParams) {
-    const decoded: any = jwt.verify(
+    const decoded = jwt.verify(
       validationParams,
       process.env["JWT_SECRET"] ?? ""
-    );
+    ) as {alreadyValidated: boolean};
     if (decoded.alreadyValidated) {
       return true;
     }
   }
-  const creatorId = req.body["creator_id"];
-  const gameId = req.body["game_id"];
+  const creatorId = body["creator_id"] as string;
+  const gameId = body["game_id"] as string;
   if (
     typeof creatorId !== "string" ||
     creatorId.length == 0 ||
@@ -44,7 +46,7 @@ function validateWebglUpload(
   }
   const gameDir = getWebglDir(req);
   if (fs.existsSync(gameDir)) {
-    if (req.body["overwrites_existing"] !== "on") {
+    if (body["overwrites_existing"] !== "on") {
       next(
         new Error(
           "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください"
@@ -55,7 +57,7 @@ function validateWebglUpload(
     }
   }
 
-  req.body["validationParams"] = jwt.sign(
+  body["validationParams"] = jwt.sign(
     { alreadyValidated: true },
     process.env["JWT_SECRET"] ?? ""
   );
@@ -92,7 +94,7 @@ router.post(
   "/webgl",
   ensureAuthenticated,
   webglUpload.array("game"),
-  function (req, res, _) {
+  function (req, res) {
     const files = req.files;
     if (!(files instanceof Array)) {
       res.status(400).end();
