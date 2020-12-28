@@ -180,6 +180,7 @@
           request.open('POST', '/upload/webgl');
           request.setRequestHeader('x-creator-id', document.querySelector('input[name="creator_id"]').value)
           request.setRequestHeader('x-game-id', document.querySelector('input[name="game_id"]').value)
+          request.setRequestHeader('x-overwrites-existing', document.querySelector('input[name="overwrites_existing"]').checked)
           request.addEventListener('load', (ev)=>{
             let content = `<h4>${(request.status === 200) ? "アップロードに成功しました" : "アップロードに失敗しました"}</h4>`;
             if(request.status === 200){
