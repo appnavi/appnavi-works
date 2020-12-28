@@ -62,6 +62,13 @@
           <button type="submit" class="btn">アップロードする</button>
         </div>
       </form>
+      <div id="result-dialog" class="modal">
+        <div class="modal-content">
+        </div>
+        <div class="modal-footer">
+          <a class="modal-close waves-effect waves-green btn-flat">閉じる</a>
+        </div>
+      </div>    
     </main>
     <script>
       //Materializeのロード
@@ -74,6 +81,7 @@
             elm.querySelector('.collapsible-header>.material-icons').innerHTML = 'keyboard_arrow_down';
           },
         });
+        M.Modal.init(document.querySelector("#result-dialog"), {});
       });
     </script>
     <script>
@@ -159,6 +167,35 @@
             gameId = '(ゲームID)';
           }
           document.querySelector('.file-list-header>.game_id').innerHTML = gameId;
+        });
+      }
+    </script>
+    <script>
+      {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          const data = new FormData(form);
+          const request = new XMLHttpRequest();
+          request.open('POST', '/upload/webgl');
+          request.setRequestHeader('x-creator-id', document.querySelector('input[name="creator_id"]').value)
+          request.setRequestHeader('x-game-id', document.querySelector('input[name="game_id"]').value)
+          request.addEventListener('load', (ev)=>{
+            let content = `<h4>${(request.status === 200) ? "アップロードに成功しました" : "アップロードに失敗しました"}</h4>`;
+            if(request.status === 200){
+              const path = JSON.parse(request.response).path?.replaceAll("\\", "/");
+              if(path !== undefined){
+                const url = `${location.origin}${path}`;
+                content += `<p><a href="${url}">${url}</a>にアップロードしました。</p>`;
+              }
+            }else {
+              content += request.response;
+            }
+            const dialog = document.querySelector("#result-dialog");
+            dialog.querySelector('.modal-content').innerHTML = content;
+            M.Modal.getInstance(dialog).open();
+          })
+          request.send(data);
         });
       }
     </script>

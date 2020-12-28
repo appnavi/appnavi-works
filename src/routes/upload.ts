@@ -107,7 +107,7 @@ router.post(
       res.status(500).send("アップロードするファイルがありません。");
       return;
     }
-    res.render("upload-success", {
+    res.send({
       path: `/${getWebglDir(req)}`,
     });
   }
