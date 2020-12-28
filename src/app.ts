@@ -7,8 +7,7 @@ import sassMiddleware from "node-sass-middleware";
 import { router as indexRouter } from "./routes/index";
 import { router as authRouter } from "./routes/auth";
 import { router as uploadRouter } from "./routes/upload";
-
-const logger = require("morgan");
+import logger from "morgan";
 
 const app = express();
 
@@ -60,10 +59,11 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (
-  err: any,
+  err: Record<string, unknown>,
   req: express.Request,
   res: express.Response,
-  _: express.NextFunction
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
 ) {
   // set locals, only providing error in development
   res.locals.message = err.message;
@@ -71,7 +71,8 @@ app.use(function (
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
+  const status = (typeof(err.status) === 'number') ? err.status : 500;
+  res.status(status);
   res.render("error");
 });
 
