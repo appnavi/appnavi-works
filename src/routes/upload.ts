@@ -5,6 +5,8 @@ import fs from "fs";
 import jwt from "jsonwebtoken";
 import { ensureAuthenticated } from "../services/auth";
 
+const GAMES_DIRECTORY_NAME = "games";
+
 const router = express.Router();
 
 router.get("/", ensureAuthenticated, function (req, res) {
@@ -16,7 +18,7 @@ function getWebglDir(req: express.Request): string {
   const body = req.body as Record<string, unknown>;
   const creator_id = body["creator_id"] as string;
   const game_id = body["game_id"] as string;
-  return path.join(creator_id, game_id, "webgl");
+  return path.join(GAMES_DIRECTORY_NAME, creator_id, game_id, "webgl");
 }
 function validateWebglUpload(
   req: express.Request,
@@ -106,7 +108,7 @@ router.post(
       return;
     }
     res.render("upload-success", {
-      path: `/games/${getWebglDir(req)}`,
+      path: `/${getWebglDir(req)}`,
     });
   }
 );

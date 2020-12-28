@@ -40,7 +40,7 @@ app.use(
   })
 );
 app.use(express.static(path.join(__dirname, "../public")));
-app.use("/games", express.static(path.join(__dirname, "../uploads")));
+app.use(express.static(path.join(__dirname, "../uploads")));
 
 /*  ログインしている時のみtestsフォルダー内のファイルにアクセスできるように(参考：https://stackoverflow.com/a/30761936)
 import {ensureAuthenticated} from './services/auth';
