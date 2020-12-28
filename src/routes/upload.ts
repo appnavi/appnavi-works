@@ -28,7 +28,7 @@ function validateWebglUpload(
     const decoded = jwt.verify(
       validationParams,
       process.env["JWT_SECRET"] ?? ""
-    ) as {alreadyValidated: boolean};
+    ) as { alreadyValidated: boolean };
     if (decoded.alreadyValidated) {
       return true;
     }
@@ -44,7 +44,7 @@ function validateWebglUpload(
     next(new Error("作者IDまたはゲームIDが指定されていません。"), "");
     return false;
   }
-  const gameDir = getWebglDir(req);
+  const gameDir = path.join("uploads", getWebglDir(req));
   if (fs.existsSync(gameDir)) {
     if (body["overwrites_existing"] !== "on") {
       next(
