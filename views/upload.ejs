@@ -77,85 +77,90 @@
       });
     </script>
     <script>
-      const filesField = document.querySelector('input[name="game"]');
-      const fileFieldFrame = document.querySelector(".input-field.file-field-frame");
-      const fileList = document.querySelector('.file-list');
-
       //ドラッグ&ドロップ時のUI変化
-      filesField.addEventListener("dragenter", (event) => {
-        fileFieldFrame.classList.add("drag");
-      });
-      filesField.addEventListener("dragleave", (event) => {
-        fileFieldFrame.classList.remove("drag");
-      });
-      filesField.addEventListener("drop", (event) => {
-        fileFieldFrame.classList.remove("drag");
-      });
-
-      //ドロップ時の動作
-      filesField.addEventListener('change', (event) => {
-        fileList.innerHTML = '';
-        document.querySelector('.message-hidden-folder-files').style.display = 'none';
-        const filePaths = [];
-        const dt = new DataTransfer();
-        Array.from(filesField.files).filter((file) => {//隠しフォルダ内のファイルを除去
-          const directories = file.webkitRelativePath.split('/');
-          return directories.find((dir) => dir.startsWith('.')) === undefined;
-        }).forEach((file) => {
-          filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ''));
-          dt.items.add(file);
+      {
+        const filesField = document.querySelector('input[name="game"]');
+        const fileFieldFrame = document.querySelector(".input-field.file-field-frame");
+        filesField.addEventListener("dragenter", (event) => {
+          fileFieldFrame.classList.add("drag");
+        });
+        filesField.addEventListener("dragleave", (event) => {
+          fileFieldFrame.classList.remove("drag");
+        });
+        filesField.addEventListener("drop", (event) => {
+          fileFieldFrame.classList.remove("drag");
         });
 
-        const fileCountBefore = filesField.files.length;
-        const fileCountAfter = dt.files.length;
-        if (fileCountBefore > fileCountAfter) {
-          document.querySelector('.message-hidden-folder-files').style.display = 'block';
-        }
-
-        filesField.files = dt.files;
-
-        filePaths.sort();
-        filePaths.forEach((path) => {
-          let parent = fileList;
-          path.split('/').forEach((section) => {
-            let p_ul = Array.from(parent.childNodes).find((node) => node.tagName === 'UL');
-            if (!p_ul) {
-              p_ul = document.createElement('ul');
-              parent.appendChild(p_ul);
-            }
-            let li = Array.from(p_ul.childNodes).find((node) => node.tagName === 'LI' && node.getAttribute('name') == section);
-            if (!li) {
-              li = document.createElement('li');
-              li.innerHTML = section;
-              li.setAttribute('name', section);
-              p_ul.appendChild(li);
-            }
-            parent = li;
-          });
-        });
-
-        const fileCount = document.querySelector('.file-count');
-        fileCount.innerHTML = `${dt.items.length}個のファイル`;
-      });
+      }
     </script>
     <script>
-      //アップロード先URLの同期
-      const creatorIdInput = document.querySelector('input[name="creator_id"]');
-      creatorIdInput.addEventListener('change', (ev) => {
-        let creatorId = creatorIdInput.value;
-        if (creatorId.length == 0) {
-          creatorId = '(作者ID)';
+      {
+        //ドロップ時の動作
+        const filesField = document.querySelector('input[name="game"]');
+        const fileList = document.querySelector('.file-list');
+        filesField.addEventListener('change', (event) => onFilesDropped());
+        function onFilesDropped() {
+          fileList.innerHTML = '';
+          document.querySelector('.message-hidden-folder-files').style.display = 'none';
+          const filePaths = [];
+          const dt = new DataTransfer();
+          Array.from(filesField.files).filter((file) => {//隠しフォルダ内のファイルを除去
+            const directories = file.webkitRelativePath.split('/');
+            return directories.find((dir) => dir.startsWith('.')) === undefined;
+          }).forEach((file) => {
+            filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ''));
+            dt.items.add(file);
+          });
+          const fileCountBefore = filesField.files.length;
+          const fileCountAfter = dt.files.length;
+          if (fileCountBefore > fileCountAfter) {
+            document.querySelector('.message-hidden-folder-files').style.display = 'block';
+          }
+          filesField.files = dt.files;
+          filePaths.sort();
+          filePaths.forEach((path) => {
+            let parent = fileList;
+            path.split('/').forEach((section) => {
+              let p_ul = Array.from(parent.childNodes).find((node) => node.tagName === 'UL');
+              if (!p_ul) {
+                p_ul = document.createElement('ul');
+                parent.appendChild(p_ul);
+              }
+              let li = Array.from(p_ul.childNodes).find((node) => node.tagName === 'LI' && node.getAttribute('name') == section);
+              if (!li) {
+                li = document.createElement('li');
+                li.innerHTML = section;
+                li.setAttribute('name', section);
+                p_ul.appendChild(li);
+              }
+              parent = li;
+            });
+          });
+          const fileCount = document.querySelector('.file-count');
+          fileCount.innerHTML = `${dt.items.length}個のファイル`;
         }
-        document.querySelector('.file-list-header>.creator_id').innerHTML = creatorId;
-      });
-      const gameIdInput = document.querySelector('input[name="game_id"]');
-      gameIdInput.addEventListener('change', (ev) => {
-        let gameId = gameIdInput.value;
-        if (gameId.length == 0) {
-          gameId = '(ゲームID)';
-        }
-        document.querySelector('.file-list-header>.game_id').innerHTML = gameId;
-      });
+      }
+    </script>
+    <script>
+      {
+        //アップロード先URLの同期
+        const creatorIdInput = document.querySelector('input[name="creator_id"]');
+        creatorIdInput.addEventListener('change', (ev) => {
+          let creatorId = creatorIdInput.value;
+          if (creatorId.length == 0) {
+            creatorId = '(作者ID)';
+          }
+          document.querySelector('.file-list-header>.creator_id').innerHTML = creatorId;
+        });
+        const gameIdInput = document.querySelector('input[name="game_id"]');
+        gameIdInput.addEventListener('change', (ev) => {
+          let gameId = gameIdInput.value;
+          if (gameId.length == 0) {
+            gameId = '(ゲームID)';
+          }
+          document.querySelector('.file-list-header>.game_id').innerHTML = gameId;
+        });
+      }
     </script>
     <%- include('common/footer') %>
       <%- include('common/scripts') %>
