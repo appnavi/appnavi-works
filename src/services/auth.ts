@@ -23,7 +23,9 @@ function redirect(req: express.Request, res: express.Response): void {
   const rediretUrl = req.session.redirect?.url;
   const token = req.session.redirectToken;
   if (token && rediretUrl) {
-    const decoded = jwt.verify(token, process.env["JWT_SECRET"] ?? "") as {url: string};
+    const decoded = jwt.verify(token, process.env["JWT_SECRET"] ?? "") as {
+      url: string;
+    };
     if (decoded.url === rediretUrl) {
       res.redirect(rediretUrl);
       return;
@@ -50,7 +52,9 @@ function isAuthenticated(req: express.Request): boolean {
   if (token == null || accessToken == null) {
     return false;
   }
-  const decoded = jwt.verify(token, process.env["JWT_SECRET"] ?? "") as {accessToken: string};
+  const decoded = jwt.verify(token, process.env["JWT_SECRET"] ?? "") as {
+    accessToken: string;
+  };
   return decoded.accessToken === accessToken;
 }
 

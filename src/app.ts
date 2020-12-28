@@ -71,7 +71,7 @@ app.use(function (
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
   // render the error page
-  const status = (typeof(err.status) === 'number') ? err.status : 500;
+  const status = typeof err.status === "number" ? err.status : 500;
   res.status(status);
   res.render("error");
 });

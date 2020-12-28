@@ -6,7 +6,7 @@ const router = express.Router();
 interface SlackAuthResponse {
   ok: boolean;
   app_id: string;
-  authed_user : {
+  authed_user: {
     id: string;
     scope: string;
     access_token: string;
@@ -29,12 +29,14 @@ router.get("/", function (req, res) {
 });
 router.get("/redirect", (req, res) => {
   const code = req.query.code;
-  if (typeof(code) !== 'string') {
+  if (typeof code !== "string") {
     res.redirect("/auth");
     return;
   }
   const options = {
-    uri: `https://slack.com/api/oauth.v2.access?code=${code}&client_id=${process.env.SLACK_CLIENT_ID ?? ""}&client_secret=${process.env.SLACK_CLIENT_SECRET ?? ""}`,
+    uri: `https://slack.com/api/oauth.v2.access?code=${code}&client_id=${
+      process.env.SLACK_CLIENT_ID ?? ""
+    }&client_secret=${process.env.SLACK_CLIENT_SECRET ?? ""}`,
     method: "GET",
   };
   request(options, (error, response, body) => {
