@@ -64,7 +64,7 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (
-  err: Record<string, unknown>,
+  err: NodeJS.Dict<unknown>,
   req: express.Request,
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
