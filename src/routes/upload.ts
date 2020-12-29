@@ -58,7 +58,11 @@ router.post(
       creatorId.length == 0 ||
       gameId.length == 0
     ) {
-      res.status(500).send("作者IDまたはゲームIDが指定されていません。");
+      res.status(500).send("作者IDとゲームIDを両方を指定する必要があります。");
+      return;
+    }
+    if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
+      res.status(500).send("作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。");
       return;
     }
     const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getWebglDir(req));
@@ -77,7 +81,7 @@ router.post(
   },
   webglUpload.array("game"),
   function (req, res) {
-    const files = req.files;
+    const files = req.files ?? [];
     if (!(files instanceof Array)) {
       res.status(400).end();
       return;

@@ -13,12 +13,14 @@
       <form action="/upload/webgl" method="POST" enctype="multipart/form-data">
         <div class="row card-panel">
           <div class="input-field">
-            <input id="creator_name" type="text" class="validate" name="creator_id" required aria-required />
+            <input id="creator_name" type="text" class="validate" name="creator_id" pattern="^[0-9a-z\-]+$" required aria-required />
             <label for="creator_name">作者ID</label>
+            <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
           </div>
           <div class="input-field">
-            <input id="game_name" type="text" class="validate" name="game_id" required aria-required />
+            <input id="game_name" type="text" class="validate" name="game_id" pattern="^[0-9a-z\-]+$" required aria-required />
             <label for="game_name">ゲームID</label>
+            <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
           </div>
           <p>
             <label>
