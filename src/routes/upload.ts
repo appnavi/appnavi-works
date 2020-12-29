@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import { ensureAuthenticated } from "../services/auth";
 
+const DIRECTORY_UPLOADS_DESTINATION = "uploads";
 const GAMES_DIRECTORY_NAME = "games";
 
 const router = express.Router();
@@ -23,7 +24,7 @@ const webglStorage = multer.diskStorage({
   destination: (req, file, next) => {
     const folders = path.dirname(file.originalname).split("/");
     folders.shift();
-    const dir = path.join("uploads", getWebglDir(req), ...folders);
+    const dir = path.join(DIRECTORY_UPLOADS_DESTINATION, getWebglDir(req), ...folders);
     fs.mkdirSync(dir, { recursive: true });
     next(null, dir);
   },
@@ -56,7 +57,7 @@ router.post(
       res.status(500).send("作者IDまたはゲームIDが指定されていません。");
       return;
     }
-    const gameDir = path.join("uploads", getWebglDir(req));
+    const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getWebglDir(req));
     if (fs.existsSync(gameDir)) {
       const overwritesExisting = req.headers["x-overwrites-existing"] as string;
       if (overwritesExisting !== "true") {
@@ -88,4 +89,4 @@ router.post(
   }
 );
 
-export { router };
+export { router, DIRECTORY_UPLOADS_DESTINATION };
