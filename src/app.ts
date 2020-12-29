@@ -6,7 +6,10 @@ import cookieParser from "cookie-parser";
 import sassMiddleware from "node-sass-middleware";
 import { router as indexRouter } from "./routes/index";
 import { router as authRouter } from "./routes/auth";
-import { router as uploadRouter, DIRECTORY_UPLOADS_DESTINATION } from "./routes/upload";
+import {
+  router as uploadRouter,
+  DIRECTORY_UPLOADS_DESTINATION,
+} from "./routes/upload";
 import logger from "morgan";
 
 const app = express();
@@ -40,7 +43,9 @@ app.use(
   })
 );
 app.use(express.static(path.join(__dirname, "../public")));
-app.use(express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION)));
+app.use(
+  express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION))
+);
 
 /*  ログインしている時のみtestsフォルダー内のファイルにアクセスできるように(参考：https://stackoverflow.com/a/30761936)
 import {ensureAuthenticated} from './services/auth';

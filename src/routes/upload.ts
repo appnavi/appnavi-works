@@ -24,7 +24,11 @@ const webglStorage = multer.diskStorage({
   destination: (req, file, next) => {
     const folders = path.dirname(file.originalname).split("/");
     folders.shift();
-    const dir = path.join(DIRECTORY_UPLOADS_DESTINATION, getWebglDir(req), ...folders);
+    const dir = path.join(
+      DIRECTORY_UPLOADS_DESTINATION,
+      getWebglDir(req),
+      ...folders
+    );
     fs.mkdirSync(dir, { recursive: true });
     next(null, dir);
   },
