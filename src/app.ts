@@ -4,6 +4,7 @@ import session from "express-session";
 import path from "path";
 import cookieParser from "cookie-parser";
 import sassMiddleware from "node-sass-middleware";
+import fs from "fs";
 import { router as indexRouter } from "./routes/index";
 import { router as authRouter } from "./routes/auth";
 import {
@@ -18,6 +19,9 @@ const app = express();
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "ejs");
 
+app.use(logger("common", {
+  stream: fs.createWriteStream(path.join(__dirname, "../access.log"), {flags: "a"})
+}));
 app.use(logger("dev"));
 app.use(express.json());
 app.use(
