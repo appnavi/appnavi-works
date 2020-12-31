@@ -42,10 +42,20 @@ router.get("/redirect", (req, res) => {
   request(options, (error, response, body) => {
     const JSONresponse = JSON.parse(body) as SlackAuthResponse;
     if (!JSONresponse.ok) {
+      console.log(JSON.parse(body));
       res
-        .send("Error encountered: \n" + JSON.stringify(JSONresponse))
+        .send("認証に失敗しました。")
         .status(200)
         .end();
+      return;
+    }
+    //Sign In With Slackで、どんなSlackアカウントでもログインできる可能性があるので、その対策
+    if(typeof process.env.SLACK_CLIENT_ID !== 'string' || JSONresponse.team.id !== process.env.SLACK_WORKSPACE_ID){
+      console.log(`${JSONresponse.team.id} ${process.env.SLACK_WORKSPACE_ID ?? ""}`);
+      res
+      .send("認証に失敗しました。")
+      .status(200)
+      .end();
       return;
     }
     const oauth = {
