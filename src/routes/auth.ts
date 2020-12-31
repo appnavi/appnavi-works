@@ -49,7 +49,8 @@ router.get("/redirect", (req, res) => {
         .end();
       return;
     }
-    //Sign In With Slackで、どんなSlackアカウントでもログインできる可能性があるので、その対策
+    //Sign In With Slackは、SLACK_CLIENT_IDとSLACK_CLIENT_SECRETの発行元のワークスペースの人しかログインできないと思っているが、
+    //どんなSlackアカウントでもログインできる可能性があるので、その対策
     if(typeof process.env.SLACK_CLIENT_ID !== 'string' || JSONresponse.team.id !== process.env.SLACK_WORKSPACE_ID){
       console.log(`${JSONresponse.team.id} ${process.env.SLACK_WORKSPACE_ID ?? ""}`);
       res
