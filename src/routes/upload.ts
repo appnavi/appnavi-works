@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { ensureAuthenticated } from "../services/auth";
+import * as logger from "../modules/logger";
 
 const DIRECTORY_UPLOADS_DESTINATION = "uploads";
 const GAMES_DIRECTORY_NAME = "games";
@@ -58,17 +59,35 @@ router.post(
       creatorId.length == 0 ||
       gameId.length == 0
     ) {
+      logger.system.error(
+        "アップロード失敗:作者IDとゲームIDを両方を指定する必要があります。",
+        creatorId,
+        gameId
+      );
       res.status(500).send("作者IDとゲームIDを両方を指定する必要があります。");
       return;
     }
     if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
-      res.status(500).send("作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。");
+      logger.system.error(
+        "アップロード失敗:作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
+        creatorId,
+        gameId
+      );
+      res
+        .status(500)
+        .send(
+          "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。"
+        );
       return;
     }
     const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getWebglDir(req));
     if (fs.existsSync(gameDir)) {
       const overwritesExisting = req.headers["x-overwrites-existing"] as string;
       if (overwritesExisting !== "true") {
+        logger.system.error(
+          "アップロード失敗:ゲームが既に存在しています。",
+          gameDir
+        );
         res
           .status(500)
           .send(
@@ -83,16 +102,23 @@ router.post(
   function (req, res) {
     const files = req.files ?? [];
     if (!(files instanceof Array)) {
+      logger.system.error(
+        "アップロード失敗:想定外のエラーです。(express.Request.filesの型が不正です)",
+        files
+      );
       res.status(400).end();
       return;
     }
     const fileCounts = files.length;
     if (fileCounts === 0) {
+      logger.system.error("アップロード失敗:アップロードするファイルがありません。");
       res.status(500).send("アップロードするファイルがありません。");
       return;
     }
+    const dir = getWebglDir(req);
+    logger.system.info("アップロード成功", dir);
     res.send({
-      path: `/${getWebglDir(req)}`,
+      path: `/${dir}`,
     });
   }
 );

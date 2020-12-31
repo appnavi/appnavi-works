@@ -60,6 +60,7 @@ router.get("/redirect", (req, res) => {
       .end();
       return;
     }
+    logger.system.info(`ユーザー${JSONresponse.authed_user.id}がSlack認証でログインしました。`);
     const oauth = {
       accessToken: JSONresponse.authed_user.access_token,
     };
