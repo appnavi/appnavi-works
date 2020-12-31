@@ -4,25 +4,19 @@ import session from "express-session";
 import path from "path";
 import cookieParser from "cookie-parser";
 import sassMiddleware from "node-sass-middleware";
-import fs from "fs";
 import { router as indexRouter } from "./routes/index";
 import { router as authRouter } from "./routes/auth";
 import {
   router as uploadRouter,
   DIRECTORY_UPLOADS_DESTINATION,
 } from "./routes/upload";
-import logger from "morgan";
+import * as logger from "./modules/logger";
 
 const app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "ejs");
-
-app.use(logger("common", {
-  stream: fs.createWriteStream(path.join(__dirname, "../access.log"), {flags: "a"})
-}));
-app.use(logger("dev"));
 app.use(express.json());
 app.use(
   session({
@@ -38,6 +32,12 @@ app.use(
 );
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(logger.connectLogger(
+  logger.access,
+  {
+    level: 'info'
+  }
+))
 app.use(
   sassMiddleware({
     src: path.join(__dirname, "../public"),
