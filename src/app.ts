@@ -32,12 +32,11 @@ app.use(
 );
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(logger.connectLogger(
-  logger.access,
-  {
-    level: 'info'
-  }
-))
+app.use(
+  logger.connectLogger(logger.access, {
+    level: "info",
+  })
+);
 app.use(
   sassMiddleware({
     src: path.join(__dirname, "../public"),

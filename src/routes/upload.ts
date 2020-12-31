@@ -111,7 +111,9 @@ router.post(
     }
     const fileCounts = files.length;
     if (fileCounts === 0) {
-      logger.system.error("アップロード失敗:アップロードするファイルがありません。");
+      logger.system.error(
+        "アップロード失敗:アップロードするファイルがありません。"
+      );
       res.status(500).send("アップロードするファイルがありません。");
       return;
     }

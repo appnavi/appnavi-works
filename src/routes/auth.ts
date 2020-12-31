@@ -2,7 +2,7 @@ import express from "express";
 import request from "request";
 import jwt from "jsonwebtoken";
 import { isAuthenticated, redirect } from "../services/auth";
-import * as logger from '../modules/logger';
+import * as logger from "../modules/logger";
 const router = express.Router();
 interface SlackAuthResponse {
   ok: boolean;
@@ -44,23 +44,24 @@ router.get("/redirect", (req, res) => {
     const JSONresponse = JSON.parse(body) as SlackAuthResponse;
     if (!JSONresponse.ok) {
       logger.system.error("Slack認証失敗", JSON.parse(body));
-      res
-        .send("認証に失敗しました。")
-        .status(200)
-        .end();
+      res.send("認証に失敗しました。").status(200).end();
       return;
     }
     //Sign In With Slackは、SLACK_CLIENT_IDとSLACK_CLIENT_SECRETの発行元のワークスペースの人しかログインできないと思っているが、
     //どんなSlackアカウントでもログインできる可能性があるので、その対策
-    if(typeof process.env.SLACK_CLIENT_ID !== 'string' || JSONresponse.team.id !== process.env.SLACK_WORKSPACE_ID){
-      logger.system.error(`違うワークスペース${JSONresponse.team.id}の人がログインしようとしました。`);
-      res
-      .send("認証に失敗しました。")
-      .status(200)
-      .end();
+    if (
+      typeof process.env.SLACK_CLIENT_ID !== "string" ||
+      JSONresponse.team.id !== process.env.SLACK_WORKSPACE_ID
+    ) {
+      logger.system.error(
+        `違うワークスペース${JSONresponse.team.id}の人がログインしようとしました。`
+      );
+      res.send("認証に失敗しました。").status(200).end();
       return;
     }
-    logger.system.info(`ユーザー${JSONresponse.authed_user.id}がSlack認証でログインしました。`);
+    logger.system.info(
+      `ユーザー${JSONresponse.authed_user.id}がSlack認証でログインしました。`
+    );
     const oauth = {
       accessToken: JSONresponse.authed_user.access_token,
     };
