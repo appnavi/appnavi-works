@@ -47,8 +47,9 @@ router.get("/redirect", (req, res) => {
       res.send("認証に失敗しました。").status(200).end();
       return;
     }
-    //Sign In With Slackは、SLACK_CLIENT_IDとSLACK_CLIENT_SECRETの発行元のワークスペースの人しかログインできないと思っているが、
-    //どんなSlackアカウントでもログインできる可能性があるので、その対策
+    //Sign In With Slackは、SLACK_CLIENT_IDとSLACK_CLIENT_SECRETの発行元のワークスペースの人しかログインできないはず
+    //（違うワークスペースからログインしようとすると、"invalid_team_for_non_distributed_app"というエラーになる）
+    //もし違うワークスペースの人がログインに成功した場合、認証失敗とする
     if (
       typeof process.env.SLACK_CLIENT_ID !== "string" ||
       JSONresponse.team.id !== process.env.SLACK_WORKSPACE_ID
