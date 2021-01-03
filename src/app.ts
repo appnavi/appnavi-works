@@ -4,6 +4,7 @@ import session from "express-session";
 import path from "path";
 import cookieParser from "cookie-parser";
 import sassMiddleware from "node-sass-middleware";
+import serveIndex from "serve-index";
 import { router as indexRouter } from "./routes/index";
 import { router as authRouter } from "./routes/auth";
 import {
@@ -47,9 +48,13 @@ app.use(
   })
 );
 app.use(express.static(path.join(__dirname, "../public")));
+
 app.use(
   `/${UPLOADS_PATH_PREFIX}`,
-  express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION))
+  express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION)),
+  serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
+    icons: true,
+  })
 );
 
 /*  ログインしている時のみtestsフォルダー内のファイルにアクセスできるように(参考：https://stackoverflow.com/a/30761936)
