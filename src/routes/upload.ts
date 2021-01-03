@@ -6,7 +6,7 @@ import { ensureAuthenticated } from "../services/auth";
 import * as logger from "../modules/logger";
 
 const DIRECTORY_UPLOADS_DESTINATION = "uploads";
-const GAMES_DIRECTORY_NAME = "games";
+const UPLOADS_PATH_PREFIX = "game";
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.get("/", ensureAuthenticated, function (req, res) {
 function getWebglDir(req: express.Request): string {
   const creator_id = req.headers["x-creator-id"] as string;
   const game_id = req.headers["x-game-id"] as string;
-  return path.join(GAMES_DIRECTORY_NAME, creator_id, game_id, "webgl");
+  return path.join(creator_id, game_id, "webgl");
 }
 
 const webglStorage = multer.diskStorage({
@@ -120,9 +120,9 @@ router.post(
     const dir = getWebglDir(req);
     logger.system.info("アップロード成功", dir);
     res.send({
-      path: `/${dir}`,
+      path: `/${path.join(UPLOADS_PATH_PREFIX, dir)}`,
     });
   }
 );
 
-export { router, DIRECTORY_UPLOADS_DESTINATION };
+export { router, DIRECTORY_UPLOADS_DESTINATION, UPLOADS_PATH_PREFIX };

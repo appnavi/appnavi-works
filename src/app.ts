@@ -9,6 +9,7 @@ import { router as authRouter } from "./routes/auth";
 import {
   router as uploadRouter,
   DIRECTORY_UPLOADS_DESTINATION,
+  UPLOADS_PATH_PREFIX,
 } from "./routes/upload";
 import * as logger from "./modules/logger";
 
@@ -47,6 +48,7 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(
+  `/${UPLOADS_PATH_PREFIX}`,
   express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION))
 );
 
