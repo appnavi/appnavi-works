@@ -66,7 +66,7 @@ router.get("/redirect", (req, res) => {
       accessToken: JSONresponse.authed_user.access_token,
     };
     req.session.oauth = oauth;
-    req.session.token = jwt.sign(oauth, getEnv("JWT_SECRET") ?? "");
+    req.session.token = jwt.sign(oauth, getEnv("JWT_SECRET"));
     redirect(req, res);
   });
 });
