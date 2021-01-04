@@ -13,7 +13,7 @@ import {
   UPLOADS_PATH_PREFIX,
 } from "./routes/upload";
 import * as logger from "./modules/logger";
-import {getEnv} from "./helpers";
+import { getEnv } from "./helpers";
 const app = express();
 
 // view engine setup

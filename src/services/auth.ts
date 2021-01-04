@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import {getEnv} from "../helpers";
+import { getEnv } from "../helpers";
 declare module "express-session" {
   interface SessionData {
     token: string;
