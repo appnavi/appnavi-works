@@ -13,7 +13,7 @@ import {
   UPLOADS_PATH_PREFIX,
 } from "./routes/upload";
 import * as logger from "./modules/logger";
-
+import {getEnv} from "./helpers";
 const app = express();
 
 // view engine setup
@@ -22,7 +22,7 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(
   session({
-    secret: process.env.SESSION_SECRET ?? "",
+    secret: getEnv("SESSION_SECRET"),
     resave: false,
     saveUninitialized: false,
     cookie: {

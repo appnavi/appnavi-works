@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-
+import {getEnv} from "../helpers";
 declare module "express-session" {
   interface SessionData {
     token: string;
@@ -15,7 +15,7 @@ function setRedirect(req: express.Request): void {
   };
   req.session.redirectToken = jwt.sign(
     { url: req.originalUrl },
-    process.env["JWT_SECRET"] ?? ""
+    getEnv("JWT_SECRET")
   );
 }
 
@@ -23,7 +23,7 @@ function redirect(req: express.Request, res: express.Response): void {
   const rediretUrl = req.session.redirect?.url;
   const token = req.session.redirectToken;
   if (token && rediretUrl) {
-    const decoded = jwt.verify(token, process.env["JWT_SECRET"] ?? "") as {
+    const decoded = jwt.verify(token, getEnv("JWT_SECRET")) as {
       url: string;
     };
     if (decoded.url === rediretUrl) {
@@ -52,7 +52,7 @@ function isAuthenticated(req: express.Request): boolean {
   if (token == null || accessToken == null) {
     return false;
   }
-  const decoded = jwt.verify(token, process.env["JWT_SECRET"] ?? "") as {
+  const decoded = jwt.verify(token, getEnv("JWT_SECRET")) as {
     accessToken: string;
   };
   return decoded.accessToken === accessToken;

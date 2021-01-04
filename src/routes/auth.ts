@@ -3,6 +3,8 @@ import request from "request";
 import jwt from "jsonwebtoken";
 import { isAuthenticated, redirect } from "../services/auth";
 import * as logger from "../modules/logger";
+import {getEnv} from "../helpers";
+
 const router = express.Router();
 interface SlackAuthResponse {
   ok: boolean;
@@ -36,8 +38,8 @@ router.get("/redirect", (req, res) => {
   }
   const options = {
     uri: `https://slack.com/api/oauth.v2.access?code=${code}&client_id=${
-      process.env.SLACK_CLIENT_ID ?? ""
-    }&client_secret=${process.env.SLACK_CLIENT_SECRET ?? ""}`,
+      getEnv("SLACK_CLIENT_ID")
+    }&client_secret=${getEnv("SLACK_CLIENT_SECRET")}`,
     method: "GET",
   };
   request(options, (error, response, body) => {
@@ -51,8 +53,7 @@ router.get("/redirect", (req, res) => {
     //（違うワークスペースからログインしようとすると、"invalid_team_for_non_distributed_app"というエラーになる）
     //もし違うワークスペースの人がログインに成功した場合、認証失敗とする
     if (
-      typeof process.env.SLACK_CLIENT_ID !== "string" ||
-      JSONresponse.team.id !== process.env.SLACK_WORKSPACE_ID
+      JSONresponse.team.id !== getEnv("SLACK_WORKSPACE_ID")
     ) {
       logger.system.error(
         `違うワークスペース${JSONresponse.team.id}の人がログインしようとしました。`
@@ -67,7 +68,7 @@ router.get("/redirect", (req, res) => {
       accessToken: JSONresponse.authed_user.access_token,
     };
     req.session.oauth = oauth;
-    req.session.token = jwt.sign(oauth, process.env.JWT_SECRET ?? "");
+    req.session.token = jwt.sign(oauth, getEnv("JWT_SECRET") ?? "");
     redirect(req, res);
   });
 });
