@@ -6,7 +6,7 @@ import { ensureAuthenticated } from "../services/auth";
 import * as logger from "../modules/logger";
 
 const DIRECTORY_UPLOADS_DESTINATION = "uploads";
-const UPLOADS_PATH_PREFIX = "game";
+const URL_PREFIX_GAME = "game";
 
 const router = express.Router();
 
@@ -120,9 +120,9 @@ router.post(
     const dir = getWebglDir(req);
     logger.system.info("アップロード成功", dir);
     res.send({
-      path: `/${path.join(UPLOADS_PATH_PREFIX, dir)}`,
+      path: `/${path.join(URL_PREFIX_GAME, dir)}`,
     });
   }
 );
 
-export { router, DIRECTORY_UPLOADS_DESTINATION, UPLOADS_PATH_PREFIX };
+export { router, DIRECTORY_UPLOADS_DESTINATION, URL_PREFIX_GAME };

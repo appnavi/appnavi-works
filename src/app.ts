@@ -10,7 +10,7 @@ import { router as authRouter } from "./routes/auth";
 import {
   router as uploadRouter,
   DIRECTORY_UPLOADS_DESTINATION,
-  UPLOADS_PATH_PREFIX,
+  URL_PREFIX_GAME,
 } from "./routes/upload";
 import * as logger from "./modules/logger";
 import { getEnv } from "./helpers";
@@ -39,18 +39,19 @@ app.use(
     level: "info",
   })
 );
+const PATH_PUBLIC_DIRECTORY = "../public";
 app.use(
   sassMiddleware({
-    src: path.join(__dirname, "../public"),
-    dest: path.join(__dirname, "../public"),
+    src: path.join(__dirname, PATH_PUBLIC_DIRECTORY),
+    dest: path.join(__dirname, PATH_PUBLIC_DIRECTORY),
     indentedSyntax: false, // true = .sass and false = .scss
     sourceMap: true,
   })
 );
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, PATH_PUBLIC_DIRECTORY)));
 
 app.use(
-  `/${UPLOADS_PATH_PREFIX}`,
+  `/${URL_PREFIX_GAME}`,
   express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION)),
   serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
     icons: true,
