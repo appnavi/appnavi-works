@@ -6,7 +6,7 @@ import { ensureAuthenticated } from "../services/auth";
 import * as logger from "../modules/logger";
 
 const DIRECTORY_UPLOADS_DESTINATION = "uploads";
-const URL_PREFIX_GAME = "game";
+const URL_PREFIX_GAME = "games";
 
 const router = express.Router();
 
