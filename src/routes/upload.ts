@@ -14,6 +14,11 @@ router.get("/", ensureAuthenticated, function (req, res) {
   res.render("upload");
 });
 
+router.use(
+  ensureAuthenticated,
+  express.static(path.join(__dirname, '../../privates/upload'))
+);
+
 //WebGLのアップロード
 function getWebglDir(req: express.Request): string {
   const creator_id = req.headers["x-creator-id"] as string;
