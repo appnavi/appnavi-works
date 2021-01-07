@@ -76,7 +76,7 @@ function onFilesDropped() {
 }
 
 
-//アップロード先URLの同期
+//アップロード先URL表示の同期
 creatorIdInput.addEventListener('change', (ev) => {
   let creatorId = creatorIdInput.value;
   if (creatorId.length == 0) {
@@ -92,7 +92,7 @@ gameIdInput.addEventListener('change', (ev) => {
   document.querySelector('.file-list-header>.game_id').innerHTML = gameId;
 });
 
-
+//ファイルアップロード
 form.addEventListener('submit', function (event) {
   event.preventDefault();
   uploadButton.classList.add('disabled');
