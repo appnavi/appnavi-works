@@ -61,9 +61,24 @@
           </ul>
         </div>
         <div class="row center">
-          <button type="submit" class="btn">アップロードする</button>
+          <button type="submit" class="btn uploadButton">アップロードする</button>
         </div>
       </form>
+      <div class="uploadingIndicator" style="display: none;">
+        <div style="margin: auto;">
+          <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-green-only">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div><div class="gap-patch">
+                <div class="circle"></div>
+              </div><div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="result-dialog" class="modal">
         <div class="modal-content">
         </div>
@@ -175,15 +190,22 @@
     <script>
       {
         const form = document.querySelector('form');
+        const uploadButton = document.querySelector('.uploadButton');
+        const uploadingIndicator = document.querySelector('.uploadingIndicator');
         form.addEventListener('submit', function (event) {
           event.preventDefault();
+          uploadButton.classList.add('disabled');
+          uploadingIndicator.style.display='flex'
           const data = new FormData(form);
           const request = new XMLHttpRequest();
           request.open('POST', '/upload/webgl', true);
           request.setRequestHeader('x-creator-id', document.querySelector('input[name="creator_id"]').value)
           request.setRequestHeader('x-game-id', document.querySelector('input[name="game_id"]').value)
           request.setRequestHeader('x-overwrites-existing', document.querySelector('input[name="overwrites_existing"]').checked)
-          request.addEventListener('load', (ev)=>{
+          request.addEventListener('load', (ev)=>{            
+            uploadButton.classList.remove('disabled');
+            uploadingIndicator.style.display='none';
+
             let content = `<h4>${(request.status === 200) ? "アップロードに成功しました" : "アップロードに失敗しました"}</h4>`;
             if(request.status === 200){
               const path = JSON.parse(request.response).path?.replaceAll("\\", "/");
@@ -199,6 +221,8 @@
             M.Modal.getInstance(dialog).open();
           })
           request.send(data);
+          uploadButton.classList.add('disabled');
+          uploadingIndicator.style.display='flex'
         });
       }
     </script>
