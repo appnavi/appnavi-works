@@ -1,5 +1,5 @@
 import express from "express";
-import multer, { Multer } from "multer";
+import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { ensureAuthenticated } from "../services/auth";
