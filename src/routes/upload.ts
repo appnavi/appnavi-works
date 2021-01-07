@@ -1,5 +1,5 @@
 import express from "express";
-import multer from "multer";
+import multer, { Multer } from "multer";
 import path from "path";
 import fs from "fs";
 import { ensureAuthenticated } from "../services/auth";
@@ -46,7 +46,11 @@ const webglUpload = multer({
     cb(null, !folders.find((f) => f.startsWith(".")));
   },
 });
-function validateParams(req: express.Request, res: express.Response, next: express.NextFunction){
+function validateParams(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
   const creatorId = req.headers["x-creator-id"];
   const gameId = req.headers["x-game-id"];
   if (
@@ -94,13 +98,16 @@ function validateParams(req: express.Request, res: express.Response, next: expre
   }
   next();
 }
-
 router.post(
   "/webgl",
   ensureAuthenticated,
   validateParams,
+  (req, res, next) => {
+    res.locals["uploadStartedAt"] = new Date();
+    next();
+  },
   webglUpload.array("game"),
-  function (req, res) {
+  (req, res) => {
     const files = req.files ?? [];
     if (!(files instanceof Array)) {
       logger.system.error(
@@ -110,6 +117,7 @@ router.post(
       res.status(400).end();
       return;
     }
+
     const fileCounts = files.length;
     if (fileCounts === 0) {
       logger.system.error(
@@ -118,8 +126,22 @@ router.post(
       res.status(500).send("アップロードするファイルがありません。");
       return;
     }
+
+    const uploadStartedAt = res.locals["uploadStartedAt"] as Date;
+    const uploadEndedAt = new Date();
+    const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
+
+    const totalFileSize = files.reduce((acc, value) => {
+      return acc + value.size;
+    }, 0);
+
     const dir = getWebglDir(req);
-    logger.system.info("アップロード成功", dir);
+    logger.system.info(
+      "アップロード成功",
+      dir,
+      `${elapsedMillis}ms`,
+      `${totalFileSize}bytes`
+    );
     res.send({
       path: `/${path.join(URL_PREFIX_GAME, dir)}`,
     });
