@@ -14,6 +14,9 @@ import {
 } from "./routes/upload";
 import * as logger from "./modules/logger";
 import { getEnv } from "./helpers";
+import dotenv from 'dotenv';
+
+dotenv.config();
 const app = express();
 
 // view engine setup
