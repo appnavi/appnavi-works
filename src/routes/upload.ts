@@ -16,7 +16,7 @@ router.get("/", ensureAuthenticated, function (req, res) {
 
 router.use(
   ensureAuthenticated,
-  express.static(path.join(__dirname, '../../privates/upload'))
+  express.static(path.join(__dirname, "../../privates/upload"))
 );
 
 //WebGLのアップロード
