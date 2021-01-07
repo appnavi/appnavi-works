@@ -1,0 +1,4 @@
+*.js
+*.ts
+!src/**/*.ts
+src/bin/www.ts

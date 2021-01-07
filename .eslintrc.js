@@ -21,7 +21,6 @@ module.exports = {
     'prettier',
     'prettier/@typescript-eslint',
   ],
-  "ignorePatterns": ["src/bin/www.ts"],
   rules: {
   },
 };
