@@ -9,10 +9,10 @@ import sassMiddleware from "node-sass-middleware";
 import serveIndex from "serve-index";
 import { getEnv } from "./helpers";
 import * as logger from "./modules/logger";
-import { router as authRouter } from "./routes/auth";
-import { router as indexRouter } from "./routes/index";
+import { authRouter } from "./routes/auth";
+import { indexRouter } from "./routes/index";
 import {
-  router as uploadRouter,
+  uploadRouter,
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
 } from "./routes/upload";

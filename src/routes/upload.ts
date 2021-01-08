@@ -9,15 +9,15 @@ import { ensureAuthenticated } from "../services/auth";
 const DIRECTORY_UPLOADS_DESTINATION = "uploads";
 const URL_PREFIX_GAME = "games";
 
-const router = express.Router();
+const uploadRouter = express.Router();
 
-router.use(getContentSecurityPolicy());
+uploadRouter.use(getContentSecurityPolicy());
 
-router.get("/", ensureAuthenticated, function (req, res) {
+uploadRouter.get("/", ensureAuthenticated, function (req, res) {
   res.render("upload");
 });
 
-router.use(
+uploadRouter.use(
   ensureAuthenticated,
   express.static(path.join(__dirname, "../../privates/upload"))
 );
@@ -106,7 +106,7 @@ function validateParams(
   }
   next();
 }
-router.post(
+uploadRouter.post(
   "/webgl",
   ensureAuthenticated,
   validateParams,
@@ -156,4 +156,4 @@ router.post(
   }
 );
 
-export { router, DIRECTORY_UPLOADS_DESTINATION, URL_PREFIX_GAME };
+export { uploadRouter, DIRECTORY_UPLOADS_DESTINATION, URL_PREFIX_GAME };

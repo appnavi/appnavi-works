@@ -2,9 +2,9 @@ import express from "express";
 import { getContentSecurityPolicy } from "../helpers";
 import { ensureAuthenticated } from "../services/auth";
 
-const router = express.Router();
+const indexRouter = express.Router();
 
-router.get(
+indexRouter.get(
   "/",
   getContentSecurityPolicy(),
   ensureAuthenticated,
@@ -13,4 +13,4 @@ router.get(
   }
 );
 
-export { router };
+export { indexRouter };

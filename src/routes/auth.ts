@@ -5,8 +5,8 @@ import { getEnv, getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
 import { isAuthenticated, redirect } from "../services/auth";
 
-const router = express.Router();
-router.use(
+const authRouter = express.Router();
+authRouter.use(
   getContentSecurityPolicy({
     "img-src": [
       "'self'",
@@ -32,14 +32,14 @@ interface SlackAuthResponse {
 }
 
 /* GET home page. */
-router.get("/", function (req, res) {
+authRouter.get("/", function (req, res) {
   if (isAuthenticated(req)) {
     res.redirect("/");
     return;
   }
   res.render("login");
 });
-router.get("/redirect", (req, res) => {
+authRouter.get("/redirect", (req, res) => {
   const code = req.query.code;
   if (typeof code !== "string") {
     res.redirect("/auth");
@@ -80,10 +80,10 @@ router.get("/redirect", (req, res) => {
   });
 });
 
-router.all("/logout", (req, res) => {
+authRouter.all("/logout", (req, res) => {
   req.session.token = undefined;
   req.session.oauth = undefined;
   res.redirect("/auth");
 });
 
-export { router };
+export { authRouter };
