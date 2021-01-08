@@ -120,4 +120,4 @@ uploadRouter.post(
   }
 );
 
-export { uploadRouter, DIRECTORY_UPLOADS_DESTINATION, URL_PREFIX_GAME };
+export { uploadRouter };

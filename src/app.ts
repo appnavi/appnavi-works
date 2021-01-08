@@ -11,11 +11,11 @@ import { getEnv } from "./helpers";
 import * as logger from "./modules/logger";
 import { authRouter } from "./routes/auth";
 import { indexRouter } from "./routes/index";
+import { uploadRouter } from "./routes/upload";
 import {
-  uploadRouter,
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
-} from "./routes/upload";
+} from "./services/upload";
 
 dotenv.config();
 const app = express();
