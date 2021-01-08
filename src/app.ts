@@ -15,9 +15,16 @@ import {
 import * as logger from "./modules/logger";
 import { getEnv } from "./helpers";
 import dotenv from "dotenv";
+import helmet from "helmet";
 
 dotenv.config();
 const app = express();
+app.use(
+  //TODO：Content Security Policyの有効化
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 // view engine setup
 app.set("views", path.join(__dirname, "../views"));
