@@ -1,11 +1,20 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import request from "request";
-import { getEnv } from "../helpers";
+import { getEnv, getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
 import { isAuthenticated, redirect } from "../services/auth";
 
 const router = express.Router();
+router.use(
+  getContentSecurityPolicy({
+    "img-src": [
+      "'self'",
+      "https://api.slack.com/img/sign_in_with_slack.png",
+      "https://a.slack-edge.com/80588/img/sign_in_with_slack.png",
+    ],
+  })
+);
 interface SlackAuthResponse {
   ok: boolean;
   app_id: string;

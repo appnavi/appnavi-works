@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import express from "express";
 import multer from "multer";
+import { getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated } from "../services/auth";
 
@@ -9,6 +10,8 @@ const DIRECTORY_UPLOADS_DESTINATION = "uploads";
 const URL_PREFIX_GAME = "games";
 
 const router = express.Router();
+
+router.use(getContentSecurityPolicy());
 
 router.get("/", ensureAuthenticated, function (req, res) {
   res.render("upload");
