@@ -12,15 +12,13 @@ const URL_PREFIX_GAME = "games";
 const uploadRouter = express.Router();
 
 uploadRouter.use(getContentSecurityPolicy());
+uploadRouter.use(ensureAuthenticated);
+uploadRouter.use(express.static(path.join(__dirname, "../../privates/upload")));
 
-uploadRouter.get("/", ensureAuthenticated, function (req, res) {
+uploadRouter.get("/", function (req, res) {
   res.render("upload");
 });
 
-uploadRouter.use(
-  ensureAuthenticated,
-  express.static(path.join(__dirname, "../../privates/upload"))
-);
 
 //WebGLのアップロード
 function getWebglDir(req: express.Request): string {
@@ -108,7 +106,7 @@ function validateParams(
 }
 uploadRouter.post(
   "/webgl",
-  ensureAuthenticated,
+
   validateParams,
   (req, res, next) => {
     res.locals["uploadStartedAt"] = new Date();
