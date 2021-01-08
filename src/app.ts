@@ -21,21 +21,7 @@ dotenv.config();
 const app = express();
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      directives: {
-        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "script-src": [
-          "'self'",
-          "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js",
-          "https://code.jquery.com/jquery-3.5.1.min.js",
-        ],
-        "img-src": [
-          "'self'",
-          "https://api.slack.com/img/sign_in_with_slack.png",
-          "https://a.slack-edge.com/80588/img/sign_in_with_slack.png",
-        ],
-      },
-    },
+    contentSecurityPolicy: false,
   })
 );
 
