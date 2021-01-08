@@ -36,7 +36,7 @@ filesField.addEventListener("drop", (event) => {
 filesField.addEventListener('change', (event) => onFilesDropped());
 function onFilesDropped() {
   fileList.innerHTML = '';
-  document.querySelector('.message-hidden-folder-files').style.display = 'none';
+  document.querySelector('.message-hidden-folder-files').classList.add('hide');
   const filePaths = [];
   const dt = new DataTransfer();
   Array.from(filesField.files).filter((file) => {//隠しフォルダ内のファイルを除去
@@ -49,7 +49,7 @@ function onFilesDropped() {
   const fileCountBefore = filesField.files.length;
   const fileCountAfter = dt.files.length;
   if (fileCountBefore > fileCountAfter) {
-    document.querySelector('.message-hidden-folder-files').style.display = 'block';
+    document.querySelector('.message-hidden-folder-files').classList.remove('hide');
   }
   filesField.files = dt.files;
   filePaths.sort();
@@ -96,7 +96,7 @@ gameIdInput.addEventListener('change', (ev) => {
 form.addEventListener('submit', function (event) {
   event.preventDefault();
   uploadButton.classList.add('disabled');
-  uploadingIndicator.style.display = 'flex'
+  uploadingIndicator.classList.remove('hide');
   const data = new FormData(form);
   const request = new XMLHttpRequest();
   request.open('POST', '/upload/webgl', true);
@@ -105,7 +105,7 @@ form.addEventListener('submit', function (event) {
   request.setRequestHeader('x-overwrites-existing', document.querySelector('input[name="overwrites_existing"]').checked)
   request.addEventListener('load', (ev) => {
     uploadButton.classList.remove('disabled');
-    uploadingIndicator.style.display = 'none';
+    uploadingIndicator.classList.add('hide');
     let content = `<h4>${(request.status === 200) ? "アップロードに成功しました" : "アップロードに失敗しました"}</h4>`;
     if (request.status === 200) {
       const path = JSON.parse(request.response).path?.replaceAll("\\", "/");
@@ -121,7 +121,5 @@ form.addEventListener('submit', function (event) {
     M.Modal.getInstance(dialog).open();
   })
   request.send(data);
-  uploadButton.classList.add('disabled');
-  uploadingIndicator.style.display = 'flex'
 });
 
