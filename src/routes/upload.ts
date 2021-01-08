@@ -9,7 +9,7 @@ import {
   URL_PREFIX_GAME,
   getWebglDir,
   webglUpload,
-} from "../services/upload"
+} from "../services/upload";
 
 const uploadRouter = express.Router();
 uploadRouter.use(getContentSecurityPolicy());

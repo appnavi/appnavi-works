@@ -36,4 +36,9 @@ const webglUpload = multer({
   },
 });
 
-export {DIRECTORY_UPLOADS_DESTINATION, URL_PREFIX_GAME, getWebglDir, webglUpload}
+export {
+  DIRECTORY_UPLOADS_DESTINATION,
+  URL_PREFIX_GAME,
+  getWebglDir,
+  webglUpload,
+};
