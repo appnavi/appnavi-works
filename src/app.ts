@@ -1,21 +1,21 @@
-import createError from "http-errors";
-import express from "express";
-import session from "express-session";
 import path from "path";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import express from "express";
+import session from "express-session";
+import helmet from "helmet";
+import createError from "http-errors";
 import sassMiddleware from "node-sass-middleware";
 import serveIndex from "serve-index";
-import { router as indexRouter } from "./routes/index";
+import { getEnv } from "./helpers";
+import * as logger from "./modules/logger";
 import { router as authRouter } from "./routes/auth";
+import { router as indexRouter } from "./routes/index";
 import {
   router as uploadRouter,
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
 } from "./routes/upload";
-import * as logger from "./modules/logger";
-import { getEnv } from "./helpers";
-import dotenv from "dotenv";
-import helmet from "helmet";
 
 dotenv.config();
 const app = express();

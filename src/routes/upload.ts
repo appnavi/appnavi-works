@@ -1,9 +1,9 @@
+import fs from "fs";
+import path from "path";
 import express from "express";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { ensureAuthenticated } from "../services/auth";
 import * as logger from "../modules/logger";
+import { ensureAuthenticated } from "../services/auth";
 
 const DIRECTORY_UPLOADS_DESTINATION = "uploads";
 const URL_PREFIX_GAME = "games";

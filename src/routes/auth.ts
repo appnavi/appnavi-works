@@ -1,9 +1,9 @@
 import express from "express";
-import request from "request";
 import jwt from "jsonwebtoken";
-import { isAuthenticated, redirect } from "../services/auth";
-import * as logger from "../modules/logger";
+import request from "request";
 import { getEnv } from "../helpers";
+import * as logger from "../modules/logger";
+import { isAuthenticated, redirect } from "../services/auth";
 
 const router = express.Router();
 interface SlackAuthResponse {

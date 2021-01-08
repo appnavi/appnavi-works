@@ -13,6 +13,7 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
+    'import'
   ],
   extends: [
     'eslint:recommended',
@@ -22,5 +23,14 @@ module.exports = {
     'prettier/@typescript-eslint',
   ],
   rules: {
+    'sort-imports':0,
+    'import/order': [
+      2,
+      {
+        'alphabetize': {
+          'order': 'asc'
+        }
+      }
+    ]
   },
 };
