@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import express from "express";
+import fsExtra from "fs-extra";
 import { getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated } from "../services/auth";
@@ -20,7 +21,8 @@ uploadRouter.get("/", function (req, res) {
 });
 uploadRouter.post(
   "/webgl",
-  validateParams,
+  validateDestinationPath,
+  validateDestination,
   (req, res, next) => {
     res.locals["uploadStartedAt"] = new Date();
     next();
@@ -67,7 +69,7 @@ uploadRouter.post(
   }
 );
 
-function validateParams(
+function validateDestinationPath(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
@@ -101,6 +103,13 @@ function validateParams(
       );
     return;
   }
+  next();
+}
+async function validateDestination(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
   const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getWebglDir(req));
   if (fs.existsSync(gameDir)) {
     const overwritesExisting = req.headers["x-overwrites-existing"] as string;
@@ -116,6 +125,7 @@ function validateParams(
         );
       return;
     }
+    await fsExtra.remove(gameDir);
   }
   next();
 }
