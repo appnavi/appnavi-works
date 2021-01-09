@@ -12,6 +12,10 @@ import {
   webglUpload,
 } from "../services/upload";
 
+interface Locals{
+  uploadStartedAt: Date;
+}
+
 const uploadRouter = express.Router();
 uploadRouter.use(getContentSecurityPolicy());
 uploadRouter.use(ensureAuthenticated);
@@ -23,48 +27,14 @@ uploadRouter.post(
   "/webgl",
   validateDestinationPath,
   validateDestination,
-  (req, res, next) => {
-    res.locals["uploadStartedAt"] = new Date();
-    next();
-  },
+  beforeUpload,
   webglUpload.array("game"),
+  ensureUploadSuccess,
+  logUploadSuccess,
   (req, res) => {
-    const files = req.files ?? [];
-    if (!(files instanceof Array)) {
-      logger.system.error(
-        "アップロード失敗:想定外のエラーです。(express.Request.filesの型が不正です)",
-        files
-      );
-      res.status(400).end();
-      return;
-    }
-
-    const fileCounts = files.length;
-    if (fileCounts === 0) {
-      logger.system.error(
-        "アップロード失敗:アップロードするファイルがありません。"
-      );
-      res.status(500).send("アップロードするファイルがありません。");
-      return;
-    }
-
-    const uploadStartedAt = res.locals["uploadStartedAt"] as Date;
-    const uploadEndedAt = new Date();
-    const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
-
-    const totalFileSize = files.reduce((acc, value) => {
-      return acc + value.size;
-    }, 0);
-
-    const dir = getWebglDir(req);
-    logger.system.info(
-      "アップロード成功",
-      dir,
-      `${elapsedMillis}ms`,
-      `${totalFileSize}bytes`
-    );
+    console.log(res.locals);
     res.send({
-      path: `/${path.join(URL_PREFIX_GAME, dir)}`,
+      path: `/${path.join(URL_PREFIX_GAME, getWebglDir(req))}`,
     });
   }
 );
@@ -129,5 +99,57 @@ async function validateDestination(
   }
   next();
 }
+function beforeUpload(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  (res.locals as Locals).uploadStartedAt = new Date();
+  next();
+}
+function ensureUploadSuccess(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const files = req.files ?? [];
+  if (!(files instanceof Array)) {
+    logger.system.error(
+      "アップロード失敗:想定外のエラーです。(express.Request.filesの型が不正です)",
+      files
+    );
+    res.status(400).end();
+    return;
+  }
 
+  const fileCounts = files.length;
+  if (fileCounts === 0) {
+    logger.system.error(
+      "アップロード失敗:アップロードするファイルがありません。"
+    );
+    res.status(500).send("アップロードするファイルがありません。");
+    return;
+  }
+  next();
+}
+function logUploadSuccess(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const uploadStartedAt = (res.locals as Locals).uploadStartedAt;
+  const uploadEndedAt = new Date();
+  const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
+  const files = req.files as Express.Multer.File[];
+  const totalFileSize = files.reduce((acc, value) => {
+    return acc + value.size;
+  }, 0);
+  logger.system.info(
+    "アップロード成功",
+    getWebglDir(req),
+    `${elapsedMillis}ms`,
+    `${totalFileSize}bytes`
+  );
+  next();
+}
 export { uploadRouter };
