@@ -18,6 +18,54 @@ uploadRouter.use(express.static(path.join(__dirname, "../../privates/upload")));
 uploadRouter.get("/", function (req, res) {
   res.render("upload");
 });
+uploadRouter.post(
+  "/webgl",
+  validateParams,
+  (req, res, next) => {
+    res.locals["uploadStartedAt"] = new Date();
+    next();
+  },
+  webglUpload.array("game"),
+  (req, res) => {
+    const files = req.files ?? [];
+    if (!(files instanceof Array)) {
+      logger.system.error(
+        "アップロード失敗:想定外のエラーです。(express.Request.filesの型が不正です)",
+        files
+      );
+      res.status(400).end();
+      return;
+    }
+
+    const fileCounts = files.length;
+    if (fileCounts === 0) {
+      logger.system.error(
+        "アップロード失敗:アップロードするファイルがありません。"
+      );
+      res.status(500).send("アップロードするファイルがありません。");
+      return;
+    }
+
+    const uploadStartedAt = res.locals["uploadStartedAt"] as Date;
+    const uploadEndedAt = new Date();
+    const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
+
+    const totalFileSize = files.reduce((acc, value) => {
+      return acc + value.size;
+    }, 0);
+
+    const dir = getWebglDir(req);
+    logger.system.info(
+      "アップロード成功",
+      dir,
+      `${elapsedMillis}ms`,
+      `${totalFileSize}bytes`
+    );
+    res.send({
+      path: `/${path.join(URL_PREFIX_GAME, dir)}`,
+    });
+  }
+);
 
 function validateParams(
   req: express.Request,
@@ -71,53 +119,5 @@ function validateParams(
   }
   next();
 }
-uploadRouter.post(
-  "/webgl",
-  validateParams,
-  (req, res, next) => {
-    res.locals["uploadStartedAt"] = new Date();
-    next();
-  },
-  webglUpload.array("game"),
-  (req, res) => {
-    const files = req.files ?? [];
-    if (!(files instanceof Array)) {
-      logger.system.error(
-        "アップロード失敗:想定外のエラーです。(express.Request.filesの型が不正です)",
-        files
-      );
-      res.status(400).end();
-      return;
-    }
-
-    const fileCounts = files.length;
-    if (fileCounts === 0) {
-      logger.system.error(
-        "アップロード失敗:アップロードするファイルがありません。"
-      );
-      res.status(500).send("アップロードするファイルがありません。");
-      return;
-    }
-
-    const uploadStartedAt = res.locals["uploadStartedAt"] as Date;
-    const uploadEndedAt = new Date();
-    const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
-
-    const totalFileSize = files.reduce((acc, value) => {
-      return acc + value.size;
-    }, 0);
-
-    const dir = getWebglDir(req);
-    logger.system.info(
-      "アップロード成功",
-      dir,
-      `${elapsedMillis}ms`,
-      `${totalFileSize}bytes`
-    );
-    res.send({
-      path: `/${path.join(URL_PREFIX_GAME, dir)}`,
-    });
-  }
-);
 
 export { uploadRouter };
