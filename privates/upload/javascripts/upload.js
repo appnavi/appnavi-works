@@ -95,8 +95,7 @@ gameIdInput.addEventListener('change', (ev) => {
 //ファイルアップロード
 form.addEventListener('submit', function (event) {
   event.preventDefault();
-  uploadButton.classList.add('disabled');
-  uploadingIndicator.classList.remove('hide');
+  setUploading(true);
   const data = new FormData(form);
   const request = new XMLHttpRequest();
   request.open('POST', '/upload/webgl', true);
@@ -104,8 +103,7 @@ form.addEventListener('submit', function (event) {
   request.setRequestHeader('x-game-id', document.querySelector('input[name="game_id"]').value)
   request.setRequestHeader('x-overwrites-existing', document.querySelector('input[name="overwrites_existing"]').checked)
   request.addEventListener('load', (ev) => {
-    uploadButton.classList.remove('disabled');
-    uploadingIndicator.classList.add('hide');
+    setUploading(false);
     let content = `<h4>${(request.status === 200) ? "アップロードに成功しました" : "アップロードに失敗しました"}</h4>`;
     if (request.status === 200) {
       const path = JSON.parse(request.response).path?.replaceAll("\\", "/");
@@ -122,4 +120,18 @@ form.addEventListener('submit', function (event) {
   })
   request.send(data);
 });
-
+function alertBeforeLeave(event){
+  event.preventDefault();
+  event.returnValue = '';
+}
+function setUploading(uploading){
+  if(uploading){
+    uploadButton.classList.add('disabled');
+    uploadingIndicator.classList.remove('hide');
+    window.addEventListener('beforeunload', alertBeforeLeave);
+  }else{
+    uploadButton.classList.remove('disabled');
+    uploadingIndicator.classList.add('hide');
+    window.removeEventListener('beforeunload', alertBeforeLeave);
+  }
+}
