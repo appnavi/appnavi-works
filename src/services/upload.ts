@@ -31,7 +31,7 @@ const webglUpload = multer({
   preservePath: true,
   fileFilter: (req, file, cb) => {
     const folders = path.dirname(file.originalname).split("/");
-    //隠しフォルダが含まれていないか
+    //隠しフォルダ内のファイルではないか
     cb(null, !folders.find((f) => f.startsWith(".")));
   },
 });
