@@ -28,7 +28,7 @@ uploadRouter.post(
   validateDestinationPath,
   validateDestination,
   beforeUpload,
-  webglUpload.array("game"),
+  webglUpload.array("webgl"),
   ensureUploadSuccess,
   logUploadSuccess,
   (req, res) => {

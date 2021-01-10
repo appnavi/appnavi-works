@@ -1,5 +1,5 @@
 //querySelector
-const filesField = document.querySelector('input[name="game"]');
+const webglFilesField = document.querySelector('input[name="webgl"]');
 const fileFieldFrame = document.querySelector(".input-field.file-field-frame");
 const fileList = document.querySelector('.file-list');
 const creatorIdInput = document.querySelector('input[name="creator_id"]');
@@ -22,36 +22,36 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 //ドラッグ&ドロップ時のUI変化
-filesField.addEventListener("dragenter", (event) => {
+webglFilesField.addEventListener("dragenter", (event) => {
   fileFieldFrame.classList.add("drag");
 });
-filesField.addEventListener("dragleave", (event) => {
+webglFilesField.addEventListener("dragleave", (event) => {
   fileFieldFrame.classList.remove("drag");
 });
-filesField.addEventListener("drop", (event) => {
+webglFilesField.addEventListener("drop", (event) => {
   fileFieldFrame.classList.remove("drag");
 });
 
 //ドロップ時の動作
-filesField.addEventListener('change', (event) => onFilesDropped());
+webglFilesField.addEventListener('change', (event) => onFilesDropped());
 function onFilesDropped() {
   fileList.innerHTML = '';
   document.querySelector('.message-hidden-folder-files').classList.add('hide');
   const filePaths = [];
   const dt = new DataTransfer();
-  Array.from(filesField.files).filter((file) => {//隠しフォルダ内のファイルを除去
+  Array.from(webglFilesField.files).filter((file) => {//隠しフォルダ内のファイルを除去
     const directories = file.webkitRelativePath.split('/');
     return directories.find((dir) => dir.startsWith('.')) === undefined;
   }).forEach((file) => {
     filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ''));
     dt.items.add(file);
   });
-  const fileCountBefore = filesField.files.length;
+  const fileCountBefore = webglFilesField.files.length;
   const fileCountAfter = dt.files.length;
   if (fileCountBefore > fileCountAfter) {
     document.querySelector('.message-hidden-folder-files').classList.remove('hide');
   }
-  filesField.files = dt.files;
+  webglFilesField.files = dt.files;
   filePaths.sort();
   filePaths.forEach((path) => {
     let parent = fileList;
