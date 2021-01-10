@@ -113,22 +113,16 @@ function ensureDiskSpaceAvailable(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
-){
-  const path = os.platform() === 'win32' ? 'c:' : '/';
-  disk.check(path, (err, info)=>{
+) {
+  const path = os.platform() === "win32" ? "c:" : "/";
+  disk.check(path, (err, info) => {
     //1024^2 B = 1MB以上のスペースがあればアップロードを許可
-    if((info?.available ?? 0) >= Math.pow(1024, 2)){
+    if ((info?.available ?? 0) >= Math.pow(1024, 2)) {
       next();
       return;
     }
-    logger.system.error(
-      "スペースが十分ではありません"
-    );
-  res
-    .status(500)
-    .send(
-      "スペースが十分ではありません"
-    );
+    logger.system.error("スペースが十分ではありません");
+    res.status(500).send("スペースが十分ではありません");
   });
 }
 function beforeUpload(
