@@ -9,19 +9,22 @@ import {
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
   getUnityDir,
+  calculateTotalFileSize,
   unityUpload,
 } from "../services/upload";
 
-interface Locals{
+interface Locals {
   uploadStartedAt: Date;
 }
+const fields = ["webgl", "windows"];
 
 const uploadRouter = express.Router();
 uploadRouter.use(getContentSecurityPolicy());
 uploadRouter.use(ensureAuthenticated);
 uploadRouter.use(express.static(path.join(__dirname, "../../privates/upload")));
 
-uploadRouter.route("/unity")
+uploadRouter
+  .route("/unity")
   .get(function (req, res) {
     res.render("upload_unity");
   })
@@ -29,11 +32,14 @@ uploadRouter.route("/unity")
     validateDestinationPath,
     validateDestination,
     beforeUpload,
-    unityUpload.array("webgl"),
+    unityUpload.fields(
+      fields.map((field) => {
+        return { name: field };
+      })
+    ),
     ensureUploadSuccess,
     logUploadSuccess,
     (req, res) => {
-      console.log(res.locals);
       res.send({
         path: `/${path.join(URL_PREFIX_GAME, getUnityDir(req))}`,
       });
@@ -113,18 +119,10 @@ function ensureUploadSuccess(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const files = req.files ?? [];
-  if (!(files instanceof Array)) {
-    logger.system.error(
-      "アップロード失敗:想定外のエラーです。(express.Request.filesの型が不正です)",
-      files
-    );
-    res.status(400).end();
-    return;
-  }
-
-  const fileCounts = files.length;
-  if (fileCounts === 0) {
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  if (Object.keys(files).length == 0) {
     logger.system.error(
       "アップロード失敗:アップロードするファイルがありません。"
     );
@@ -141,10 +139,10 @@ function logUploadSuccess(
   const uploadStartedAt = (res.locals as Locals).uploadStartedAt;
   const uploadEndedAt = new Date();
   const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
-  const files = req.files as Express.Multer.File[];
-  const totalFileSize = files.reduce((acc, value) => {
-    return acc + value.size;
-  }, 0);
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  const totalFileSize = calculateTotalFileSize(files, fields);
   logger.system.info(
     "アップロード成功",
     getUnityDir(req),

@@ -5,12 +5,13 @@
   <title>アップロード</title>
   <%- include('common/head') %>
     <script src="javascripts/upload.js" defer></script>
+    <link rel="stylesheet" href="stylesheets/style.css">
 </head>
 
 <body>
   <%- include('common/navbar', {logout: true}) %>
     <main class="container">
-      <h3 class="header">Unity WebGLゲームを投稿する</h3>
+      <h3 class="header">Unityゲームを投稿する</h3>
       <form action="webgl" method="POST" enctype="multipart/form-data">
         <div class="row card-panel">
           <div class="input-field">
@@ -33,10 +34,11 @@
           </p>
         </div>
         <div class="row card-panel">
-          <blockquote class="message-hidden-folder-files hide">
+          <h4 class="upload-text">WebGL</h4>
+          <blockquote class="message-hidden-folder-files webgl hide">
             隠しフォルダ(.gitなど)内のフォルダはアップロードされません。
           </blockquote>
-          <div class="input-field file-field-frame">
+          <div class="input-field file-field-frame webgl">
             <div class="placeholder">
               <h6>
                 ここにフォルダをドロップ
@@ -46,23 +48,45 @@
                 クリックしてフォルダを選択
               </h6>
             </div>
-            <input class="file-path validate" type="file" name="webgl" webkitdirectory required aria-required />
+            <input class="file-path validate" type="file" name="webgl" webkitdirectory/>
           </div>
-          <div class="divider"></div>
-          <ul class="collapsible">
-            <li>
-              <div class="collapsible-header">
-                <i class="material-icons">keyboard_arrow_down</i>
-                <span class="file-count">0個のファイル</span>
-              </div>
-              <div class="collapsible-body">
-                <div class="file-list-header">http://localhost:3000/games/<span class="creator_id">(作者ID)</span>/<span
-                    class="game_id">(ゲームID)</span>/webgl/</div>
-                <div class="file-list"></div>
-              </div>
-            </li>
-          </ul>
         </div>
+        <div class="row card-panel">
+          <h4 class="upload-text">Windows</h4>
+          <blockquote class="message-hidden-folder-files windows hide">
+            隠しフォルダ(.gitなど)内のフォルダはアップロードされません。
+          </blockquote>
+          <div class="input-field file-field-frame windows">
+            <div class="placeholder">
+              <h6>
+                ここにフォルダをドロップ
+              </h6>
+              <div>または</div>
+              <h6>
+                クリックしてフォルダを選択
+              </h6>
+            </div>
+            <input class="file-path validate" type="file" name="windows" webkitdirectory />
+          </div>
+        </div>
+        <ul class="collapsible">
+          <li>
+            <div class="collapsible-header">
+              <i class="material-icons">keyboard_arrow_down</i>
+              <span>プレビュー</span>
+            </div>
+            <div class="collapsible-body">
+              <div class="file-list-header">http://localhost:3000/games/<span class="creator_id">(作者ID)</span>/<span
+                  class="game_id">(ゲームID)</span>/</div>
+              <div class="file-list">
+                <ul>
+                  <li class="webgl">webgl</li>
+                  <li class="windows">windows</li>
+                </ul>
+              </div>
+            </div>
+          </li>
+        </ul>
         <div class="row center">
           <button type="submit" class="btn uploadButton">アップロードする</button>
         </div>

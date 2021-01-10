@@ -1,6 +1,8 @@
 //querySelector
-const webglFilesField = document.querySelector('input[name="webgl"]');
-const fileFieldFrame = document.querySelector(".input-field.file-field-frame");
+const webglFilesInput = document.querySelector('input[name="webgl"]');
+const windowsFilesInput = document.querySelector('input[name="windows"]');
+const webglFileFieldFrame = document.querySelector(".input-field.file-field-frame.webgl");
+const windowsFileFieldFrame = document.querySelector(".input-field.file-field-frame.windows");
 const fileList = document.querySelector('.file-list');
 const creatorIdInput = document.querySelector('input[name="creator_id"]');
 const gameIdInput = document.querySelector('input[name="game_id"]');
@@ -22,39 +24,48 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 //ドラッグ&ドロップ時のUI変化
-webglFilesField.addEventListener("dragenter", (event) => {
-  fileFieldFrame.classList.add("drag");
-});
-webglFilesField.addEventListener("dragleave", (event) => {
-  fileFieldFrame.classList.remove("drag");
-});
-webglFilesField.addEventListener("drop", (event) => {
-  fileFieldFrame.classList.remove("drag");
-});
+function initDragAndDrop(fileInput, frame){
+  fileInput.addEventListener("dragenter", (event) => {
+    frame.classList.add("drag");
+  });
+  fileInput.addEventListener("dragleave", (event) => {
+    frame.classList.remove("drag");
+  });
+  fileInput.addEventListener("drop", (event) => {
+    frame.classList.remove("drag");
+  });
+  
+}
+initDragAndDrop(webglFilesInput, webglFileFieldFrame);
+initDragAndDrop(windowsFilesInput, windowsFileFieldFrame);
 
 //ドロップ時の動作
-webglFilesField.addEventListener('change', (event) => onFilesDropped());
-function onFilesDropped() {
-  fileList.innerHTML = '';
-  document.querySelector('.message-hidden-folder-files').classList.add('hide');
+webglFilesInput.addEventListener('change', (event) => onFilesDropped('webgl',webglFilesInput));
+windowsFilesInput.addEventListener('change', (event) => onFilesDropped('windows',windowsFilesInput));
+
+function onFilesDropped(type,input) {
+  const preview = fileList.querySelector(`.${type}`);
+  preview.innerHTML = `${type}`;
+  const message = document.querySelector(`.message-hidden-folder-files.${type}`)
+  message.classList.add('hide');
   const filePaths = [];
   const dt = new DataTransfer();
-  Array.from(webglFilesField.files).filter((file) => {//隠しフォルダ内のファイルを除去
+  Array.from(input.files).filter((file) => {//隠しフォルダ内のファイルを除去
     const directories = file.webkitRelativePath.split('/');
     return directories.find((dir) => dir.startsWith('.')) === undefined;
   }).forEach((file) => {
     filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ''));
     dt.items.add(file);
   });
-  const fileCountBefore = webglFilesField.files.length;
+  const fileCountBefore = input.files.length;
   const fileCountAfter = dt.files.length;
   if (fileCountBefore > fileCountAfter) {
-    document.querySelector('.message-hidden-folder-files').classList.remove('hide');
+    message.classList.remove('hide');
   }
-  webglFilesField.files = dt.files;
+  input.files = dt.files;
   filePaths.sort();
   filePaths.forEach((path) => {
-    let parent = fileList;
+    let parent = preview;
     path.split('/').forEach((section) => {
       let p_ul = Array.from(parent.childNodes).find((node) => node.tagName === 'UL');
       if (!p_ul) {
@@ -71,8 +82,6 @@ function onFilesDropped() {
       parent = li;
     });
   });
-  const fileCount = document.querySelector('.file-count');
-  fileCount.innerHTML = `${dt.items.length}個のファイル`;
 }
 
 
@@ -95,10 +104,13 @@ gameIdInput.addEventListener('change', (ev) => {
 //ファイルアップロード
 form.addEventListener('submit', function (event) {
   event.preventDefault();
+  if(webglFilesInput.files.length == 0 && windowsFilesInput.files.length == 0){
+    //return;
+  }
   setUploading(true);
   const data = new FormData(form);
   const request = new XMLHttpRequest();
-  request.open('POST', '/', true);
+  request.open('POST', '', true);
   request.setRequestHeader('x-creator-id', document.querySelector('input[name="creator_id"]').value)
   request.setRequestHeader('x-game-id', document.querySelector('input[name="game_id"]').value)
   request.setRequestHeader('x-overwrites-existing', document.querySelector('input[name="overwrites_existing"]').checked)

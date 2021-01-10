@@ -10,6 +10,20 @@ function getUnityDir(req: express.Request): string {
   const game_id = req.headers["x-game-id"] as string;
   return path.join(creator_id, game_id);
 }
+function calculateTotalFileSize(
+  files: {
+    [fieldname: string]: Express.Multer.File[];
+  },
+  fields: string[]
+): number {
+  let totalFileSize = 0;
+  fields.forEach((field) =>
+    files[field].forEach((file) => {
+      totalFileSize += file.size;
+    })
+  );
+  return totalFileSize;
+}
 const unityStorage = multer.diskStorage({
   destination: (req, file, next) => {
     const folders = path.dirname(file.originalname).split("/");
@@ -20,7 +34,7 @@ const unityStorage = multer.diskStorage({
       file.fieldname,
       ...folders
     );
-    if(!fs.existsSync(dir)){
+    if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
     next(null, dir);
@@ -43,5 +57,6 @@ export {
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
   getUnityDir,
+  calculateTotalFileSize,
   unityUpload,
 };
