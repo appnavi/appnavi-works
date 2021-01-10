@@ -18,7 +18,7 @@ function calculateTotalFileSize(
 ): number {
   let totalFileSize = 0;
   fields.forEach((field) =>
-    files[field].forEach((file) => {
+    (files[field] ?? []).forEach((file) => {
       totalFileSize += file.size;
     })
   );
