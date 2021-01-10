@@ -20,24 +20,25 @@ const uploadRouter = express.Router();
 uploadRouter.use(getContentSecurityPolicy());
 uploadRouter.use(ensureAuthenticated);
 uploadRouter.use(express.static(path.join(__dirname, "../../privates/upload")));
-uploadRouter.get("/", function (req, res) {
-  res.render("upload");
-});
-uploadRouter.post(
-  "/webgl",
-  validateDestinationPath,
-  validateDestination,
-  beforeUpload,
-  unityUpload.array("webgl"),
-  ensureUploadSuccess,
-  logUploadSuccess,
-  (req, res) => {
-    console.log(res.locals);
-    res.send({
-      path: `/${path.join(URL_PREFIX_GAME, getUnityDir(req))}`,
-    });
-  }
-);
+
+uploadRouter.route("/unity")
+  .get(function (req, res) {
+    res.render("upload");
+  })
+  .post(
+    validateDestinationPath,
+    validateDestination,
+    beforeUpload,
+    unityUpload.array("webgl"),
+    ensureUploadSuccess,
+    logUploadSuccess,
+    (req, res) => {
+      console.log(res.locals);
+      res.send({
+        path: `/${path.join(URL_PREFIX_GAME, getUnityDir(req))}`,
+      });
+    }
+  );
 
 function validateDestinationPath(
   req: express.Request,

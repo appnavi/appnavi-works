@@ -98,7 +98,7 @@ form.addEventListener('submit', function (event) {
   setUploading(true);
   const data = new FormData(form);
   const request = new XMLHttpRequest();
-  request.open('POST', '/upload/webgl', true);
+  request.open('POST', '/', true);
   request.setRequestHeader('x-creator-id', document.querySelector('input[name="creator_id"]').value)
   request.setRequestHeader('x-game-id', document.querySelector('input[name="game_id"]').value)
   request.setRequestHeader('x-overwrites-existing', document.querySelector('input[name="overwrites_existing"]').checked)
