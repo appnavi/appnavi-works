@@ -5,29 +5,32 @@ import multer from "multer";
 
 const DIRECTORY_UPLOADS_DESTINATION = "uploads";
 const URL_PREFIX_GAME = "games";
-function getWebglDir(req: express.Request): string {
+function getUnityDir(req: express.Request): string {
   const creator_id = req.headers["x-creator-id"] as string;
   const game_id = req.headers["x-game-id"] as string;
-  return path.join(creator_id, game_id, "webgl");
+  return path.join(creator_id, game_id);
 }
-const webglStorage = multer.diskStorage({
+const unityStorage = multer.diskStorage({
   destination: (req, file, next) => {
     const folders = path.dirname(file.originalname).split("/");
     folders.shift();
     const dir = path.join(
       DIRECTORY_UPLOADS_DESTINATION,
-      getWebglDir(req),
+      getUnityDir(req),
+      file.fieldname,
       ...folders
     );
-    fs.mkdirSync(dir, { recursive: true });
+    if(!fs.existsSync(dir)){
+      fs.mkdirSync(dir, { recursive: true });
+    }
     next(null, dir);
   },
   filename: function (req, file, callback) {
     callback(null, path.basename(file.originalname));
   },
 });
-const webglUpload = multer({
-  storage: webglStorage,
+const unityUpload = multer({
+  storage: unityStorage,
   preservePath: true,
   fileFilter: (req, file, cb) => {
     const folders = path.dirname(file.originalname).split("/");
@@ -39,6 +42,6 @@ const webglUpload = multer({
 export {
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
-  getWebglDir,
-  webglUpload,
+  getUnityDir,
+  unityUpload,
 };

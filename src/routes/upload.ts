@@ -8,8 +8,8 @@ import { ensureAuthenticated } from "../services/auth";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
-  getWebglDir,
-  webglUpload,
+  getUnityDir,
+  unityUpload,
 } from "../services/upload";
 
 interface Locals{
@@ -28,13 +28,13 @@ uploadRouter.post(
   validateDestinationPath,
   validateDestination,
   beforeUpload,
-  webglUpload.array("webgl"),
+  unityUpload.array("webgl"),
   ensureUploadSuccess,
   logUploadSuccess,
   (req, res) => {
     console.log(res.locals);
     res.send({
-      path: `/${path.join(URL_PREFIX_GAME, getWebglDir(req))}`,
+      path: `/${path.join(URL_PREFIX_GAME, getUnityDir(req))}`,
     });
   }
 );
@@ -80,7 +80,7 @@ async function validateDestination(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getWebglDir(req));
+  const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
   if (fs.existsSync(gameDir)) {
     const overwritesExisting = req.headers["x-overwrites-existing"] as string;
     if (overwritesExisting !== "true") {
@@ -146,7 +146,7 @@ function logUploadSuccess(
   }, 0);
   logger.system.info(
     "アップロード成功",
-    getWebglDir(req),
+    getUnityDir(req),
     `${elapsedMillis}ms`,
     `${totalFileSize}bytes`
   );
