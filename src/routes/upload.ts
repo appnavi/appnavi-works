@@ -21,7 +21,7 @@ interface Locals {
 const fields = ["webgl", "windows"];
 
 const uploadRouter = express.Router();
-uploadRouter.use(  ensureAuthenticated  );
+uploadRouter.use(ensureAuthenticated);
 uploadRouter.use(getContentSecurityPolicy());
 
 uploadRouter
