@@ -27,7 +27,7 @@ uploadRouter.use(getContentSecurityPolicy());
 uploadRouter
   .route("/unity")
   .get(function (req, res) {
-    res.render("upload_unity");
+    res.render("upload/unity");
   })
   .post(
     validateDestinationPath,
