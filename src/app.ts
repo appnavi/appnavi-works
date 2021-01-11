@@ -12,6 +12,7 @@ import * as logger from "./modules/logger";
 import { authRouter } from "./routes/auth";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
+import { ensureAuthenticated } from "./services/auth";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
@@ -58,6 +59,20 @@ app.use(
   })
 );
 app.use(express.static(path.join(__dirname, PATH_PUBLIC_DIRECTORY)));
+
+const PATH_PRIVATE_DIRECTORY = "../private";
+const URL_PREFIX_PRIVATE = "private";
+app.use(
+  `/${URL_PREFIX_PRIVATE}`,
+  ensureAuthenticated,
+  sassMiddleware({
+    src: path.join(__dirname, PATH_PRIVATE_DIRECTORY),
+    dest: path.join(__dirname, PATH_PRIVATE_DIRECTORY),
+    indentedSyntax: false, // true = .sass and false = .scss
+    sourceMap: true,
+  }),
+  express.static(path.join(__dirname, PATH_PRIVATE_DIRECTORY))
+);
 
 app.use(
   `/${URL_PREFIX_GAME}`,
