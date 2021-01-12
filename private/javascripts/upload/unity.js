@@ -105,7 +105,7 @@ gameIdInput.addEventListener('change', (ev) => {
 form.addEventListener('submit', function (event) {
   event.preventDefault();
   if(webglFilesInput.files.length == 0 && windowsFilesInput.files.length == 0){
-    //return;
+    return;
   }
   setUploading(true);
   const data = new FormData(form);
