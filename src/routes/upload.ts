@@ -128,8 +128,8 @@ function ensureDiskSpaceAvailable(
 ) {
   const path = os.platform() === "win32" ? "c:" : "/";
   disk.check(path, (err, info) => {
-    //1024^2 B = 1MB以上のスペースがあればアップロードを許可
-    if ((info?.available ?? 0) >= Math.pow(1024, 2)) {
+    //1024^3 B = 1GB以上のスペースがあればアップロードを許可
+    if ((info?.available ?? 0) >= Math.pow(1024, 3)) {
       next();
       return;
     }
