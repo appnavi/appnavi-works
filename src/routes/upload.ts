@@ -18,6 +18,7 @@ import {
 interface Locals {
   uploadStartedAt: Date;
 }
+//TODO：アップロード失敗エラーをクラスに変更
 const fields = ["webgl", "windows"];
 
 const uploadRouter = express.Router();
@@ -48,6 +49,23 @@ uploadRouter
     }
   );
 
+  uploadRouter.use(function (
+    err: NodeJS.Dict<unknown>,
+    req: express.Request,
+    res: express.Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
+  ){
+    if(err instanceof Error){
+      console.log(err);
+      next(err);
+      return;
+    }
+    const params = (err.params as unknown[]) ?? [];
+    logger.system.error(`アップロード失敗：${err.message as string}`, ...params);
+    res.status(500).send(err.message);
+  });
+
 function validateDestinationPath(
   req: express.Request,
   res: express.Response,
@@ -61,25 +79,23 @@ function validateDestinationPath(
     creatorId.length == 0 ||
     gameId.length == 0
   ) {
-    logger.system.error(
-      "アップロード失敗:作者IDとゲームIDを両方を指定する必要があります。",
-      creatorId,
-      gameId
-    );
-    res.status(500).send("作者IDとゲームIDを両方を指定する必要があります。");
+    next({
+      message: "作者IDとゲームIDを両方を指定する必要があります。",
+      params: [
+        creatorId,
+        gameId
+      ]
+    })
     return;
   }
   if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
-    logger.system.error(
-      "アップロード失敗:作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
-      creatorId,
-      gameId
-    );
-    res
-      .status(500)
-      .send(
-        "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。"
-      );
+    next({
+      message: "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
+      params: [
+        creatorId,
+        gameId
+      ]
+    })
     return;
   }
   next();
@@ -93,15 +109,12 @@ async function validateDestination(
   if (fs.existsSync(gameDir)) {
     const overwritesExisting = req.headers["x-overwrites-existing"] as string;
     if (overwritesExisting !== "true") {
-      logger.system.error(
-        "アップロード失敗:ゲームが既に存在しています。",
-        gameDir
-      );
-      res
-        .status(500)
-        .send(
-          "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください"
-        );
+      next({
+        message: "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
+        params: [
+          gameDir
+        ]
+      });
       return;
     }
     await fsExtra.remove(gameDir);
@@ -120,8 +133,9 @@ function ensureDiskSpaceAvailable(
       next();
       return;
     }
-    logger.system.error("スペースが十分ではありません");
-    res.status(500).send("スペースが十分ではありません");
+    next({
+      message:"スペースが十分ではありません"
+    })
   });
 }
 function beforeUpload(
@@ -140,11 +154,10 @@ function ensureUploadSuccess(
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
   };
-  if (Object.keys(files).length == 0) {
-    logger.system.error(
-      "アップロード失敗:アップロードするファイルがありません。"
-    );
-    res.status(500).send("アップロードするファイルがありません。");
+  if (files === undefined || Object.keys(files).length == 0) {
+    next({
+      message: "アップロードするファイルがありません。"
+    })
     return;
   }
   next();
