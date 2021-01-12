@@ -49,22 +49,22 @@ uploadRouter
     }
   );
 
-  uploadRouter.use(function (
-    err: NodeJS.Dict<unknown>,
-    req: express.Request,
-    res: express.Response,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
-  ){
-    if(err instanceof Error){
-      console.log(err);
-      next(err);
-      return;
-    }
-    const params = (err.params as unknown[]) ?? [];
-    logger.system.error(`アップロード失敗：${err.message as string}`, ...params);
-    res.status(500).send(err.message);
-  });
+uploadRouter.use(function (
+  err: NodeJS.Dict<unknown>,
+  req: express.Request,
+  res: express.Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
+) {
+  if (err instanceof Error) {
+    console.log(err);
+    next(err);
+    return;
+  }
+  const params = (err.params as unknown[]) ?? [];
+  logger.system.error(`アップロード失敗：${err.message as string}`, ...params);
+  res.status(500).send(err.message);
+});
 
 function validateDestinationPath(
   req: express.Request,
@@ -81,21 +81,16 @@ function validateDestinationPath(
   ) {
     next({
       message: "作者IDとゲームIDを両方を指定する必要があります。",
-      params: [
-        creatorId,
-        gameId
-      ]
-    })
+      params: [creatorId, gameId],
+    });
     return;
   }
   if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
     next({
-      message: "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
-      params: [
-        creatorId,
-        gameId
-      ]
-    })
+      message:
+        "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
+      params: [creatorId, gameId],
+    });
     return;
   }
   next();
@@ -110,10 +105,9 @@ async function validateDestination(
     const overwritesExisting = req.headers["x-overwrites-existing"] as string;
     if (overwritesExisting !== "true") {
       next({
-        message: "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
-        params: [
-          gameDir
-        ]
+        message:
+          "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
+        params: [gameDir],
       });
       return;
     }
@@ -134,8 +128,8 @@ function ensureDiskSpaceAvailable(
       return;
     }
     next({
-      message:"スペースが十分ではありません"
-    })
+      message: "スペースが十分ではありません",
+    });
   });
 }
 function beforeUpload(
@@ -156,8 +150,8 @@ function ensureUploadSuccess(
   };
   if (files === undefined || Object.keys(files).length == 0) {
     next({
-      message: "アップロードするファイルがありません。"
-    })
+      message: "アップロードするファイルがありません。",
+    });
     return;
   }
   next();
