@@ -19,7 +19,14 @@ interface Locals {
   uploadStartedAt: Date;
 }
 //TODO：アップロード失敗エラーをクラスに変更
-const fields = ["webgl", "windows"];
+const fields = [
+  {
+    name: "webgl",
+  },
+  {
+    name: "windows",
+  },
+];
 
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
@@ -35,11 +42,7 @@ uploadRouter
     validateDestination,
     ensureDiskSpaceAvailable,
     beforeUpload,
-    unityUpload.fields(
-      fields.map((field) => {
-        return { name: field };
-      })
-    ),
+    unityUpload.fields(fields),
     ensureUploadSuccess,
     logUploadSuccess,
     (req, res) => {
@@ -145,10 +148,11 @@ function ensureUploadSuccess(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const files = req.files as {
-    [fieldname: string]: Express.Multer.File[];
-  };
-  if (files === undefined || Object.keys(files).length == 0) {
+  const files =
+    (req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    }) ?? {};
+  if (Object.keys(files).length == 0) {
     next({
       message: "アップロードするファイルがありません。",
     });

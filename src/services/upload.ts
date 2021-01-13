@@ -14,11 +14,11 @@ function calculateTotalFileSize(
   files: {
     [fieldname: string]: Express.Multer.File[];
   },
-  fields: string[]
+  fields: { name: string }[]
 ): number {
   let totalFileSize = 0;
-  fields.forEach((field) =>
-    (files[field] ?? []).forEach((file) => {
+  fields.forEach(({ name }) =>
+    (files[name] ?? []).forEach((file) => {
       totalFileSize += file.size;
     })
   );
