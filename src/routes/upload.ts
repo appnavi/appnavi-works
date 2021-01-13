@@ -18,7 +18,14 @@ import {
 interface Locals {
   uploadStartedAt: Date;
 }
-//TODO：アップロード失敗エラーをクラスに変更
+class UploadError extends Error{
+  constructor(message: string, public params:unknown[]){
+    super(message)
+    this.name = new.target.name;
+    // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
 const fields = [
   {
     name: "webgl",
@@ -59,13 +66,12 @@ uploadRouter.use(function (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
 ) {
-  if (err instanceof Error) {
-    console.log(err);
+  if (!(err instanceof UploadError)) {
     next(err);
     return;
   }
-  const params = (err.params as unknown[]) ?? [];
-  logger.system.error(`アップロード失敗：${err.message as string}`, ...params);
+  const params = err.params;
+  logger.system.error(`アップロード失敗：${err.message}`, ...params);
   res.status(500).send(err.message);
 });
 
@@ -82,18 +88,11 @@ function validateDestinationPath(
     creatorId.length == 0 ||
     gameId.length == 0
   ) {
-    next({
-      message: "作者IDとゲームIDを両方を指定する必要があります。",
-      params: [creatorId, gameId],
-    });
+    next(new UploadError("作者IDとゲームIDを両方を指定する必要があります。", [creatorId, gameId],));
     return;
   }
   if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
-    next({
-      message:
-        "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
-      params: [creatorId, gameId],
-    });
+    next(new UploadError("作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。", [creatorId, gameId],));
     return;
   }
   next();
@@ -107,11 +106,7 @@ async function validateDestination(
   if (fs.existsSync(gameDir)) {
     const overwritesExisting = req.headers["x-overwrites-existing"] as string;
     if (overwritesExisting !== "true") {
-      next({
-        message:
-          "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
-        params: [gameDir],
-      });
+      next(new UploadError("ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください", [gameDir],));
       return;
     }
     await fsExtra.remove(gameDir);
