@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 //ドラッグ&ドロップ時のUI変化
-function initDragAndDrop(fileInput, frame){
+function initDragAndDrop(fileInput, frame) {
   fileInput.addEventListener("dragenter", (event) => {
     frame.classList.add("drag");
   });
@@ -34,27 +34,23 @@ function initDragAndDrop(fileInput, frame){
   fileInput.addEventListener("drop", (event) => {
     frame.classList.remove("drag");
   });
-  
+
 }
 initDragAndDrop(webglFilesInput, webglFileFieldFrame);
 initDragAndDrop(windowsFilesInput, windowsFileFieldFrame);
 
 //ドロップ時の動作
-webglFilesInput.addEventListener('change', (event) => onFilesDropped('webgl',webglFilesInput));
-windowsFilesInput.addEventListener('change', (event) => onFilesDropped('windows',windowsFilesInput));
+webglFilesInput.addEventListener('change', (event) => onFilesDropped('webgl', webglFilesInput));
+windowsFilesInput.addEventListener('change', (event) => onFilesDropped('windows', windowsFilesInput));
 
-function onFilesDropped(type,input) {
-  const preview = fileList.querySelector(`.${type}`);
-  preview.innerHTML = `${type}`;
+function onMultipleFilesDropped(type, input) {
   const message = document.querySelector(`.message-hidden-folder-files.${type}`)
   message.classList.add('hide');
-  const filePaths = [];
   const dt = new DataTransfer();
   Array.from(input.files).filter((file) => {//隠しフォルダ内のファイルを除去
     const directories = file.webkitRelativePath.split('/');
     return directories.find((dir) => dir.startsWith('.')) === undefined;
   }).forEach((file) => {
-    filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ''));
     dt.items.add(file);
   });
   const fileCountBefore = input.files.length;
@@ -63,6 +59,20 @@ function onFilesDropped(type,input) {
     message.classList.remove('hide');
   }
   input.files = dt.files;
+}
+
+function onFilesDropped(type, input) {
+  const preview = fileList.querySelector(`.${type}`);
+  preview.innerHTML = `${type}`;
+  const filePaths = [];
+  if (input.webkitdirectory) {
+    onMultipleFilesDropped(type, input);
+    Array.from(input.files).forEach((file) => {
+      filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ''));
+    });
+  } else {
+    filePaths.push(input.files[0].name);
+  }
   filePaths.sort();
   filePaths.forEach((path) => {
     let parent = preview;
@@ -104,7 +114,7 @@ gameIdInput.addEventListener('change', (ev) => {
 //ファイルアップロード
 form.addEventListener('submit', function (event) {
   event.preventDefault();
-  if(webglFilesInput.files.length == 0 && windowsFilesInput.files.length == 0){
+  if (webglFilesInput.files.length == 0 && windowsFilesInput.files.length == 0) {
     return;
   }
   setUploading(true);
@@ -132,16 +142,16 @@ form.addEventListener('submit', function (event) {
   })
   request.send(data);
 });
-function alertBeforeLeave(event){
+function alertBeforeLeave(event) {
   event.preventDefault();
   event.returnValue = '';
 }
-function setUploading(uploading){
-  if(uploading){
+function setUploading(uploading) {
+  if (uploading) {
     uploadButton.classList.add('disabled');
     uploadingIndicator.classList.remove('hide');
     window.addEventListener('beforeunload', alertBeforeLeave);
-  }else{
+  } else {
     uploadButton.classList.remove('disabled');
     uploadingIndicator.classList.add('hide');
     window.removeEventListener('beforeunload', alertBeforeLeave);

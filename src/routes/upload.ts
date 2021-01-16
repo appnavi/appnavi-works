@@ -13,6 +13,7 @@ import {
   getUnityDir,
   calculateTotalFileSize,
   unityUpload,
+  fields,
 } from "../services/upload";
 
 interface Locals {
@@ -26,14 +27,6 @@ class UploadError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
-const fields = [
-  {
-    name: "webgl",
-  },
-  {
-    name: "windows",
-  },
-];
 
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
