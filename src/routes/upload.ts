@@ -18,9 +18,9 @@ import {
 interface Locals {
   uploadStartedAt: Date;
 }
-class UploadError extends Error{
-  constructor(message: string, public params:unknown[]){
-    super(message)
+class UploadError extends Error {
+  constructor(message: string, public params: unknown[]) {
+    super(message);
     this.name = new.target.name;
     // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
     Object.setPrototypeOf(this, new.target.prototype);
@@ -88,11 +88,21 @@ function validateDestinationPath(
     creatorId.length == 0 ||
     gameId.length == 0
   ) {
-    next(new UploadError("作者IDとゲームIDを両方を指定する必要があります。", [creatorId, gameId],));
+    next(
+      new UploadError("作者IDとゲームIDを両方を指定する必要があります。", [
+        creatorId,
+        gameId,
+      ])
+    );
     return;
   }
   if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
-    next(new UploadError("作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。", [creatorId, gameId],));
+    next(
+      new UploadError(
+        "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
+        [creatorId, gameId]
+      )
+    );
     return;
   }
   next();
@@ -106,7 +116,12 @@ async function validateDestination(
   if (fs.existsSync(gameDir)) {
     const overwritesExisting = req.headers["x-overwrites-existing"] as string;
     if (overwritesExisting !== "true") {
-      next(new UploadError("ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください", [gameDir],));
+      next(
+        new UploadError(
+          "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
+          [gameDir]
+        )
+      );
       return;
     }
     await fsExtra.remove(gameDir);
