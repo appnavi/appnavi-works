@@ -2,13 +2,13 @@ import log4js from "log4js";
 log4js.configure({
   appenders: {
     console: { type: "console" },
-    file: { type: "file", filename: "system.log" },
-    accessFile: { type: "file", filename: "access.log" },
+    file: { type: "dateFile", filename: "logs/system.log" },
+    accessFile: { type: "dateFile", filename: "logs/access.log" },
   },
   categories: {
-    default: { appenders: ["console"], level: "info" },
-    system: { appenders: ["console", "file"], level: "info" },
-    access: { appenders: ["console", "accessFile"], level: "info" },
+    default: { appenders: ["console"], level: "all" },
+    system: { appenders: ["console", "file"], level: "all" },
+    access: { appenders: ["console", "accessFile"], level: "all" },
   },
 });
 const access = log4js.getLogger("access");
