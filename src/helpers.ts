@@ -1,7 +1,14 @@
 import express from "express";
 import helmet from "helmet";
 
-function getEnv(key: string): string {
+type EnvKey =
+  | "SLACK_CLIENT_ID"
+  | "SLACK_CLIENT_SECRET"
+  | "SLACK_REDIRECT_URI"
+  | "SLACK_WORKSPACE_ID"
+  | "SESSION_SECRET"
+  | "JWT_SECRET";
+function getEnv(key: EnvKey): string {
   const val = process.env[key];
   if (typeof val !== "string") {
     throw new Error(`環境変数${key}は存在しません。`);
