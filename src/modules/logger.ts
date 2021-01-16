@@ -3,8 +3,20 @@ const maxFileSize = 5 * 1024 * 1024; //5MB
 log4js.configure({
   appenders: {
     console: { type: "console" },
-    file: { type: "file", filename: "logs/system.log", backups: 5, maxLogSize: maxFileSize, compress: true },
-    accessFile: { type: "file", filename: "logs/access.log", backups: 5, maxLogSize: maxFileSize, compress: true },
+    file: {
+      type: "file",
+      filename: "logs/system.log",
+      backups: 5,
+      maxLogSize: maxFileSize,
+      compress: true,
+    },
+    accessFile: {
+      type: "file",
+      filename: "logs/access.log",
+      backups: 5,
+      maxLogSize: maxFileSize,
+      compress: true,
+    },
   },
   categories: {
     default: { appenders: ["console"], level: "all" },

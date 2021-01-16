@@ -109,7 +109,7 @@ app.use(function (
   res.locals.message = err.message;
   res.locals.status = err.status;
   res.locals.error = req.app.get("env") === "development" ? err : {};
-  if(err.status !== 404){
+  if (err.status !== 404) {
     logger.system.error("エラーが発生しました。", err);
   }
 
