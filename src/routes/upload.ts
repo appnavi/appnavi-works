@@ -30,10 +30,22 @@ class UploadError extends Error {
 }
 const idRegex = /^[0-9a-z-]+$/;
 const uploadSchema = yup.object({
-  creatorId: yup.string().matches(idRegex, "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。").required("作者IDは必須です。"),
-  gameId: yup.string().matches(idRegex, "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。").required("ゲームIDは必須です。"),
+  creatorId: yup
+    .string()
+    .matches(
+      idRegex,
+      "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。"
+    )
+    .required("作者IDは必須です。"),
+  gameId: yup
+    .string()
+    .matches(
+      idRegex,
+      "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。"
+    )
+    .required("ゲームIDは必須です。"),
   overwritesExisting: yup.string().matches(/^(true|false)$/),
-})
+});
 
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
@@ -84,47 +96,20 @@ function validateParams(
   const gameId = req.headers["x-game-id"];
   const overwritesExisting = req.headers["x-overwrites-existing"];
 
-  uploadSchema.validate({
-    creatorId: creatorId,
-    gameId: gameId,
-    overwritesExisting
-  }).then(()=>{
-    next();
-  }).catch((err: {name: string; errors: string[];})=>{
-    next(
-      new UploadError(err.errors[0], [
-        creatorId,
-        gameId,
-        overwritesExisting,
-      ])
-    );
-  });
-
-
-  // if (
-  //   typeof creatorId !== "string" ||
-  //   typeof gameId !== "string" ||
-  //   creatorId.length == 0 ||
-  //   gameId.length == 0
-  // ) {
-  //   next(
-  //     new UploadError("作者IDとゲームIDを両方を指定する必要があります。", [
-  //       creatorId,
-  //       gameId,
-  //     ])
-  //   );
-  //   return;
-  // }
-  // if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
-  //   next(
-  //     new UploadError(
-  //       "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
-  //       [creatorId, gameId]
-  //     )
-  //   );
-  //   return;
-  // }
-  // next();
+  uploadSchema
+    .validate({
+      creatorId: creatorId,
+      gameId: gameId,
+      overwritesExisting,
+    })
+    .then(() => {
+      next();
+    })
+    .catch((err: { name: string; errors: string[] }) => {
+      next(
+        new UploadError(err.errors[0], [creatorId, gameId, overwritesExisting])
+      );
+    });
 }
 async function validateDestination(
   req: express.Request,
