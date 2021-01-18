@@ -32,6 +32,7 @@ const idRegex = /^[0-9a-z-]+$/;
 const uploadSchema = yup.object({
   creatorId: yup.string().matches(idRegex, "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。").required("作者IDは必須です。"),
   gameId: yup.string().matches(idRegex, "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。").required("ゲームIDは必須です。"),
+  overwritesExisting: yup.string().matches(/^(true|false)$/),
 })
 
 const uploadRouter = express.Router();
@@ -44,7 +45,7 @@ uploadRouter
     res.render("upload/unity");
   })
   .post(
-    validateDestinationPath,
+    validateParams,
     validateDestination,
     ensureDiskSpaceAvailable,
     beforeUpload,
@@ -74,17 +75,19 @@ uploadRouter.use(function (
   res.status(500).send(err.message);
 });
 
-function validateDestinationPath(
+function validateParams(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
   const creatorId = req.headers["x-creator-id"];
   const gameId = req.headers["x-game-id"];
+  const overwritesExisting = req.headers["x-overwrites-existing"];
 
   uploadSchema.validate({
     creatorId: creatorId,
-    gameId: gameId
+    gameId: gameId,
+    overwritesExisting
   }).then(()=>{
     next();
   }).catch((err: {name: string; errors: string[];})=>{
@@ -92,6 +95,7 @@ function validateDestinationPath(
       new UploadError(err.errors[0], [
         creatorId,
         gameId,
+        overwritesExisting,
       ])
     );
   });
