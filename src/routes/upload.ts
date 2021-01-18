@@ -4,6 +4,7 @@ import path from "path";
 import disk from "diskusage";
 import express from "express";
 import fsExtra from "fs-extra";
+import * as yup from "yup";
 import { getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated } from "../services/auth";
@@ -27,6 +28,11 @@ class UploadError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
+const idRegex = /^[0-9a-z-]+$/;
+const uploadSchema = yup.object({
+  creatorId: yup.string().matches(idRegex, "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。").required("作者IDは必須です。"),
+  gameId: yup.string().matches(idRegex, "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。").required("ゲームIDは必須です。"),
+})
 
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
@@ -75,30 +81,46 @@ function validateDestinationPath(
 ) {
   const creatorId = req.headers["x-creator-id"];
   const gameId = req.headers["x-game-id"];
-  if (
-    typeof creatorId !== "string" ||
-    typeof gameId !== "string" ||
-    creatorId.length == 0 ||
-    gameId.length == 0
-  ) {
+
+  uploadSchema.validate({
+    creatorId: creatorId,
+    gameId: gameId
+  }).then(()=>{
+    next();
+  }).catch((err: {name: string; errors: string[];})=>{
     next(
-      new UploadError("作者IDとゲームIDを両方を指定する必要があります。", [
+      new UploadError(err.errors[0], [
         creatorId,
         gameId,
       ])
     );
-    return;
-  }
-  if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
-    next(
-      new UploadError(
-        "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
-        [creatorId, gameId]
-      )
-    );
-    return;
-  }
-  next();
+  });
+
+
+  // if (
+  //   typeof creatorId !== "string" ||
+  //   typeof gameId !== "string" ||
+  //   creatorId.length == 0 ||
+  //   gameId.length == 0
+  // ) {
+  //   next(
+  //     new UploadError("作者IDとゲームIDを両方を指定する必要があります。", [
+  //       creatorId,
+  //       gameId,
+  //     ])
+  //   );
+  //   return;
+  // }
+  // if (!/^[0-9a-z-]+$/.test(creatorId) || !/^[0-9a-z-]+$/.test(gameId)) {
+  //   next(
+  //     new UploadError(
+  //       "作者IDおよびゲームIDは数字・アルファベット小文字・ハイフンのみ使用できます。",
+  //       [creatorId, gameId]
+  //     )
+  //   );
+  //   return;
+  // }
+  // next();
 }
 async function validateDestination(
   req: express.Request,
