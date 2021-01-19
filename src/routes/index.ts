@@ -1,6 +1,6 @@
 import express from "express";
 import { getContentSecurityPolicy } from "../helpers";
-import { ensureAuthenticated } from "../services/auth";
+import { ensureAuthenticatedWithRedirect } from "../services/auth";
 
 const indexRouter = express.Router();
 
@@ -9,7 +9,7 @@ const indexRouter = express.Router();
 indexRouter.get(
   "/",
   getContentSecurityPolicy(),
-  ensureAuthenticated,
+  ensureAuthenticatedWithRedirect,
   function (req, res) {
     res.render("index");
   }

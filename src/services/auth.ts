@@ -42,6 +42,17 @@ function ensureAuthenticated(
     next();
     return;
   }
+  res.status(401).end();
+}
+function ensureAuthenticatedWithRedirect(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+): void {
+  if (isAuthenticated(req)) {
+    next();
+    return;
+  }
   setRedirect(req);
   res.redirect("/auth");
 }
@@ -58,4 +69,4 @@ function isAuthenticated(req: express.Request): boolean {
   return decoded.accessToken === accessToken;
 }
 
-export { ensureAuthenticated, isAuthenticated, redirect };
+export { ensureAuthenticated,ensureAuthenticatedWithRedirect, isAuthenticated, redirect };

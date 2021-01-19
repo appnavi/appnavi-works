@@ -7,7 +7,7 @@ import fsExtra from "fs-extra";
 import * as yup from "yup";
 import { getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
-import { ensureAuthenticated } from "../services/auth";
+import { ensureAuthenticated,ensureAuthenticatedWithRedirect } from "../services/auth";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
@@ -48,15 +48,17 @@ const uploadSchema = yup.object({
 });
 
 const uploadRouter = express.Router();
-uploadRouter.use(ensureAuthenticated);
 uploadRouter.use(getContentSecurityPolicy());
 
 uploadRouter
   .route("/unity")
-  .get(function (req, res) {
+  .get(
+    ensureAuthenticatedWithRedirect,
+    function (req, res) {
     res.render("upload/unity");
   })
   .post(
+    ensureAuthenticated,
     validateParams,
     validateDestination,
     ensureDiskSpaceAvailable,
