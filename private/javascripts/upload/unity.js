@@ -128,10 +128,12 @@ form.addEventListener('submit', function (event) {
     setUploading(false);
     let content = `<h4>${(request.status === 200) ? "アップロードに成功しました" : "アップロードに失敗しました"}</h4>`;
     if (request.status === 200) {
-      const path = JSON.parse(request.response).path?.replaceAll("\\", "/");
-      if (path !== undefined) {
-        const url = `${location.origin}${path}`;
-        content += `<p><a href="${url}">${url}</a>にアップロードしました。</p>`;
+      const paths = JSON.parse(request.response).paths?.map((p)=>p.replaceAll("\\", "/")) ?? [];
+      if (paths.length > 0) {
+        paths.forEach((p)=>{
+          const url = `${location.origin}${p}`;
+          content += `<p><a href="${url}">${url}</a>にアップロードしました。</p>`;  
+        })
       }
     } else if (request.status === 401){
       content += "<p>ログインしなおす必要があります。</p><p>ページを再読み込みしてください</>";

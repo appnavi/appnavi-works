@@ -68,7 +68,16 @@ uploadRouter
     logUploadSuccess,
     (req, res) => {
       res.send({
-        path: `/${path.join(URL_PREFIX_GAME, getUnityDir(req))}`,
+        paths: fields
+          .filter(({ name })=>{
+            const files = req.files as {
+              [fieldname: string]: Express.Multer.File[];
+            };
+            return files[name] !== undefined;
+          })
+          .map(({ name }) =>
+            path.join("/", URL_PREFIX_GAME, getUnityDir(req), name)
+          ),
       });
     }
   );
