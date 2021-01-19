@@ -82,12 +82,6 @@ app.use(
   })
 );
 
-/*  ログインしている時のみtestsフォルダー内のファイルにアクセスできるように(参考：https://stackoverflow.com/a/30761936)
-import {ensureAuthenticated} from './services/auth';
-app.use('/test', ensureAuthenticated);
-app.use('/test',express.static(path.join(__dirname, '../tests')));
-*/
-
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/upload", uploadRouter);
