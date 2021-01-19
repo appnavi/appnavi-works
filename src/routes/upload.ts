@@ -6,9 +6,7 @@ import fsExtra from "fs-extra";
 import * as yup from "yup";
 import { getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
-import {
-  ensureAuthenticated,
-} from "../services/auth";
+import { ensureAuthenticated } from "../services/auth";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
@@ -68,7 +66,7 @@ uploadRouter
     (req, res) => {
       res.send({
         paths: fields
-          .filter(({ name })=>{
+          .filter(({ name }) => {
             const files = req.files as {
               [fieldname: string]: Express.Multer.File[];
             };
