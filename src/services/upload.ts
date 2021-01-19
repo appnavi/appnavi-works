@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import express from "express";
+import fsExtra from "fs-extra";
 import multer from "multer";
 const FIELD_WEBGL = "webgl";
 const FIELD_WINDOWS = "windows";
@@ -41,24 +42,23 @@ const unityStorage = multer.diskStorage({
       getUnityDir(req),
       file.fieldname
     );
-    if (file.fieldname == FIELD_WINDOWS) {
-      if (!fs.existsSync(parentDir)) {
-        fs.mkdirSync(parentDir, { recursive: true });
-      }
-      next(null, parentDir);
-      return;
+    let dir: string;
+    switch(file.fieldname){
+      case FIELD_WINDOWS:
+        dir = parentDir;
+        break;
+      case FIELD_WEBGL:
+        const folders = path.dirname(file.originalname).split("/");
+        folders.shift();
+        dir = path.join(parentDir, ...folders);
+        break;
+      default:
+        next(new Error(`fieldname${file.fieldname}は不正です。`), "");
+        return;
     }
-    if (file.fieldname == FIELD_WEBGL) {
-      const folders = path.dirname(file.originalname).split("/");
-      folders.shift();
-      const dir = path.join(parentDir, ...folders);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
+    fsExtra.ensureDir(dir).then(()=>{
       next(null, dir);
-      return;
-    }
-    next(new Error(`fieldname${file.fieldname}は不正です。`), "");
+    });
   },
   filename: function (req, file, callback) {
     callback(null, path.basename(file.originalname));
@@ -68,17 +68,19 @@ const unityUpload = multer({
   storage: unityStorage,
   preservePath: true,
   fileFilter: (req, file, cb) => {
-    if (file.fieldname == FIELD_WINDOWS) {
-      cb(null, path.extname(file.originalname) === ".zip");
-      return;
+    switch(file.fieldname){
+      case FIELD_WINDOWS:
+        cb(null, path.extname(file.originalname) === ".zip");
+        break;
+      case FIELD_WEBGL:
+        const folders = path.dirname(file.originalname).split("/");
+        //隠しフォルダ内のファイルではないか
+        cb(null, !folders.find((f) => f.startsWith(".")));
+        break;
+      default:
+        cb(new Error(`fieldname${file.fieldname}は不正です。`));
+        return;
     }
-    if (file.fieldname == FIELD_WEBGL) {
-      const folders = path.dirname(file.originalname).split("/");
-      //隠しフォルダ内のファイルではないか
-      cb(null, !folders.find((f) => f.startsWith(".")));
-      return;
-    }
-    cb(new Error(`fieldname${file.fieldname}は不正です。`));
   },
 });
 

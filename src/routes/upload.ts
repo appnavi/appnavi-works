@@ -119,7 +119,8 @@ async function validateDestination(
   next: express.NextFunction
 ) {
   const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
-  if (fs.existsSync(gameDir)) {
+  const exists = await fsExtra.pathExists(gameDir);
+  if (exists) {
     const overwritesExisting = req.headers["x-overwrites-existing"] as string;
     if (overwritesExisting !== "true") {
       next(
