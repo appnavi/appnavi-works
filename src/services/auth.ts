@@ -69,4 +69,9 @@ function isAuthenticated(req: express.Request): boolean {
   return decoded.accessToken === accessToken;
 }
 
-export { ensureAuthenticated,ensureAuthenticatedWithRedirect, isAuthenticated, redirect };
+export {
+  ensureAuthenticated,
+  ensureAuthenticatedWithRedirect,
+  isAuthenticated,
+  redirect,
+};

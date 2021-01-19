@@ -1,4 +1,3 @@
-import fs from "fs";
 import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
@@ -36,29 +35,31 @@ function calculateTotalFileSize(
   return totalFileSize;
 }
 const unityStorage = multer.diskStorage({
-  destination: (req, file, next) => {
+  destination: async (req, file, next) => {
     const parentDir = path.join(
       DIRECTORY_UPLOADS_DESTINATION,
       getUnityDir(req),
       file.fieldname
     );
     let dir: string;
-    switch(file.fieldname){
-      case FIELD_WINDOWS:
+    switch (file.fieldname) {
+      case FIELD_WINDOWS: {
         dir = parentDir;
         break;
-      case FIELD_WEBGL:
+      }
+      case FIELD_WEBGL: {
         const folders = path.dirname(file.originalname).split("/");
         folders.shift();
         dir = path.join(parentDir, ...folders);
         break;
-      default:
+      }
+      default: {
         next(new Error(`fieldname${file.fieldname}は不正です。`), "");
         return;
+      }
     }
-    fsExtra.ensureDir(dir).then(()=>{
-      next(null, dir);
-    });
+    await fsExtra.ensureDir(dir);
+    next(null, dir);
   },
   filename: function (req, file, callback) {
     callback(null, path.basename(file.originalname));
@@ -68,18 +69,21 @@ const unityUpload = multer({
   storage: unityStorage,
   preservePath: true,
   fileFilter: (req, file, cb) => {
-    switch(file.fieldname){
-      case FIELD_WINDOWS:
+    switch (file.fieldname) {
+      case FIELD_WINDOWS: {
         cb(null, path.extname(file.originalname) === ".zip");
         break;
-      case FIELD_WEBGL:
+      }
+      case FIELD_WEBGL: {
         const folders = path.dirname(file.originalname).split("/");
         //隠しフォルダ内のファイルではないか
         cb(null, !folders.find((f) => f.startsWith(".")));
         break;
-      default:
+      }
+      default: {
         cb(new Error(`fieldname${file.fieldname}は不正です。`));
         return;
+      }
     }
   },
 });

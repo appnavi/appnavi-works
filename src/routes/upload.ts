@@ -1,4 +1,3 @@
-import fs from "fs";
 import os from "os";
 import path from "path";
 import disk from "diskusage";
@@ -7,7 +6,10 @@ import fsExtra from "fs-extra";
 import * as yup from "yup";
 import { getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
-import { ensureAuthenticated,ensureAuthenticatedWithRedirect } from "../services/auth";
+import {
+  ensureAuthenticated,
+  ensureAuthenticatedWithRedirect,
+} from "../services/auth";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
   URL_PREFIX_GAME,
@@ -52,9 +54,7 @@ uploadRouter.use(getContentSecurityPolicy());
 
 uploadRouter
   .route("/unity")
-  .get(
-    ensureAuthenticatedWithRedirect,
-    function (req, res) {
+  .get(ensureAuthenticatedWithRedirect, function (req, res) {
     res.render("upload/unity");
   })
   .post(
