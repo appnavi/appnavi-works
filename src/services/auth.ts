@@ -42,19 +42,12 @@ function ensureAuthenticated(
     next();
     return;
   }
-  res.status(401).end();
-}
-function ensureAuthenticatedWithRedirect(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-): void {
-  if (isAuthenticated(req)) {
-    next();
+  if(req.method === "GET"){
+    setRedirect(req);
+    res.redirect("/auth");
     return;
   }
-  setRedirect(req);
-  res.redirect("/auth");
+  res.status(401).end();
 }
 
 function isAuthenticated(req: express.Request): boolean {
@@ -71,7 +64,6 @@ function isAuthenticated(req: express.Request): boolean {
 
 export {
   ensureAuthenticated,
-  ensureAuthenticatedWithRedirect,
   isAuthenticated,
   redirect,
 };

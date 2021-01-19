@@ -8,7 +8,6 @@ import { getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
-  ensureAuthenticatedWithRedirect,
 } from "../services/auth";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
@@ -50,15 +49,15 @@ const uploadSchema = yup.object({
 });
 
 const uploadRouter = express.Router();
+uploadRouter.use(ensureAuthenticated);
 uploadRouter.use(getContentSecurityPolicy());
 
 uploadRouter
   .route("/unity")
-  .get(ensureAuthenticatedWithRedirect, function (req, res) {
+  .get(function (req, res) {
     res.render("upload/unity");
   })
   .post(
-    ensureAuthenticated,
     validateParams,
     validateDestination,
     ensureDiskSpaceAvailable,
