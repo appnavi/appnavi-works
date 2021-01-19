@@ -133,7 +133,9 @@ form.addEventListener('submit', function (event) {
         const url = `${location.origin}${path}`;
         content += `<p><a href="${url}">${url}</a>にアップロードしました。</p>`;
       }
-    } else {
+    } else if (request.status === 401){
+      content += "<p>ログインしなおす必要があります。</p><p>ページを再読み込みしてください</>";
+    }else{
       content += request.response;
     }
     const dialog = document.querySelector("#result-dialog");
