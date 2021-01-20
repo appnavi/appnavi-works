@@ -10,6 +10,7 @@ var form = document.querySelector("form");
 var uploadButton = document.querySelector(".uploadButton");
 var uploadingIndicator = document.querySelector(".uploadingIndicator");
 var dialog = document.querySelector("#result-dialog");
+var dialogContent = dialog.querySelector(".modal-content");
 document.addEventListener("DOMContentLoaded", function () {
     M.Collapsible.init(document.querySelector(".collapsible"), {
         onOpenStart: function (elm) {
@@ -43,6 +44,10 @@ webglFilesInput.addEventListener("change", function (_) {
 windowsFilesInput.addEventListener("change", function (_) {
     return onFilesDropped("windows", windowsFilesInput);
 });
+function openDialog(title, content) {
+    dialogContent.innerHTML = "<h4>" + title + "</h4>" + content;
+    M.Modal.getInstance(dialog).open();
+}
 function onMultipleFilesDropped(type, input) {
     var _a, _b, _c;
     var message = document.querySelector(".message-hidden-folder-files." + type);
@@ -121,6 +126,7 @@ form.addEventListener("submit", function (event) {
     event.preventDefault();
     if (((_a = webglFilesInput.files) === null || _a === void 0 ? void 0 : _a.length) === 0 &&
         ((_b = windowsFilesInput.files) === null || _b === void 0 ? void 0 : _b.length) === 0) {
+        openDialog("ファイルが選択されていません", "<p>WebGLまたはWindowsのいずれかのファイルを選択してください</p>");
         return;
     }
     setUploading(true);
@@ -134,9 +140,10 @@ form.addEventListener("submit", function (event) {
     request.addEventListener("load", function (ev) {
         var _a;
         setUploading(false);
-        var content = "<h4>" + (request.status === 200
+        var title = request.status === 200
             ? "アップロードに成功しました"
-            : "アップロードに失敗しました") + "</h4>";
+            : "アップロードに失敗しました";
+        var content = "";
         if (request.status === 200) {
             var paths = (_a = JSON.parse(request.response).paths) !== null && _a !== void 0 ? _a : [];
             paths
@@ -147,15 +154,13 @@ form.addEventListener("submit", function (event) {
             });
         }
         else if (request.status === 401) {
-            content +=
+            content =
                 "<p>ログインしなおす必要があります。</p><p>ページを再読み込みしてください</>";
         }
         else {
-            content += request.response;
+            content = request.response;
         }
-        var dialogContent = dialog.querySelector(".modal-content");
-        dialogContent.innerHTML = content;
-        M.Modal.getInstance(dialog).open();
+        openDialog(title, content);
     });
     request.send(data);
 });

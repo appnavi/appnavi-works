@@ -26,6 +26,7 @@ const uploadingIndicator = document.querySelector(
   ".uploadingIndicator"
 ) as HTMLElement;
 const dialog = document.querySelector("#result-dialog") as HTMLElement;
+const dialogContent = dialog.querySelector(".modal-content") as HTMLElement;
 
 //Materializeのロード
 document.addEventListener("DOMContentLoaded", function () {
@@ -69,6 +70,11 @@ webglFilesInput.addEventListener("change", (_) =>
 windowsFilesInput.addEventListener("change", (_) =>
   onFilesDropped("windows", windowsFilesInput)
 );
+
+function openDialog(title: string, content: string) {
+  dialogContent.innerHTML = `<h4>${title}</h4>${content}`;
+  M.Modal.getInstance(dialog).open();
+}
 
 function onMultipleFilesDropped(type: string, input: HTMLInputElement) {
   const message = document.querySelector(
@@ -162,7 +168,10 @@ form.addEventListener("submit", function (event) {
     webglFilesInput.files?.length === 0 &&
     windowsFilesInput.files?.length === 0
   ) {
-    //TODO：エラー表示
+    openDialog(
+      "ファイルが選択されていません",
+      "<p>WebGLまたはWindowsのいずれかのファイルを選択してください</p>"
+    );
     return;
   }
   setUploading(true);
@@ -180,11 +189,11 @@ form.addEventListener("submit", function (event) {
   );
   request.addEventListener("load", (ev) => {
     setUploading(false);
-    let content = `<h4>${
+    let title =
       request.status === 200
         ? "アップロードに成功しました"
-        : "アップロードに失敗しました"
-    }</h4>`;
+        : "アップロードに失敗しました";
+    let content = "";
     if (request.status === 200) {
       const paths = (JSON.parse(request.response).paths as string[]) ?? [];
       paths
@@ -194,14 +203,12 @@ form.addEventListener("submit", function (event) {
           content += `<p><a href="${url}">${url}</a>にアップロードしました。</p>`;
         });
     } else if (request.status === 401) {
-      content +=
+      content =
         "<p>ログインしなおす必要があります。</p><p>ページを再読み込みしてください</>";
     } else {
-      content += request.response;
+      content = request.response;
     }
-    const dialogContent = dialog.querySelector(".modal-content") as HTMLElement;
-    dialogContent.innerHTML = content;
-    M.Modal.getInstance(dialog).open();
+    openDialog(title, content);
   });
   request.send(data);
 });
