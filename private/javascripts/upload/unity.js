@@ -9,6 +9,7 @@ var gameIdInput = document.querySelector('input[name="game_id"]');
 var form = document.querySelector("form");
 var uploadButton = document.querySelector(".uploadButton");
 var uploadingIndicator = document.querySelector(".uploadingIndicator");
+var dialog = document.querySelector("#result-dialog");
 document.addEventListener("DOMContentLoaded", function () {
     M.Collapsible.init(document.querySelector(".collapsible"), {
         onOpenStart: function (elm) {
@@ -20,26 +21,26 @@ document.addEventListener("DOMContentLoaded", function () {
             header.innerHTML = "keyboard_arrow_down";
         },
     });
-    M.Modal.init(document.querySelector("#result-dialog"), {});
-    setTimeout(function () { M.updateTextFields(); }, 0);
+    M.Modal.init(dialog, {});
+    setTimeout(function () { return M.updateTextFields(); }, 0);
 });
 function initDragAndDrop(fileInput, frame) {
-    fileInput.addEventListener("dragenter", function (event) {
+    fileInput.addEventListener("dragenter", function (_) {
         frame.classList.add("drag");
     });
-    fileInput.addEventListener("dragleave", function (event) {
+    fileInput.addEventListener("dragleave", function (_) {
         frame.classList.remove("drag");
     });
-    fileInput.addEventListener("drop", function (event) {
+    fileInput.addEventListener("drop", function (_) {
         frame.classList.remove("drag");
     });
 }
 initDragAndDrop(webglFilesInput, webglFileFieldFrame);
 initDragAndDrop(windowsFilesInput, windowsFileFieldFrame);
-webglFilesInput.addEventListener("change", function (event) {
+webglFilesInput.addEventListener("change", function (_) {
     return onFilesDropped("webgl", webglFilesInput);
 });
-windowsFilesInput.addEventListener("change", function (event) {
+windowsFilesInput.addEventListener("change", function (_) {
     return onFilesDropped("windows", windowsFilesInput);
 });
 function onMultipleFilesDropped(type, input) {
@@ -47,9 +48,11 @@ function onMultipleFilesDropped(type, input) {
     var message = document.querySelector(".message-hidden-folder-files." + type);
     message.classList.add("hide");
     var dt = new DataTransfer();
-    Array.from((_a = input.files) !== null && _a !== void 0 ? _a : new FileList())
+    var files = (_a = input.files) !== null && _a !== void 0 ? _a : new FileList();
+    Array.from(files)
         .filter(function (file) {
-        var directories = file.webkitRelativePath.split("/");
+        var _a, _b;
+        var directories = (_b = (_a = file.webkitRelativePath) === null || _a === void 0 ? void 0 : _a.split("/")) !== null && _b !== void 0 ? _b : [];
         return directories.find(function (dir) { return dir.startsWith("."); }) === undefined;
     })
         .forEach(function (file) {
@@ -63,18 +66,19 @@ function onMultipleFilesDropped(type, input) {
     input.files = dt.files;
 }
 function onFilesDropped(type, input) {
-    var _a, _b, _c;
+    var _a, _b;
     var preview = fileList.querySelector("." + type);
     preview.innerHTML = "" + type;
     var filePaths = [];
+    var files = (_a = input.files) !== null && _a !== void 0 ? _a : new FileList();
     if (input.webkitdirectory) {
         onMultipleFilesDropped(type, input);
-        Array.from((_a = input.files) !== null && _a !== void 0 ? _a : new FileList()).forEach(function (file) {
+        Array.from(files).forEach(function (file) {
             filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ""));
         });
     }
     else {
-        filePaths.push((_c = ((_b = input.files) !== null && _b !== void 0 ? _b : [])[0]) === null || _c === void 0 ? void 0 : _c.name);
+        filePaths.push((_b = files[0]) === null || _b === void 0 ? void 0 : _b.name);
     }
     filePaths.sort();
     filePaths.forEach(function (path) {
@@ -96,19 +100,21 @@ function onFilesDropped(type, input) {
         });
     });
 }
-creatorIdInput.addEventListener("change", function (ev) {
+creatorIdInput.addEventListener("change", function (_) {
     var creatorId = creatorIdInput.value;
     if (creatorId.length == 0) {
         creatorId = "(作者ID)";
     }
-    document.querySelector(".file-list-header>.creator_id").innerHTML = creatorId;
+    var preview = document.querySelector(".file-list-header>.creator_id");
+    preview.innerHTML = creatorId;
 });
-gameIdInput.addEventListener("change", function (ev) {
+gameIdInput.addEventListener("change", function (_) {
     var gameId = gameIdInput.value;
     if (gameId.length == 0) {
         gameId = "(ゲームID)";
     }
-    document.querySelector(".file-list-header>.game_id").innerHTML = gameId;
+    var preview = document.querySelector(".file-list-header>.game_id");
+    preview.innerHTML = gameId;
 });
 form.addEventListener("submit", function (event) {
     var _a, _b;
@@ -120,26 +126,25 @@ form.addEventListener("submit", function (event) {
     setUploading(true);
     var data = new FormData(form);
     var request = new XMLHttpRequest();
+    var overwriteCheckBox = document.querySelector('input[name="overwrites_existing"]');
     request.open("POST", "", true);
     request.setRequestHeader("x-creator-id", creatorIdInput.value);
     request.setRequestHeader("x-game-id", gameIdInput.value);
-    request.setRequestHeader("x-overwrites-existing", document.querySelector('input[name="overwrites_existing"]').checked.toString());
+    request.setRequestHeader("x-overwrites-existing", overwriteCheckBox.checked.toString());
     request.addEventListener("load", function (ev) {
-        var _a, _b;
+        var _a;
         setUploading(false);
         var content = "<h4>" + (request.status === 200
             ? "アップロードに成功しました"
             : "アップロードに失敗しました") + "</h4>";
         if (request.status === 200) {
-            var paths = (_b = (_a = JSON.parse(request.response).paths) === null || _a === void 0 ? void 0 : _a.map(function (p) {
-                return p.replace(/\\/g, "/");
-            })) !== null && _b !== void 0 ? _b : [];
-            if (paths.length > 0) {
-                paths.forEach(function (p) {
-                    var url = "" + location.origin + p;
-                    content += "<p><a href=\"" + url + "\">" + url + "</a>\u306B\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3057\u307E\u3057\u305F\u3002</p>";
-                });
-            }
+            var paths = (_a = JSON.parse(request.response).paths) !== null && _a !== void 0 ? _a : [];
+            paths
+                .map(function (p) { return p.replace(/\\/g, "/"); })
+                .forEach(function (p) {
+                var url = "" + location.origin + p;
+                content += "<p><a href=\"" + url + "\">" + url + "</a>\u306B\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3057\u307E\u3057\u305F\u3002</p>";
+            });
         }
         else if (request.status === 401) {
             content +=
@@ -148,8 +153,8 @@ form.addEventListener("submit", function (event) {
         else {
             content += request.response;
         }
-        var dialog = document.querySelector("#result-dialog");
-        dialog.querySelector(".modal-content").innerHTML = content;
+        var dialogContent = dialog.querySelector(".modal-content");
+        dialogContent.innerHTML = content;
         M.Modal.getInstance(dialog).open();
     });
     request.send(data);

@@ -25,6 +25,7 @@ const uploadButton = document.querySelector(
 const uploadingIndicator = document.querySelector(
   ".uploadingIndicator"
 ) as HTMLElement;
+const dialog = document.querySelector("#result-dialog") as HTMLElement;
 
 //Materializeのロード
 document.addEventListener("DOMContentLoaded", function () {
@@ -42,19 +43,19 @@ document.addEventListener("DOMContentLoaded", function () {
       header.innerHTML = "keyboard_arrow_down";
     },
   });
-  M.Modal.init(document.querySelector("#result-dialog") as HTMLElement, {});
-  setTimeout(()=>M.updateTextFields(), 0);
+  M.Modal.init(dialog, {});
+  setTimeout(() => M.updateTextFields(), 0);
 });
 
 //ドラッグ&ドロップ時のUI変化
 function initDragAndDrop(fileInput: HTMLInputElement, frame: HTMLDivElement) {
-  fileInput.addEventListener("dragenter", (event) => {
+  fileInput.addEventListener("dragenter", (_) => {
     frame.classList.add("drag");
   });
-  fileInput.addEventListener("dragleave", (event) => {
+  fileInput.addEventListener("dragleave", (_) => {
     frame.classList.remove("drag");
   });
-  fileInput.addEventListener("drop", (event) => {
+  fileInput.addEventListener("drop", (_) => {
     frame.classList.remove("drag");
   });
 }
@@ -62,10 +63,10 @@ initDragAndDrop(webglFilesInput, webglFileFieldFrame);
 initDragAndDrop(windowsFilesInput, windowsFileFieldFrame);
 
 //ドロップ時の動作
-webglFilesInput.addEventListener("change", (event) =>
+webglFilesInput.addEventListener("change", (_) =>
   onFilesDropped("webgl", webglFilesInput)
 );
-windowsFilesInput.addEventListener("change", (event) =>
+windowsFilesInput.addEventListener("change", (_) =>
   onFilesDropped("windows", windowsFilesInput)
 );
 
@@ -75,12 +76,12 @@ function onMultipleFilesDropped(type: string, input: HTMLInputElement) {
   ) as HTMLDivElement;
   message.classList.add("hide");
   const dt = new DataTransfer();
-  Array.from(input.files ?? new FileList())
+  const files = input.files ?? new FileList();
+  Array.from(files)
     .filter((file) => {
       //隠しフォルダ内のファイルを除去
-      const directories = (file as any).webkitRelativePath.split(
-        "/"
-      ) as string[];
+      const directories =
+        ((file as any).webkitRelativePath?.split("/") as string[]) ?? [];
       return directories.find((dir) => dir.startsWith(".")) === undefined;
     })
     .forEach((file) => {
@@ -98,26 +99,27 @@ function onFilesDropped(type: string, input: HTMLInputElement) {
   const preview = fileList.querySelector(`.${type}`) as HTMLElement;
   preview.innerHTML = `${type}`;
   const filePaths = [];
+  const files = input.files ?? new FileList();
   if ((input as any).webkitdirectory) {
     onMultipleFilesDropped(type, input);
-    Array.from(input.files ?? new FileList()).forEach((file) => {
+    Array.from(files).forEach((file) => {
       filePaths.push((file as any).webkitRelativePath.replace(/^[^\/]+\//, ""));
     });
   } else {
-    filePaths.push((input.files ?? [])[0]?.name);
+    filePaths.push(files[0]?.name);
   }
   filePaths.sort();
   filePaths.forEach((path) => {
     let parent = preview;
     path.split("/").forEach((section) => {
-      let p_ul = (Array.from(parent.childNodes) as Element[]).find(
+      let p_ul = (Array.from(parent.childNodes) as HTMLElement[]).find(
         (node) => node.tagName === "UL"
       );
       if (!p_ul) {
         p_ul = document.createElement("ul");
         parent.appendChild(p_ul);
       }
-      let li = (Array.from(p_ul.childNodes) as Element[]).find(
+      let li = (Array.from(p_ul.childNodes) as HTMLElement[]).find(
         (node) => node.tagName === "LI" && node.getAttribute("name") == section
       ) as HTMLElement;
       if (!li) {
@@ -132,23 +134,25 @@ function onFilesDropped(type: string, input: HTMLInputElement) {
 }
 
 //アップロード先URL表示の同期
-creatorIdInput.addEventListener("change", (ev) => {
+creatorIdInput.addEventListener("change", (_) => {
   let creatorId = creatorIdInput.value;
   if (creatorId.length == 0) {
     creatorId = "(作者ID)";
   }
-  (document.querySelector(
+  const preview = document.querySelector(
     ".file-list-header>.creator_id"
-  ) as HTMLDivElement).innerHTML = creatorId;
+  ) as HTMLDivElement;
+  preview.innerHTML = creatorId;
 });
-gameIdInput.addEventListener("change", (ev) => {
+gameIdInput.addEventListener("change", (_) => {
   let gameId = gameIdInput.value;
   if (gameId.length == 0) {
     gameId = "(ゲームID)";
   }
-  (document.querySelector(
+  const preview = document.querySelector(
     ".file-list-header>.game_id"
-  ) as HTMLDivElement).innerHTML = gameId;
+  ) as HTMLDivElement;
+  preview.innerHTML = gameId;
 });
 
 //ファイルアップロード
@@ -158,19 +162,21 @@ form.addEventListener("submit", function (event) {
     webglFilesInput.files?.length === 0 &&
     windowsFilesInput.files?.length === 0
   ) {
+    //TODO：エラー表示
     return;
   }
   setUploading(true);
   const data = new FormData(form);
   const request = new XMLHttpRequest();
+  const overwriteCheckBox = document.querySelector(
+    'input[name="overwrites_existing"]'
+  ) as HTMLInputElement;
   request.open("POST", "", true);
   request.setRequestHeader("x-creator-id", creatorIdInput.value);
   request.setRequestHeader("x-game-id", gameIdInput.value);
   request.setRequestHeader(
     "x-overwrites-existing",
-    (document.querySelector(
-      'input[name="overwrites_existing"]'
-    ) as HTMLInputElement).checked.toString()
+    overwriteCheckBox.checked.toString()
   );
   request.addEventListener("load", (ev) => {
     setUploading(false);
@@ -180,24 +186,21 @@ form.addEventListener("submit", function (event) {
         : "アップロードに失敗しました"
     }</h4>`;
     if (request.status === 200) {
-      const paths: string[] =
-        JSON.parse(request.response).paths?.map((p: string) =>
-          p.replace(/\\/g, "/")
-        ) ?? [];
-      if (paths.length > 0) {
-        paths.forEach((p) => {
+      const paths = (JSON.parse(request.response).paths as string[]) ?? [];
+      paths
+        .map((p) => p.replace(/\\/g, "/"))
+        .forEach((p) => {
           const url = `${location.origin}${p}`;
           content += `<p><a href="${url}">${url}</a>にアップロードしました。</p>`;
         });
-      }
     } else if (request.status === 401) {
       content +=
         "<p>ログインしなおす必要があります。</p><p>ページを再読み込みしてください</>";
     } else {
       content += request.response;
     }
-    const dialog = document.querySelector("#result-dialog") as HTMLElement;
-    (dialog.querySelector(".modal-content") as HTMLElement).innerHTML = content;
+    const dialogContent = dialog.querySelector(".modal-content") as HTMLElement;
+    dialogContent.innerHTML = content;
     M.Modal.getInstance(dialog).open();
   });
   request.send(data);
