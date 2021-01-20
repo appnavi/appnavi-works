@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   });
   M.Modal.init(document.querySelector("#result-dialog") as HTMLElement, {});
+  setTimeout(()=>M.updateTextFields(), 0);
 });
 
 //ドラッグ&ドロップ時のUI変化

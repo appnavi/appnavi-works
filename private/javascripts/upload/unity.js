@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     });
     M.Modal.init(document.querySelector("#result-dialog"), {});
+    setTimeout(function () { M.updateTextFields(); }, 0);
 });
 function initDragAndDrop(fileInput, frame) {
     fileInput.addEventListener("dragenter", function (event) {
