@@ -45,6 +45,7 @@
     "@types/http-errors": "^1.8.0",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/log4js": "^2.3.5",
+    "@types/materialize-css": "^1.0.8",
     "@types/morgan": "^1.9.2",
     "@types/multer": "^1.4.5",
     "@types/node-sass-middleware": "^0.0.31",
