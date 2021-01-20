@@ -5,13 +5,17 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production forever start ./dist/bin/www.js",
     "dev": "nodemon ./src/bin/www",
-    "build": "tsc -p .",
-    "check-types": "tsc --noEmit",
-    "eslint": "eslint src/**/*.ts",
-    "eslint:fix": "eslint src/**/*.ts --fix",
-    "lint": "npm-run-all eslint check-types",
+    "build": "npm-run-all build:server build:browser",
+    "build:server":"tsc -p tsconfig.json",
+    "build:browser":"tsc -p tsconfig.browser.json",
+    "check-types": "npm-run-all check-types:server check-types:browser",
+    "check-types:server": "tsc -p tsconfig.json --noEmit",
+    "check-types:browser": "tsc -p tsconfig.browser.json --noEmit",
+    "eslint:server": "eslint src/**/*.ts",
+    "eslint:server:fix": "eslint src/**/*.ts --fix",
+    "lint": "npm-run-all eslint:server check-types",
     "format": "prettier --write src/**/*.{js,ts,json}",
-    "lint:fix": "npm-run-all check-types format eslint:fix"
+    "lint:fix": "npm-run-all check-types format eslint:server:fix "
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
