@@ -43,6 +43,7 @@
     "@types/fs-extra": "^9.0.6",
     "@types/helmet": "^4.0.0",
     "@types/http-errors": "^1.8.0",
+    "@types/jquery": "^3.5.5",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/log4js": "^2.3.5",
     "@types/materialize-css": "^1.0.8",
