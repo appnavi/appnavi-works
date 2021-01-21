@@ -37,7 +37,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, //TODO：https通信にする時はtrueにする。
+      secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 30,
     },
   })
