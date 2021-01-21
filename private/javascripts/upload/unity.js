@@ -1,12 +1,13 @@
 "use strict";
+var form = document.querySelector("form");
+var creatorIdInput = document.querySelector('input[name="creator_id"]');
+var gameIdInput = document.querySelector('input[name="game_id"]');
+var overwriteCheckBox = document.querySelector('input[name="overwrites_existing"]');
 var webglFilesInput = document.querySelector('input[name="webgl"]');
 var windowsFilesInput = document.querySelector('input[name="windows"]');
 var webglFileFieldFrame = document.querySelector(".input-field.file-field-frame.webgl");
 var windowsFileFieldFrame = document.querySelector(".input-field.file-field-frame.windows");
 var fileList = document.querySelector(".file-list");
-var creatorIdInput = document.querySelector('input[name="creator_id"]');
-var gameIdInput = document.querySelector('input[name="game_id"]');
-var form = document.querySelector("form");
 var uploadButton = document.querySelector(".uploadButton");
 var uploadingIndicator = document.querySelector(".uploadingIndicator");
 var dialog = document.querySelector("#result-dialog");
@@ -121,6 +122,15 @@ gameIdInput.addEventListener("change", function (_) {
     var preview = document.querySelector(".file-list-header>.game_id");
     preview.innerHTML = gameId;
 });
+overwriteCheckBox.addEventListener("change", function (ev) {
+    var note = document.querySelector(".overwrites_existing_note");
+    if (overwriteCheckBox.checked) {
+        note.classList.remove("hide");
+    }
+    else {
+        note.classList.add("hide");
+    }
+});
 form.addEventListener("submit", function (event) {
     var _a, _b;
     event.preventDefault();
@@ -132,7 +142,6 @@ form.addEventListener("submit", function (event) {
     setUploading(true);
     var data = new FormData(form);
     var request = new XMLHttpRequest();
-    var overwriteCheckBox = document.querySelector('input[name="overwrites_existing"]');
     request.open("POST", "", true);
     request.setRequestHeader("x-creator-id", creatorIdInput.value);
     request.setRequestHeader("x-game-id", gameIdInput.value);

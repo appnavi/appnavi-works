@@ -1,4 +1,13 @@
-//querySelector
+const form = document.querySelector("form") as HTMLFormElement;
+const creatorIdInput = document.querySelector(
+  'input[name="creator_id"]'
+) as HTMLInputElement;
+const gameIdInput = document.querySelector(
+  'input[name="game_id"]'
+) as HTMLInputElement;
+const overwriteCheckBox = document.querySelector(
+  'input[name="overwrites_existing"]'
+) as HTMLInputElement;
 const webglFilesInput = document.querySelector(
   'input[name="webgl"]'
 ) as HTMLInputElement;
@@ -12,13 +21,7 @@ const windowsFileFieldFrame = document.querySelector(
   ".input-field.file-field-frame.windows"
 ) as HTMLDivElement;
 const fileList = document.querySelector(".file-list") as HTMLDivElement;
-const creatorIdInput = document.querySelector(
-  'input[name="creator_id"]'
-) as HTMLInputElement;
-const gameIdInput = document.querySelector(
-  'input[name="game_id"]'
-) as HTMLInputElement;
-const form = document.querySelector("form") as HTMLFormElement;
+
 const uploadButton = document.querySelector(
   ".uploadButton"
 ) as HTMLButtonElement;
@@ -161,6 +164,16 @@ gameIdInput.addEventListener("change", (_) => {
   preview.innerHTML = gameId;
 });
 
+//上書き警告の表示切替
+overwriteCheckBox.addEventListener("change", (ev)=>{
+  const note = document.querySelector(".overwrites_existing_note") as HTMLElement;
+  if(overwriteCheckBox.checked){
+    note.classList.remove("hide")
+  }else{
+    note.classList.add("hide")
+  }
+})
+
 //ファイルアップロード
 form.addEventListener("submit", function (event) {
   event.preventDefault();
@@ -177,9 +190,7 @@ form.addEventListener("submit", function (event) {
   setUploading(true);
   const data = new FormData(form);
   const request = new XMLHttpRequest();
-  const overwriteCheckBox = document.querySelector(
-    'input[name="overwrites_existing"]'
-  ) as HTMLInputElement;
+
   request.open("POST", "", true);
   request.setRequestHeader("x-creator-id", creatorIdInput.value);
   request.setRequestHeader("x-game-id", gameIdInput.value);
