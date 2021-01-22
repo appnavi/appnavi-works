@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <title>ログイン</title>
-  <%- include('common/head') %> 
-</head>
-<body>
-  <%- include('common/navbar') %> 
-  <main>
-    <div class="container">
-      <h3 class="header">ログイン</h3>
-      <p class="flow-text">このサイトはアプリNavi部員専用です。アプリNavi部員でない人はアクセスすることができません。</p>
-      <p class="flow-text">アプリNavi部員は下のボタンを押してログインしてください。</p>
-      <div class="center-align">
-        <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=1617885928230.1637294493393"><img src="https://api.slack.com/img/sign_in_with_slack.png" /></a>
+  <head>
+    <title>ログイン</title>
+    <%- include('common/head') %>
+  </head>
+  <body>
+    <%- include('common/navbar') %>
+    <main>
+      <div class="container">
+        <h3 class="header">ログイン</h3>
+        <p class="flow-text">
+          このサイトはアプリNavi部員専用です。アプリNavi部員でない人はアクセスすることができません。
+        </p>
+        <p class="flow-text">
+          アプリNavi部員は下のボタンを押してログインしてください。
+        </p>
+        <div class="center-align">
+          <a
+            href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=1617885928230.1637294493393"
+          >
+            <img
+              src="https://api.slack.com/img/sign_in_with_slack.png"
+              style="width: 172px; height: 40px"
+              alt="Sign In With Slack"
+            />
+          </a>
+        </div>
       </div>
-    </div>
-  </main>
-  <%- include('common/footer') %> 
-  <%- include('common/scripts') %> 
-</body>
+    </main>
+    <%- include('common/footer') %> <%- include('common/scripts') %>
+  </body>
 </html>
