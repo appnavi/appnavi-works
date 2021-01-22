@@ -1,4 +1,5 @@
 import path from "path";
+import compression from "compression";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import express from "express";
@@ -25,7 +26,7 @@ app.use(
     contentSecurityPolicy: false,
   })
 );
-
+app.use(compression());
 // view engine setup
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "ejs");
