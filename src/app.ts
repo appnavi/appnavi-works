@@ -1,25 +1,20 @@
-import fs from "fs";
 import path from "path";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import escapeHtml from "escape-html";
 import express from "express";
 import session from "express-session";
 import helmet from "helmet";
 import createError from "http-errors";
 import sassMiddleware from "node-sass-middleware";
-import serveIndex from "serve-index";
 import { getEnv } from "./helpers";
 import * as logger from "./modules/logger";
 import { authRouter } from "./routes/auth";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
 import { ensureAuthenticated } from "./services/auth";
-import {
-  DIRECTORY_UPLOADS_DESTINATION,
-  URL_PREFIX_GAME,
-} from "./services/upload";
+import { serveGamesIndex } from "./services/games";
+import { DIRECTORY_UPLOADS_DESTINATION } from "./services/upload";
 
 dotenv.config();
 const app = express();
@@ -59,9 +54,9 @@ app.use(
     dest: path.join(__dirname, PATH_PUBLIC_DIRECTORY),
     indentedSyntax: false, // true = .sass and false = .scss
     sourceMap: true,
-  })
+  }),
+  express.static(path.join(__dirname, PATH_PUBLIC_DIRECTORY))
 );
-app.use(express.static(path.join(__dirname, PATH_PUBLIC_DIRECTORY)));
 
 const PATH_PRIVATE_DIRECTORY = "../private";
 const URL_PREFIX_PRIVATE = "private";
@@ -77,68 +72,14 @@ app.use(
   express.static(path.join(__dirname, PATH_PRIVATE_DIRECTORY))
 );
 
-app.use(
-  `/${URL_PREFIX_GAME}`,
-  express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION)),
-  serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
-    icons: true,
-    template: (locals, callback) => {
-      fs.readFile("serve-index-directory.html", "utf8", (err, str) => {
-        if (err) return callback(err);
-        const directoryParts = locals.directory
-          .split("/")
-          .filter((p) => p.length > 0);
-        const files = locals.fileList;
-        if (locals.fileList[0].name === "..") {
-          files.shift();
-        }
-        const body = str
-          .replace(
-            /\{linked-path\}/g,
-            directoryParts
-              .map(
-                (p, i) =>
-                  `<a class="breadcrumb" href="/${directoryParts
-                    .slice(0, i + 1)
-                    .join("/")}">${p}</a>`
-              )
-              .join("\n")
-          )
-          .replace(
-            /\{files\}/g,
-            files
-              .map(
-                (f) =>
-                  `<div class="col s3 center">
-                  <a href="${locals.directory}${f.name}">
-                    <div class="card">
-                      <div class="card-image">
-                        ${
-                          f.stat.isDirectory()
-                            ? '<i class="fas fa-folder fa-10x"></i>'
-                            : '<i class="fas fa-file fa-10x"></i>'
-                        }
-                      </div>
-                      <span class="card-title">
-                        ${f.name}
-                      </span>
-                    </div>
-                  </a>
-                </div>
-                `
-              )
-              .join("\n")
-          )
-          .replace(/\{directory\}/g, escapeHtml(locals.directory));
-        callback(null, body);
-      });
-    },
-  })
-);
-
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/upload", uploadRouter);
+app.use(
+  "/games",
+  express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION)),
+  serveGamesIndex(DIRECTORY_UPLOADS_DESTINATION)
+);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
