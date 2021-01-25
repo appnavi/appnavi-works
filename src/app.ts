@@ -80,6 +80,7 @@ app.use(
   express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION)),
   serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
     icons: true,
+    template: "serve-index-directory.html"
   })
 );
 
