@@ -96,7 +96,7 @@ function onMultipleFilesDropped(type: string, input: HTMLInputElement) {
     .forEach((file) => {
       dt.items.add(file);
     });
-  const fileCountBefore = input.files?.length ?? [];
+  const fileCountBefore = input.files?.length ?? 0;
   const fileCountAfter = dt.files.length;
   if (fileCountBefore > fileCountAfter) {
     message.classList.remove("hide");

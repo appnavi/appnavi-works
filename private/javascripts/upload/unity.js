@@ -64,7 +64,7 @@ function onMultipleFilesDropped(type, input) {
         .forEach(function (file) {
         dt.items.add(file);
     });
-    var fileCountBefore = (_c = (_b = input.files) === null || _b === void 0 ? void 0 : _b.length) !== null && _c !== void 0 ? _c : [];
+    var fileCountBefore = (_c = (_b = input.files) === null || _b === void 0 ? void 0 : _b.length) !== null && _c !== void 0 ? _c : 0;
     var fileCountAfter = dt.files.length;
     if (fileCountBefore > fileCountAfter) {
         message.classList.remove("hide");
