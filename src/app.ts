@@ -1,7 +1,9 @@
+import fs from "fs";
 import path from "path";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import escapeHtml from "escape-html";
 import express from "express";
 import session from "express-session";
 import helmet from "helmet";
@@ -80,7 +82,57 @@ app.use(
   express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION)),
   serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
     icons: true,
-    template: "serve-index-directory.html"
+    template: (locals, callback) => {
+      fs.readFile("serve-index-directory.html", "utf8", (err, str) => {
+        if (err) return callback(err);
+        const directoryParts = locals.directory
+          .split("/")
+          .filter((p) => p.length > 0);
+        const files = locals.fileList;
+        if (locals.fileList[0].name === "..") {
+          files.shift();
+        }
+        const body = str
+          .replace(
+            /\{linked-path\}/g,
+            directoryParts
+              .map(
+                (p, i) =>
+                  `<a class="breadcrumb" href="/${directoryParts
+                    .slice(0, i + 1)
+                    .join("/")}">${p}</a>`
+              )
+              .join("\n")
+          )
+          .replace(
+            /\{files\}/g,
+            files
+              .map(
+                (f) =>
+                  `<div class="col s3 center">
+                  <a href="${locals.directory}${f.name}">
+                    <div class="card">
+                      <div class="card-image">
+                        ${
+                          f.stat.isDirectory()
+                            ? '<i class="fas fa-folder fa-10x"></i>'
+                            : '<i class="fas fa-file fa-10x"></i>'
+                        }
+                      </div>
+                      <span class="card-title">
+                        ${f.name}
+                      </span>
+                    </div>
+                  </a>
+                </div>
+                `
+              )
+              .join("\n")
+          )
+          .replace(/\{directory\}/g, escapeHtml(locals.directory));
+        callback(null, body);
+      });
+    },
   })
 );
 
