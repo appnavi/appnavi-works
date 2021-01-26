@@ -1,9 +1,9 @@
 import path from "path";
 import compression from "compression";
 import cookieParser from "cookie-parser";
+import cookieSession from "cookie-session";
 import dotenv from "dotenv";
 import express from "express";
-import session from "express-session";
 import helmet from "helmet";
 import createError from "http-errors";
 import sassMiddleware from "node-sass-middleware";
@@ -29,15 +29,12 @@ app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(
-  session({
+  cookieSession({
+    name: "game-upload-dev",
     secret: getEnv("SESSION_SECRET"),
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 30,
-    },
+    maxAge: 1000 * 60 * 30,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
   })
 );
 app.use(express.urlencoded({ extended: false }));

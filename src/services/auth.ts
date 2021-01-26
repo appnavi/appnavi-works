@@ -1,13 +1,12 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { getEnv } from "../helpers";
-declare module "express-session" {
-  interface SessionData {
-    token: string;
-    oauth: { accessToken: string };
-    redirect: { url: string };
-    redirectToken: string;
-  }
+
+interface SessionData {
+  token: string;
+  oauth: { accessToken: string };
+  redirect: { url: string };
+  redirectToken: string;
 }
 function setRedirect(req: express.Request): void {
   req.session.redirect = {
@@ -20,8 +19,9 @@ function setRedirect(req: express.Request): void {
 }
 
 function redirect(req: express.Request, res: express.Response): void {
-  const rediretUrl = req.session.redirect?.url;
-  const token = req.session.redirectToken;
+  const session = req.session as SessionData;
+  const rediretUrl = session.redirect?.url;
+  const token = session.redirectToken;
   if (token && rediretUrl) {
     const decoded = jwt.verify(token, getEnv("JWT_SECRET")) as {
       url: string;
@@ -51,8 +51,9 @@ function ensureAuthenticated(
 }
 
 function isAuthenticated(req: express.Request): boolean {
-  const token = req.session.token;
-  const accessToken = req.session.oauth?.accessToken;
+  const session = req.session as SessionData;
+  const token = session.token;
+  const accessToken = session.oauth?.accessToken;
   if (token == null || accessToken == null) {
     return false;
   }
