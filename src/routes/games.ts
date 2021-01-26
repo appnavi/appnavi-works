@@ -1,9 +1,16 @@
 import fs from "fs";
+import path from "path";
 import escapeHtml from "escape-html";
 import express from "express";
 import serveIndex from "serve-index";
-
-
+import { DIRECTORY_UPLOADS_DESTINATION } from "../services/upload";
+const gamesRouter = express.Router();
+gamesRouter.use(
+  express.static(path.join(__dirname, "../..", DIRECTORY_UPLOADS_DESTINATION)),
+  serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
+    template: renderTemplate,
+  })
+);
 function directoryBreadcrumbs(directory: string): string {
   const directoryParts = directory.split("/").filter((p) => p.length > 0);
   return directoryParts
@@ -54,10 +61,4 @@ function renderTemplate(
   });
 }
 
-function serveGamesIndex(path: string):express.Handler{
-  return serveIndex(path, {
-    template: renderTemplate,
-  });
-}
-
-export { serveGamesIndex };
+export { gamesRouter };

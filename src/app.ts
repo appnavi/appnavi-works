@@ -10,11 +10,11 @@ import sassMiddleware from "node-sass-middleware";
 import { getEnv } from "./helpers";
 import * as logger from "./modules/logger";
 import { authRouter } from "./routes/auth";
+import { gamesRouter } from "./routes/games";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
 import { ensureAuthenticated } from "./services/auth";
-import { serveGamesIndex } from "./services/games";
-import { DIRECTORY_UPLOADS_DESTINATION } from "./services/upload";
+import { URL_PREFIX_GAME } from "./services/upload";
 
 dotenv.config();
 const app = express();
@@ -75,11 +75,7 @@ app.use(
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/upload", uploadRouter);
-app.use(
-  "/games",
-  express.static(path.join(__dirname, "..", DIRECTORY_UPLOADS_DESTINATION)),
-  serveGamesIndex(DIRECTORY_UPLOADS_DESTINATION)
-);
+app.use(`/${URL_PREFIX_GAME}`, gamesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
