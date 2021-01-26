@@ -3,8 +3,6 @@ import jwt from "jsonwebtoken";
 import { getEnv } from "../helpers";
 
 interface SessionData {
-  token: string;
-  oauth: { accessToken: string };
   redirect: { url: string };
   redirectToken: string;
 }
@@ -51,16 +49,7 @@ function ensureAuthenticated(
 }
 
 function isAuthenticated(req: express.Request): boolean {
-  const session = req.session as SessionData;
-  const token = session.token;
-  const accessToken = session.oauth?.accessToken;
-  if (token == null || accessToken == null) {
-    return false;
-  }
-  const decoded = jwt.verify(token, getEnv("JWT_SECRET")) as {
-    accessToken: string;
-  };
-  return decoded.accessToken === accessToken;
+  return req.user !== undefined;
 }
 
 export { ensureAuthenticated, isAuthenticated, redirect };
