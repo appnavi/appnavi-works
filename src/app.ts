@@ -6,8 +6,8 @@ import express from "express";
 import helmet from "helmet";
 import createError from "http-errors";
 import sassMiddleware from "node-sass-middleware";
-import { PassportStatic } from "passport";
-import { passport as passportJS } from "./config/passport";
+import passport from "passport";
+import { preparePassport } from "./config/passport";
 import { getEnv } from "./helpers";
 import * as logger from "./modules/logger";
 import { authRouter } from "./routes/auth";
@@ -17,8 +17,8 @@ import { uploadRouter } from "./routes/upload";
 import { ensureAuthenticated } from "./services/auth";
 import { URL_PREFIX_GAME } from "./services/upload";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const passport: PassportStatic = passportJS;
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+preparePassport(passport);
 const app = express();
 app.use(
   helmet({
@@ -105,4 +105,5 @@ app.use(function (
   res.render("error");
 });
 
+export { passport };
 module.exports = app;

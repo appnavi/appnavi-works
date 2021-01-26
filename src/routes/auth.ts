@@ -1,10 +1,7 @@
 import express from "express";
-import { PassportStatic } from "passport";
-import { passport as passportJS } from "../config/passport";
+import { passport } from "../app";
 import { getContentSecurityPolicy } from "../helpers";
 import { isAuthenticated, redirect } from "../services/auth";
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const passport: PassportStatic = passportJS;
 
 const authRouter = express.Router();
 authRouter.use(

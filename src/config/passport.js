@@ -1,4 +1,3 @@
-const passport = require("passport");
 const SlackStrategy = require("async-passport-slack").Strategy;
 const strategy = new SlackStrategy(
   {
@@ -35,14 +34,16 @@ oauth2.getOAuthAccessToken = function (code, params, callback) {
     }
   );
 };
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
+function preparePassport(passport) {
+  passport.serializeUser(function (user, done) {
+    done(null, user);
+  });
 
-passport.deserializeUser(function (user, done) {
-  done(null, user);
-});
+  passport.deserializeUser(function (user, done) {
+    done(null, user);
+  });
 
-passport.use(strategy);
+  passport.use(strategy);
+}
 
-export { passport };
+export { preparePassport };
