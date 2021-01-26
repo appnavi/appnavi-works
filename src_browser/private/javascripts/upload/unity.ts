@@ -111,7 +111,7 @@ function onFilesDropped(type: string, input: HTMLInputElement) {
   const files = input.files ?? new FileList();
   if ((input as any).webkitdirectory) {
     onMultipleFilesDropped(type, input);
-    Array.from(files).forEach((file) => {
+    Array.from(input.files).forEach((file) => {
       filePaths.push((file as any).webkitRelativePath.replace(/^[^\/]+\//, ""));
     });
   } else {
