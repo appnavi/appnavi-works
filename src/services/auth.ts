@@ -25,8 +25,10 @@ function redirect(req: express.Request, res: express.Response): void {
       url: string;
     };
     if (decoded.url === rediretUrl) {
-      res.redirect(rediretUrl);
-      return;
+      if (rediretUrl.startsWith("/")) {
+        res.redirect(rediretUrl);
+        return;
+      }
     }
   }
   res.redirect("/");
