@@ -6,7 +6,8 @@ type EnvKey =
   | "SLACK_CLIENT_SECRET"
   | "SLACK_REDIRECT_URI"
   | "SLACK_WORKSPACE_ID"
-  | "SESSION_SECRET"
+  | "COOKIE_NAME"
+  | "COOKIE_KEYS"
   | "JWT_SECRET";
 function getEnv(key: EnvKey): string {
   const val = process.env[key];

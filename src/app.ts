@@ -30,8 +30,8 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(
   cookieSession({
-    name: "game-upload-dev",
-    secret: getEnv("SESSION_SECRET"),
+    name: getEnv("COOKIE_NAME"),
+    keys: getEnv("COOKIE_KEYS").split(","),
     maxAge: 1000 * 60 * 30,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
