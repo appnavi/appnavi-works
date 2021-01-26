@@ -1,13 +1,17 @@
-
-const passport = require('passport');
-const SlackStrategy = require('async-passport-slack').Strategy;
+const passport = require("passport");
+const SlackStrategy = require("async-passport-slack").Strategy;
 const strategy = new SlackStrategy(
   {
     clientID: process.env["SLACK_CLIENT_ID"],
     clientSecret: process.env["SLACK_CLIENT_SECRET"],
     callbackURL: "http://localhost:3000/auth/redirect",
     skipUserProfile: false,
-    user_scope: ['identity.basic', 'identity.email', 'identity.avatar', 'identity.team'] // default
+    user_scope: [
+      "identity.basic",
+      "identity.email",
+      "identity.avatar",
+      "identity.team",
+    ], // default
   },
   function (accessToken, refreshToken, profile, done) {
     return done(null, profile);
@@ -17,13 +21,20 @@ const strategy = new SlackStrategy(
 const oauth2 = strategy._oauth2;
 const getToken = oauth2.getOAuthAccessToken;
 oauth2.getOAuthAccessToken = function (code, params, callback) {
-  getToken.call(oauth2, code, params, function (err, accessToken, refreshToken, params) {
-    if (err) { return callback(err) }
-    var accessToken = params["authed_user"]["access_token"];
-    var refreshToken = "";
-    callback(null, accessToken, refreshToken, params);
-  });
-}
+  getToken.call(
+    oauth2,
+    code,
+    params,
+    function (err, accessToken, refreshToken, params) {
+      if (err) {
+        return callback(err);
+      }
+      var accessToken = params["authed_user"]["access_token"];
+      var refreshToken = "";
+      callback(null, accessToken, refreshToken, params);
+    }
+  );
+};
 passport.serializeUser(function (user, done) {
   done(null, user);
 });

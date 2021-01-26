@@ -1,8 +1,9 @@
 import express from "express";
 import { PassportStatic } from "passport";
-import { passport } from "../config/passport";
+import { passport as passportJS } from "../config/passport";
 import { getContentSecurityPolicy } from "../helpers";
 import { isAuthenticated, redirect } from "../services/auth";
+const passport: PassportStatic = passportJS;
 
 const authRouter = express.Router();
 authRouter.use(
@@ -26,10 +27,10 @@ authRouter.get("/", function (req, res) {
   }
   res.render("login");
 });
-authRouter.get("/slack", (passport as PassportStatic).authenticate("slack"));
+authRouter.get("/slack", passport.authenticate("slack"));
 authRouter.get(
   "/redirect",
-  (passport as PassportStatic).authenticate("slack", {
+  passport.authenticate("slack", {
     failureRedirect: "/auth/error",
   }),
   (req, res) => {
