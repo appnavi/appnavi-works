@@ -164,16 +164,6 @@ gameIdInput.addEventListener("change", (_) => {
   preview.innerHTML = gameId;
 });
 
-//上書き警告の表示切替
-overwriteCheckBox.addEventListener("change", (ev)=>{
-  const note = document.querySelector(".overwrites_existing_note") as HTMLElement;
-  if(overwriteCheckBox.checked){
-    note.classList.remove("hide")
-  }else{
-    note.classList.add("hide")
-  }
-})
-
 //ファイルアップロード
 form.addEventListener("submit", function (event) {
   event.preventDefault();

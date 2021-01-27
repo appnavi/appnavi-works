@@ -122,15 +122,6 @@ gameIdInput.addEventListener("change", function (_) {
     var preview = document.querySelector(".file-list-header>.game_id");
     preview.innerHTML = gameId;
 });
-overwriteCheckBox.addEventListener("change", function (ev) {
-    var note = document.querySelector(".overwrites_existing_note");
-    if (overwriteCheckBox.checked) {
-        note.classList.remove("hide");
-    }
-    else {
-        note.classList.add("hide");
-    }
-});
 form.addEventListener("submit", function (event) {
     var _a, _b;
     event.preventDefault();
