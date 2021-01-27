@@ -1,6 +1,7 @@
 import express from "express";
+import * as logger from "../modules/logger";
 import { passport } from "../app";
-import { getContentSecurityPolicy } from "../helpers";
+import { getContentSecurityPolicy, getEnv } from "../helpers";
 import { isAuthenticated, redirect } from "../services/auth";
 
 const authRouter = express.Router();
@@ -31,6 +32,21 @@ authRouter.get(
   passport.authenticate("slack", {
     failureRedirect: "/auth/error",
   }),
+  (req,res,next)=>{
+    const user = req.user as {team: {id: string}, user: {id: string}};
+    const workspaceId = user?.team?.id;
+    if(workspaceId !== getEnv("SLACK_WORKSPACE_ID")){
+      logger.system.error(	
+        `違うワークスペース${workspaceId}の人がログインしようとしました。`	
+      );	
+      res.send("認証に失敗しました。").status(403).end();	
+      return;	
+    }
+    logger.system.info(	
+      `ユーザー${user.user.id}がSlack認証でログインしました。`	
+    );
+    next();
+  },
   (req, res) => {
     redirect(req, res);
   }
