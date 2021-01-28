@@ -11,7 +11,7 @@ gamesRouter.use(
   express.static(path.join(__dirname, "../..", DIRECTORY_UPLOADS_DESTINATION)),
   serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
     template: renderTemplate,
-    //TODO：ejsに移行
+    // //TODO：ejsに移行
     // template: (
     //   locals: serveIndex.Locals,
     //   callback: serveIndex.templateCallback
