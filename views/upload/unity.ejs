@@ -4,120 +4,120 @@
 <head>
   <title>アップロード</title>
   <%- include('../common/head') %>
-    <script src="/private/javascripts/upload/unity.js" defer></script>
-    <link rel="stylesheet" href="/private/stylesheets/upload/unity.css">
+  <script src="/private/javascripts/upload/unity.js" defer></script>
+  <link rel="stylesheet" href="/private/stylesheets/upload/unity.css">
 </head>
 
 <body>
   <%- include('../common/navbar', {logout: true}) %>
-    <main class="container">
-      <h3 class="header">Unityゲームを投稿する</h3>
-      <form action="webgl" method="POST" enctype="multipart/form-data">
-        <div class="row card-panel">
-          <div class="input-field">
-            <input id="creator_name" type="text" class="validate" name="creator_id" pattern="^[0-9a-z\-]+$" required
-              aria-required />
-            <label for="creator_name">作者ID</label>
-            <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
-          </div>
-          <div class="input-field">
-            <input id="game_name" type="text" class="validate" name="game_id" pattern="^[0-9a-z\-]+$" required
-              aria-required />
-            <label for="game_name">ゲームID</label>
-            <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
-          </div>
-          <p>
-            <blockquote class="overwrites_existing_note">
-              チェックを入れると、既存のWebGLとWindowsゲームの両方を削除してからアップロードします。
-            </blockquote>
-            <label>
-              <input type="checkbox" class="filled-in" name="overwrites_existing" />
-              <span>上書きする</span>
-            </label>
-          </p>
+  <main class="container">
+    <h3 class="header">Unityゲームを投稿する</h3>
+    <form action="webgl" method="POST" enctype="multipart/form-data">
+      <div class="row card-panel">
+        <div class="input-field">
+          <input id="creator_name" type="text" class="validate" name="creator_id" pattern="^[0-9a-z\-]+$" required
+            aria-required />
+          <label for="creator_name">作者ID</label>
+          <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
         </div>
-        <div class="row card-panel">
-          <h4 class="upload-text">WebGL(フォルダ)</h4>
-          <blockquote class="message-hidden-folder-files webgl hide">
-            隠しフォルダ(.gitなど)内のフォルダはアップロードされません。
+        <div class="input-field">
+          <input id="game_name" type="text" class="validate" name="game_id" pattern="^[0-9a-z\-]+$" required
+            aria-required />
+          <label for="game_name">ゲームID</label>
+          <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
+        </div>
+        <p>
+          <blockquote class="overwrites_existing_note">
+            チェックを入れると、既存のWebGLとWindowsゲームの両方を削除してからアップロードします。
           </blockquote>
-          <div class="input-field file-field-frame webgl">
-            <div class="placeholder">
-              <h6>
-                ここにフォルダをドロップ
-              </h6>
-              <div>または</div>
-              <h6>
-                クリックしてフォルダを選択
-              </h6>
-            </div>
-            <input class="file-path validate" type="file" name="webgl" webkitdirectory/>
+          <label>
+            <input type="checkbox" class="filled-in" name="overwrites_existing" />
+            <span>上書きする</span>
+          </label>
+        </p>
+      </div>
+      <div class="row card-panel">
+        <h4 class="upload-text">WebGL(フォルダ)</h4>
+        <blockquote class="message-hidden-folder-files webgl hide">
+          隠しフォルダ(.gitなど)内のフォルダはアップロードされません。
+        </blockquote>
+        <div class="input-field file-field-frame webgl">
+          <div class="placeholder">
+            <h6>
+              ここにフォルダをドロップ
+            </h6>
+            <div>または</div>
+            <h6>
+              クリックしてフォルダを選択
+            </h6>
           </div>
+          <input class="file-path validate" type="file" name="webgl" webkitdirectory/>
         </div>
-        <div class="row card-panel">
-          <h4 class="upload-text">Windows(Zipファイル)</h4>
-          <div class="input-field file-field-frame windows">
-            <div class="placeholder">
-              <h6>
-                ここにZipファイルをドロップ
-              </h6>
-              <div>または</div>
-              <h6>
-                クリックしてZipファイルを選択
-              </h6>
-            </div>
-            <input class="file-path validate" type="file" name="windows" accept=".zip"/>
+      </div>
+      <div class="row card-panel">
+        <h4 class="upload-text">Windows(Zipファイル)</h4>
+        <div class="input-field file-field-frame windows">
+          <div class="placeholder">
+            <h6>
+              ここにZipファイルをドロップ
+            </h6>
+            <div>または</div>
+            <h6>
+              クリックしてZipファイルを選択
+            </h6>
           </div>
+          <input class="file-path validate" type="file" name="windows" accept=".zip"/>
         </div>
-        <ul class="collapsible">
-          <li>
-            <div class="collapsible-header">
-              <i class="material-icons">keyboard_arrow_down</i>
-              <span>プレビュー</span>
+      </div>
+      <ul class="collapsible">
+        <li>
+          <div class="collapsible-header">
+            <i class="material-icons">keyboard_arrow_down</i>
+            <span>プレビュー</span>
+          </div>
+          <div class="collapsible-body">
+            <div class="file-list-header">http://localhost:3000/games/<span class="creator_id">(作者ID)</span>/<span
+                class="game_id">(ゲームID)</span>/</div>
+            <div class="file-list">
+              <ul>
+                <li class="webgl">webgl</li>
+                <li class="windows">windows</li>
+              </ul>
             </div>
-            <div class="collapsible-body">
-              <div class="file-list-header">http://localhost:3000/games/<span class="creator_id">(作者ID)</span>/<span
-                  class="game_id">(ゲームID)</span>/</div>
-              <div class="file-list">
-                <ul>
-                  <li class="webgl">webgl</li>
-                  <li class="windows">windows</li>
-                </ul>
-              </div>
+          </div>
+        </li>
+      </ul>
+      <div class="row center">
+        <button type="submit" class="btn uploadButton">アップロードする</button>
+      </div>
+    </form>
+    <div class="uploadingIndicator hide">
+      <div class="center-align">
+        <div class="preloader-wrapper big active">
+          <div class="spinner-layer spinner-green-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
             </div>
-          </li>
-        </ul>
-        <div class="row center">
-          <button type="submit" class="btn uploadButton">アップロードする</button>
-        </div>
-      </form>
-      <div class="uploadingIndicator hide">
-        <div class="center-align">
-          <div class="preloader-wrapper big active">
-            <div class="spinner-layer spinner-green-only">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
             </div>
           </div>
         </div>
       </div>
-      <div id="result-dialog" class="modal">
-        <div class="modal-content">
-        </div>
-        <div class="modal-footer">
-          <a class="modal-close waves-effect waves-green btn-flat">閉じる</a>
-        </div>
+    </div>
+    <div id="result-dialog" class="modal">
+      <div class="modal-content">
       </div>
-    </main>
-    <%- include('../common/footer') %>
-    <%- include('../common/scripts') %>
+      <div class="modal-footer">
+        <a class="modal-close waves-effect waves-green btn-flat">閉じる</a>
+      </div>
+    </div>
+  </main>
+  <%- include('../common/footer') %>
+  <%- include('../common/scripts') %>
 </body>
 
 </html>
