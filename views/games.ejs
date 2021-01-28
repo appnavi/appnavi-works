@@ -25,7 +25,7 @@
   </nav>
   <main class="container">
     <div class="row">
-      <% fileList.filter((file)=>file.name !== "..").forEach((file)=>{%>
+      <% fileList.filter((file)=>file.name !== "..").forEach((file)=>{ %>
         <% const icon=file.stat.isDirectory() ? '<i class="fas fa-folder fa-10x"></i>'
           : '<i class="fas fa-file fa-10x"></i>' ; %>
         <div class="col s3 center">
