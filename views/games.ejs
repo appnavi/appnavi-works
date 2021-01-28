@@ -9,7 +9,7 @@
 <body>
   <nav class="nav-extended">
     <div class="nav-wrapper">
-      <a class="brand-logo center" href="/">アプリNavi</a>
+      <a class="brand-logo center" href="https://opuappnavi.com/#/">アプリNavi</a>
     </div>
     <div class="nav-content row">
       <div class="col s11 offset-s1">
@@ -28,7 +28,7 @@
       <% fileList.filter((file)=>file.name !== "..").forEach((file)=>{ %>
         <% const icon=file.stat.isDirectory() ? '<i class="fas fa-folder fa-10x"></i>'
           : '<i class="fas fa-file fa-10x"></i>' ; %>
-        <div class="col s3 center">
+        <div class="col s6 l3 center">
           <a href="<%- directory %><%- file.name%>">
             <div class="card hoverable">
               <div class="card-image">
@@ -43,7 +43,6 @@
       <% }) %>
     </div>
   </main>
-  <%- include('common/footer') %>
   <%- include('common/scripts') %>
 </body>
 
