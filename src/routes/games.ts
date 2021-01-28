@@ -57,6 +57,10 @@ function renderTemplate(
       .replace(/\{linked-path\}/g, directoryBreadcrumbs(locals.directory))
       .replace(/\{files\}/g, fileCards(locals.directory, locals.fileList))
       .replace(/\{directory\}/g, escapeHtml(locals.directory));
+    
+    // エラーが無かったらcallbackにnullを渡す仕様なのに、nullを渡すとstrictNullChecksの警告が出るのでignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     callback(null, body);
   });
 }

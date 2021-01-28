@@ -7,10 +7,11 @@ interface SessionData {
   redirectToken: string;
 }
 function setRedirect(req: express.Request): void {
-  req.session.redirect = {
+  const session = req.session as SessionData;
+  session.redirect = {
     url: req.originalUrl,
   };
-  req.session.redirectToken = jwt.sign(
+  session.redirectToken = jwt.sign(
     { url: req.originalUrl },
     getEnv("JWT_SECRET")
   );

@@ -72,19 +72,20 @@ function onMultipleFilesDropped(type, input) {
     input.files = dt.files;
 }
 function onFilesDropped(type, input) {
-    var _a, _b;
+    var _a, _b, _c;
     var preview = fileList.querySelector("." + type);
     preview.innerHTML = "" + type;
     var filePaths = [];
-    var files = (_a = input.files) !== null && _a !== void 0 ? _a : new FileList();
     if (input.webkitdirectory) {
+        var files = (_a = input.files) !== null && _a !== void 0 ? _a : new FileList();
         onMultipleFilesDropped(type, input);
-        Array.from(input.files).forEach(function (file) {
+        Array.from(files).forEach(function (file) {
             filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ""));
         });
     }
     else {
-        filePaths.push((_b = files[0]) === null || _b === void 0 ? void 0 : _b.name);
+        var files = (_b = input.files) !== null && _b !== void 0 ? _b : new FileList();
+        filePaths.push((_c = files[0]) === null || _c === void 0 ? void 0 : _c.name);
     }
     filePaths.sort();
     filePaths.forEach(function (path) {
