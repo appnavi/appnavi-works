@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <title>HOME</title>
+  <%- include('common/head') %>
+</head>
+
+<body>
+  <nav class="nav-extended">
+    <div class="nav-wrapper">
+      <a class="brand-logo center" href="/">アプリNavi</a>
+    </div>
+    <div class="nav-content row">
+      <div class="col s11 offset-s1">
+        {linked-path}
+      </div>
+    </div>
+  </nav>
+  <main class="container">
+    {files}
+  </main>
+  <%- include('common/footer') %>
+    <%- include('common/scripts') %>
+</body>
+
+</html>
