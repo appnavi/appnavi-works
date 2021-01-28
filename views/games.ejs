@@ -13,28 +13,34 @@
     </div>
     <div class="nav-content row">
       <div class="col s11 offset-s1">
-        {linked-path}
+        <% const directoryParts=directory.split("/").filter((p)=> p.length > 0) %>
+          <% directoryParts.forEach((value, key)=>{ %>
+            <% const link=`/${directoryParts.slice(0, key + 1).join("/")}` %>
+              <a class="breadcrumb" href="<%- link %>">
+                <%- value %>
+              </a>
+              <% }) %>
       </div>
     </div>
   </nav>
   <main class="container">
-    <div>
-      <%- directory %>
-    </div>
-    <div>
-      <%- displayIcons %>
-    </div>
-    <div>
-      <%- fileList %>
-    </div>
-    <div>
-      <%- path %>
-    </div>
-    <div>
-      <%- style %>
-    </div>
-    <div>
-      <%- viewName %>
+    <div class="row">
+      <% fileList.filter((file)=>file.name !== "..").forEach((file)=>{%>
+        <% const icon=file.stat.isDirectory() ? '<i class="fas fa-folder fa-10x"></i>'
+          : '<i class="fas fa-file fa-10x"></i>' ; %>
+          <div class="col s3 center">
+            <a href="<%- directory %><%- file.name%>">
+              <div class="card">
+                <div class="card-image">
+                  <%- icon %>
+                </div>
+                <span class="card-title">
+                  <%- file.name %>
+                </span>
+              </div>
+            </a>
+          </div>
+          <% }) %>
     </div>
   </main>
   <%- include('common/footer') %>
