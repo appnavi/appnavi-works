@@ -13,19 +13,17 @@
     </div>
     <div class="nav-content row">
       <div class="col s11 offset-s1">
-        <% const directoryParts=directory.split("/").filter((p)=> p.length > 0) %>
-        <% directoryParts.forEach((value, i)=>{ %>
-          <% const link=`/${directoryParts.slice(0, i + 1).join("/")}` %>
-          <% if (i == directoryParts.length - 1){ %> 
-            <span class="breadcrumb">
-              <%- value %>
-            </span>
-          <% }else{ %> 
-            <a class="breadcrumb" href="<%- link %>">
-              <%- value %>
-            </a>
-          <% } %> 
+        <% const directories = directory.split("/").filter((p)=> p.length > 0) %>
+        <% const currentDirectory = directories.pop(); %> 
+        <% directories.forEach((value, i)=>{ %>
+          <% const link=`/${directories.slice(0, i + 1).join("/")}` %>
+          <a class="breadcrumb" href="<%- link %>">
+            <%- value %>
+          </a>
         <% }) %>
+        <span class="breadcrumb">
+          <%- currentDirectory %>
+        </span>
       </div>
     </div>
   </nav>
