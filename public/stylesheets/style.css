@@ -6,4 +6,7 @@ body {
 main {
   flex: 1 0 auto; }
 
+.file-card {
+  padding: 1rem; }
+
 /*# sourceMappingURL=style.css.map */
