@@ -32,6 +32,7 @@ authRouter.get(
   passport.authenticate("slack", {
     failureRedirect: "/auth/error",
   }),
+  //TODO：ユーザー記録機能実装
   (req, res, next) => {
     const user = req.user as { team: { id: string }; user: { id: string } };
     const workspaceId = user?.team?.id;

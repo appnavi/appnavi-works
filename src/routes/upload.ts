@@ -4,6 +4,7 @@ import disk from "diskusage";
 import express from "express";
 import fsExtra from "fs-extra";
 import * as yup from "yup";
+import { GameInfo } from "../models/database";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated } from "../services/auth";
 import {
@@ -11,6 +12,9 @@ import {
   calculateTotalFileSize,
   unityUpload,
   fields,
+  getAuthorId,
+  getGameId,
+  findGameInfo,
 } from "../services/upload";
 import {
   URL_PREFIX_GAME,
@@ -60,11 +64,13 @@ uploadRouter
   })
   .post(
     validateParams,
+    preventEditByOtherPerson,
     validateDestination,
     ensureDiskSpaceAvailable,
     beforeUpload,
     unityUpload.fields(fields),
     ensureUploadSuccess,
+    saveGameInfoToDatabase,
     logUploadSuccess,
     (req, res) => {
       res.send({
@@ -103,8 +109,8 @@ function validateParams(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const creatorId = req.headers["x-creator-id"];
-  const gameId = req.headers["x-game-id"];
+  const creatorId = getAuthorId(req);
+  const gameId = getGameId(req);
   const overwritesExisting = req.headers["x-overwrites-existing"];
 
   uploadSchema
@@ -121,6 +127,29 @@ function validateParams(
         new UploadError(err.errors[0], [creatorId, gameId, overwritesExisting])
       );
     });
+}
+async function preventEditByOtherPerson(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const gameInfo = await findGameInfo(req);
+  if (gameInfo === undefined) {
+    next();
+    return;
+  }
+  const user = req.user as { user: { id: string } };
+  const createdBy = gameInfo["createdBy"];
+  if (createdBy === user.user.id) {
+    next();
+    return;
+  }
+  next(
+    new UploadError(
+      `別の人が既に投稿したゲームがあります。上書きすることはできません。`,
+      [getUnityDir(req)]
+    )
+  );
 }
 async function validateDestination(
   req: express.Request,
@@ -184,6 +213,20 @@ function ensureUploadSuccess(
     });
     return;
   }
+  next();
+}
+async function saveGameInfoToDatabase(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const user = req.user as { user: { id: string } };
+  const g = new GameInfo({
+    authorId: getAuthorId(req),
+    gameId: getGameId(req),
+    createdBy: user.user.id,
+  });
+  await g.save();
   next();
 }
 function logUploadSuccess(

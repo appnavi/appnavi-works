@@ -2,6 +2,7 @@ import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
 import multer from "multer";
+import { GameInfo } from "../models/database";
 import { DIRECTORY_UPLOADS_DESTINATION } from "../utils/constants";
 const FIELD_WEBGL = "webgl";
 const FIELD_WINDOWS = "windows";
@@ -14,11 +15,37 @@ const fields = [
     maxCount: 1,
   },
 ];
+function getAuthorId(req: express.Request): string {
+  return req.headers["x-creator-id"] as string;
+}
+function getGameId(req: express.Request): string {
+  return req.headers["x-game-id"] as string;
+}
 function getUnityDir(req: express.Request): string {
-  const creator_id = req.headers["x-creator-id"] as string;
-  const game_id = req.headers["x-game-id"] as string;
+  const creator_id = getAuthorId(req);
+  const game_id = getGameId(req);
   return path.join(creator_id, game_id);
 }
+async function findGameInfo(
+  req: express.Request
+): Promise<NodeJS.Dict<unknown> | undefined> {
+  const infos = (await GameInfo.find()) as NodeJS.Dict<unknown>[];
+  const gameInfo = infos.filter((info) => {
+    return (
+      info["authorId"] === getAuthorId(req) && info["gameId"] === getGameId(req)
+    );
+  });
+  switch (gameInfo.length) {
+    case 0:
+      return undefined;
+    case 1:
+      return gameInfo[0];
+    default:
+      throw new Error("同じゲームが複数登録されています");
+      
+  }
+}
+
 function calculateTotalFileSize(
   files: {
     [fieldname: string]: Express.Multer.File[];
@@ -88,7 +115,10 @@ const unityUpload = multer({
 });
 
 export {
+  getAuthorId,
+  getGameId,
   getUnityDir,
+  findGameInfo,
   calculateTotalFileSize,
   unityUpload,
   FIELD_WEBGL,
