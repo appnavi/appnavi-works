@@ -15,6 +15,7 @@ import {
 import {
   URL_PREFIX_GAME,
   DIRECTORY_UPLOADS_DESTINATION,
+  DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
 import { getContentSecurityPolicy } from "../utils/helpers";
 
@@ -139,7 +140,7 @@ async function validateDestination(
       );
       return;
     }
-    await fsExtra.remove(gameDir);
+    await fsExtra.move(gameDir, path.join(DIRECTORY_NAME_BACKUPS, gameDir));
   }
   next();
 }
