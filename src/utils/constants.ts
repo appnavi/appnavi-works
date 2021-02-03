@@ -1,0 +1,18 @@
+const URL_PREFIX_GAME = "/games";
+const URL_PREFIX_PRIVATE = "/private";
+
+const DIRECTORY_UPLOADS_DESTINATION = "uploads";
+
+//srcディレクトリからのフォルダの相対パス
+const DIRECTORY_NAME_PRIVATE = "private";
+const DIRECTORY_NAME_PUBLIC = "public";
+const DIRECTORY_NAME_VIEWS = "views";
+
+export {
+  URL_PREFIX_GAME,
+  URL_PREFIX_PRIVATE,
+  DIRECTORY_UPLOADS_DESTINATION,
+  DIRECTORY_NAME_PRIVATE,
+  DIRECTORY_NAME_PUBLIC,
+  DIRECTORY_NAME_VIEWS,
+};

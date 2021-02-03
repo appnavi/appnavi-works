@@ -4,17 +4,19 @@ import disk from "diskusage";
 import express from "express";
 import fsExtra from "fs-extra";
 import * as yup from "yup";
-import { getContentSecurityPolicy } from "../helpers";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated } from "../services/auth";
 import {
-  DIRECTORY_UPLOADS_DESTINATION,
-  URL_PREFIX_GAME,
   getUnityDir,
   calculateTotalFileSize,
   unityUpload,
   fields,
 } from "../services/upload";
+import {
+  URL_PREFIX_GAME,
+  DIRECTORY_UPLOADS_DESTINATION,
+} from "../utils/constants";
+import { getContentSecurityPolicy } from "../utils/helpers";
 
 interface Locals {
   uploadStartedAt: Date;
@@ -73,7 +75,7 @@ uploadRouter
             return files[name] !== undefined;
           })
           .map(({ name }) =>
-            path.join("/", URL_PREFIX_GAME, getUnityDir(req), name)
+            path.join(URL_PREFIX_GAME, getUnityDir(req), name)
           ),
       });
     }

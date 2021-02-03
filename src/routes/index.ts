@@ -1,6 +1,6 @@
 import express from "express";
-import { getContentSecurityPolicy } from "../helpers";
 import { ensureAuthenticated } from "../services/auth";
+import { getContentSecurityPolicy } from "../utils/helpers";
 
 const indexRouter = express.Router();
 

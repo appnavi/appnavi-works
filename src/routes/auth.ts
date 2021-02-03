@@ -1,8 +1,8 @@
 import express from "express";
 import { passport } from "../app";
-import { getContentSecurityPolicy, getEnv } from "../helpers";
 import * as logger from "../modules/logger";
 import { isAuthenticated, redirect } from "../services/auth";
+import { getContentSecurityPolicy, getEnv } from "../utils/helpers";
 
 const authRouter = express.Router();
 authRouter.use(

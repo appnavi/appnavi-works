@@ -8,14 +8,20 @@ import createError from "http-errors";
 import sassMiddleware from "node-sass-middleware";
 import passport from "passport";
 import { preparePassport } from "./config/passport";
-import { getEnv } from "./helpers";
 import * as logger from "./modules/logger";
 import { authRouter } from "./routes/auth";
 import { gamesRouter } from "./routes/games";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
 import { ensureAuthenticated } from "./services/auth";
-import { URL_PREFIX_GAME } from "./services/upload";
+import {
+  URL_PREFIX_PRIVATE,
+  URL_PREFIX_GAME,
+  DIRECTORY_NAME_PRIVATE,
+  DIRECTORY_NAME_PUBLIC,
+  DIRECTORY_NAME_VIEWS,
+} from "./utils/constants";
+import { getEnv } from "./utils/helpers";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 preparePassport(passport);
@@ -27,7 +33,7 @@ app.use(
 );
 app.use(compression());
 // view engine setup
-app.set("views", path.join(__dirname, "../views"));
+app.set("views", path.join(__dirname, "..", DIRECTORY_NAME_VIEWS));
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(
@@ -48,35 +54,39 @@ app.use(
     level: "info",
   })
 );
-const PATH_PUBLIC_DIRECTORY = "../public";
+const PATH_PUBLIC_DIRECTORY = path.join(__dirname, "..", DIRECTORY_NAME_PUBLIC);
 app.use(
   sassMiddleware({
-    src: path.join(__dirname, PATH_PUBLIC_DIRECTORY),
-    dest: path.join(__dirname, PATH_PUBLIC_DIRECTORY),
+    src: PATH_PUBLIC_DIRECTORY,
+    dest: PATH_PUBLIC_DIRECTORY,
     indentedSyntax: false, // true = .sass and false = .scss
     sourceMap: true,
   }),
-  express.static(path.join(__dirname, PATH_PUBLIC_DIRECTORY))
+  express.static(PATH_PUBLIC_DIRECTORY)
 );
 
-const PATH_PRIVATE_DIRECTORY = "../private";
-const URL_PREFIX_PRIVATE = "private";
+const PATH_PRIVATE_DIRECTORY = path.join(
+  __dirname,
+  "..",
+  DIRECTORY_NAME_PRIVATE
+);
+
 app.use(
-  `/${URL_PREFIX_PRIVATE}`,
+  URL_PREFIX_PRIVATE,
   ensureAuthenticated,
   sassMiddleware({
-    src: path.join(__dirname, PATH_PRIVATE_DIRECTORY),
-    dest: path.join(__dirname, PATH_PRIVATE_DIRECTORY),
+    src: PATH_PRIVATE_DIRECTORY,
+    dest: PATH_PRIVATE_DIRECTORY,
     indentedSyntax: false, // true = .sass and false = .scss
     sourceMap: true,
   }),
-  express.static(path.join(__dirname, PATH_PRIVATE_DIRECTORY))
+  express.static(PATH_PRIVATE_DIRECTORY)
 );
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/upload", uploadRouter);
-app.use(`/${URL_PREFIX_GAME}`, gamesRouter);
+app.use(URL_PREFIX_GAME, gamesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

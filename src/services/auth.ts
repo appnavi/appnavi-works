@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { getEnv } from "../helpers";
+import { getEnv } from "../utils/helpers";
 
 interface SessionData {
   redirect: { url: string };

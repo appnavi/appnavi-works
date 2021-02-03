@@ -2,6 +2,7 @@ import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
 import multer from "multer";
+import { DIRECTORY_UPLOADS_DESTINATION } from "../utils/constants";
 const FIELD_WEBGL = "webgl";
 const FIELD_WINDOWS = "windows";
 const fields = [
@@ -13,8 +14,6 @@ const fields = [
     maxCount: 1,
   },
 ];
-const DIRECTORY_UPLOADS_DESTINATION = "uploads";
-const URL_PREFIX_GAME = "games";
 function getUnityDir(req: express.Request): string {
   const creator_id = req.headers["x-creator-id"] as string;
   const game_id = req.headers["x-game-id"] as string;
@@ -89,8 +88,6 @@ const unityUpload = multer({
 });
 
 export {
-  DIRECTORY_UPLOADS_DESTINATION,
-  URL_PREFIX_GAME,
   getUnityDir,
   calculateTotalFileSize,
   unityUpload,

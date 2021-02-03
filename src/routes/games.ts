@@ -2,9 +2,11 @@ import path from "path";
 import ejs from "ejs";
 import express from "express";
 import serveIndex from "serve-index";
-import { DIRECTORY_UPLOADS_DESTINATION } from "../services/upload";
+import {
+  DIRECTORY_NAME_VIEWS,
+  DIRECTORY_UPLOADS_DESTINATION,
+} from "../utils/constants";
 const gamesRouter = express.Router();
-const viewsDir = path.join(__dirname, "../../views");
 gamesRouter.use(
   express.static(path.join(__dirname, "../..", DIRECTORY_UPLOADS_DESTINATION)),
   serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
@@ -14,7 +16,7 @@ gamesRouter.use(
     ) => {
       ejs
         .renderFile(
-          path.join(viewsDir, "games.ejs"),
+          path.join(__dirname, "../..", DIRECTORY_NAME_VIEWS, "games.ejs"),
           {
             ...locals,
           },
@@ -23,7 +25,7 @@ gamesRouter.use(
           }
         )
         .then((str) =>
-          //エラーが起きなかったら第一引数にnullを渡す仕様なのに、strictNullChecksで怒られるのでignore
+          // エラーが起きなかったら第一引数にnullを渡す仕様なのに、strictNullChecksで怒られるのでignore
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           callback(null, str)
