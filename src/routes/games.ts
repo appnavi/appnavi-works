@@ -23,6 +23,7 @@ gamesRouter.use(
           }
         )
         .then((str) =>
+          //エラーが起きなかったら第一引数にnullを渡す仕様なのに、strictNullChecksで怒られるのでignore
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           callback(null, str)
