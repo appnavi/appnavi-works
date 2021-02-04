@@ -172,7 +172,7 @@ async function validateDestination(
       );
       return;
     }
-    await fsExtra.move(gameDir, path.join(DIRECTORY_NAME_BACKUPS, gameDir));
+    await fsExtra.move(gameDir, path.join(DIRECTORY_NAME_BACKUPS, gameDir), {overwrite: true});
   }
   next();
 }
@@ -218,19 +218,35 @@ function ensureUploadSuccess(
   }
   next();
 }
-async function saveGameInfoToDatabase(
+function saveGameInfoToDatabase(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
   const user = req.user as { user: { id: string } };
-  const g = new GameInfo({
-    creatorId: getCreatorId(req),
-    gameId: getGameId(req),
-    createdBy: user.user.id,
-  });
-  await g.save();
-  next();
+  const creatorId = getCreatorId(req);
+  const gameId = getGameId(req);
+  GameInfo.updateOne(
+    {
+      creatorId: creatorId,
+      gameId:gameId
+    },
+    {
+      $set:{
+        creatorId: creatorId,
+        gameId:gameId,
+        createdBy: user.user.id,
+      }
+    },
+    {upsert:true},
+    (err)=>{
+      if(err){
+        next(err);
+        return;
+      }
+      next();
+    }
+  );
 }
 function logUploadSuccess(
   req: express.Request,
