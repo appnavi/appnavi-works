@@ -24,20 +24,23 @@ import {
 } from "./utils/constants";
 import { getEnv } from "./utils/helpers";
 
-void mongoose.connect(getEnv("DATABASE_URL"), {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(()=>{
-  const db = mongoose.connection;
-  db.once("open", ()=>{
-    logger.system.info("データベースに接続しました。")
-  });
-  db.on("stop", (error)=>{
-    logger.system.error("データベース関連のエラーが発生しました。", error)
+void mongoose
+  .connect(getEnv("DATABASE_URL"), {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-}).catch((error)=>{
-  logger.system.error("データベース関連のエラーが発生しました。", error)
-});
+  .then(() => {
+    const db = mongoose.connection;
+    db.once("open", () => {
+      logger.system.info("データベースに接続しました。");
+    });
+    db.on("stop", (error) => {
+      logger.system.error("データベース関連のエラーが発生しました。", error);
+    });
+  })
+  .catch((error) => {
+    logger.system.error("データベース関連のエラーが発生しました。", error);
+  });
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 preparePassport(passport);

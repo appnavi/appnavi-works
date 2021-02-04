@@ -11,7 +11,7 @@ indexRouter.get(
   getContentSecurityPolicy(),
   ensureAuthenticated,
   function (req, res) {
-    render("index",req,res);
+    render("index", req, res);
   }
 );
 
