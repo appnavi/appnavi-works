@@ -133,11 +133,12 @@ async function preventEditByOtherPerson(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const gameInfo = await findGameInfo(req);
-  if (gameInfo === undefined) {
+  const gameDocument = await findGameInfo(req);
+  if (gameDocument === undefined) {
     next();
     return;
   }
+  const gameInfo = gameDocument.toObject() as Record<string, unknown>;
   const user = req.user as { user: { id: string } };
   const createdBy = gameInfo["createdBy"];
   if (createdBy === user.user.id) {

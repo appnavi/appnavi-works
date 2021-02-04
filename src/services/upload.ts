@@ -1,6 +1,7 @@
 import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
+import { Document } from "mongoose";
 import multer from "multer";
 import { GameInfo } from "../models/database";
 import { DIRECTORY_UPLOADS_DESTINATION } from "../utils/constants";
@@ -28,21 +29,29 @@ function getUnityDir(req: express.Request): string {
 }
 async function findGameInfo(
   req: express.Request
-): Promise<NodeJS.Dict<unknown> | undefined> {
-  const infos = (await GameInfo.find()) as NodeJS.Dict<unknown>[];
-  const gameInfo = infos.filter((info) => {
-    return (
-      info["authorId"] === getAuthorId(req) && info["gameId"] === getGameId(req)
+): Promise<Document | undefined> {
+  const results = await new Promise<Document[]>((resolve, reject) => {
+    GameInfo.find(
+      {
+        authorId: getAuthorId(req),
+        gameId: getGameId(req),
+      },
+      (err, data) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(data);
+      }
     );
   });
-  switch (gameInfo.length) {
+  switch (results.length) {
     case 0:
       return undefined;
     case 1:
-      return gameInfo[0];
+      return results[0];
     default:
       throw new Error("同じゲームが複数登録されています");
-      
   }
 }
 
