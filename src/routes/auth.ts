@@ -67,7 +67,7 @@ authRouter
     const userData = userDocument?.toObject() as Record<string, unknown>;
     console.log(userData?.defaultAuthorId);
     render("auth/profile", req, res, {
-      default_author_id: userData?.defaultAuthorId,
+      defaultAuthorId: userData?.defaultAuthorId,
     });
   })
   .post(ensureAuthenticated, (req, res, next) => {
