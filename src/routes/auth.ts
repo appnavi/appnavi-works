@@ -8,6 +8,7 @@ import {
   isAuthenticated,
   redirect,
 } from "../services/auth";
+import { creatorIdSchema } from "../services/upload";
 import { getContentSecurityPolicy, getEnv, render } from "../utils/helpers";
 
 const authRouter = express.Router();
@@ -68,12 +69,16 @@ authRouter
       defaultCreatorId: defaultCreatorId,
     });
   })
-  .post(ensureAuthenticated, (req, res, next) => {
+  .post(ensureAuthenticated,async (req, res, next) => {
     const defaultCreatorId = (req.body as Record<string, unknown>)[
       "default_creator_id"
     ] as string;
-    if (defaultCreatorId === undefined) {
-      res.status(500).send("デフォルト作者IDが設定されていません。");
+    try{
+      await creatorIdSchema.validate(defaultCreatorId);
+    }catch(e){
+      const err = e as { name: string; errors: string[] };
+      const message = err.errors[0];
+      res.status(500).send(message);
       return;
     }
     const user = req.user as { user: { id: string } };

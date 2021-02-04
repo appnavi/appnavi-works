@@ -3,7 +3,6 @@ import path from "path";
 import disk from "diskusage";
 import express from "express";
 import fsExtra from "fs-extra";
-import * as yup from "yup";
 import { GameInfo } from "../models/database";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
@@ -15,6 +14,7 @@ import {
   getCreatorId,
   getGameId,
   findGameInfo,
+  uploadSchema,
 } from "../services/upload";
 import {
   URL_PREFIX_GAME,
@@ -34,24 +34,6 @@ class UploadError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
-const idRegex = /^[0-9a-z-]+$/;
-const uploadSchema = yup.object({
-  creatorId: yup
-    .string()
-    .matches(
-      idRegex,
-      "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。"
-    )
-    .required("作者IDは必須です。"),
-  gameId: yup
-    .string()
-    .matches(
-      idRegex,
-      "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。"
-    )
-    .required("ゲームIDは必須です。"),
-  overwritesExisting: yup.string().matches(/^(true|false)$/),
-});
 
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);

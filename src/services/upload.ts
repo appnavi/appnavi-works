@@ -3,10 +3,32 @@ import express from "express";
 import fsExtra from "fs-extra";
 import { Document } from "mongoose";
 import multer from "multer";
+import * as yup from "yup";
 import { GameInfo } from "../models/database";
 import { DIRECTORY_UPLOADS_DESTINATION } from "../utils/constants";
 const FIELD_WEBGL = "webgl";
 const FIELD_WINDOWS = "windows";
+const idRegex = /^[0-9a-z-]+$/;
+const creatorIdSchema = yup
+.string()
+.matches(
+  idRegex,
+  "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。"
+)
+.required("作者IDは必須です。");
+const gameIdSchema = yup
+    .string()
+    .matches(
+      idRegex,
+      "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。"
+    )
+    .required("ゲームIDは必須です。");
+const uploadSchema = yup.object({
+  creatorId: creatorIdSchema,
+  gameId: gameIdSchema,
+  overwritesExisting: yup.string().matches(/^(true|false)$/),
+});
+
 const fields = [
   {
     name: FIELD_WEBGL,
@@ -133,4 +155,7 @@ export {
   FIELD_WEBGL,
   FIELD_WINDOWS,
   fields,
+  creatorIdSchema,
+  gameIdSchema,
+  uploadSchema
 };
