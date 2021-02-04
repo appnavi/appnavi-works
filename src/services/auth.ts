@@ -1,5 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import { User } from "../models/database";
 import { getEnv } from "../utils/helpers";
 
 interface SessionData {
@@ -15,6 +16,23 @@ function setRedirect(req: express.Request): void {
     { url: req.originalUrl },
     getEnv("JWT_SECRET")
   );
+}
+async function findUser(
+  req: express.Request
+): Promise<NodeJS.Dict<unknown> | undefined> {
+  const user = req.user as { user: { id: string } };
+  const users = (await User.find()) as NodeJS.Dict<unknown>[];
+  const userData = users.filter((u) => u["id"] == user.user.id);
+  switch (userData.length) {
+    case 0:
+      return undefined;
+    case 1:
+      return userData[0];
+    default:
+      throw new Error(
+        `ユーザー${user.user.id}のデータがデータベースに複数存在します。`
+      );
+  }
 }
 
 function redirect(req: express.Request, res: express.Response): void {
@@ -55,4 +73,4 @@ function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
 }
 
-export { ensureAuthenticated, isAuthenticated, redirect };
+export { ensureAuthenticated, isAuthenticated, redirect, findUser };

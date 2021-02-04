@@ -1,14 +1,20 @@
 import express from "express";
 import { passport } from "../app";
 import * as logger from "../modules/logger";
-import { isAuthenticated, redirect } from "../services/auth";
-import { getContentSecurityPolicy, getEnv } from "../utils/helpers";
+import {
+  ensureAuthenticated,
+  isAuthenticated,
+  redirect,
+} from "../services/auth";
+import { getContentSecurityPolicy, getEnv, render } from "../utils/helpers";
 
 const authRouter = express.Router();
 authRouter.use(
   getContentSecurityPolicy({
     "img-src": [
       "'self'",
+      "secure.gravatar.com",
+      "i0.wp.com",
       "https://api.slack.com/img/sign_in_with_slack.png",
       "https://a.slack-edge.com/80588/img/sign_in_with_slack.png",
     ],
@@ -32,7 +38,6 @@ authRouter.get(
   passport.authenticate("slack", {
     failureRedirect: "/auth/error",
   }),
-  //TODO：ユーザー記録機能実装
   (req, res, next) => {
     const user = req.user as { team: { id: string }; user: { id: string } };
     const workspaceId = user?.team?.id;
@@ -52,6 +57,10 @@ authRouter.get(
     redirect(req, res);
   }
 );
+
+authRouter.route("/profile").get(ensureAuthenticated, (req, res) => {
+  render("auth/profile", req, res);
+});
 
 authRouter.all("/logout", (req, res) => {
   req.session = undefined;

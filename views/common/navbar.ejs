@@ -1,10 +1,23 @@
 <nav>
+  <ul id="navbar-dropdown" class="dropdown-content">
+    <li><a href="/auth/profile">設定</a></li>
+    <li class="divider"></li>
+    <li><a href="/auth/logout">ログアウト</a></li>
+  </ul>
   <div class="nav-wrapper">
     <a class="brand-logo center" href="/">アプリNavi</a>
     <% if (typeof(user) !=="undefined"){ %>
       <ul id="nav-mobile" class="right">
-        <li><a href="/auth/logout"><i class="material-icons left">logout</i>ログアウト</a></li>
+        <li>
+          <a class="navbar-dropdown-trigger valign-wrapper" href="#!" data-target="navbar-dropdown">
+            <img src="<%- user.image_24 %> " alt="User Avatar" class="circle responsive-img navbar-avatar">
+            <%-user.name %> 
+            <i class="material-icons right">arrow_drop_down</i>
+          </a>
+        </li>
       </ul>
+      <link rel="stylesheet" href="/private/stylesheets/navbar.css" />
+      <script src="/private/javascripts/navbar.js" defer></script>
     <% } %>
   </div>
 </nav>

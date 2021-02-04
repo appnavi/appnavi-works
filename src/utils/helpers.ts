@@ -32,6 +32,11 @@ function getContentSecurityPolicy(
         "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js",
         "https://code.jquery.com/jquery-3.5.1.min.js",
       ],
+      "img-src": [
+        "'self'",
+        "secure.gravatar.com",
+        "i0.wp.com",
+      ],  
       ...directives,
     },
   });
@@ -42,9 +47,9 @@ function render(
   res: express.Response,
   options: Record<string, unknown> = {}
 ): void {
-  console.log(req.user);
+  const user = req.user as {user:Record<string, unknown>};
   res.render(view, {
-    user: req.user,
+    user: user.user,
     ...options,
   });
 }
