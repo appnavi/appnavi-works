@@ -61,24 +61,27 @@ authRouter.get(
   }
 );
 
+authRouter.use("/profile", ensureAuthenticated);
+
 authRouter
   .route("/profile")
-  .get(ensureAuthenticated, async (req, res) => {
+  .get(async (req, res) => {
     const defaultCreatorId = await getDefaultCreatorId(req);
     render("auth/profile", req, res, {
       defaultCreatorId: defaultCreatorId,
     });
   })
-  .post(ensureAuthenticated,async (req, res, next) => {
+  .post(async (req, res, next) => {
     const defaultCreatorId = (req.body as Record<string, unknown>)[
       "default_creator_id"
     ] as string;
-    try{
+    res.locals.defaultCreatorId = defaultCreatorId;
+    try {
       await creatorIdSchema.validate(defaultCreatorId);
-    }catch(e){
+    } catch (e) {
       const err = e as { name: string; errors: string[] };
-      const message = err.errors[0];
-      res.status(500).send(message);
+      res.locals.error = err.errors[0];
+      next();
       return;
     }
     const user = req.user as { user: { id: string } };
@@ -97,9 +100,17 @@ authRouter
           next(err);
           return;
         }
-        res.send("OK");
+        next();
       }
     );
+  }, (req,res)=>{
+    const error = res.locals.error as string;
+    const message = error ?? "設定しました。";
+    const defaultCreatorId = res.locals.defaultCreatorId as string;
+    render("auth/profile", req, res, {
+      message: message,
+      defaultCreatorId: defaultCreatorId,
+    });
   });
 
 authRouter.all("/logout", (req, res) => {
