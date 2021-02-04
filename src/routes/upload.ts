@@ -59,9 +59,9 @@ uploadRouter.use(getContentSecurityPolicy());
 
 uploadRouter
   .route("/unity")
-  .get(function (req, res) {
+  .get(async function (req, res) {
     render("upload/unity", req, res, {
-      defaultCreatorId: getDefaultCreatorId(req),
+      defaultCreatorId: await getDefaultCreatorId(req),
     });
   })
   .post(
