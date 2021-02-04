@@ -9,7 +9,7 @@ const gameInfoSchema = new Schema(
     timestamps: true,
   }
 );
-const GameInfo = model("Game", gameInfoSchema);
+const GameModel = model("Game", gameInfoSchema);
 const userSchema = new Schema(
   {
     userId: String,
@@ -19,5 +19,5 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-const User = model("User", userSchema);
-export { GameInfo, User };
+const UserModel = model("UserModel", userSchema);
+export { GameModel, UserModel };

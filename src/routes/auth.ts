@@ -1,6 +1,6 @@
 import express from "express";
 import { passport } from "../app";
-import { User } from "../models/database";
+import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
@@ -71,47 +71,50 @@ authRouter
       defaultCreatorId: defaultCreatorId,
     });
   })
-  .post(async (req, res, next) => {
-    const defaultCreatorId = (req.body as Record<string, unknown>)[
-      "default_creator_id"
-    ] as string;
-    res.locals.defaultCreatorId = defaultCreatorId;
-    try {
-      await creatorIdSchema.validate(defaultCreatorId);
-    } catch (e) {
-      const err = e as { name: string; errors: string[] };
-      res.locals.error = err.errors[0];
-      next();
-      return;
-    }
-    const user = req.user as { user: { id: string } };
-    User.updateOne(
-      {
-        userId: user.user.id,
-      },
-      {
-        $set: {
-          defaultCreatorId: defaultCreatorId,
-        },
-      },
-      { upsert: true },
-      (err) => {
-        if (err) {
-          next(err);
-          return;
-        }
+  .post(
+    async (req, res, next) => {
+      const defaultCreatorId = (req.body as Record<string, unknown>)[
+        "default_creator_id"
+      ] as string;
+      res.locals.defaultCreatorId = defaultCreatorId;
+      try {
+        await creatorIdSchema.validate(defaultCreatorId);
+      } catch (e) {
+        const err = e as { name: string; errors: string[] };
+        res.locals.error = err.errors[0];
         next();
+        return;
       }
-    );
-  }, (req,res)=>{
-    const error = res.locals.error as string;
-    const message = error ?? "設定しました。";
-    const defaultCreatorId = res.locals.defaultCreatorId as string;
-    render("auth/profile", req, res, {
-      message: message,
-      defaultCreatorId: defaultCreatorId,
-    });
-  });
+      const user = req.user as { user: { id: string } };
+      UserModel.updateOne(
+        {
+          userId: user.user.id,
+        },
+        {
+          $set: {
+            defaultCreatorId: defaultCreatorId,
+          },
+        },
+        { upsert: true },
+        (err) => {
+          if (err) {
+            next(err);
+            return;
+          }
+          next();
+        }
+      );
+    },
+    (req, res) => {
+      const error = res.locals.error as string;
+      const message = error ?? "設定しました。";
+      const defaultCreatorId = res.locals.defaultCreatorId as string;
+      render("auth/profile", req, res, {
+        message: message,
+        defaultCreatorId: defaultCreatorId,
+      });
+    }
+  );
 
 authRouter.all("/logout", (req, res) => {
   req.session = undefined;

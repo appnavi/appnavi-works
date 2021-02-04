@@ -4,25 +4,25 @@ import fsExtra from "fs-extra";
 import { Document } from "mongoose";
 import multer from "multer";
 import * as yup from "yup";
-import { GameInfo } from "../models/database";
+import { GameModel } from "../models/database";
 import { DIRECTORY_UPLOADS_DESTINATION } from "../utils/constants";
 const FIELD_WEBGL = "webgl";
 const FIELD_WINDOWS = "windows";
 const idRegex = /^[0-9a-z-]+$/;
 const creatorIdSchema = yup
-.string()
-.matches(
-  idRegex,
-  "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。"
-)
-.required("作者IDは必須です。");
+  .string()
+  .matches(
+    idRegex,
+    "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。"
+  )
+  .required("作者IDは必須です。");
 const gameIdSchema = yup
-    .string()
-    .matches(
-      idRegex,
-      "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。"
-    )
-    .required("ゲームIDは必須です。");
+  .string()
+  .matches(
+    idRegex,
+    "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。"
+  )
+  .required("ゲームIDは必須です。");
 const uploadSchema = yup.object({
   creatorId: creatorIdSchema,
   gameId: gameIdSchema,
@@ -49,11 +49,11 @@ function getUnityDir(req: express.Request): string {
   const game_id = getGameId(req);
   return path.join(creator_id, game_id);
 }
-async function findGameInfo(
+async function findGameInDatabase(
   req: express.Request
 ): Promise<Document | undefined> {
   const results = await new Promise<Document[]>((resolve, reject) => {
-    GameInfo.find(
+    GameModel.find(
       {
         creatorId: getCreatorId(req),
         gameId: getGameId(req),
@@ -149,7 +149,7 @@ export {
   getCreatorId,
   getGameId,
   getUnityDir,
-  findGameInfo,
+  findGameInDatabase,
   calculateTotalFileSize,
   unityUpload,
   FIELD_WEBGL,
@@ -157,5 +157,5 @@ export {
   fields,
   creatorIdSchema,
   gameIdSchema,
-  uploadSchema
+  uploadSchema,
 };

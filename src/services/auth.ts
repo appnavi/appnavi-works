@@ -1,7 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
-import { User } from "../models/database";
+import { UserModel } from "../models/database";
 import { getEnv } from "../utils/helpers";
 
 interface SessionData {
@@ -21,7 +21,7 @@ function setRedirect(req: express.Request): void {
 async function findUser(req: express.Request): Promise<Document | undefined> {
   const user = req.user as { user: { id: string } };
   const results = await new Promise<Document[]>((resolve, reject) => {
-    User.find(
+    UserModel.find(
       {
         userId: user.user.id,
       },

@@ -3,7 +3,7 @@ import path from "path";
 import disk from "diskusage";
 import express from "express";
 import fsExtra from "fs-extra";
-import { GameInfo } from "../models/database";
+import { GameModel } from "../models/database";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import {
@@ -13,7 +13,7 @@ import {
   fields,
   getCreatorId,
   getGameId,
-  findGameInfo,
+  findGameInDatabase,
   uploadSchema,
 } from "../services/upload";
 import {
@@ -54,7 +54,7 @@ uploadRouter
     beforeUpload,
     unityUpload.fields(fields),
     ensureUploadSuccess,
-    saveGameInfoToDatabase,
+    saveGameToDatabase,
     logUploadSuccess,
     (req, res) => {
       res.send({
@@ -117,14 +117,14 @@ async function preventEditByOtherPerson(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const gameDocument = await findGameInfo(req);
+  const gameDocument = await findGameInDatabase(req);
   if (gameDocument === undefined) {
     next();
     return;
   }
-  const gameInfo = gameDocument.toObject() as Record<string, unknown>;
+  const game = gameDocument.toObject() as Record<string, unknown>;
   const user = req.user as { user: { id: string } };
-  const createdBy = gameInfo["createdBy"];
+  const createdBy = game["createdBy"];
   if (createdBy === user.user.id) {
     next();
     return;
@@ -202,7 +202,7 @@ function ensureUploadSuccess(
   }
   next();
 }
-function saveGameInfoToDatabase(
+function saveGameToDatabase(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
@@ -210,7 +210,7 @@ function saveGameInfoToDatabase(
   const user = req.user as { user: { id: string } };
   const creatorId = getCreatorId(req);
   const gameId = getGameId(req);
-  GameInfo.updateOne(
+  GameModel.updateOne(
     {
       creatorId: creatorId,
       gameId: gameId,
