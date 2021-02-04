@@ -172,7 +172,9 @@ async function validateDestination(
       );
       return;
     }
-    await fsExtra.move(gameDir, path.join(DIRECTORY_NAME_BACKUPS, gameDir), {overwrite: true});
+    await fsExtra.move(gameDir, path.join(DIRECTORY_NAME_BACKUPS, gameDir), {
+      overwrite: true,
+    });
   }
   next();
 }
@@ -229,18 +231,18 @@ function saveGameInfoToDatabase(
   GameInfo.updateOne(
     {
       creatorId: creatorId,
-      gameId:gameId
+      gameId: gameId,
     },
     {
-      $set:{
+      $set: {
         creatorId: creatorId,
-        gameId:gameId,
+        gameId: gameId,
         createdBy: user.user.id,
-      }
+      },
     },
-    {upsert:true},
-    (err)=>{
-      if(err){
+    { upsert: true },
+    (err) => {
+      if (err) {
         next(err);
         return;
       }
