@@ -4,7 +4,7 @@ import { User } from "../models/database";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
-  findUser,
+  getDefaultAuthorId,
   isAuthenticated,
   redirect,
 } from "../services/auth";
@@ -63,11 +63,9 @@ authRouter.get(
 authRouter
   .route("/profile")
   .get(ensureAuthenticated, async (req, res) => {
-    const userDocument = await findUser(req);
-    const userData = userDocument?.toObject() as Record<string, unknown>;
-    console.log(userData?.defaultAuthorId);
+    const defaultAuthorId = await getDefaultAuthorId(req);
     render("auth/profile", req, res, {
-      defaultAuthorId: userData?.defaultAuthorId,
+      defaultAuthorId: defaultAuthorId,
     });
   })
   .post(ensureAuthenticated, (req, res, next) => {
