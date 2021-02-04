@@ -75,7 +75,7 @@ authRouter
       "default_author_id"
     ] as string;
     if (defaultAuthorId === undefined) {
-      res.status(500).send("デフォルト著者IDが設定されていません。");
+      res.status(500).send("デフォルト作者IDが設定されていません。");
       return;
     }
     const user = req.user as { user: { id: string } };
