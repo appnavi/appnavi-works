@@ -24,7 +24,7 @@ authRouter.get("/", function (req, res) {
     res.redirect("/");
     return;
   }
-  res.render("login");
+  res.render("auth/login");
 });
 authRouter.get("/slack", passport.authenticate("slack"));
 authRouter.get(
