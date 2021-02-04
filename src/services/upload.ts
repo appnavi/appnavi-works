@@ -16,14 +16,14 @@ const fields = [
     maxCount: 1,
   },
 ];
-function getAuthorId(req: express.Request): string {
+function getCreatorId(req: express.Request): string {
   return req.headers["x-creator-id"] as string;
 }
 function getGameId(req: express.Request): string {
   return req.headers["x-game-id"] as string;
 }
 function getUnityDir(req: express.Request): string {
-  const creator_id = getAuthorId(req);
+  const creator_id = getCreatorId(req);
   const game_id = getGameId(req);
   return path.join(creator_id, game_id);
 }
@@ -33,7 +33,7 @@ async function findGameInfo(
   const results = await new Promise<Document[]>((resolve, reject) => {
     GameInfo.find(
       {
-        authorId: getAuthorId(req),
+        creatorId: getCreatorId(req),
         gameId: getGameId(req),
       },
       (err, data) => {
@@ -124,7 +124,7 @@ const unityUpload = multer({
 });
 
 export {
-  getAuthorId,
+  getCreatorId,
   getGameId,
   getUnityDir,
   findGameInfo,

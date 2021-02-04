@@ -4,7 +4,7 @@ import { User } from "../models/database";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
-  getDefaultAuthorId,
+  getDefaultCreatorId,
   isAuthenticated,
   redirect,
 } from "../services/auth";
@@ -63,16 +63,16 @@ authRouter.get(
 authRouter
   .route("/profile")
   .get(ensureAuthenticated, async (req, res) => {
-    const defaultAuthorId = await getDefaultAuthorId(req);
+    const defaultCreatorId = await getDefaultCreatorId(req);
     render("auth/profile", req, res, {
-      defaultAuthorId: defaultAuthorId,
+      defaultCreatorId: defaultCreatorId,
     });
   })
   .post(ensureAuthenticated, (req, res, next) => {
-    const defaultAuthorId = (req.body as Record<string, unknown>)[
-      "default_author_id"
+    const defaultCreatorId = (req.body as Record<string, unknown>)[
+      "default_creator_id"
     ] as string;
-    if (defaultAuthorId === undefined) {
+    if (defaultCreatorId === undefined) {
       res.status(500).send("デフォルト作者IDが設定されていません。");
       return;
     }
@@ -83,7 +83,7 @@ authRouter
       },
       {
         $set: {
-          defaultAuthorId: defaultAuthorId,
+          defaultCreatorId: defaultCreatorId,
         },
       },
       { upsert: true },

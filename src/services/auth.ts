@@ -43,12 +43,12 @@ async function findUser(req: express.Request): Promise<Document | undefined> {
       throw new Error("同じユーザーが複数登録されています");
   }
 }
-async function getDefaultAuthorId(
+async function getDefaultCreatorId(
   req: express.Request
 ): Promise<string | undefined> {
   const userDocument = await findUser(req);
   const userData = userDocument?.toObject() as Record<string, unknown>;
-  return userData?.defaultAuthorId as string;
+  return userData?.defaultCreatorId as string;
 }
 function redirect(req: express.Request, res: express.Response): void {
   const session = req.session as SessionData;
@@ -93,5 +93,5 @@ export {
   isAuthenticated,
   redirect,
   findUser,
-  getDefaultAuthorId,
+  getDefaultCreatorId,
 };

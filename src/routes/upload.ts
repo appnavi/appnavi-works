@@ -6,13 +6,13 @@ import fsExtra from "fs-extra";
 import * as yup from "yup";
 import { GameInfo } from "../models/database";
 import * as logger from "../modules/logger";
-import { ensureAuthenticated } from "../services/auth";
+import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import {
   getUnityDir,
   calculateTotalFileSize,
   unityUpload,
   fields,
-  getAuthorId,
+  getCreatorId,
   getGameId,
   findGameInfo,
 } from "../services/upload";
@@ -60,7 +60,9 @@ uploadRouter.use(getContentSecurityPolicy());
 uploadRouter
   .route("/unity")
   .get(function (req, res) {
-    render("upload/unity", req, res);
+    render("upload/unity", req, res, {
+      defaultCreatorId: getDefaultCreatorId(req),
+    });
   })
   .post(
     validateParams,
@@ -109,7 +111,7 @@ function validateParams(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const creatorId = getAuthorId(req);
+  const creatorId = getCreatorId(req);
   const gameId = getGameId(req);
   const overwritesExisting = req.headers["x-overwrites-existing"];
 
@@ -223,7 +225,7 @@ async function saveGameInfoToDatabase(
 ) {
   const user = req.user as { user: { id: string } };
   const g = new GameInfo({
-    authorId: getAuthorId(req),
+    creatorId: getCreatorId(req),
     gameId: getGameId(req),
     createdBy: user.user.id,
   });

@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 const gameInfoSchema = new Schema(
   {
-    authorId: String,
+    creatorId: String,
     gameId: String,
     createdBy: String,
   },
@@ -13,7 +13,7 @@ const GameInfo = model("Game", gameInfoSchema);
 const userSchema = new Schema(
   {
     userId: String,
-    defaultAuthorId: String,
+    defaultCreatorId: String,
   },
   {
     timestamps: true,
