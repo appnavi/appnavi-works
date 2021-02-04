@@ -77,8 +77,8 @@ function onFilesDropped(type, input) {
     preview.innerHTML = "" + type;
     var filePaths = [];
     if (input.webkitdirectory) {
-        var files = (_a = input.files) !== null && _a !== void 0 ? _a : new FileList();
         onMultipleFilesDropped(type, input);
+        var files = (_a = input.files) !== null && _a !== void 0 ? _a : new FileList();
         Array.from(files).forEach(function (file) {
             filePaths.push(file.webkitRelativePath.replace(/^[^\/]+\//, ""));
         });
