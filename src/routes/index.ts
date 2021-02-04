@@ -1,6 +1,6 @@
 import express from "express";
 import { ensureAuthenticated } from "../services/auth";
-import { getContentSecurityPolicy } from "../utils/helpers";
+import { getContentSecurityPolicy, render } from "../utils/helpers";
 
 const indexRouter = express.Router();
 
@@ -11,7 +11,7 @@ indexRouter.get(
   getContentSecurityPolicy(),
   ensureAuthenticated,
   function (req, res) {
-    res.render("index");
+    render("index",req,res);
   }
 );
 

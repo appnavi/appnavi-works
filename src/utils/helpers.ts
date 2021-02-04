@@ -36,4 +36,16 @@ function getContentSecurityPolicy(
     },
   });
 }
-export { getEnv, getContentSecurityPolicy };
+function render(
+  view: string,
+  req: express.Request,
+  res: express.Response,
+  options: Record<string, unknown> = {}
+): void {
+  console.log(req.user);
+  res.render(view, {
+    user: req.user,
+    ...options,
+  });
+}
+export { getEnv, getContentSecurityPolicy, render };

@@ -21,7 +21,7 @@ import {
   DIRECTORY_UPLOADS_DESTINATION,
   DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
-import { getContentSecurityPolicy } from "../utils/helpers";
+import { getContentSecurityPolicy, render } from "../utils/helpers";
 
 interface Locals {
   uploadStartedAt: Date;
@@ -60,7 +60,7 @@ uploadRouter.use(getContentSecurityPolicy());
 uploadRouter
   .route("/unity")
   .get(function (req, res) {
-    res.render("upload/unity");
+    render("upload/unity", req,res);
   })
   .post(
     validateParams,
