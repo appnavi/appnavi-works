@@ -1,8 +1,10 @@
 import express from "express";
 import { passport } from "../app";
+import { User } from "../models/database";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
+  findUser,
   isAuthenticated,
   redirect,
 } from "../services/auth";
@@ -58,9 +60,44 @@ authRouter.get(
   }
 );
 
-authRouter.route("/profile").get(ensureAuthenticated, (req, res) => {
-  render("auth/profile", req, res);
-});
+authRouter
+  .route("/profile")
+  .get(ensureAuthenticated, async (req, res) => {
+    const userDocument = await findUser(req);
+    const userData = userDocument?.toObject() as Record<string, unknown>;
+    console.log(userData?.defaultAuthorId);
+    render("auth/profile", req, res, {
+      default_author_id: userData?.defaultAuthorId,
+    });
+  })
+  .post(ensureAuthenticated, (req, res, next) => {
+    const defaultAuthorId = (req.body as Record<string, unknown>)[
+      "default_author_id"
+    ] as string;
+    if (defaultAuthorId === undefined) {
+      res.status(500).send("デフォルト著者IDが設定されていません。");
+      return;
+    }
+    const user = req.user as { user: { id: string } };
+    User.updateOne(
+      {
+        userId: user.user.id,
+      },
+      {
+        $set: {
+          defaultAuthorId: defaultAuthorId,
+        },
+      },
+      { upsert: true },
+      (err) => {
+        if (err) {
+          next(err);
+          return;
+        }
+        res.send("OK");
+      }
+    );
+  });
 
 authRouter.all("/logout", (req, res) => {
   req.session = undefined;

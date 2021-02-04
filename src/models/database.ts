@@ -8,7 +8,7 @@ const gameInfoSchema = new Schema({
 });
 const GameInfo = model("Game", gameInfoSchema);
 const userSchema = new Schema({
-  id: String,
+  userId: String,
   defaultAuthorId: String,
 }, {
   timestamps: true

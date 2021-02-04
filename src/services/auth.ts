@@ -1,5 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import { Document } from "mongoose";
 import { User } from "../models/database";
 import { getEnv } from "../utils/helpers";
 
@@ -19,19 +20,29 @@ function setRedirect(req: express.Request): void {
 }
 async function findUser(
   req: express.Request
-): Promise<NodeJS.Dict<unknown> | undefined> {
+): Promise<Document | undefined> {
   const user = req.user as { user: { id: string } };
-  const users = (await User.find()) as NodeJS.Dict<unknown>[];
-  const userData = users.filter((u) => u["id"] == user.user.id);
-  switch (userData.length) {
+  const results = await new Promise<Document[]>((resolve, reject)=>{
+    User.find(
+      {
+        userId: user.user.id
+      },
+      (err,data)=>{
+        if(err){
+          reject(err);
+          return;
+        }
+        resolve(data);
+      }
+    )
+  });
+  switch(results.length){
     case 0:
       return undefined;
-    case 1:
-      return userData[0];
-    default:
-      throw new Error(
-        `ユーザー${user.user.id}のデータがデータベースに複数存在します。`
-      );
+      case 1:
+        return results[0];
+        default:
+          throw new Error("同じユーザーが複数登録されています");
   }
 }
 
