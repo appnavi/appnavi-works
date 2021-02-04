@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-const gameInfoSchema = new Schema(
+const gameSchema = new Schema(
   {
     creatorId: String,
     gameId: String,
@@ -9,7 +9,7 @@ const gameInfoSchema = new Schema(
     timestamps: true,
   }
 );
-const GameModel = model("Game", gameInfoSchema);
+const GameModel = model("Game", gameSchema);
 const userSchema = new Schema(
   {
     userId: String,
@@ -19,5 +19,5 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-const UserModel = model("UserModel", userSchema);
+const UserModel = model("User", userSchema);
 export { GameModel, UserModel };
