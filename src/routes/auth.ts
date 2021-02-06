@@ -1,6 +1,7 @@
 import express from "express";
 import { passport } from "../app";
 import { UserModel } from "../models/database";
+import { SlackUser } from "../models/slack_user";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
@@ -42,7 +43,8 @@ authRouter.get(
     failureRedirect: "/auth/error",
   }),
   (req, res, next) => {
-    const user = req.user as { team: { id: string }; user: { id: string } };
+    console.log(req.user);
+    const user = req.user as SlackUser;
     const workspaceId = user?.team?.id;
     if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
       logger.system.error(
@@ -85,7 +87,7 @@ authRouter
         next();
         return;
       }
-      const user = req.user as { user: { id: string } };
+      const user = req.user as SlackUser;
       UserModel.updateOne(
         {
           userId: user.user.id,

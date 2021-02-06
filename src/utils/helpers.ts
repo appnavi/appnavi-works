@@ -1,5 +1,6 @@
 import express from "express";
 import helmet from "helmet";
+import { SlackUser } from "../models/slack_user";
 
 type EnvKey =
   | "SLACK_CLIENT_ID"
@@ -43,7 +44,7 @@ function render(
   res: express.Response,
   options: Record<string, unknown> = {}
 ): void {
-  const user = req.user as { user: Record<string, unknown> };
+  const user = req.user as SlackUser;
   res.render(view, {
     user: user.user,
     ...options,
