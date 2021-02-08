@@ -14,6 +14,27 @@
   - 📁[stylesheets](#publicstylesheets)  
     - 📁[fontawesome-free-5.15.1-web](#publicstylesheetsfontawesome-free-5151-web)  
 - 📁[src](#src)  
+  - 📁[bin](#srcbin)  
+    - [www.ts](#srcbinwwwts)
+  - 📁[config](#srcconfig)  
+    - [passport.js](#srcconfigpassportjs)  
+  - 📁[models](#srcmodels)  
+    - [database.ts](#srcmodelsdatabasets)  
+    - [slack_user.ts](#srcmodelsslack_userts)  
+  - 📁[modules](#srcmodules)  
+    - [logger.ts](#srcmodulesloggerts)  
+  - 📁[routes](#srcroutes)  
+    - [auth.ts](#srcroutesauthts)  
+    - [games.ts](#srcroutesgamests)  
+    - [index.ts](#srcroutesindexts)  
+    - [upload.ts](#srcroutesuploadts)  
+  - 📁[services](#srcservices)  
+    - [auth.ts](#srcservicesauthts)  
+    - [upload.ts](#srcservicesuploadts)
+  - 📁[utils](#srcutils)  
+    - [constants.ts](#srcutilsconstantsts)  
+    - [helpers.ts](#srcutilshelpersts)  
+  - [app.ts](#srcappts)  
 - 📁[src_browser](#src_browser)  
 - 📁[uploads](#uploads)  
 - 📁[views](#views)  
@@ -80,6 +101,79 @@ scssファイルを編集すれば、同名のcssファイルにアクセスし�
 Expressアプリケーションのソースコード(Typescript&Javascript)
 
 `yarn build:server`コマンドにより、生成されたJavascirptコードが[dist](#dist)フォルダーに格納される
+
+### 📁src/bin
+
+#### src/bin/www.ts
+
+[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートコード。
+唯一の変更点として、2行目でdotenvを使い環境変数を読み込んでいる。
+
+### 📁src/config
+
+#### src/config/passport.js
+
+[async-passport-slack](https://www.npmjs.com/package/async-passport-slack)を読み込み、Sign In With Slack V2に対応するための修正を加える。
+
+### 📁src/models
+
+#### src/models/database.ts
+
+MongoDBで保存するデータに関するオブジェクトの定義。
+
+#### src/models/slack_user.ts
+
+[passport](https://www.npmjs.com/package/passport)&[async-passport-slack](https://www.npmjs.com/package/async-passport-slack)によって追加されるrequest.userの型を定義。
+
+### 📁src/modules
+
+#### src/modules/logger.ts
+
+[log4js](https://www.npmjs.com/package/log4js)によるロギングの定義。
+
+### 📁src/routes
+
+express.routerの定義。
+
+#### src/routes/auth.ts
+
+`/auth/*`でアクセスできるroute。
+
+#### src/routes/games.ts
+
+`/games/*`でアクセスできるroute。
+
+#### src/routes/index.ts
+
+`/`でアクセスできるroute。ログイン必須。
+
+#### src/routes/upload.ts
+
+`/upload/*`でアクセスできるroute。ログイン必須。
+
+### 📁src/services
+
+#### src/services/auth.ts
+
+認証関連の関数などを定義。
+
+#### src/services/upload.ts
+
+ゲームアップロード関連の関数などを定義。
+
+### 📁src/utils
+
+#### src/utils/constants.ts
+
+定数の定義。
+
+#### src/utils/helpers.ts
+
+ヘルパー関数の定義。
+
+### src/app.ts
+
+expressアプリケーションの定義。
 
 ## 📁src_browser
 
