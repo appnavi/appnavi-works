@@ -17,6 +17,7 @@
 - 📁[src_browser](#src_browser)  
 - 📁[uploads](#uploads)  
 - 📁[views](#views)  
+- [.env](#env)
 
 ---
 
@@ -97,3 +98,16 @@ Expressアプリケーションのソースコード(Typescript&Javascript)
 このレポジトリーで使われているejsファイルを格納するフォルダー
 
 ejsはhtmlに条件分岐、変数の内容表示など、機能を拡張したファイル
+
+## .env
+
+環境変数を格納するファイル。バージョン管理対象外である。
+
+- `SLACK_CLIENT_ID`：Slack AppのClient ID。
+- `SLACK_CLIENT_SECRET`：Slack AppのClient Secret。
+- `SLACK_REDIRECT_URI`：Slack AppのRedirect URI。Slack Appのページで設定するだけで動作するので、現状使っていない。
+- `SLACK_WORKSPACE_ID`：ログインを認めるWorkspaceのID。Sign In With Slackは、作成したWorkspaceしかログインできないと思われるが、フェイルセーフとして導入
+- `COOKIE_NAME`：Cookieを利用するための設定。
+- `COOKIE_KEYS`：Cookieを利用するための設定。
+- `JWT_SECRET`：JsonWebTokenによる暗号化に必要なsecretも文字列。
+- `DATABASE_URL`：MongoDBを使用するためのURL。
