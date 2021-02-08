@@ -43,7 +43,6 @@ authRouter.get(
     failureRedirect: "/auth/error",
   }),
   (req, res, next) => {
-    console.log(req.user);
     const user = req.user as SlackUser;
     const workspaceId = user?.team?.id;
     if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
