@@ -10,19 +10,13 @@
 - 📁[private](#private)  
   - 📁[javascripts](#privatejavascripts)  
   - 📁[stylesheets](#privatestylesheets)  
-    - 📁[upload](#privatestylesheetsupload)  
 - 📁[public](#public)  
   - 📁[stylesheets](#publicstylesheets)  
     - 📁[fontawesome-free-5.15.1-web](#publicstylesheetsfontawesome-free-5151-web)  
 - 📁[src](#src)  
 - 📁[src_browser](#src_browser)  
-  - 📁[private](#src_browserprivate)  
-    - 📁[javascripts](#src_browserprivatejavascripts)  
-      - 📁[uploads](#uploads)  
+- 📁[uploads](#uploads)  
 - 📁[views](#views)  
-  - 📁[auth](#viewsauth)  
-  - 📁[common](#viewscommon)  
-  - 📁[upload](#viewsupload)  
 
 ---
 
