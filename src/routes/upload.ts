@@ -206,23 +206,26 @@ function createMetadata(
   const locals = res.locals as Locals;
   const uploadStartedAt = locals.uploadStartedAt;
   const uploadEndedAt = new Date();
-  locals.uploadEndedAt = uploadEndedAt;
-  locals.elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
-  locals.creatorId = getCreatorId(req);
-  locals.gameId = getGameId(req);
-  locals.createdBy = req.user?.user.id ?? "";
-  locals.paths = fields
-    .filter(({ name }) => {
-      const files = req.files as {
-        [fieldname: string]: Express.Multer.File[];
-      };
-      return files[name] !== undefined;
-    })
-    .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name));
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
   };
-  locals.totalFileSize = calculateTotalFileSize(files, fields);
+  res.locals = {
+    uploadStartedAt: uploadStartedAt,
+    uploadEndedAt: uploadEndedAt,
+    elapsedMillis: uploadEndedAt.getTime() - uploadStartedAt.getTime(),
+    creatorId: getCreatorId(req),
+    gameId: getGameId(req),
+    createdBy: req.user?.user.id ?? "",
+    paths: fields
+      .filter(({ name }) => {
+        const files = req.files as {
+          [fieldname: string]: Express.Multer.File[];
+        };
+        return files[name] !== undefined;
+      })
+      .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name)),
+    totalFileSize: calculateTotalFileSize(files, fields),
+  } as Locals;
   next();
 }
 function saveToDatabase(
