@@ -26,6 +26,13 @@ import { getContentSecurityPolicy, render } from "../utils/helpers";
 
 interface Locals {
   uploadStartedAt: Date;
+  uploadEndedAt: Date;
+  elapsedMillis: number;
+  creatorId: string;
+  gameId: string;
+  createdBy: string;
+  paths: string[];
+  totalFileSize: number;
 }
 class UploadError extends Error {
   constructor(message: string, public params: unknown[]) {
@@ -55,20 +62,13 @@ uploadRouter
     beforeUpload,
     unityUpload.fields(fields),
     ensureUploadSuccess,
-    saveGameToDatabase,
+    createMetadata,
+    saveToDatabase,
     logUploadSuccess,
     (req, res) => {
+      const locals = res.locals as Locals;
       res.send({
-        paths: fields
-          .filter(({ name }) => {
-            const files = req.files as {
-              [fieldname: string]: Express.Multer.File[];
-            };
-            return files[name] !== undefined;
-          })
-          .map(({ name }) =>
-            path.join(URL_PREFIX_GAME, getUnityDir(req), name)
-          ),
+        paths: locals.paths,
       });
     }
   );
@@ -181,7 +181,8 @@ function beforeUpload(
   res: express.Response,
   next: express.NextFunction
 ) {
-  (res.locals as Locals).uploadStartedAt = new Date();
+  const locals = res.locals as Locals;
+  locals.uploadStartedAt = new Date();
   next();
 }
 function ensureUploadSuccess(
@@ -197,24 +198,46 @@ function ensureUploadSuccess(
   }
   next();
 }
-function saveGameToDatabase(
+function createMetadata(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
-  const creatorId = getCreatorId(req);
-  const gameId = getGameId(req);
+  const locals = res.locals as Locals;
+  const uploadStartedAt = locals.uploadStartedAt;
+  const uploadEndedAt = new Date();
+  locals.uploadEndedAt = uploadEndedAt;
+  locals.elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
+  locals.creatorId = getCreatorId(req);
+  locals.gameId = getGameId(req);
+  locals.createdBy = req.user?.user.id ?? "";
+  locals.paths = fields
+    .filter(({ name }) => {
+      const files = req.files as {
+        [fieldname: string]: Express.Multer.File[];
+      };
+      return files[name] !== undefined;
+    })
+    .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name));
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  locals.totalFileSize = calculateTotalFileSize(files, fields);
+  next();
+}
+function saveToDatabase(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const locals = res.locals as Locals;
   GameModel.updateOne(
     {
-      creatorId: creatorId,
-      gameId: gameId,
+      creatorId: locals.creatorId,
+      gameId: locals.gameId,
     },
     {
-      $set: {
-        creatorId: creatorId,
-        gameId: gameId,
-        createdBy: req.user?.user.id,
-      },
+      $set: locals,
     },
     { upsert: true },
     (err) => {
@@ -231,19 +254,8 @@ function logUploadSuccess(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const uploadStartedAt = (res.locals as Locals).uploadStartedAt;
-  const uploadEndedAt = new Date();
-  const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
-  const files = req.files as {
-    [fieldname: string]: Express.Multer.File[];
-  };
-  const totalFileSize = calculateTotalFileSize(files, fields);
-  logger.system.info(
-    "アップロード成功",
-    getUnityDir(req),
-    `${elapsedMillis}ms`,
-    `${totalFileSize}bytes`
-  );
+  const locals = res.locals as Locals;
+  logger.system.info("アップロード成功", locals);
   next();
 }
 export { uploadRouter };

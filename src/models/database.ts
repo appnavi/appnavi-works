@@ -1,9 +1,14 @@
 import * as mongoose  from "mongoose";
 const gameSchema = new mongoose.Schema(
   {
+    uploadStartedAt: Date,
+    uploadEndedAt: Date,
+    elapsedMillis: Number,  
     creatorId: String,
     gameId: String,
     createdBy: String,
+    paths: [String],
+    totalFileSize: Number,
   },
   {
     timestamps: true,
