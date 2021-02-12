@@ -2,7 +2,6 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
 import { UserModel } from "../models/database";
-import { SlackUser } from "../models/slack_user";
 import { getEnv } from "../utils/helpers";
 
 interface SessionData {
@@ -20,11 +19,10 @@ function setRedirect(req: express.Request): void {
   );
 }
 async function findUser(req: express.Request): Promise<Document | undefined> {
-  const user = req.user as SlackUser;
   const results = await new Promise<Document[]>((resolve, reject) => {
     UserModel.find(
       {
-        userId: user.user.id,
+        userId: req.user?.user.id,
       },
       (err, data) => {
         if (err) {

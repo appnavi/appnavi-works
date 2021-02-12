@@ -4,7 +4,6 @@ import disk from "diskusage";
 import express from "express";
 import fsExtra from "fs-extra";
 import { GameModel } from "../models/database";
-import { SlackUser } from "../models/slack_user";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import {
@@ -125,9 +124,8 @@ async function preventEditByOtherPerson(
     return;
   }
   const game = gameDocument.toObject() as Record<string, unknown>;
-  const user = req.user as SlackUser;
   const createdBy = game["createdBy"];
-  if (createdBy === user.user.id) {
+  if (createdBy === req.user?.user.id) {
     next();
     return;
   }
@@ -204,7 +202,6 @@ function saveGameToDatabase(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const user = req.user as SlackUser;
   const creatorId = getCreatorId(req);
   const gameId = getGameId(req);
   GameModel.updateOne(
@@ -216,7 +213,7 @@ function saveGameToDatabase(
       $set: {
         creatorId: creatorId,
         gameId: gameId,
-        createdBy: user.user.id,
+        createdBy: req.user?.user.id,
       },
     },
     { upsert: true },

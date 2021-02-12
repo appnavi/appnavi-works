@@ -1,7 +1,6 @@
 import express from "express";
 import { passport } from "../app";
 import { UserModel } from "../models/database";
-import { SlackUser } from "../models/slack_user";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
@@ -43,17 +42,16 @@ authRouter.get(
     failureRedirect: "/auth/error",
   }),
   (req, res, next) => {
-    const user = req.user as SlackUser;
-    const workspaceId = user?.team?.id;
+    const workspaceId = req.user?.team?.id;
     if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
       logger.system.error(
-        `違うワークスペース${workspaceId}の人がログインしようとしました。`
+        `違うワークスペース${workspaceId ?? ""}の人がログインしようとしました。`
       );
       res.send("認証に失敗しました。").status(403).end();
       return;
     }
     logger.system.info(
-      `ユーザー${user.user.id}がSlack認証でログインしました。`
+      `ユーザー${req.user?.user.id ?? ""}がSlack認証でログインしました。`
     );
     next();
   },
@@ -86,10 +84,9 @@ authRouter
         next();
         return;
       }
-      const user = req.user as SlackUser;
       UserModel.updateOne(
         {
-          userId: user.user.id,
+          userId: req.user?.user.id,
         },
         {
           $set: {
