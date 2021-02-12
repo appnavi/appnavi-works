@@ -1,5 +1,5 @@
-import { Schema, model } from "mongoose";
-const gameSchema = new Schema(
+import * as mongoose  from "mongoose";
+const gameSchema = new mongoose.Schema(
   {
     creatorId: String,
     gameId: String,
@@ -9,8 +9,8 @@ const gameSchema = new Schema(
     timestamps: true,
   }
 );
-const GameModel = model("Game", gameSchema);
-const userSchema = new Schema(
+const GameModel = mongoose.model("Game", gameSchema);
+const userSchema = new mongoose.Schema(
   {
     userId: String,
     defaultCreatorId: String,
@@ -19,5 +19,5 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-const UserModel = model("User", userSchema);
+const UserModel = mongoose.model("User", userSchema);
 export { GameModel, UserModel };
