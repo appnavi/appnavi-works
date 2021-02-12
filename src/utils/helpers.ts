@@ -44,7 +44,7 @@ function render(
   options: Record<string, unknown> = {}
 ): void {
   res.render(view, {
-    user: req.user,
+    user: req.user?.user,
     ...options,
   });
 }
