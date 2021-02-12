@@ -16,6 +16,7 @@ import {
   getGameId,
   findGameInDatabase,
   uploadSchema,
+  getOverwritesExisting,
 } from "../services/upload";
 import {
   URL_PREFIX_GAME,
@@ -96,7 +97,7 @@ function validateParams(
 ) {
   const creatorId = getCreatorId(req);
   const gameId = getGameId(req);
-  const overwritesExisting = req.headers["x-overwrites-existing"];
+  const overwritesExisting = getOverwritesExisting(req);
 
   uploadSchema
     .validate({
@@ -145,8 +146,7 @@ async function validateDestination(
   const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
   const exists = await fsExtra.pathExists(gameDir);
   if (exists) {
-    const overwritesExisting = req.headers["x-overwrites-existing"] as string;
-    if (overwritesExisting !== "true") {
+    if (!getOverwritesExisting(req)) {
       next(
         new UploadError(
           "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
@@ -191,11 +191,7 @@ function ensureUploadSuccess(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const files =
-    (req.files as {
-      [fieldname: string]: Express.Multer.File[];
-    }) ?? {};
-  if (Object.keys(files).length == 0) {
+  if (Object.keys(req.files ?? {}).length === 0) {
     next({
       message: "アップロードするファイルがありません。",
     });

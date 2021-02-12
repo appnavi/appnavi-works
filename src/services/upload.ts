@@ -26,7 +26,7 @@ const gameIdSchema = yup
 const uploadSchema = yup.object({
   creatorId: creatorIdSchema,
   gameId: gameIdSchema,
-  overwritesExisting: yup.string().matches(/^(true|false)$/),
+  overwritesExisting: yup.boolean(),
 });
 
 const fields = [
@@ -43,6 +43,9 @@ function getCreatorId(req: express.Request): string {
 }
 function getGameId(req: express.Request): string {
   return req.headers["x-game-id"] as string;
+}
+function getOverwritesExisting(req: express.Request): boolean{
+  return req.headers["x-overwrites-existing"] === "true";
 }
 function getUnityDir(req: express.Request): string {
   const creator_id = getCreatorId(req);
@@ -149,6 +152,7 @@ export {
   getCreatorId,
   getGameId,
   getUnityDir,
+  getOverwritesExisting,
   findGameInDatabase,
   calculateTotalFileSize,
   unityUpload,
