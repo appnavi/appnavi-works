@@ -6,6 +6,10 @@ services:
     command: "node dist/bin/www.js"
     ports:
       - "3000:3000"
+    volumes: 
+      - ./uploads:/app/uploads
+      - ./backups:/app/backups
+      - ./logs:/app/logs
     depends_on:
       - "mongo"
   mongo:
