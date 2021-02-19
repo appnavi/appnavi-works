@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=production forever start ./dist/bin/www.js",
+    "start": "run-s build run",
+    "run": "node ./dist/bin/www.js",
     "dev": "run-p dev:*",
-    "dev:server": "cross-env NODE_ENV=development nodemon ./src/bin/www",
+    "dev:server": "nodemon ./src/bin/www",
     "dev:browser": "tsc -p tsconfig.browser.json -w",
     "build": "run-s build:*",
     "build:server": "tsc -p tsconfig.json",
@@ -69,13 +70,13 @@
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
-    "cross-env": "^7.0.3",
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
-    "forever": "^3.0.4",
+    "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
   }
 }
