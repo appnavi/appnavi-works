@@ -1,0 +1,21 @@
+version: '3'
+services:
+  game-upload:
+    image: "game-upload"
+    build: .
+    command: "node dist/bin/www.js"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - "mongo"
+  mongo:
+    image: "mongo"
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-volume:/data/db
+      - db-config-volume:/data/configdb
+
+volumes:
+  db-volume:
+  db-config-volume:
