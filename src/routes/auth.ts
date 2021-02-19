@@ -20,6 +20,7 @@ authRouter.use(
       "i0.wp.com",
       "https://api.slack.com/img/sign_in_with_slack.png",
       "https://a.slack-edge.com/80588/img/sign_in_with_slack.png",
+      "https://avatars.slack-edge.com",
     ],
   })
 );
