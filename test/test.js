@@ -1,8 +1,17 @@
 const request = require("supertest");
 const app = require("../dist/app");
 const passportStub = require('passport-stub');
-
+const fs = require('fs-extra');
+const path = require("path");
 const STATUS_CODE_SUCCESS = 200;
+
+async function removeAllUploads() {
+  const dir = path.join(__dirname, "../uploads")
+  const files = await fs.readdir(dir);
+  files.forEach(async(f) => {
+    await fs.remove(path.join(dir, f));
+  });
+}
 
 function requireAuthenticated(path, done) {
   return request(app).get(path).expect(302)
@@ -156,3 +165,18 @@ describe("ログイン時のGET", () => {
     });
   });
 });
+
+// describe("ゲームアップロード", ()=>{
+//   describe("Unity", ()=>{
+//     describe("非ログイン時", ()=>{
+//       it("条件を満たしていても、ファイルアップロードに失敗する", (done)=>{
+//         request(app).post("/upload/unity")
+//       });
+//     });
+//     describe("ログイン時", ()=>{
+//       before(login);
+//       after(logout);
+      
+//     });
+//   });
+// });
