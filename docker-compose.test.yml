@@ -10,9 +10,8 @@ services:
       - "mongo"
     env_file:
       - node.env
-    environment: 
-      - NODE_ENV=development
-      - SLACK_REDIRECT_URI=http://localhost:3000/auth/redirect
+      - docker-test.env
+
   mongo:
     image: "mongo"
     ports:

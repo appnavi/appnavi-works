@@ -14,10 +14,7 @@ services:
       - "mongo"
     env_file:
       - node.env
-    environment: 
-      - NODE_ENV=production
-      # TODO：本番のURLに変更
-      - SLACK_REDIRECT_URI=http://localhost:3000/auth/redirect
+      - docker-production.env
   mongo:
     image: "mongo"
     ports:
