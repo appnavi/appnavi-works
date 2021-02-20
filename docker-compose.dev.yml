@@ -23,10 +23,10 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - db-volume:/data/db
-      - db-config-volume:/data/configdb
+      - db-volume_dev:/data/db
+      - db-config-volume_dev:/data/configdb
 
 volumes:
-  db-volume:
-  db-config-volume:
+  db-volume_dev:
+  db-config-volume_dev:
   ignore:

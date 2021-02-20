@@ -18,9 +18,9 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - db-volume:/data/db
-      - db-config-volume:/data/configdb
+      - db-volume_test:/data/db
+      - db-config-volume_test:/data/configdb
 
 volumes:
-  db-volume:
-  db-config-volume:
+  db-volume_test:
+  db-config-volume_test:
