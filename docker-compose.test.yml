@@ -1,16 +1,11 @@
 version: '3'
 services:
-  game-upload-dev:
-    image: "game-upload-dev"
+  game-upload-test:
+    image: "game-upload-test"
     build: .
-    command: "yarn run dev"
-    ports:
-      - "3000:3000"
+    command: "yarn run test"
     volumes: 
-      # ファイル変化でリロードするために、プロジェクトの全ファイルをマウント
-      - .:/app
-      # node_modulesを除外するため、適当な名前(ignore)のvolumeをマウント
-      - ignore:/app/node_modules
+      - ./test:/app/test
     depends_on:
       - "mongo"
     env_file:

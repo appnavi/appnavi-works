@@ -18,7 +18,9 @@
     "eslint:server:fix": "eslint src/**/*.ts --fix",
     "lint": "run-s eslint:server check-types",
     "format": "prettier --write src/**/*.{js,ts,json}",
-    "lint:fix": "run-s check-types format eslint:server:fix "
+    "lint:fix": "run-s check-types format eslint:server:fix ",
+    "test": "run-s build:server test:run",
+    "test:run": "nodemon --watch test -e js -L --exec mocha"
   },
   "dependencies": {
     "async-passport-slack": "^0.1.0",
@@ -72,9 +74,12 @@
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
+    "mocha": "^8.3.0",
     "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
+    "passport-stub": "^1.1.1",
     "prettier": "^2.2.1",
+    "supertest": "^6.1.3",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
   }
