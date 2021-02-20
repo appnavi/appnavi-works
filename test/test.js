@@ -22,12 +22,12 @@ function canAccessTo(path, done) {
 }
 
 
-describe("非ログイン時のアクセス可否", () => {
+describe("非ログイン時のGET", () => {
   describe("authRouter", () => {
-    it("/authにアクセスできる", (done) => {
+    it("/authをGETできる", (done) => {
       canAccessTo("/auth", done);
     });
-    it("/auth/slackにアクセスするとSlackの認証ページにリダイレクトされる", (done) => {
+    it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
       request(app).get("/auth/slack")
         .expect(302)
         .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
@@ -36,7 +36,7 @@ describe("非ログイン時のアクセス可否", () => {
     it("/auth/profileはログイン必須", (done) => {
       requireAuthenticated("/auth/profile", done);
     });
-    it("/auth/logoutにアクセスするとログイン画面にリダイレクトされる", (done) => {
+    it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
       request(app).get("/auth/logout")
         .expect(302)
         .expect("Location", "/auth")
@@ -44,14 +44,14 @@ describe("非ログイン時のアクセス可否", () => {
     });
   });
   describe("gamesRouter", () => {
-    it("/gamesページにアクセスできる(URLは/games/になる)", (done) => {
+    it("/gamesページをGETできる(URLは/games/になる)", (done) => {
       request(app).get("/games")
         .expect("Content-Type", /html/)
         .expect(301)
         .expect("Location", "/games/")
         .end(done);
     });
-    it("/games/ページにアクセスできる", (done) => {
+    it("/games/ページをGETできる", (done) => {
       canAccessTo("/games/", done);
     });
   });
@@ -67,7 +67,7 @@ describe("非ログイン時のアクセス可否", () => {
   });
 });
 
-describe("ログイン時のアクセス可否", () => {
+describe("ログイン時のGET", () => {
   before(() => {
     passportStub.install(app);
     passportStub.login({
@@ -106,22 +106,22 @@ describe("ログイン時のアクセス可否", () => {
     passportStub.uninstall(app);
   });
   describe("authRouter", () => {
-    it("/authにアクセスにアクセスすると/にリダイレクトされる", (done) => {
+    it("/authをGETをGETすると/にリダイレクトされる", (done) => {
       request(app).get("/auth")
         .expect(302)
         .expect("Location", "/")
         .end(done);
     });
-    it("/auth/slackにアクセスするとSlackの認証ページにリダイレクトされる", (done) => {
+    it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
       request(app).get("/auth/slack")
         .expect(302)
         .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
         .end(done);
     });
-    it("/auth/profileにアクセスできる", (done) => {
+    it("/auth/profileをGETできる", (done) => {
       canAccessTo("/auth/profile", done);
     });
-    it("/auth/logoutにアクセスするとログイン画面にリダイレクトされる", (done) => {
+    it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
       request(app).get("/auth/logout")
         .expect(302)
         .expect("Location", "/auth")
@@ -129,14 +129,14 @@ describe("ログイン時のアクセス可否", () => {
     });
   });
   describe("gamesRouter", () => {
-    it("/gamesページにアクセスできる(URLは/games/になる)", (done) => {
+    it("/gamesページをGETできる(URLは/games/になる)", (done) => {
       request(app).get("/games")
         .expect("Content-Type", /html/)
         .expect(301)
         .expect("Location", "/games/")
         .end(done);
     });
-    it("/games/ページにアクセスできる", (done) => {
+    it("/games/ページをGETできる", (done) => {
       request(app).get("/games/")
         .expect("Content-Type", /html/)
         .expect(STATUS_CODE_SUCCESS)
@@ -144,12 +144,12 @@ describe("ログイン時のアクセス可否", () => {
     });
   });
   describe("indexRouter", () => {
-    it("/にアクセスできる", (done) => {
+    it("/をGETできる", (done) => {
       canAccessTo("/", done);
     });
   });
   describe("uploadRouter", () => {
-    it("/upload/unityにアクセスできる", (done) => {
+    it("/upload/unityをGETできる", (done) => {
       canAccessTo("/upload/unity", done);
     });
   });
