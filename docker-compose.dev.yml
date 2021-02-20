@@ -11,20 +11,15 @@ services:
       - .:/app
       # node_modulesを除外するため、適当な名前(ignore)のvolumeをマウント
       - ignore:/app/node_modules
-    depends_on:
-      - "mongo"
     env_file:
       - node.env
       - docker-dev.env
-  mongo:
-    image: "mongo"
-    ports:
-      - "27017:27017"
-    volumes:
-      - db-volume_dev:/data/db
-      - db-config-volume_dev:/data/configdb
+    networks: 
+      - network-mongo
 
 volumes:
-  db-volume_dev:
-  db-config-volume_dev:
   ignore:
+
+networks: 
+  network-mongo:
+    external: true

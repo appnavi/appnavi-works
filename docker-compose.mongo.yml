@@ -1,0 +1,19 @@
+version: '3'
+services:
+  mongo:
+    image: "mongo"
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-volume:/data/db
+      - db-config-volume:/data/configdb
+    networks: 
+      - network-mongo
+
+volumes:
+  db-volume:
+  db-config-volume:
+
+networks: 
+  network-mongo:
+    external: true

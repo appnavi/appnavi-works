@@ -6,20 +6,12 @@ services:
     command: "yarn run test"
     volumes: 
       - ./test:/app/test
-    depends_on:
-      - "mongo"
     env_file:
       - node.env
       - docker-test.env
+    networks: 
+      - network-mongo
 
-  mongo:
-    image: "mongo"
-    ports:
-      - "27017:27017"
-    volumes:
-      - db-volume_test:/data/db
-      - db-config-volume_test:/data/configdb
-
-volumes:
-  db-volume_test:
-  db-config-volume_test:
+networks: 
+  network-mongo:
+    external: true

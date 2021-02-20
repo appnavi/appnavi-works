@@ -10,19 +10,12 @@ services:
       - ./uploads:/app/uploads
       - ./backups:/app/backups
       - ./logs:/app/logs
-    depends_on:
-      - "mongo"
     env_file:
       - node.env
       - docker-production.env
-  mongo:
-    image: "mongo"
-    ports:
-      - "27017:27017"
-    volumes:
-      - db-volume:/data/db
-      - db-config-volume:/data/configdb
+    networks: 
+      - network-mongo
 
-volumes:
-  db-volume:
-  db-config-volume:
+networks: 
+  network-mongo:
+    external: true
