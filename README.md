@@ -6,37 +6,30 @@
 
 ## 起動方法
 
-### データベースの起動
+1. データベースの起動
+2. アプリケーション起動
+   - production
+      実際にさくらのVPSで稼働させるとき
 
-```sh
-bash start_mongodb.sh
-```
+      ```sh
+      docker-compose up -d
+      ```
 
-### アプリケーション起動
+   - development
 
-#### production
+      ローカル環境で開発するとき(ファイルに変更が加えて保存すると自動的に変更が反映される)
 
-実際にさくらのVPSで稼働させるとき
+      ```sh
+      bash dev.sh
+      ```
 
-```sh
-docker-compose up -d
-```
+   - test
 
-#### development
+      game-uploadの単体テスト
 
-ローカル環境で開発するとき(ファイルに変更が加えて保存すると自動的に変更が反映される)
-
-```sh
-bash dev.sh
-```
-
-#### test
-
-game-uploadの単体テスト
-
-```sh
-bash test.sh
-```
+      ```sh
+      bash test.sh
+      ```
 
 ## 停止方法
 
