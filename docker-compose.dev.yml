@@ -7,18 +7,15 @@ services:
     ports:
       - "3000:3000"
     volumes: 
-      # ファイル変化でリロードするために、プロジェクトの全ファイルをマウント
-      - .:/app
-      # node_modulesを除外するため、適当な名前(ignore)のvolumeをマウント
-      - ignore:/app/node_modules
+      - ./private:/app/private
+      - ./public:/app/public
+      - ./src:/app/src
+      - ./src_browser:/app/src_browser
     env_file:
       - node.env
       - docker-dev.env
     networks: 
       - network-mongo
-
-volumes:
-  ignore:
 
 networks: 
   network-mongo:
