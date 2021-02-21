@@ -1,7 +1,6 @@
 version: '3'
 services:
-  game-upload-test:
-    image: "game-upload-test"
+  game-upload:
     build: .
     command: "yarn run test"
     volumes: 

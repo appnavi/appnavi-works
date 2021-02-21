@@ -1,7 +1,6 @@
 version: '3'
 services:
   game-upload:
-    image: "game-upload"
     build: .
     command: "yarn run start"
     ports:
