@@ -1,9 +1,9 @@
-import * as mongoose  from "mongoose";
+import * as mongoose from "mongoose";
 const gameSchema = new mongoose.Schema(
   {
     uploadStartedAt: Date,
     uploadEndedAt: Date,
-    elapsedMillis: Number,  
+    elapsedMillis: Number,
     creatorId: String,
     gameId: String,
     createdBy: String,

@@ -32,7 +32,12 @@ function getContentSecurityPolicy(
         "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js",
         "https://code.jquery.com/jquery-3.5.1.min.js",
       ],
-      "img-src": ["'self'", "secure.gravatar.com", "i0.wp.com", "https://avatars.slack-edge.com"],
+      "img-src": [
+        "'self'",
+        "secure.gravatar.com",
+        "i0.wp.com",
+        "https://avatars.slack-edge.com",
+      ],
       ...directives,
     },
   });

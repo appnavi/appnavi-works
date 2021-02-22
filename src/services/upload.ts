@@ -44,7 +44,7 @@ function getCreatorId(req: express.Request): string {
 function getGameId(req: express.Request): string {
   return req.headers["x-game-id"] as string;
 }
-function getOverwritesExisting(req: express.Request): boolean{
+function getOverwritesExisting(req: express.Request): boolean {
   return req.headers["x-overwrites-existing"] === "true";
 }
 function getUnityDir(req: express.Request): string {
