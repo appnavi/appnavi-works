@@ -10,6 +10,7 @@ services:
       - ./public:/app/public
       - ./src:/app/src
       - ./src_browser:/app/src_browser
+      - ./views:/app/views
     env_file:
       - node.env
       - docker-dev.env
