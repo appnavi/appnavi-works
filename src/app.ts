@@ -11,6 +11,7 @@ import passport from "passport";
 import { preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
 import { authRouter } from "./routes/auth";
+import { dbRouter } from "./routes/db";
 import { gamesRouter } from "./routes/games";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
@@ -107,6 +108,8 @@ app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/upload", uploadRouter);
 app.use(URL_PREFIX_GAME, gamesRouter);
+app.use("/db", dbRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

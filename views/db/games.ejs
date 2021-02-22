@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>ゲーム一覧</title>
+  <%- include('../common/head') %> 
+</head>
+<body>
+  <%- include('../common/navbar') %> 
+  <main class="container">
+    <h3 class="header">ゲーム一覧</h3>
+    <div class="card">
+      <div class="card-content">
+        <pre><%- (typeof games !== "undefined") ? JSON.stringify(games, null, 2) : "" %></pre>
+      </div>
+    </div>
+  </main>
+  <%- include('../common/footer') %> 
+  <%- include('../common/scripts') %> 
+</body>
+</html>
