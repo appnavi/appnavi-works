@@ -14,17 +14,18 @@
   - 📁[stylesheets](#publicstylesheets)  
     - 📁[fontawesome-free-5.15.1-web](#publicstylesheetsfontawesome-free-5151-web)  
 - 📁[src](#src)  
+  - 📁[@types](#srctypes)
   - 📁[bin](#srcbin)  
     - [www.ts](#srcbinwwwts)
   - 📁[config](#srcconfig)  
     - [passport.js](#srcconfigpassportjs)  
   - 📁[models](#srcmodels)  
     - [database.ts](#srcmodelsdatabasets)  
-    - [slack_user.ts](#srcmodelsslack_userts)  
   - 📁[modules](#srcmodules)  
     - [logger.ts](#srcmodulesloggerts)  
   - 📁[routes](#srcroutes)  
     - [auth.ts](#srcroutesauthts)  
+    - [db.ts](#srcroutesdbts)  
     - [games.ts](#srcroutesgamests)  
     - [index.ts](#srcroutesindexts)  
     - [upload.ts](#srcroutesuploadts)  
@@ -38,7 +39,10 @@
 - 📁[src_browser](#src_browser)  
 - 📁[uploads](#uploads)  
 - 📁[views](#views)  
-- [.env](#env)
+- [node.env](#nodeenv)
+- [docker-dev.env](#docker-devenv)
+- [docker-production.env](#docker-productionenv)
+- [docker-test.env](#docker-testenv)
 
 ---
 
@@ -102,12 +106,16 @@ Expressアプリケーションのソースコード(Typescript&Javascript)
 
 `yarn build:server`コマンドにより、生成されたJavascirptコードが[dist](#dist)フォルダーに格納される
 
+### 📁src/@types
+
+Typescriptの型定義ファイルを格納
+
 ### 📁src/bin
 
 #### src/bin/www.ts
 
-[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートコード。
-唯一の変更点として、2行目でdotenvを使い環境変数を読み込んでいる。
+[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートコード`bin/www`。
+拡張子`.ts`を付け、コンパイルエラーが発生しないように一部修正。
 
 ### 📁src/config
 
@@ -120,10 +128,6 @@ Expressアプリケーションのソースコード(Typescript&Javascript)
 #### src/models/database.ts
 
 MongoDBで保存するデータに関するオブジェクトの定義。
-
-#### src/models/slack_user.ts
-
-[passport](https://www.npmjs.com/package/passport)&[async-passport-slack](https://www.npmjs.com/package/async-passport-slack)によって追加されるrequest.userの型を定義。
 
 ### 📁src/modules
 
@@ -138,18 +142,27 @@ express.routerの定義。
 #### src/routes/auth.ts
 
 `/auth/*`でアクセスできるroute。
+ログイン・ログアウトなどができる。
+
+#### src/routes/db.ts
+
+`/db/*`でアクセスできるroute。
+MongoDBに保存したデータを得られる。
 
 #### src/routes/games.ts
 
 `/games/*`でアクセスできるroute。
+アップロードされたゲームにアクセスできる。
 
 #### src/routes/index.ts
 
 `/`でアクセスできるroute。ログイン必須。
+機能一覧を表示
 
 #### src/routes/upload.ts
 
 `/upload/*`でアクセスできるroute。ログイン必須。
+ゲームをアップロードできる。
 
 ### 📁src/services
 
@@ -193,15 +206,34 @@ expressアプリケーションの定義。
 
 ejsはhtmlに条件分岐、変数の内容表示など、機能を拡張したファイル
 
-## .env
+## node.env
 
 環境変数を格納するファイル。バージョン管理対象外である。
 
 - `SLACK_CLIENT_ID`：Slack AppのClient ID。
 - `SLACK_CLIENT_SECRET`：Slack AppのClient Secret。
-- `SLACK_REDIRECT_URI`：Slack AppのRedirect URI。Slack Appのページで設定するだけで動作するので、現状使っていない。
 - `SLACK_WORKSPACE_ID`：ログインを認めるWorkspaceのID。Sign In With Slackは、作成したWorkspaceしかログインできないと思われるが、フェイルセーフとして導入
 - `COOKIE_NAME`：Cookieを利用するための設定。
 - `COOKIE_KEYS`：Cookieを利用するための設定。
 - `JWT_SECRET`：JsonWebTokenによる暗号化に必要なsecretも文字列。
+
+## docker-dev.env
+
+dockerでdevelopment実行する際の環境変数を格納するファイル。バージョン管理対象外である。
+
+- `SLACK_REDIRECT_URI`：Slack AppのRedirect URI。Slack Appのページで設定するだけで動作するので、現状使っていない。
+- `DATABASE_URL`：MongoDBを使用するためのURL。
+
+## docker-production.env
+
+dockerでproduction実行する際の環境変数を格納するファイル。バージョン管理対象外である。
+
+- `SLACK_REDIRECT_URI`：Slack AppのRedirect URI。Slack Appのページで設定するだけで動作するので、現状使っていない。
+- `DATABASE_URL`：MongoDBを使用するためのURL。
+
+## docker-test.env
+
+dockerでtest実行する際の環境変数を格納するファイル。バージョン管理対象外である。
+
+- `SLACK_REDIRECT_URI`：Slack AppのRedirect URI。Slack Appのページで設定するだけで動作するので、現状使っていない。
 - `DATABASE_URL`：MongoDBを使用するためのURL。
