@@ -114,8 +114,9 @@ Typescriptの型定義ファイルを格納
 
 #### src/bin/www.ts
 
-[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートコード`bin/www`。
-拡張子`.ts`を付け、コンパイルエラーが発生しないように一部修正。
+[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたファイル`bin/www`を基にしたファイル。
+start関数内が`bin/www`の内容をコンパイルエラーが発生しないように一部修正したもの。
+データベースに接続出来るまで待機してから開始する。
 
 ### 📁src/config
 
