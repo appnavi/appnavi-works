@@ -5,7 +5,6 @@ import cookieSession from "cookie-session";
 import express from "express";
 import helmet from "helmet";
 import createError from "http-errors";
-import mongoose from "mongoose";
 import sassMiddleware from "node-sass-middleware";
 import passport from "passport";
 import { preparePassport } from "./config/passport";
@@ -24,24 +23,6 @@ import {
   DIRECTORY_NAME_VIEWS,
 } from "./utils/constants";
 import { getEnv } from "./utils/helpers";
-
-void mongoose
-  .connect(getEnv("DATABASE_URL"), {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    const db = mongoose.connection;
-    db.once("open", () => {
-      logger.system.info("データベースに接続しました。");
-    });
-    db.on("stop", (error) => {
-      logger.system.error("データベース関連のエラーが発生しました。", error);
-    });
-  })
-  .catch((error) => {
-    logger.system.error("データベース関連のエラーが発生しました。", error);
-  });
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 preparePassport(passport);
