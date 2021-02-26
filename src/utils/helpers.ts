@@ -9,7 +9,8 @@ type EnvKey =
   | "COOKIE_NAME"
   | "COOKIE_KEYS"
   | "JWT_SECRET"
-  | "DATABASE_URL";
+  | "DATABASE_URL"
+  | "GAME_STORAGE_SIZE_BYTES";
 function getEnv(key: EnvKey): string {
   const val = process.env[key];
   if (typeof val !== "string") {

@@ -1,7 +1,4 @@
-# diskusageがNode14までしか対応していないため14を使用
-FROM node:14
-
-RUN apt-get update || : && apt-get install python -y
+FROM node:latest
 
 WORKDIR /app
 

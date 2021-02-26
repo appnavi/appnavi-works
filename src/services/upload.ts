@@ -80,6 +80,23 @@ async function findGameInDatabase(
   }
 }
 
+function calculateCurrentStorageSizeBytes(): Promise<number> {
+  return new Promise<number>((resolve, reject) => {
+    GameModel.find((err, data) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(
+        data.reduce(
+          (accumulator, currentValue) =>
+            accumulator + currentValue.totalFileSize,
+          0
+        )
+      );
+    });
+  });
+}
+
 function calculateTotalFileSize(
   files: {
     [fieldname: string]: Express.Multer.File[];
@@ -153,6 +170,7 @@ export {
   getGameId,
   getUnityDir,
   getOverwritesExisting,
+  calculateCurrentStorageSizeBytes,
   findGameInDatabase,
   calculateTotalFileSize,
   unityUpload,

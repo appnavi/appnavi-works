@@ -1,6 +1,4 @@
-import os from "os";
 import path from "path";
-import disk from "diskusage";
 import express from "express";
 import fsExtra from "fs-extra";
 import { GameModel } from "../models/database";
@@ -16,13 +14,14 @@ import {
   findGameInDatabase,
   uploadSchema,
   getOverwritesExisting,
+  calculateCurrentStorageSizeBytes,
 } from "../services/upload";
 import {
   URL_PREFIX_GAME,
   DIRECTORY_UPLOADS_DESTINATION,
   DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
-import { getContentSecurityPolicy, render } from "../utils/helpers";
+import { getContentSecurityPolicy, getEnv, render } from "../utils/helpers";
 
 interface Locals {
   uploadStartedAt: Date;
@@ -159,21 +158,19 @@ async function validateDestination(
   }
   next();
 }
-function ensureDiskSpaceAvailable(
+async function ensureDiskSpaceAvailable(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
-  const path = os.platform() === "win32" ? "c:" : "/";
-  disk.check(path, (err, info) => {
-    //1024^3 B = 1GB以上のスペースがあればアップロードを許可
-    if ((info?.available ?? 0) >= Math.pow(1024, 3)) {
-      next();
-      return;
-    }
-    next({
-      message: "スペースが十分ではありません",
-    });
+  const gameStorageSizeBytes = parseInt(getEnv("GAME_STORAGE_SIZE_BYTES"), 10);
+  const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
+  if (gameStorageSizeBytes >= currentStorageSizeBytes) {
+    next();
+    return;
+  }
+  next({
+    message: "スペースが十分ではありません",
   });
 }
 function beforeUpload(
