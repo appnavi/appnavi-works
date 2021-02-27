@@ -21,7 +21,11 @@ import {
   DIRECTORY_UPLOADS_DESTINATION,
   DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
-import { getContentSecurityPolicy, getEnvNumber, render } from "../utils/helpers";
+import {
+  getContentSecurityPolicy,
+  getEnvNumber,
+  render,
+} from "../utils/helpers";
 
 interface Locals {
   uploadStartedAt: Date;
