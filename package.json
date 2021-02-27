@@ -19,8 +19,7 @@
     "lint": "run-s eslint:server check-types",
     "format": "prettier --write src/**/*.{js,ts,json}",
     "lint:fix": "run-s check-types format eslint:server:fix ",
-    "test": "run-s build:server test:run",
-    "test:run": "nodemon --watch test -e js -L --exec mocha"
+    "test": "nodemon -L --config nodemon.test.json"
   },
   "dependencies": {
     "async-passport-slack": "^0.1.0",
@@ -45,6 +44,7 @@
     "yup": "^0.32.8"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.15",
     "@types/compression": "^1.7.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/cookie-session": "^2.0.42",
@@ -59,6 +59,7 @@
     "@types/jsonwebtoken": "^8.5.0",
     "@types/log4js": "^2.3.5",
     "@types/materialize-css": "^1.0.8",
+    "@types/mocha": "^8.2.1",
     "@types/mongoose": "^5.10.3",
     "@types/morgan": "^1.9.2",
     "@types/multer": "^1.4.5",
@@ -66,9 +67,11 @@
     "@types/passport": "^1.0.5",
     "@types/request": "^2.48.5",
     "@types/serve-index": "^1.7.30",
+    "@types/supertest": "^2.0.10",
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
+    "chai": "^4.3.0",
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
