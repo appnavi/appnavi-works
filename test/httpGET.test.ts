@@ -31,16 +31,21 @@ function canAccessTo(path: string, done: Mocha.Done) {
 }
 
 describe("GET", () => {
-  before(async()=>{
-    const uploadDirPath = path.join(__dirname, "../", DIRECTORY_UPLOADS_DESTINATION);
-    if(!(await fs.pathExists(uploadDirPath))){
+  before(async () => {
+    const uploadDirPath = path.join(
+      __dirname,
+      "../",
+      DIRECTORY_UPLOADS_DESTINATION
+    );
+    if (!(await fs.pathExists(uploadDirPath))) {
       await fs.mkdir(uploadDirPath);
     }
-    await mongoose
-    .connect(getEnv("DATABASE_URL"), {
+    await mongoose.connect(getEnv("DATABASE_URL"), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    })
+    });
+    const db = mongoose.connection;
+    await db.dropDatabase();
   });
   describe("非ログイン時", () => {
     describe("authRouter", () => {
