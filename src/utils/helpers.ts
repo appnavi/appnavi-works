@@ -10,7 +10,8 @@ type EnvKey =
   | "COOKIE_KEYS"
   | "JWT_SECRET"
   | "DATABASE_URL"
-  | "GAME_STORAGE_SIZE_BYTES";
+  | "GAME_STORAGE_SIZE_BYTES"
+  | "PORT";
 function getEnv(key: EnvKey): string {
   const val = process.env[key];
   if (typeof val !== "string") {
@@ -18,7 +19,7 @@ function getEnv(key: EnvKey): string {
   }
   return val;
 }
-function getEnvNumber(key: "GAME_STORAGE_SIZE_BYTES"): number {
+function getEnvNumber(key: "GAME_STORAGE_SIZE_BYTES" | "PORT"): number {
   const env = getEnv(key);
   const envNumber = parseInt(env, 10);
   if (env !== envNumber.toString()) {

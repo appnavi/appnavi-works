@@ -91,7 +91,6 @@ app.use("/upload", uploadRouter);
 app.use(URL_PREFIX_GAME, gamesRouter);
 app.use("/db", dbRouter);
 
-
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -119,5 +118,4 @@ app.use(function (
   res.render("error");
 });
 
-export { passport };
-module.exports = app;
+export { passport, app };

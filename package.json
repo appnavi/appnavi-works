@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "run-s build run",
-    "run": "node ./dist/bin/www.js",
+    "run": "node ./dist/index.js",
     "dev": "run-p dev:*",
-    "dev:server": "nodemon -L ./src/bin/www",
+    "dev:server": "nodemon -L ./src/index.ts",
     "dev:browser": "tsc -p tsconfig.browser.json -w",
     "build": "run-s build:*",
     "build:server": "tsc -p tsconfig.json",
