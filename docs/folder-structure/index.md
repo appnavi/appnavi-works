@@ -15,8 +15,6 @@
     - 📁[fontawesome-free-5.15.1-web](#publicstylesheetsfontawesome-free-5151-web)  
 - 📁[src](#src)  
   - 📁[@types](#srctypes)
-  - 📁[bin](#srcbin)  
-    - [www.ts](#srcbinwwwts)
   - 📁[config](#srcconfig)  
     - [passport.js](#srcconfigpassportjs)  
   - 📁[models](#srcmodels)  
@@ -36,6 +34,7 @@
     - [constants.ts](#srcutilsconstantsts)  
     - [helpers.ts](#srcutilshelpersts)  
   - [app.ts](#srcappts)  
+  - [index.ts](#srcindexts)  
 - 📁[src_browser](#src_browser)  
 - 📁[uploads](#uploads)  
 - 📁[views](#views)  
@@ -110,14 +109,6 @@ Expressアプリケーションのソースコード(Typescript&Javascript)
 
 Typescriptの型定義ファイルを格納
 
-### 📁src/bin
-
-#### src/bin/www.ts
-
-[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたファイル`bin/www`を基にしたファイル。
-start関数内が`bin/www`の内容をコンパイルエラーが発生しないように一部修正したもの。
-データベースに接続出来るまで待機してから開始する。
-
 ### 📁src/config
 
 #### src/config/passport.js
@@ -188,6 +179,10 @@ MongoDBに保存したデータを得られる。
 ### src/app.ts
 
 expressアプリケーションの定義。
+
+### src/index.ts
+
+データベースに接続し、アプリケーションを開始する。
 
 ## 📁src_browser
 
