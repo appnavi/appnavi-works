@@ -4,6 +4,7 @@ import { app } from "../src/app";
 import { DIRECTORY_UPLOADS_DESTINATION } from "../src/utils/constants";
 import { getEnv, getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId } from "./auth";
+import { prepare } from "./common";
 import fs from "fs-extra";
 import path from "path";
 const passportStub = require("passport-stub");
@@ -31,22 +32,7 @@ function canAccessTo(path: string, done: Mocha.Done) {
 }
 
 describe("GET", () => {
-  before(async () => {
-    const uploadDirPath = path.join(
-      __dirname,
-      "../",
-      DIRECTORY_UPLOADS_DESTINATION
-    );
-    if (!(await fs.pathExists(uploadDirPath))) {
-      await fs.mkdir(uploadDirPath);
-    }
-    await mongoose.connect(getEnv("DATABASE_URL"), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    const db = mongoose.connection;
-    await db.dropDatabase();
-  });
+  before(prepare);
   describe("非ログイン時", () => {
     describe("authRouter", () => {
       it("/authをGETできる", (done) => {
