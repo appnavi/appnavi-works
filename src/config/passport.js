@@ -3,7 +3,7 @@ const strategy = new SlackStrategy(
   {
     clientID: process.env["SLACK_CLIENT_ID"],
     clientSecret: process.env["SLACK_CLIENT_SECRET"],
-    callbackURL: process.env["SLACK_REDIRECT_URI"],//"http://localhost:3000/auth/redirect",
+    callbackURL: process.env["SLACK_REDIRECT_URI"],
     skipUserProfile: false,
     user_scope: [
       "identity.basic",
