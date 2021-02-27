@@ -21,7 +21,7 @@ import {
   DIRECTORY_UPLOADS_DESTINATION,
   DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
-import { getContentSecurityPolicy, getEnv, render } from "../utils/helpers";
+import { getContentSecurityPolicy, getEnvNumber, render } from "../utils/helpers";
 
 interface Locals {
   uploadStartedAt: Date;
@@ -163,7 +163,7 @@ async function ensureDiskSpaceAvailable(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const gameStorageSizeBytes = parseInt(getEnv("GAME_STORAGE_SIZE_BYTES"), 10);
+  const gameStorageSizeBytes = getEnvNumber("GAME_STORAGE_SIZE_BYTES");
   const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
   if (gameStorageSizeBytes >= currentStorageSizeBytes) {
     next();

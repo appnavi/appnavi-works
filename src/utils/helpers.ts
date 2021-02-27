@@ -18,6 +18,14 @@ function getEnv(key: EnvKey): string {
   }
   return val;
 }
+function getEnvNumber(key: "GAME_STORAGE_SIZE_BYTES"): number {
+  const env = getEnv(key);
+  const envNumber = parseInt(env, 10);
+  if (env !== envNumber.toString()) {
+    throw new Error(`環境変数${key}は数値に変換できません`);
+  }
+  return envNumber;
+}
 function getContentSecurityPolicy(
   directives: Record<string, Iterable<string>> = {}
 ): (
@@ -54,4 +62,4 @@ function render(
     ...options,
   });
 }
-export { getEnv, getContentSecurityPolicy, render };
+export { getEnv, getEnvNumber, getContentSecurityPolicy, render };
