@@ -10,7 +10,15 @@
   <%- include('common/navbar') %> 
   <main class="container">
     <h3 class="header">HOME</h3>
-    <a class="btn-large" href="upload/unity"><i class="fab fa-unity fa-2x"></i>Unityゲームのアップロード</a>
+    <div class="section">
+      <h4 class="header">アップロード</h4>
+      <a class="btn-large" href="upload/unity"><i class="fab fa-unity fa-2x"></i>Unityゲームのアップロード</a>
+    </div>
+    <div class="section">
+      <h4 class="header">データベース内容の出力</h4>
+      <a class="btn-large" href="db/games">games</a>
+      <a class="btn-large" href="db/users">users</a>
+    </div>
   </main>
   <%- include('common/footer') %> 
   <%- include('common/scripts') %> 
