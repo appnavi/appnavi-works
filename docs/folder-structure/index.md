@@ -36,6 +36,7 @@
   - [app.ts](#srcappts)  
   - [index.ts](#srcindexts)  
 - 📁[src_browser](#src_browser)  
+- 📁[test](#test)  
 - 📁[uploads](#uploads)  
 - 📁[views](#views)  
 - [node.env](#nodeenv)
@@ -189,6 +190,10 @@ expressアプリケーションの定義。
 ブラウザーで表示するコンテンツ用のソースコード(Typescript)
 
 `yarn build:browser`コマンドにより、生成されたJavascriptコードがルートフォルダーに格納される。
+
+## 📁test
+
+単体テスト
 
 ## 📁uploads
 
