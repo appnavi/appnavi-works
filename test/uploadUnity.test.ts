@@ -13,6 +13,7 @@ import { Multer } from "multer";
 
 const creatorId = "creator";
 const gameId = "game";
+const unityGameWindowsPath = path.join(__dirname, "unity-correct-zip.zip");
 
 //TODO：multerを単体テストする方法の模索(候補：sinon)
 describe("Unityゲームのアップロード", () => {
@@ -34,7 +35,7 @@ describe("Unityゲームのアップロード", () => {
         .set("x-creator-id", creatorId)
         .set("x-game-id", gameId)
         .set("x-overwrites-existing", "false")
-        .attach(FIELD_WINDOWS, path.join(__dirname, "unity-correct-zip.zip"))
+        .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(200)
         .end(done);
     });
