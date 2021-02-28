@@ -20,6 +20,8 @@ import {
   URL_PREFIX_GAME,
   DIRECTORY_UPLOADS_DESTINATION,
   DIRECTORY_NAME_BACKUPS,
+  MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS as ALREADY_EXISTS,
+  MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER
 } from "../utils/constants";
 import {
   getContentSecurityPolicy,
@@ -134,7 +136,7 @@ async function preventEditByOtherPerson(
   }
   next(
     new UploadError(
-      `別の人が既に投稿したゲームがあります。上書きすることはできません。`,
+      DIFFERENT_USER,
       [getUnityDir(req)]
     )
   );
@@ -150,7 +152,7 @@ async function validateDestination(
     if (!getOverwritesExisting(req)) {
       next(
         new UploadError(
-          "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください",
+          ALREADY_EXISTS,
           [gameDir]
         )
       );

@@ -9,6 +9,12 @@ import {
   STATUS_CODE_FAILURE,
   STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
+  MESSAGE_UNITY_UPLOAD_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
+  MESSAGE_UNITY_UPLOAD_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
+  MESSAGE_UNITY_UPLOAD_GAME_ID_REQUIRED as GAME_ID_REQUIRED,
+  MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID as GAME_ID_INVALID,
+  MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS as ALREADY_EXISTS,
+  MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER
 } from "../src/utils/constants";
 import { getEnv, getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
@@ -43,7 +49,7 @@ describe("Unityゲームのアップロード", () => {
         .set("x-overwrites-existing", "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_FAILURE)
-        .expect("作者IDは必須です。")
+        .expect(CREATOR_ID_REQUIRED)
         .end(done);
     });
     it("作者IDが設定されていないとアップロードできない", (done) => {
@@ -54,9 +60,7 @@ describe("Unityゲームのアップロード", () => {
         .set("x-overwrites-existing", "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_FAILURE)
-        .expect(
-          "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。"
-        )
+        .expect(CREATOR_ID_INVALID)
         .end(done);
     });
     it("ゲームIDが設定されていないとアップロードできない", (done) => {
@@ -66,7 +70,7 @@ describe("Unityゲームのアップロード", () => {
         .set("x-overwrites-existing", "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_FAILURE)
-        .expect("ゲームIDは必須です。")
+        .expect(GAME_ID_REQUIRED)
         .end(done);
     });
     it("作者IDが設定されていないとアップロードできない", (done) => {
@@ -77,9 +81,7 @@ describe("Unityゲームのアップロード", () => {
         .set("x-overwrites-existing", "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_FAILURE)
-        .expect(
-          "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。"
-        )
+        .expect(GAME_ID_INVALID)
         .end(done);
     });
     it("既に存在する場合、上書き設定していなければアップロードできない", (done) => {
@@ -111,7 +113,7 @@ describe("Unityゲームのアップロード", () => {
             .attach(FIELD_WINDOWS, unityGameWindowsPath)
             .expect(STATUS_CODE_FAILURE)
             .expect(
-              "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください"
+              ALREADY_EXISTS
             )
             .end(done);
         });
@@ -145,7 +147,7 @@ describe("Unityゲームのアップロード", () => {
             .attach(FIELD_WINDOWS, unityGameWindowsPath)
             .expect(STATUS_CODE_FAILURE)
             .expect(
-              "別の人が既に投稿したゲームがあります。上書きすることはできません。"
+              DIFFERENT_USER
             )
             .end(done);
         });

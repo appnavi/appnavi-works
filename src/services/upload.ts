@@ -5,24 +5,24 @@ import { Document } from "mongoose";
 import multer from "multer";
 import * as yup from "yup";
 import { GameModel } from "../models/database";
-import { DIRECTORY_UPLOADS_DESTINATION } from "../utils/constants";
+import {
+  DIRECTORY_UPLOADS_DESTINATION,
+  MESSAGE_UNITY_UPLOAD_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
+  MESSAGE_UNITY_UPLOAD_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
+  MESSAGE_UNITY_UPLOAD_GAME_ID_REQUIRED as GAME_ID_REQUIRED,
+  MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID as GAME_ID_INVALID,
+} from "../utils/constants";
 const FIELD_WEBGL = "webgl";
 const FIELD_WINDOWS = "windows";
 const idRegex = /^[0-9a-z-]+$/;
 const creatorIdSchema = yup
   .string()
-  .matches(
-    idRegex,
-    "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。"
-  )
-  .required("作者IDは必須です。");
+  .matches(idRegex, CREATOR_ID_INVALID)
+  .required(CREATOR_ID_REQUIRED);
 const gameIdSchema = yup
   .string()
-  .matches(
-    idRegex,
-    "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。"
-  )
-  .required("ゲームIDは必須です。");
+  .matches(idRegex, GAME_ID_INVALID)
+  .required(GAME_ID_REQUIRED);
 const uploadSchema = yup.object({
   creatorId: creatorIdSchema,
   gameId: gameIdSchema,
