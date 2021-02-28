@@ -21,6 +21,7 @@ import {
   DIRECTORY_NAME_PRIVATE,
   DIRECTORY_NAME_PUBLIC,
   DIRECTORY_NAME_VIEWS,
+  STATUS_CODE_FAILURE,
 } from "./utils/constants";
 import { getEnv } from "./utils/helpers";
 
@@ -113,7 +114,7 @@ app.use(function (
   }
 
   // render the error page
-  const status = typeof err.status === "number" ? err.status : 500;
+  const status = typeof err.status === "number" ? err.status : STATUS_CODE_FAILURE;
   res.status(status);
   res.render("error");
 });
