@@ -1,6 +1,5 @@
 {
-  "watch": ["test"],
+  "watch": ["src", "test"],
   "ext": "ts",
-  "ignore": ["src/**/*.spec.ts"],
   "exec": "mocha --require ts-node/register --project tsconfig.test.json \"test/**/*.test.ts\""
 }
