@@ -18,6 +18,8 @@ const gameId = "game";
 describe("Unityゲームのアップロード", () => {
   before(async () => {
     await connectDatabase();
+  });
+  beforeEach(async () => {
     await clearData();
   });
   it("非ログイン時にはアップロードができない", (done) => {
