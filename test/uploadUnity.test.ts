@@ -26,7 +26,7 @@ describe("Unityゲームのアップロード", () => {
   describe("ログイン時", () => {
     before(() => login(app, myId));
     after(() => logout(app));
-    it.only("条件を満たしていればアップロードできる", (done) => {
+    it("条件を満たしていればアップロードできる", (done) => {
       request(app)
         .post("/upload/unity")
         .set("x-creator-id", creatorId)
