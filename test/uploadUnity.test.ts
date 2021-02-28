@@ -6,7 +6,7 @@ import { FIELD_WINDOWS } from "../src/services/upload";
 import { DIRECTORY_UPLOADS_DESTINATION } from "../src/utils/constants";
 import { getEnv, getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId } from "./auth";
-import { prepare, connectDatabase } from "./common";
+import { clearData, connectDatabase } from "./common";
 import fs from "fs-extra";
 import path from "path";
 import { Multer } from "multer";
@@ -18,7 +18,7 @@ const gameId = "game";
 describe("Unityゲームのアップロード", () => {
   before(async () => {
     await connectDatabase();
-    await prepare();
+    await clearData();
   });
   it("非ログイン時にはアップロードができない", (done) => {
     request(app).post("/upload/unity").expect(401, done);

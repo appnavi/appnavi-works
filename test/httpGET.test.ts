@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../src/app";
 import { login, logout, myId } from "./auth";
-import { prepare, connectDatabase } from "./common";
+import { clearData, connectDatabase } from "./common";
 const passportStub = require("passport-stub");
 const STATUS_CODE_SUCCESS = 200;
 
@@ -29,7 +29,7 @@ function canAccessTo(path: string, done: Mocha.Done) {
 describe("GET", () => {
   before(async () => {
     await connectDatabase();
-    await prepare();
+    await clearData();
   });
   describe("非ログイン時", () => {
     describe("authRouter", () => {
