@@ -9,7 +9,6 @@ import { login, logout, myId } from "./auth";
 import { clearData, connectDatabase } from "./common";
 import fs from "fs-extra";
 import path from "path";
-import { Multer } from "multer";
 
 const creatorId = "creator";
 const gameId = "game";
