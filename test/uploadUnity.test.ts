@@ -15,6 +15,8 @@ import {
   MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID as GAME_ID_INVALID,
   MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS as ALREADY_EXISTS,
   MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
+  MESSAGE_UNITY_UPLOAD_STORAGE_FULL as STORAGE_FULL,
+  MESSAGE_UNITY_UPLOAD_NO_FILES as NO_FILES,
   HEADER_CREATOR_ID,
   HEADER_GAME_ID,
   HEADER_OVERWRITES_EXISTING,
@@ -150,6 +152,35 @@ describe("Unityゲームのアップロード", () => {
             .expect(DIFFERENT_USER)
             .end(done);
         });
+    });
+    it("ストレージ容量の上限を上回っている場合はアップロードできない", (done) => {
+      GameModel.create({
+        creatorId: "large-game-creator",
+        gameId: "large-game",
+        createdBy: theirId,
+        totalFileSize: getEnvNumber("GAME_STORAGE_SIZE_BYTES"),
+      })
+        .then(() => {
+          request(app)
+            .post("/upload/unity")
+            .set(HEADER_CREATOR_ID, creatorId)
+            .set(HEADER_GAME_ID, gameId)
+            .set(HEADER_OVERWRITES_EXISTING, "false")
+            .attach(FIELD_WINDOWS, unityGameWindowsPath)
+            .expect(STATUS_CODE_FAILURE)
+            .expect(STORAGE_FULL)
+            .end(done);
+        });
+    });
+    it("ゲームがなければアップロードできない", (done) => {
+      request(app)
+        .post("/upload/unity")
+        .set(HEADER_CREATOR_ID, creatorId)
+        .set(HEADER_GAME_ID, gameId)
+        .set(HEADER_OVERWRITES_EXISTING, "false")
+        .expect(STATUS_CODE_FAILURE)
+        .expect(NO_FILES)
+        .end(done);
     });
     it("条件を満たしていればアップロードできる", (done) => {
       request(app)

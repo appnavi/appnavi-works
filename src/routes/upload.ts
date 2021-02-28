@@ -22,6 +22,8 @@ import {
   DIRECTORY_NAME_BACKUPS,
   MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS as ALREADY_EXISTS,
   MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
+  MESSAGE_UNITY_UPLOAD_STORAGE_FULL as STORAGE_FULL,
+  MESSAGE_UNITY_UPLOAD_NO_FILES as NO_FILES
 } from "../utils/constants";
 import {
   getContentSecurityPolicy,
@@ -162,7 +164,7 @@ async function ensureStorageSpaceAvailable(
   const gameStorageSizeBytes = getEnvNumber("GAME_STORAGE_SIZE_BYTES");
   const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
   if (gameStorageSizeBytes <= currentStorageSizeBytes) {
-    next(new UploadError("スペースが十分ではありません"));
+    next(new UploadError(STORAGE_FULL));
     return;
   }
   next();
@@ -182,7 +184,7 @@ function ensureUploadSuccess(
   next: express.NextFunction
 ) {
   if (Object.keys(req.files ?? {}).length === 0) {
-    next(new UploadError("アップロードするファイルがありません。"));
+    next(new UploadError(NO_FILES));
     return;
   }
   next();
