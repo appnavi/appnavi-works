@@ -7,7 +7,7 @@ import { login, logout, myId } from "./auth";
 import fs from "fs-extra";
 import path from "path";
 
-async function prepareUploadDestination() {
+async function clearUploadDestination() {
   const uploadDirPath = path.join(
     __dirname,
     "../",
@@ -15,16 +15,18 @@ async function prepareUploadDestination() {
   );
   await fs.emptyDir(uploadDirPath);
 }
-async function prepareDatabase() {
+async function clearDatabase() {
+  const db = mongoose.connection;
+  await db.dropDatabase();
+}
+export async function connectDatabase(){
   await mongoose.connect(getEnv("DATABASE_URL"), {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  const db = mongoose.connection;
-  await db.dropDatabase();
 }
 
 export async function prepare() {
-  prepareUploadDestination();
-  prepareDatabase();
+  clearUploadDestination();
+  clearDatabase();
 }
