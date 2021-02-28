@@ -15,7 +15,6 @@ const creatorId = "creator";
 const gameId = "game";
 const unityGameWindowsPath = path.join(__dirname, "unity-correct-zip.zip");
 
-//TODO：multerを単体テストする方法の模索(候補：sinon)
 describe("Unityゲームのアップロード", () => {
   before(async () => {
     await connectDatabase();
