@@ -2,13 +2,17 @@ import request from "supertest";
 import { app } from "../src/app";
 import { login, logout, myId } from "./auth";
 import { clearData, connectDatabase } from "./common";
+import {
+  STATUS_CODE_SUCCESS,
+  STATUS_CODE_REDIRECT_PERMANENT,
+  STATUS_CODE_REDIRECT_TEMPORARY,
+} from "../src/utils/constants";
 const passportStub = require("passport-stub");
-const STATUS_CODE_SUCCESS = 200;
 
 function requireAuthenticated(path: string, done: Mocha.Done) {
   return request(app)
     .get(path)
-    .expect(302)
+    .expect(STATUS_CODE_REDIRECT_TEMPORARY)
     .expect("Location", "/auth")
     .end(done);
 }
@@ -39,7 +43,7 @@ describe("GET", () => {
       it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
         request(app)
           .get("/auth/slack")
-          .expect(302)
+          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
           .end(done);
       });
@@ -49,7 +53,7 @@ describe("GET", () => {
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
           .get("/auth/logout")
-          .expect(302)
+          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", "/auth")
           .end(done);
       });
@@ -59,7 +63,7 @@ describe("GET", () => {
         request(app)
           .get("/games")
           .expect("Content-Type", /html/)
-          .expect(301)
+          .expect(STATUS_CODE_REDIRECT_PERMANENT)
           .expect("Location", "/games/")
           .end(done);
       });
@@ -84,12 +88,16 @@ describe("GET", () => {
     after(() => logout(app));
     describe("authRouter", () => {
       it("/authをGETをGETすると/にリダイレクトされる", (done) => {
-        request(app).get("/auth").expect(302).expect("Location", "/").end(done);
+        request(app)
+          .get("/auth")
+          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+          .expect("Location", "/")
+          .end(done);
       });
       it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
         request(app)
           .get("/auth/slack")
-          .expect(302)
+          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
           .end(done);
       });
@@ -99,7 +107,7 @@ describe("GET", () => {
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
           .get("/auth/logout")
-          .expect(302)
+          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", "/auth")
           .end(done);
       });
@@ -109,7 +117,7 @@ describe("GET", () => {
         request(app)
           .get("/games")
           .expect("Content-Type", /html/)
-          .expect(301)
+          .expect(STATUS_CODE_REDIRECT_PERMANENT)
           .expect("Location", "/games/")
           .end(done);
       });

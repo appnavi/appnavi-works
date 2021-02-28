@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../src/app";
 import { FIELD_WINDOWS } from "../src/services/upload";
-import { DIRECTORY_UPLOADS_DESTINATION } from "../src/utils/constants";
+import { DIRECTORY_UPLOADS_DESTINATION, STATUS_CODE_UNAUTHORIZED } from "../src/utils/constants";
 import { getEnv, getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId } from "./auth";
 import { clearData, connectDatabase } from "./common";
@@ -22,7 +22,7 @@ describe("Unityゲームのアップロード", () => {
     await clearData();
   });
   it("非ログイン時にはアップロードができない", (done) => {
-    request(app).post("/upload/unity").expect(401, done);
+    request(app).post("/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
   });
   describe("ログイン時", () => {
     before(() => login(app, myId));
