@@ -171,7 +171,7 @@ async function ensureDiskSpaceAvailable(
 ) {
   const gameStorageSizeBytes = getEnvNumber("GAME_STORAGE_SIZE_BYTES");
   const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
-  if (gameStorageSizeBytes >= currentStorageSizeBytes) {
+  if (gameStorageSizeBytes > currentStorageSizeBytes) {
     next();
     return;
   }
