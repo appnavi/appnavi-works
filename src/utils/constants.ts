@@ -22,7 +22,7 @@ const MESSAGE_UNITY_UPLOAD_GAME_ID_REQUIRED = "ゲームIDは必須です。";
 const MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID =
   "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。";
 const MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS =
-  "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください";
+  "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください。";
 const MESSAGE_UNITY_UPLOAD_DIFFERENT_USER = 
 "別の人が既に投稿したゲームがあります。上書きすることはできません。";
 export {
