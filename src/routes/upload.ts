@@ -21,7 +21,7 @@ import {
   DIRECTORY_UPLOADS_DESTINATION,
   DIRECTORY_NAME_BACKUPS,
   MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS as ALREADY_EXISTS,
-  MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER
+  MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
 } from "../utils/constants";
 import {
   getContentSecurityPolicy,
@@ -40,7 +40,7 @@ interface Locals {
   totalFileSize: number;
 }
 class UploadError extends Error {
-  constructor(message: string, public params: unknown[]) {
+  constructor(message: string, public params: unknown[] = []) {
     super(message);
     this.name = new.target.name;
     // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
@@ -134,12 +134,7 @@ async function preventEditByOtherPerson(
     next();
     return;
   }
-  next(
-    new UploadError(
-      DIFFERENT_USER,
-      [getUnityDir(req)]
-    )
-  );
+  next(new UploadError(DIFFERENT_USER, [getUnityDir(req)]));
 }
 async function validateDestination(
   req: express.Request,
@@ -150,12 +145,7 @@ async function validateDestination(
   const exists = await fsExtra.pathExists(gameDir);
   if (exists) {
     if (!getOverwritesExisting(req)) {
-      next(
-        new UploadError(
-          ALREADY_EXISTS,
-          [gameDir]
-        )
-      );
+      next(new UploadError(ALREADY_EXISTS, [gameDir]));
       return;
     }
     await fsExtra.move(gameDir, path.join(DIRECTORY_NAME_BACKUPS, gameDir), {
@@ -175,9 +165,7 @@ async function ensureStorageSpaceAvailable(
     next();
     return;
   }
-  next({
-    message: "スペースが十分ではありません",
-  });
+  next(new UploadError("スペースが十分ではありません"));
 }
 function beforeUpload(
   req: express.Request,
@@ -194,9 +182,7 @@ function ensureUploadSuccess(
   next: express.NextFunction
 ) {
   if (Object.keys(req.files ?? {}).length === 0) {
-    next({
-      message: "アップロードするファイルがありません。",
-    });
+    next(new UploadError("アップロードするファイルがありません。"));
     return;
   }
   next();
