@@ -27,6 +27,6 @@ export async function connectDatabase(){
 }
 
 export async function clearData() {
-  clearUploadDestination();
-  clearDatabase();
+  await clearUploadDestination();
+  await clearDatabase();
 }
