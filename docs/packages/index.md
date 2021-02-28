@@ -66,7 +66,7 @@ Expressアプリケーションに認証機能を提供するパッケージ
 
 値のバリデーションをやりやすくするパッケージ。
 
-### `debug`, `http-errors`, `morgan`, `request`
+### `http-errors`, `request`
 
 [express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートに含まれるパッケージ
 
