@@ -161,11 +161,11 @@ async function ensureStorageSpaceAvailable(
 ) {
   const gameStorageSizeBytes = getEnvNumber("GAME_STORAGE_SIZE_BYTES");
   const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
-  if (gameStorageSizeBytes > currentStorageSizeBytes) {
-    next();
+  if (gameStorageSizeBytes <= currentStorageSizeBytes) {
+    next(new UploadError("スペースが十分ではありません"));
     return;
   }
-  next(new UploadError("スペースが十分ではありません"));
+  next();
 }
 function beforeUpload(
   req: express.Request,
