@@ -6,33 +6,30 @@
 
 ## 起動方法
 
-1. データベースの起動
-2. アプリケーション起動
-   - production
-      実際にさくらのVPSで稼働させるとき
+### 1. データベースの起動
 
-      ```sh
-      docker-compose up -d
-      ```
+### 2. アプリケーション起動
 
-   - development
+#### production
 
-      ローカル環境で開発するとき(ファイルに変更が加えて保存すると自動的に変更が反映される)
-
-      ```sh
-      bash dev.sh
-      ```
-
-   - test
-
-      game-uploadの単体テスト
-
-      ```sh
-      bash test.sh
-      ```
-
-## 停止方法
+実際にさくらのVPSで稼働させるとき
 
 ```sh
-docker-compose down
+docker-compose up -d
+```
+
+#### development
+
+ローカル環境で開発するとき(ファイルに変更が加えて保存すると自動的に変更が反映される)
+
+```sh
+bash dev.sh
+```
+
+#### test
+
+game-uploadの単体テスト
+
+```sh
+bash test.sh
 ```
