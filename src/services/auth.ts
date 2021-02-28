@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
 import { UserModel } from "../models/database";
+import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
 import { getEnv } from "../utils/helpers";
 
 interface SessionData {
@@ -80,7 +81,7 @@ function ensureAuthenticated(
     res.redirect("/auth");
     return;
   }
-  res.status(401).end();
+  res.status(STATUS_CODE_UNAUTHORIZED).end();
 }
 
 function isAuthenticated(req: express.Request): boolean {
