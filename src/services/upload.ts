@@ -11,6 +11,9 @@ import {
   MESSAGE_UNITY_UPLOAD_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
   MESSAGE_UNITY_UPLOAD_GAME_ID_REQUIRED as GAME_ID_REQUIRED,
   MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID as GAME_ID_INVALID,
+  HEADER_CREATOR_ID,
+  HEADER_GAME_ID,
+  HEADER_OVERWRITES_EXISTING,
 } from "../utils/constants";
 const FIELD_WEBGL = "webgl";
 const FIELD_WINDOWS = "windows";
@@ -39,13 +42,13 @@ const fields = [
   },
 ];
 function getCreatorId(req: express.Request): string {
-  return req.headers["x-creator-id"] as string;
+  return req.headers[HEADER_CREATOR_ID] as string;
 }
 function getGameId(req: express.Request): string {
-  return req.headers["x-game-id"] as string;
+  return req.headers[HEADER_GAME_ID] as string;
 }
 function getOverwritesExisting(req: express.Request): boolean {
-  return req.headers["x-overwrites-existing"] === "true";
+  return req.headers[HEADER_OVERWRITES_EXISTING] === "true";
 }
 function getUnityDir(req: express.Request): string {
   const creator_id = getCreatorId(req);

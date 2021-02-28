@@ -9,6 +9,10 @@ const DIRECTORY_NAME_PUBLIC = "public";
 const DIRECTORY_NAME_VIEWS = "views";
 const DIRECTORY_NAME_BACKUPS = "backups";
 
+const HEADER_CREATOR_ID = "x-creator-id";
+const HEADER_GAME_ID = "x-game-id";
+const HEADER_OVERWRITES_EXISTING = "x-overwrites-existing";
+
 const STATUS_CODE_SUCCESS = 200;
 const STATUS_CODE_REDIRECT_PERMANENT = 301;
 const STATUS_CODE_REDIRECT_TEMPORARY = 302;
@@ -23,8 +27,9 @@ const MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID =
   "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。";
 const MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS =
   "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください。";
-const MESSAGE_UNITY_UPLOAD_DIFFERENT_USER = 
-"別の人が既に投稿したゲームがあります。上書きすることはできません。";
+const MESSAGE_UNITY_UPLOAD_DIFFERENT_USER =
+  "別の人が既に投稿したゲームがあります。上書きすることはできません。";
+
 export {
   URL_PREFIX_GAME,
   URL_PREFIX_PRIVATE,
@@ -43,5 +48,8 @@ export {
   MESSAGE_UNITY_UPLOAD_GAME_ID_REQUIRED,
   MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID,
   MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS,
-  MESSAGE_UNITY_UPLOAD_DIFFERENT_USER
+  MESSAGE_UNITY_UPLOAD_DIFFERENT_USER,
+  HEADER_CREATOR_ID,
+  HEADER_GAME_ID,
+  HEADER_OVERWRITES_EXISTING,
 };

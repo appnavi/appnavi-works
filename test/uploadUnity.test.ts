@@ -14,7 +14,10 @@ import {
   MESSAGE_UNITY_UPLOAD_GAME_ID_REQUIRED as GAME_ID_REQUIRED,
   MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID as GAME_ID_INVALID,
   MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS as ALREADY_EXISTS,
-  MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER
+  MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
+  HEADER_CREATOR_ID,
+  HEADER_GAME_ID,
+  HEADER_OVERWRITES_EXISTING,
 } from "../src/utils/constants";
 import { getEnv, getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
@@ -45,8 +48,8 @@ describe("Unityゲームのアップロード", () => {
     it("作者IDが設定されていないとアップロードできない", (done) => {
       request(app)
         .post("/upload/unity")
-        .set("x-game-id", gameId)
-        .set("x-overwrites-existing", "false")
+        .set(HEADER_GAME_ID, gameId)
+        .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_FAILURE)
         .expect(CREATOR_ID_REQUIRED)
@@ -55,9 +58,9 @@ describe("Unityゲームのアップロード", () => {
     it("作者IDが設定されていないとアップロードできない", (done) => {
       request(app)
         .post("/upload/unity")
-        .set("x-creator-id", encodeURI("テスト"))
-        .set("x-game-id", gameId)
-        .set("x-overwrites-existing", "false")
+        .set(HEADER_CREATOR_ID, encodeURI("テスト"))
+        .set(HEADER_GAME_ID, gameId)
+        .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_FAILURE)
         .expect(CREATOR_ID_INVALID)
@@ -66,8 +69,8 @@ describe("Unityゲームのアップロード", () => {
     it("ゲームIDが設定されていないとアップロードできない", (done) => {
       request(app)
         .post("/upload/unity")
-        .set("x-creator-id", creatorId)
-        .set("x-overwrites-existing", "false")
+        .set(HEADER_CREATOR_ID, creatorId)
+        .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_FAILURE)
         .expect(GAME_ID_REQUIRED)
@@ -76,9 +79,9 @@ describe("Unityゲームのアップロード", () => {
     it("作者IDが設定されていないとアップロードできない", (done) => {
       request(app)
         .post("/upload/unity")
-        .set("x-creator-id", creatorId)
-        .set("x-game-id", encodeURI("テスト"))
-        .set("x-overwrites-existing", "false")
+        .set(HEADER_CREATOR_ID, creatorId)
+        .set(HEADER_GAME_ID, encodeURI("テスト"))
+        .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_FAILURE)
         .expect(GAME_ID_INVALID)
@@ -107,14 +110,12 @@ describe("Unityゲームのアップロード", () => {
         .then(() => {
           request(app)
             .post("/upload/unity")
-            .set("x-creator-id", creatorId)
-            .set("x-game-id", gameId)
-            .set("x-overwrites-existing", "false")
+            .set(HEADER_CREATOR_ID, creatorId)
+            .set(HEADER_GAME_ID, gameId)
+            .set(HEADER_OVERWRITES_EXISTING, "false")
             .attach(FIELD_WINDOWS, unityGameWindowsPath)
             .expect(STATUS_CODE_FAILURE)
-            .expect(
-              ALREADY_EXISTS
-            )
+            .expect(ALREADY_EXISTS)
             .end(done);
         });
     });
@@ -141,23 +142,21 @@ describe("Unityゲームのアップロード", () => {
         .then(() => {
           request(app)
             .post("/upload/unity")
-            .set("x-creator-id", creatorId)
-            .set("x-game-id", gameId)
-            .set("x-overwrites-existing", "true")
+            .set(HEADER_CREATOR_ID, creatorId)
+            .set(HEADER_GAME_ID, gameId)
+            .set(HEADER_OVERWRITES_EXISTING, "true")
             .attach(FIELD_WINDOWS, unityGameWindowsPath)
             .expect(STATUS_CODE_FAILURE)
-            .expect(
-              DIFFERENT_USER
-            )
+            .expect(DIFFERENT_USER)
             .end(done);
         });
     });
     it("条件を満たしていればアップロードできる", (done) => {
       request(app)
         .post("/upload/unity")
-        .set("x-creator-id", creatorId)
-        .set("x-game-id", gameId)
-        .set("x-overwrites-existing", "false")
+        .set(HEADER_CREATOR_ID, creatorId)
+        .set(HEADER_GAME_ID, gameId)
+        .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
         .expect(STATUS_CODE_SUCCESS)
         .expect(
