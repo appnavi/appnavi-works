@@ -63,7 +63,7 @@ uploadRouter
     validateParams,
     preventEditByOtherPerson,
     validateDestination,
-    ensureDiskSpaceAvailable,
+    ensureStorageSpaceAvailable,
     beforeUpload,
     unityUpload.fields(fields),
     ensureUploadSuccess,
@@ -164,7 +164,7 @@ async function validateDestination(
   }
   next();
 }
-async function ensureDiskSpaceAvailable(
+async function ensureStorageSpaceAvailable(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
