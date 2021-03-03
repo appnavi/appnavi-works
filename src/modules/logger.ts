@@ -34,8 +34,6 @@ log4js.configure({
     },
   },
 });
-const access = log4js.getLogger("access");
-const system = log4js.getLogger("system");
-const connectLogger = log4js.connectLogger;
-
-export { access, system, connectLogger };
+export const access = log4js.getLogger("access");
+export const system = log4js.getLogger("system");
+export const connectLogger = log4js.connectLogger;

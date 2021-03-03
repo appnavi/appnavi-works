@@ -14,24 +14,9 @@ import {
   HEADER_GAME_ID,
   HEADER_OVERWRITES_EXISTING,
 } from "../utils/constants";
-const FIELD_WEBGL = "webgl";
-const FIELD_WINDOWS = "windows";
-const idRegex = /^[0-9a-z-]+$/;
-const creatorIdSchema = yup
-  .string()
-  .matches(idRegex, CREATOR_ID_INVALID)
-  .required(CREATOR_ID_REQUIRED);
-const gameIdSchema = yup
-  .string()
-  .matches(idRegex, GAME_ID_INVALID)
-  .required(GAME_ID_REQUIRED);
-const uploadSchema = yup.object({
-  creatorId: creatorIdSchema,
-  gameId: gameIdSchema,
-  overwritesExisting: yup.boolean(),
-});
-
-const fields = [
+export const FIELD_WEBGL = "webgl";
+export const FIELD_WINDOWS = "windows";
+export const fields = [
   {
     name: FIELD_WEBGL,
   },
@@ -40,21 +25,37 @@ const fields = [
     maxCount: 1,
   },
 ];
-function getCreatorId(req: express.Request): string {
+
+const idRegex = /^[0-9a-z-]+$/;
+export const creatorIdSchema = yup
+  .string()
+  .matches(idRegex, CREATOR_ID_INVALID)
+  .required(CREATOR_ID_REQUIRED);
+export const gameIdSchema = yup
+  .string()
+  .matches(idRegex, GAME_ID_INVALID)
+  .required(GAME_ID_REQUIRED);
+export const uploadSchema = yup.object({
+  creatorId: creatorIdSchema,
+  gameId: gameIdSchema,
+  overwritesExisting: yup.boolean(),
+});
+
+export function getCreatorId(req: express.Request): string {
   return req.headers[HEADER_CREATOR_ID] as string;
 }
-function getGameId(req: express.Request): string {
+export function getGameId(req: express.Request): string {
   return req.headers[HEADER_GAME_ID] as string;
 }
-function getOverwritesExisting(req: express.Request): boolean {
+export function getOverwritesExisting(req: express.Request): boolean {
   return req.headers[HEADER_OVERWRITES_EXISTING] === "true";
 }
-function getUnityDir(req: express.Request): string {
+export function getUnityDir(req: express.Request): string {
   const creator_id = getCreatorId(req);
   const game_id = getGameId(req);
   return path.join(creator_id, game_id);
 }
-async function findGameInDatabase(
+export async function findGameInDatabase(
   req: express.Request
 ): Promise<GameDocument | undefined> {
   const results = await new Promise<GameDocument[]>((resolve, reject) => {
@@ -82,7 +83,7 @@ async function findGameInDatabase(
   }
 }
 
-function calculateCurrentStorageSizeBytes(): Promise<number> {
+export function calculateCurrentStorageSizeBytes(): Promise<number> {
   return new Promise<number>((resolve, reject) => {
     GameModel.find((err, data) => {
       if (err) {
@@ -99,7 +100,7 @@ function calculateCurrentStorageSizeBytes(): Promise<number> {
   });
 }
 
-function calculateTotalFileSize(
+export function calculateTotalFileSize(
   files: {
     [fieldname: string]: Express.Multer.File[];
   },
@@ -144,7 +145,7 @@ const unityStorage = multer.diskStorage({
     callback(null, path.basename(file.originalname));
   },
 });
-const unityUpload = multer({
+export const unityUpload = multer({
   storage: unityStorage,
   preservePath: true,
   fileFilter: (req, file, cb) => {
@@ -166,20 +167,3 @@ const unityUpload = multer({
     }
   },
 });
-
-export {
-  getCreatorId,
-  getGameId,
-  getUnityDir,
-  getOverwritesExisting,
-  calculateCurrentStorageSizeBytes,
-  findGameInDatabase,
-  calculateTotalFileSize,
-  unityUpload,
-  FIELD_WEBGL,
-  FIELD_WINDOWS,
-  fields,
-  creatorIdSchema,
-  gameIdSchema,
-  uploadSchema,
-};

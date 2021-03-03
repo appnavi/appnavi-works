@@ -12,14 +12,14 @@ type EnvKey =
   | "DATABASE_URL"
   | "GAME_STORAGE_SIZE_BYTES"
   | "PORT";
-function getEnv(key: EnvKey): string {
+export function getEnv(key: EnvKey): string {
   const val = process.env[key];
   if (typeof val !== "string") {
     throw new Error(`環境変数${key}は存在しません。`);
   }
   return val;
 }
-function getEnvNumber(key: "GAME_STORAGE_SIZE_BYTES" | "PORT"): number {
+export function getEnvNumber(key: "GAME_STORAGE_SIZE_BYTES" | "PORT"): number {
   const env = getEnv(key);
   const envNumber = parseInt(env, 10);
   if (env !== envNumber.toString()) {
@@ -27,7 +27,7 @@ function getEnvNumber(key: "GAME_STORAGE_SIZE_BYTES" | "PORT"): number {
   }
   return envNumber;
 }
-function getContentSecurityPolicy(
+export function getContentSecurityPolicy(
   directives: Record<string, Iterable<string>> = {}
 ): (
   req: express.Request,
@@ -52,7 +52,7 @@ function getContentSecurityPolicy(
     },
   });
 }
-function render(
+export function render(
   view: string,
   req: express.Request,
   res: express.Response,
@@ -63,4 +63,3 @@ function render(
     ...options,
   });
 }
-export { getEnv, getEnvNumber, getContentSecurityPolicy, render };

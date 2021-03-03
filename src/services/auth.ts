@@ -18,7 +18,7 @@ function setRedirect(req: express.Request): void {
     getEnv("JWT_SECRET")
   );
 }
-async function findUser(req: express.Request): Promise<UserDocument | undefined> {
+export async function findUser(req: express.Request): Promise<UserDocument | undefined> {
   const results = await new Promise<UserDocument[]>((resolve, reject) => {
     UserModel.find(
       {
@@ -42,14 +42,14 @@ async function findUser(req: express.Request): Promise<UserDocument | undefined>
       throw new Error("同じユーザーが複数登録されています");
   }
 }
-async function getDefaultCreatorId(
+export async function getDefaultCreatorId(
   req: express.Request
 ): Promise<string | undefined> {
   const userDocument = await findUser(req);
   const userData = userDocument?.toObject() as Record<string, unknown>;
   return userData?.defaultCreatorId as string;
 }
-function redirect(req: express.Request, res: express.Response): void {
+export function redirect(req: express.Request, res: express.Response): void {
   const session = req.session as SessionData;
   const rediretUrl = session.redirect?.url;
   const token = session.redirectToken;
@@ -66,7 +66,7 @@ function redirect(req: express.Request, res: express.Response): void {
   }
   res.redirect("/");
 }
-function ensureAuthenticated(
+export function ensureAuthenticated(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
@@ -83,14 +83,7 @@ function ensureAuthenticated(
   res.status(STATUS_CODE_UNAUTHORIZED).end();
 }
 
-function isAuthenticated(req: express.Request): boolean {
+export function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
 }
 
-export {
-  ensureAuthenticated,
-  isAuthenticated,
-  redirect,
-  findUser,
-  getDefaultCreatorId,
-};

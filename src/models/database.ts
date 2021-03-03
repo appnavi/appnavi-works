@@ -9,10 +9,6 @@ export interface GameDocument extends mongoose.Document {
   paths: string[];
   totalFileSize: number;
 }
-export interface UserDocument extends mongoose.Document{
-  userId: string,
-  defaultCreatorId: string,
-}
 const gameSchema = new mongoose.Schema(
   {
     uploadStartedAt: Date,
@@ -28,7 +24,12 @@ const gameSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-const GameModel = mongoose.model<GameDocument>("Game", gameSchema);
+export const GameModel = mongoose.model<GameDocument>("Game", gameSchema);
+
+export interface UserDocument extends mongoose.Document{
+  userId: string,
+  defaultCreatorId: string,
+}
 const userSchema = new mongoose.Schema(
   {
     userId: String,
@@ -38,5 +39,4 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-const UserModel = mongoose.model<UserDocument>("User", userSchema);
-export { GameModel, UserModel };
+export const UserModel = mongoose.model<UserDocument>("User", userSchema);
