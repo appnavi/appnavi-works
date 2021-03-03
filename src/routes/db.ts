@@ -23,7 +23,6 @@ dbRouter.get("/users", function (req, res, next) {
       next(err);
       return;
     }
-    console.log(data);
     render("db/users", req, res, {
       users: data,
     });
