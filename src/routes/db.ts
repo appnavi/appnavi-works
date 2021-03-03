@@ -7,26 +7,26 @@ const dbRouter = express.Router();
 
 dbRouter.use(ensureAuthenticated, getContentSecurityPolicy());
 dbRouter.get("/games", function (req, res, next) {
-  GameModel.find((err, data) => {
-    if (err) {
+  void GameModel.find()
+    .then((games) => {
+      render("db/games", req, res, {
+        games: games,
+      });
+    })
+    .catch((err) => {
       next(err);
-      return;
-    }
-    render("db/games", req, res, {
-      games: data,
     });
-  });
 });
 dbRouter.get("/users", function (req, res, next) {
-  UserModel.find((err, data) => {
-    if (err) {
+  void UserModel.find()
+    .then((users) => {
+      render("db/users", req, res, {
+        users: users,
+      });
+    })
+    .catch((err) => {
       next(err);
-      return;
-    }
-    render("db/users", req, res, {
-      users: data,
     });
-  });
 });
 
 export { dbRouter };

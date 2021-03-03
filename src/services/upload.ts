@@ -58,46 +58,26 @@ export function getUnityDir(req: express.Request): string {
 export async function findGameInDatabase(
   req: express.Request
 ): Promise<GameDocument | undefined> {
-  const results = await new Promise<GameDocument[]>((resolve, reject) => {
-    GameModel.find(
-      {
-        creatorId: getCreatorId(req),
-        gameId: getGameId(req),
-      },
-      (err, data) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(data);
-      }
-    );
+  const games = await GameModel.find({
+    creatorId: getCreatorId(req),
+    gameId: getGameId(req),
   });
-  switch (results.length) {
+  switch (games.length) {
     case 0:
       return undefined;
     case 1:
-      return results[0];
+      return games[0];
     default:
       throw new Error("同じゲームが複数登録されています");
   }
 }
 
-export function calculateCurrentStorageSizeBytes(): Promise<number> {
-  return new Promise<number>((resolve, reject) => {
-    GameModel.find((err, data) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(
-        data.reduce(
-          (accumulator, currentValue) =>
-            accumulator + currentValue.totalFileSize,
-          0
-        )
-      );
-    });
-  });
+export async function calculateCurrentStorageSizeBytes(): Promise<number> {
+  const games = await GameModel.find();
+  return games.reduce(
+    (accumulator, currentValue) => accumulator + currentValue.totalFileSize,
+    0
+  );
 }
 
 export function calculateTotalFileSize(

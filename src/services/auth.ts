@@ -18,26 +18,17 @@ function setRedirect(req: express.Request): void {
     getEnv("JWT_SECRET")
   );
 }
-export async function findUser(req: express.Request): Promise<UserDocument | undefined> {
-  const results = await new Promise<UserDocument[]>((resolve, reject) => {
-    UserModel.find(
-      {
-        userId: req.user?.user.id,
-      },
-      (err, data) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(data);
-      }
-    );
+export async function findUser(
+  req: express.Request
+): Promise<UserDocument | undefined> {
+  const users = await UserModel.find({
+    userId: req.user?.user.id,
   });
-  switch (results.length) {
+  switch (users.length) {
     case 0:
       return undefined;
     case 1:
-      return results[0];
+      return users[0];
     default:
       throw new Error("同じユーザーが複数登録されています");
   }
@@ -86,4 +77,3 @@ export function ensureAuthenticated(
 export function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
 }
-
