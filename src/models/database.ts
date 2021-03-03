@@ -1,5 +1,5 @@
 import * as mongoose from "mongoose";
-interface GameDocument extends mongoose.Document {
+export interface GameDocument extends mongoose.Document {
   uploadStartedAt: Date;
   uploadEndedAt: Date;
   elapsedMillis: number;
@@ -8,6 +8,10 @@ interface GameDocument extends mongoose.Document {
   createdBy: string;
   paths: string[];
   totalFileSize: number;
+}
+export interface UserDocument extends mongoose.Document{
+  userId: string,
+  defaultCreatorId: string,
 }
 const gameSchema = new mongoose.Schema(
   {
@@ -34,5 +38,5 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-const UserModel = mongoose.model("User", userSchema);
+const UserModel = mongoose.model<UserDocument>("User", userSchema);
 export { GameModel, UserModel };

@@ -1,10 +1,9 @@
 import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
-import { Document } from "mongoose";
 import multer from "multer";
 import * as yup from "yup";
-import { GameModel } from "../models/database";
+import { GameDocument, GameModel } from "../models/database";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
   MESSAGE_UNITY_UPLOAD_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
@@ -57,8 +56,8 @@ function getUnityDir(req: express.Request): string {
 }
 async function findGameInDatabase(
   req: express.Request
-): Promise<Document | undefined> {
-  const results = await new Promise<Document[]>((resolve, reject) => {
+): Promise<GameDocument | undefined> {
+  const results = await new Promise<GameDocument[]>((resolve, reject) => {
     GameModel.find(
       {
         creatorId: getCreatorId(req),

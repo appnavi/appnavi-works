@@ -130,8 +130,7 @@ async function preventEditByOtherPerson(
     next();
     return;
   }
-  const game = gameDocument.toObject() as Record<string, unknown>;
-  const createdBy = game["createdBy"];
+  const createdBy = gameDocument.createdBy;
   if (createdBy === req.user?.user.id) {
     next();
     return;

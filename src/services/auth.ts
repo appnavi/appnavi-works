@@ -1,7 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { Document } from "mongoose";
-import { UserModel } from "../models/database";
+import { UserDocument, UserModel } from "../models/database";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
 import { getEnv } from "../utils/helpers";
 
@@ -19,8 +18,8 @@ function setRedirect(req: express.Request): void {
     getEnv("JWT_SECRET")
   );
 }
-async function findUser(req: express.Request): Promise<Document | undefined> {
-  const results = await new Promise<Document[]>((resolve, reject) => {
+async function findUser(req: express.Request): Promise<UserDocument | undefined> {
+  const results = await new Promise<UserDocument[]>((resolve, reject) => {
     UserModel.find(
       {
         userId: req.user?.user.id,
