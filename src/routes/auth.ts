@@ -85,7 +85,7 @@ authRouter
         next();
         return;
       }
-      UserModel.updateOne(
+      await UserModel.updateOne(
         {
           userId: req.user?.user.id,
         },
@@ -94,15 +94,9 @@ authRouter
             defaultCreatorId: defaultCreatorId,
           },
         },
-        { upsert: true },
-        (err) => {
-          if (err) {
-            next(err);
-            return;
-          }
-          next();
-        }
+        { upsert: true }
       );
+      next();
     },
     (req, res) => {
       const error = res.locals.error as string;

@@ -114,7 +114,8 @@ app.use(function (
   }
 
   // render the error page
-  const status = typeof err.status === "number" ? err.status : STATUS_CODE_FAILURE;
+  const status =
+    typeof err.status === "number" ? err.status : STATUS_CODE_FAILURE;
   res.status(status);
   res.render("error");
 });

@@ -23,7 +23,7 @@ import {
   MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS as ALREADY_EXISTS,
   MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
   MESSAGE_UNITY_UPLOAD_STORAGE_FULL as STORAGE_FULL,
-  MESSAGE_UNITY_UPLOAD_NO_FILES as NO_FILES
+  MESSAGE_UNITY_UPLOAD_NO_FILES as NO_FILES,
 } from "../utils/constants";
 import {
   getContentSecurityPolicy,
@@ -218,13 +218,13 @@ function createMetadata(
   } as Locals;
   next();
 }
-function saveToDatabase(
+async function saveToDatabase(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
   const locals = res.locals as Locals;
-  GameModel.updateOne(
+  await GameModel.updateOne(
     {
       creatorId: locals.creatorId,
       gameId: locals.gameId,
@@ -232,15 +232,9 @@ function saveToDatabase(
     {
       $set: locals,
     },
-    { upsert: true },
-    (err) => {
-      if (err) {
-        next(err);
-        return;
-      }
-      next();
-    }
+    { upsert: true }
   );
+  next();
 }
 function logUploadSuccess(
   req: express.Request,

@@ -29,6 +29,7 @@ export const MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS =
   "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください。";
 export const MESSAGE_UNITY_UPLOAD_DIFFERENT_USER =
   "別の人が既に投稿したゲームがあります。上書きすることはできません。";
-export const MESSAGE_UNITY_UPLOAD_STORAGE_FULL = "スペースが十分ではありません。";
-export const MESSAGE_UNITY_UPLOAD_NO_FILES = "アップロードするファイルがありません。";
-
+export const MESSAGE_UNITY_UPLOAD_STORAGE_FULL =
+  "スペースが十分ではありません。";
+export const MESSAGE_UNITY_UPLOAD_NO_FILES =
+  "アップロードするファイルがありません。";
