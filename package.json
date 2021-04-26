@@ -22,7 +22,6 @@
     "test": "nodemon -L --config nodemon.test.json"
   },
   "dependencies": {
-    "async-passport-slack": "^0.1.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "cookie-session": "^1.4.0",
@@ -37,6 +36,7 @@
     "multer": "^1.4.2",
     "node-sass-middleware": "^0.11.0",
     "passport": "^0.4.1",
+    "passport-slack": "juris710/passport-slack#v0.2.0",
     "request": "^2.88.2",
     "serve-index": "^1.9.1",
     "yup": "^0.32.9"
