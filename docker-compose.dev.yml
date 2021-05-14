@@ -1,10 +1,7 @@
 version: '3'
 services:
   game-upload:
-    build: .
     command: "yarn run dev"
-    ports:
-      - "3000:3000"
     volumes: 
       - ./private:/app/private
       - ./public:/app/public
@@ -12,11 +9,4 @@ services:
       - ./src_browser:/app/src_browser
       - ./views:/app/views
     env_file:
-      - node.env
       - docker-dev.env
-    networks: 
-      - network-mongo
-
-networks: 
-  network-mongo:
-    external: true

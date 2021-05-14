@@ -1,17 +1,10 @@
 version: '3'
 services:
   game-upload:
-    build: .
     command: "yarn run test"
     volumes: 
       - ./test:/app/test
       - ./src:/app/src
     env_file:
-      - node.env
       - docker-test.env
-    networks: 
-      - network-mongo
 
-networks: 
-  network-mongo:
-    external: true

@@ -1,0 +1,10 @@
+version: '3'
+services:
+  game-upload:
+    command: "yarn run start"
+    volumes: 
+      - ./uploads:/app/uploads
+      - ./backups:/app/backups
+      - ./logs:/app/logs
+    env_file:
+      - docker-production.env
