@@ -22,7 +22,7 @@ import {
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_FAILURE,
 } from "./utils/constants";
-import { getEnv, ignoreTypescriptFile } from "./utils/helpers";
+import { getEnv, ignoreTypescriptFile, render } from "./utils/helpers";
 
 preparePassport(passport);
 
@@ -36,6 +36,7 @@ app.use(compression());
 // view engine setup
 app.set("views", path.join(__dirname, "..", DIRECTORY_NAME_VIEWS));
 app.set("view engine", "ejs");
+
 app.use(express.json());
 app.use(
   cookieSession({
@@ -105,7 +106,7 @@ app.use(function (
   const status =
     typeof err.status === "number" ? err.status : STATUS_CODE_FAILURE;
   res.status(status);
-  res.render("error");
+  render("error", req, res);
 });
 
 export { passport, app };
