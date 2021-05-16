@@ -1,3 +1,3 @@
 #!/bin/sh
 
-COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml docker-compose -p game-upload up -d $@
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml -p game-upload up -d $@
