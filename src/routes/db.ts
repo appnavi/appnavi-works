@@ -7,7 +7,7 @@ const dbRouter = express.Router();
 
 dbRouter.use(ensureAuthenticated, getContentSecurityPolicy());
 dbRouter.get("/games", function (req, res, next) {
-  void GameModel.find()
+  GameModel.find()
     .then((games) => {
       render("db/games", req, res, {
         games: games,
@@ -18,7 +18,7 @@ dbRouter.get("/games", function (req, res, next) {
     });
 });
 dbRouter.get("/users", function (req, res, next) {
-  void UserModel.find()
+  UserModel.find()
     .then((users) => {
       render("db/users", req, res, {
         users: users,
