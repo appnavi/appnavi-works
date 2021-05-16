@@ -2,6 +2,8 @@ version: '3'
 services:
   game-upload:
     command: "yarn run dev"
+    ports:
+      - "3000:3000"
     volumes: 
       - ./private:/app/private
       - ./public:/app/public
