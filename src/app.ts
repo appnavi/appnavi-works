@@ -25,7 +25,6 @@ import {
 } from "./utils/constants";
 import { getEnv } from "./utils/helpers";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 preparePassport(passport);
 
 const app = express();
