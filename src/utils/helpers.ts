@@ -1,5 +1,6 @@
 import express from "express";
 import helmet from "helmet";
+import createError from "http-errors";
 
 type EnvKey =
   | "SLACK_CLIENT_ID"
@@ -53,6 +54,17 @@ export function getContentSecurityPolicy(
     },
   });
 }
+export const ignoreTypescriptFile = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) :void=>  {
+  if(req.url.endsWith(".ts")){
+    next(createError(404));
+  }
+  next();
+}
+
 export function render(
   view: string,
   req: express.Request,

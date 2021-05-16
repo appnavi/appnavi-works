@@ -22,7 +22,7 @@ import {
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_FAILURE,
 } from "./utils/constants";
-import { getEnv } from "./utils/helpers";
+import { getEnv, ignoreTypescriptFile } from "./utils/helpers";
 
 preparePassport(passport);
 
@@ -59,7 +59,9 @@ app.use(
   })
 );
 const PATH_PUBLIC_DIRECTORY = path.join(__dirname, "..", DIRECTORY_NAME_PUBLIC);
-app.use(express.static(PATH_PUBLIC_DIRECTORY));
+app.use(
+  ignoreTypescriptFile,
+  express.static(PATH_PUBLIC_DIRECTORY));
 
 const PATH_PRIVATE_DIRECTORY = path.join(
   __dirname,
@@ -70,6 +72,7 @@ const PATH_PRIVATE_DIRECTORY = path.join(
 app.use(
   URL_PREFIX_PRIVATE,
   ensureAuthenticated,
+  ignoreTypescriptFile,
   express.static(PATH_PRIVATE_DIRECTORY)
 );
 
