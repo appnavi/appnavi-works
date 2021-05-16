@@ -1,9 +1,1 @@
-{
-	"version": 3,
-	"file": "navbar.css",
-	"sources": [
-		"navbar.scss"
-	],
-	"names": [],
-	"mappings": "AAAA,AAAA,cAAc,CAAA;EACZ,YAAY,EAAE,IAAI,GACnB"
-}
+{"version":3,"sourceRoot":"","sources":["navbar.scss"],"names":[],"mappings":"AAAA,eACE","file":"navbar.css"}
