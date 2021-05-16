@@ -15,8 +15,8 @@ const strategy = new SlackStrategy(
     ], // default
   },
   function (
-    accessToken: string,
-    refreshToken: string,
+    _accessToken: string,
+    _refreshToken: string,
     profile: Express.User,
     done: OAuth2Strategy.VerifyCallback
   ) {
