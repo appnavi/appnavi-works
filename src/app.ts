@@ -5,7 +5,6 @@ import cookieSession from "cookie-session";
 import express from "express";
 import helmet from "helmet";
 import createError from "http-errors";
-import sassMiddleware from "node-sass-middleware";
 import passport from "passport";
 import { preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
@@ -60,15 +59,7 @@ app.use(
   })
 );
 const PATH_PUBLIC_DIRECTORY = path.join(__dirname, "..", DIRECTORY_NAME_PUBLIC);
-app.use(
-  sassMiddleware({
-    src: PATH_PUBLIC_DIRECTORY,
-    dest: PATH_PUBLIC_DIRECTORY,
-    indentedSyntax: false, // true = .sass and false = .scss
-    sourceMap: true,
-  }),
-  express.static(PATH_PUBLIC_DIRECTORY)
-);
+app.use(express.static(PATH_PUBLIC_DIRECTORY));
 
 const PATH_PRIVATE_DIRECTORY = path.join(
   __dirname,
@@ -79,12 +70,6 @@ const PATH_PRIVATE_DIRECTORY = path.join(
 app.use(
   URL_PREFIX_PRIVATE,
   ensureAuthenticated,
-  sassMiddleware({
-    src: PATH_PRIVATE_DIRECTORY,
-    dest: PATH_PRIVATE_DIRECTORY,
-    indentedSyntax: false, // true = .sass and false = .scss
-    sourceMap: true,
-  }),
   express.static(PATH_PRIVATE_DIRECTORY)
 );
 
