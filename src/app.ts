@@ -59,9 +59,7 @@ app.use(
   })
 );
 const PATH_PUBLIC_DIRECTORY = path.join(__dirname, "..", DIRECTORY_NAME_PUBLIC);
-app.use(
-  ignoreTypescriptFile,
-  express.static(PATH_PUBLIC_DIRECTORY));
+app.use(ignoreTypescriptFile, express.static(PATH_PUBLIC_DIRECTORY));
 
 const PATH_PRIVATE_DIRECTORY = path.join(
   __dirname,

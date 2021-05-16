@@ -58,12 +58,12 @@ export const ignoreTypescriptFile = (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
-) :void=>  {
-  if(req.url.endsWith(".ts")){
+): void => {
+  if (req.url.endsWith(".ts")) {
     next(createError(404));
   }
   next();
-}
+};
 
 export function render(
   view: string,
