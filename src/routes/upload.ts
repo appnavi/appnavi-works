@@ -74,7 +74,7 @@ uploadRouter
     createMetadata,
     saveToDatabase,
     logUploadSuccess,
-    (req, res) => {
+    (_req, res) => {
       const locals = res.locals as Locals;
       res.send({
         paths: locals.paths,
@@ -84,7 +84,7 @@ uploadRouter
 
 uploadRouter.use(function (
   err: NodeJS.Dict<unknown>,
-  req: express.Request,
+  _req: express.Request,
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
@@ -100,7 +100,7 @@ uploadRouter.use(function (
 
 function validateParams(
   req: express.Request,
-  res: express.Response,
+  _res: express.Response,
   next: express.NextFunction
 ) {
   const creatorId = getCreatorId(req);
@@ -124,7 +124,7 @@ function validateParams(
 }
 async function preventEditByOtherPerson(
   req: express.Request,
-  res: express.Response,
+  _res: express.Response,
   next: express.NextFunction
 ) {
   const gameDocument = await findGameInDatabase(req);
@@ -141,7 +141,7 @@ async function preventEditByOtherPerson(
 }
 async function validateDestination(
   req: express.Request,
-  res: express.Response,
+  _res: express.Response,
   next: express.NextFunction
 ) {
   const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
@@ -158,8 +158,8 @@ async function validateDestination(
   next();
 }
 async function ensureStorageSpaceAvailable(
-  req: express.Request,
-  res: express.Response,
+  _req: express.Request,
+  _res: express.Response,
   next: express.NextFunction
 ) {
   const gameStorageSizeBytes = getEnvNumber("GAME_STORAGE_SIZE_BYTES");
@@ -171,7 +171,7 @@ async function ensureStorageSpaceAvailable(
   next();
 }
 function beforeUpload(
-  req: express.Request,
+  _req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
@@ -181,7 +181,7 @@ function beforeUpload(
 }
 function ensureUploadSuccess(
   req: express.Request,
-  res: express.Response,
+  _res: express.Response,
   next: express.NextFunction
 ) {
   if (Object.keys(req.files ?? {}).length === 0) {
@@ -221,7 +221,7 @@ function createMetadata(
   next();
 }
 async function saveToDatabase(
-  req: express.Request,
+  _req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
@@ -239,7 +239,7 @@ async function saveToDatabase(
   next();
 }
 function logUploadSuccess(
-  req: express.Request,
+  _req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {

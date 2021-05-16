@@ -58,7 +58,7 @@ export function getContentSecurityPolicy(
 }
 export const ignoreTypescriptFile = (
   req: express.Request,
-  res: express.Response,
+  _res: express.Response,
   next: express.NextFunction
 ): void => {
   if (req.url.endsWith(".ts")) {
