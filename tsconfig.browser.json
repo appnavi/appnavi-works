@@ -1,16 +1,17 @@
 {
   "extends": "./tsconfig.json",
   "include": [
-    "src_browser/**/*.ts"
+    "./public/javascripts/**/*.ts",
+    "./private/javascripts/**/*.ts"
   ],
   "exclude": [
-    "../**/*.js"
+    "./**/*.js"
   ],
   "compilerOptions": {
     "lib": [
       "DOM"
     ],
-    "rootDir": "./src_browser",
+    "rootDir": "./",
     "outDir": "./"
   }
 }
