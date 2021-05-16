@@ -35,7 +35,6 @@
     - [helpers.ts](#srcutilshelpersts)  
   - [app.ts](#srcappts)  
   - [index.ts](#srcindexts)  
-- 📁[src_browser](#src_browser)  
 - 📁[test](#test)  
 - 📁[uploads](#uploads)  
 - 📁[views](#views)  
@@ -78,9 +77,9 @@ productionにおいては、[src](#📁src)フォルダー内の代わりに、�
 
 ### 📁private/javascripts
 
-[📁src_browser/private/javascripts](📁src_browser/private/javascripts)内のTypescriptをビルドしたJavascriptファイル。
+ログイン必須なページで使用されるJavascriptファイル。
 
-ログイン必須なページで使用される。
+`yarn build:browser`により、このフォルダー内のTypescriptファイルから同名のJavascriptファイルが生成される。
 
 ### 📁private/stylesheets
 
@@ -184,12 +183,6 @@ expressアプリケーションの定義。
 ### src/index.ts
 
 データベースに接続し、アプリケーションを開始する。
-
-## 📁src_browser
-
-ブラウザーで表示するコンテンツ用のソースコード(Typescript)
-
-`yarn build:browser`コマンドにより、生成されたJavascriptコードがルートフォルダーに格納される。
 
 ## 📁test
 
