@@ -91,7 +91,7 @@ app.use(function (
   req: express.Request,
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
+  _next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
 ) {
   // set locals, only providing error in development
   res.locals.message = err.message;
