@@ -9,7 +9,7 @@ services:
     depends_on:
       - mongo
     networks:
-      - game-upload
+      - db
   mongo:
     image: "mongo"
     expose: 
@@ -18,12 +18,12 @@ services:
       - db-volume-game-upload:/data/db
       - db-config-volume-game-upload:/data/configdb
     networks:
-      - game-upload
+      - db
 
 volumes:
   db-volume-game-upload:
   db-config-volume-game-upload:
 
 networks:
-  game-upload:
+  db:
     driver: bridge
