@@ -12,7 +12,7 @@
   - 📁[stylesheets](#privatestylesheets)  
 - 📁[public](#public)  
   - 📁[stylesheets](#publicstylesheets)  
-    - 📁[fontawesome-free-5.15.1-web](#publicstylesheetsfontawesome-free-5151-web)  
+  - 📁[fontawesome-free-5.15.1-web](#publicfontawesome-free-5151-web)  
 - 📁[src](#src)  
   - 📁[@types](#srctypes)
   - 📁[config](#srcconfig)  
@@ -96,7 +96,7 @@ scssファイルを編集すれば、同名のcssファイルにアクセスし�
 
 scssファイルを編集すれば、同名のcssファイルにアクセスした際、cssファイルの内容が自動的に更新される。
 
-#### 📁public/stylesheets/fontawesome-free-5.15.1-web
+#### 📁public/fontawesome-free-5.15.1-web
 
 [Font Awesome](https://fontawesome.com/)のアイコン
 
