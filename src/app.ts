@@ -50,6 +50,9 @@ app.use(
   passport.initialize(),
   passport.session()
 );
+if (process.env.NODE_ENV === "production"){
+  app.set("trust proxy", 1);
+}
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(
