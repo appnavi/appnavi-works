@@ -2,8 +2,6 @@ version: '3'
 services:
   game-upload:
     build: .
-    ports:
-      - "3000:3000"
     env_file:
       - node.env
     depends_on:
