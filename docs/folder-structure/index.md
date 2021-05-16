@@ -11,6 +11,7 @@
   - 📁[javascripts](#privatejavascripts)  
   - 📁[stylesheets](#privatestylesheets)  
 - 📁[public](#public)  
+  - 📁[javascripts](#publicjavascripts)  
   - 📁[stylesheets](#publicstylesheets)  
   - 📁[fontawesome-free-5.15.1-web](#publicfontawesome-free-5151-web)  
 - 📁[src](#src)  
@@ -88,6 +89,12 @@ productionにおいては、[src](#📁src)フォルダー内の代わりに、�
 scssファイルを編集すれば、同名のcssファイルにアクセスした際、cssファイルの内容が自動的に更新される。
 
 ## 📁public
+
+### 📁public/javascripts
+
+ログインの有無に関わらず使えるJavascriptファイルを格納するフォルダー。
+
+`yarn build:browser`により、このフォルダー内のTypescriptファイルから同名のJavascriptファイルが生成される。
 
 ### 📁public/stylesheets
 
