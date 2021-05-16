@@ -12,6 +12,7 @@ import { authRouter } from "./routes/auth";
 import { dbRouter } from "./routes/db";
 import { gamesRouter } from "./routes/games";
 import { indexRouter } from "./routes/index";
+import { profileRouter } from "./routes/profile";
 import { uploadRouter } from "./routes/upload";
 import { ensureAuthenticated } from "./services/auth";
 import {
@@ -87,6 +88,7 @@ app.use(
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
+app.use("/profile", profileRouter);
 app.use("/upload", uploadRouter);
 app.use(URL_PREFIX_GAME, gamesRouter);
 app.use("/db", dbRouter);
