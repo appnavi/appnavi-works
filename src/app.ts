@@ -22,7 +22,12 @@ import {
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_FAILURE,
 } from "./utils/constants";
-import { getEnv, ignoreTypescriptFile, render } from "./utils/helpers";
+import {
+  ejsToHtml,
+  getEnv,
+  ignoreTypescriptFile,
+  render,
+} from "./utils/helpers";
 
 preparePassport(passport);
 
@@ -35,6 +40,11 @@ app.use(
 app.use(compression());
 // view engine setup
 app.set("views", path.join(__dirname, "..", DIRECTORY_NAME_VIEWS));
+app.engine("ejs", function (filePath, options, callback) {
+  ejsToHtml(filePath, options as Record<string, unknown>)
+    .then((it) => callback(null, it))
+    .catch((err) => callback(err));
+});
 app.set("view engine", "ejs");
 
 app.use(express.json());

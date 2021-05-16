@@ -1,3 +1,5 @@
+import path from "path";
+import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import helmet from "helmet";
 import createError from "http-errors";
@@ -74,5 +76,16 @@ export function render(
   res.render(view, {
     user: req.user?.user,
     ...options,
+  });
+}
+
+export function ejsToHtml(
+  filePath: string,
+  options: Record<string, unknown>,
+  ejsOptions: EjsOptions = {}
+): Promise<string> {
+  return ejs.renderFile(filePath, options, {
+    views: [path.join(__dirname, "../../views")],
+    ...ejsOptions,
   });
 }
