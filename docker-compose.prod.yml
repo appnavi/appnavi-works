@@ -8,3 +8,13 @@ services:
       - ./logs:/app/logs
     env_file:
       - docker-production.env
+    environment:
+      - "VIRTUAL_HOST=resources.opuappnavi.com"
+      - "CERT_NAME=shared"
+    networks:
+      - nginx-proxy
+
+networks: 
+  nginx-proxy:
+    external: 
+      name: nginx-proxy
