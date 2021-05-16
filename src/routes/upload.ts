@@ -27,6 +27,7 @@ import {
 } from "../utils/constants";
 import {
   getContentSecurityPolicy,
+  getEnv,
   getEnvNumber,
   render,
 } from "../utils/helpers";
@@ -59,6 +60,7 @@ uploadRouter
   .get(async function (req, res) {
     render("upload/unity", req, res, {
       defaultCreatorId: await getDefaultCreatorId(req),
+      url: getEnv("SITE_URL")
     });
   })
   .post(

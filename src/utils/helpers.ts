@@ -10,6 +10,7 @@ type EnvKey =
   | "COOKIE_KEYS"
   | "JWT_SECRET"
   | "DATABASE_URL"
+  | "SITE_URL"
   | "GAME_STORAGE_SIZE_BYTES"
   | "PORT";
 export function getEnv(key: EnvKey): string {
