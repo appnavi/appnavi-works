@@ -8,6 +8,7 @@
     "dev": "run-p dev:*",
     "dev:server": "nodemon -L ./src/index.ts",
     "dev:browser": "tsc -p tsconfig.browser.json -w",
+    "dev:sass": "sass public/stylesheets:public/stylesheets private/stylesheets:private/stylesheets --style=compressed --update --watch",
     "build": "run-s build:*",
     "build:server": "tsc -p tsconfig.json",
     "build:browser": "tsc -p tsconfig.browser.json",
