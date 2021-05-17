@@ -21,7 +21,7 @@ import {
   DIRECTORY_NAME_PRIVATE,
   DIRECTORY_NAME_PUBLIC,
   DIRECTORY_NAME_VIEWS,
-  STATUS_CODE_FAILURE,
+  STATUS_CODE_SERVER_ERROR,
 } from "./utils/constants";
 import {
   ejsToHtml,
@@ -116,7 +116,7 @@ app.use(function (
 
   // render the error page
   const status =
-    typeof err.status === "number" ? err.status : STATUS_CODE_FAILURE;
+    typeof err.status === "number" ? err.status : STATUS_CODE_SERVER_ERROR;
   res.status(status);
   render("error", req, res);
 });

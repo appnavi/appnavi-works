@@ -6,7 +6,7 @@ import { FIELD_WINDOWS } from "../src/services/upload";
 import {
   URL_PREFIX_GAME,
   DIRECTORY_UPLOADS_DESTINATION,
-  STATUS_CODE_FAILURE,
+  STATUS_CODE_BAD_REQUEST,
   STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
   MESSAGE_UNITY_UPLOAD_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
@@ -53,7 +53,7 @@ describe("Unityゲームのアップロード", () => {
         .set(HEADER_GAME_ID, gameId)
         .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
-        .expect(STATUS_CODE_FAILURE)
+        .expect(STATUS_CODE_BAD_REQUEST)
         .expect(CREATOR_ID_REQUIRED)
         .end(done);
     });
@@ -64,7 +64,7 @@ describe("Unityゲームのアップロード", () => {
         .set(HEADER_GAME_ID, gameId)
         .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
-        .expect(STATUS_CODE_FAILURE)
+        .expect(STATUS_CODE_BAD_REQUEST)
         .expect(CREATOR_ID_INVALID)
         .end(done);
     });
@@ -74,7 +74,7 @@ describe("Unityゲームのアップロード", () => {
         .set(HEADER_CREATOR_ID, creatorId)
         .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
-        .expect(STATUS_CODE_FAILURE)
+        .expect(STATUS_CODE_BAD_REQUEST)
         .expect(GAME_ID_REQUIRED)
         .end(done);
     });
@@ -85,7 +85,7 @@ describe("Unityゲームのアップロード", () => {
         .set(HEADER_GAME_ID, encodeURI("テスト"))
         .set(HEADER_OVERWRITES_EXISTING, "false")
         .attach(FIELD_WINDOWS, unityGameWindowsPath)
-        .expect(STATUS_CODE_FAILURE)
+        .expect(STATUS_CODE_BAD_REQUEST)
         .expect(GAME_ID_INVALID)
         .end(done);
     });
@@ -116,7 +116,7 @@ describe("Unityゲームのアップロード", () => {
             .set(HEADER_GAME_ID, gameId)
             .set(HEADER_OVERWRITES_EXISTING, "false")
             .attach(FIELD_WINDOWS, unityGameWindowsPath)
-            .expect(STATUS_CODE_FAILURE)
+            .expect(STATUS_CODE_BAD_REQUEST)
             .expect(ALREADY_EXISTS)
             .end(done);
         });
@@ -148,7 +148,7 @@ describe("Unityゲームのアップロード", () => {
             .set(HEADER_GAME_ID, gameId)
             .set(HEADER_OVERWRITES_EXISTING, "true")
             .attach(FIELD_WINDOWS, unityGameWindowsPath)
-            .expect(STATUS_CODE_FAILURE)
+            .expect(STATUS_CODE_BAD_REQUEST)
             .expect(DIFFERENT_USER)
             .end(done);
         });
@@ -159,18 +159,17 @@ describe("Unityゲームのアップロード", () => {
         gameId: "large-game",
         createdBy: theirId,
         totalFileSize: getEnvNumber("GAME_STORAGE_SIZE_BYTES"),
-      })
-        .then(() => {
-          request(app)
-            .post("/upload/unity")
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_GAME_ID, gameId)
-            .set(HEADER_OVERWRITES_EXISTING, "false")
-            .attach(FIELD_WINDOWS, unityGameWindowsPath)
-            .expect(STATUS_CODE_FAILURE)
-            .expect(STORAGE_FULL)
-            .end(done);
-        });
+      }).then(() => {
+        request(app)
+          .post("/upload/unity")
+          .set(HEADER_CREATOR_ID, creatorId)
+          .set(HEADER_GAME_ID, gameId)
+          .set(HEADER_OVERWRITES_EXISTING, "false")
+          .attach(FIELD_WINDOWS, unityGameWindowsPath)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(STORAGE_FULL)
+          .end(done);
+      });
     });
     it("ゲームがなければアップロードできない", (done) => {
       request(app)
@@ -178,7 +177,7 @@ describe("Unityゲームのアップロード", () => {
         .set(HEADER_CREATOR_ID, creatorId)
         .set(HEADER_GAME_ID, gameId)
         .set(HEADER_OVERWRITES_EXISTING, "false")
-        .expect(STATUS_CODE_FAILURE)
+        .expect(STATUS_CODE_BAD_REQUEST)
         .expect(NO_FILES)
         .end(done);
     });

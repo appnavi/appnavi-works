@@ -24,6 +24,7 @@ import {
   MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
   MESSAGE_UNITY_UPLOAD_STORAGE_FULL as STORAGE_FULL,
   MESSAGE_UNITY_UPLOAD_NO_FILES as NO_FILES,
+  STATUS_CODE_BAD_REQUEST,
 } from "../utils/constants";
 import {
   getContentSecurityPolicy,
@@ -95,7 +96,7 @@ uploadRouter.use(function (
   }
   const params = err.params;
   logger.system.error(`アップロード失敗：${err.message}`, ...params);
-  res.status(500).send(err.message);
+  res.status(STATUS_CODE_BAD_REQUEST).send(err.message);
 });
 
 function validateParams(
