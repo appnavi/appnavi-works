@@ -32,6 +32,7 @@ import {
 } from "../utils/helpers";
 
 interface Locals {
+  paths: string[];
   uploadStartedAt: Date;
   game: GameDocument;
 }
@@ -70,7 +71,7 @@ uploadRouter
     (_req, res) => {
       const locals = res.locals as Locals;
       res.send({
-        paths: locals.game.paths,
+        paths: locals.paths,
       });
     }
   );
@@ -138,7 +139,6 @@ async function fetchOrCrateGameDocument(
       creatorId: getCreatorId(req),
       gameId: getGameId(req),
       createdBy: req.user?.id,
-      paths: [],
       totalFileSize: 0,
       backupFileSizes: {},
     });
@@ -204,10 +204,10 @@ async function saveToDatabase(
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
   };
-  game.totalFileSize = calculateTotalFileSize(files, fields);
-  game.paths = fields
+  locals.paths = fields
     .filter(({ name }) => files[name] !== undefined)
     .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name));
+  game.totalFileSize = calculateTotalFileSize(files, fields);
   await game.save();
   next();
 }
