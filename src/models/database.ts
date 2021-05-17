@@ -3,7 +3,6 @@ export interface GameDocument extends Document {
   creatorId: string;
   gameId: string;
   createdBy: string;
-  paths: string[];
   totalFileSize: number;
   backupFileSizes: Types.Map<number>;
 }
@@ -12,7 +11,6 @@ const gameSchema = new Schema(
     creatorId: String,
     gameId: String,
     createdBy: String,
-    paths: [String],
     totalFileSize: Number,
     backupFileSizes: {
       type: Map,
