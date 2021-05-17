@@ -47,8 +47,8 @@ describe("GET", () => {
           .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
           .end(done);
       });
-      it("/auth/profileはログイン必須", (done) => {
-        requireAuthenticated("/auth/profile", done);
+      it("/profileはログイン必須", (done) => {
+        requireAuthenticated("/profile", done);
       });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
@@ -101,8 +101,8 @@ describe("GET", () => {
           .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
           .end(done);
       });
-      it("/auth/profileをGETできる", (done) => {
-        canAccessTo("/auth/profile", done);
+      it("/profileをGETできる", (done) => {
+        canAccessTo("/profile", done);
       });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
