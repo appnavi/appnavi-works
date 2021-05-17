@@ -8,7 +8,7 @@ import {
   isAuthenticated,
   redirect,
 } from "../services/auth";
-import { creatorIdSchema } from "../services/upload";
+import { creatorIdSchema } from "../services/games";
 import { getContentSecurityPolicy, getEnv, render } from "../utils/helpers";
 
 const authRouter = express.Router();

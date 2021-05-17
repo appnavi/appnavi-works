@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../src/app";
-import { FIELD_WINDOWS } from "../src/services/upload";
+import { FIELD_WINDOWS } from "../src/services/games";
 import {
   URL_PREFIX_GAME,
   DIRECTORY_UPLOADS_DESTINATION,

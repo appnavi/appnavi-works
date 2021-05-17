@@ -15,7 +15,7 @@ import {
   uploadSchema,
   getOverwritesExisting,
   calculateCurrentStorageSizeBytes,
-} from "../services/upload";
+} from "../services/games";
 import {
   URL_PREFIX_GAME,
   DIRECTORY_UPLOADS_DESTINATION,
