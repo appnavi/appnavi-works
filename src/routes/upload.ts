@@ -146,15 +146,20 @@ async function validateDestination(
   next: express.NextFunction
 ) {
   const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
-  const exists = await fsExtra.pathExists(gameDir);
+  const gamePath = path.resolve(gameDir);
+  const exists = await fsExtra.pathExists(gamePath);
   if (exists) {
     if (!getOverwritesExisting(req)) {
       next(new UploadError(ALREADY_EXISTS, [gameDir]));
       return;
     }
-    await fsExtra.move(gameDir, path.join(DIRECTORY_NAME_BACKUPS, gameDir), {
-      overwrite: true,
-    });
+    await fsExtra.move(
+      gamePath,
+      path.resolve(DIRECTORY_NAME_BACKUPS, gameDir),
+      {
+        overwrite: true,
+      }
+    );
   }
   next();
 }

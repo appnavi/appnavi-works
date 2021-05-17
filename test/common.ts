@@ -8,18 +8,14 @@ import fs from "fs-extra";
 import path from "path";
 
 async function clearUploadDestination() {
-  const uploadDirPath = path.join(
-    __dirname,
-    "../",
-    DIRECTORY_UPLOADS_DESTINATION
-  );
+  const uploadDirPath = path.resolve(DIRECTORY_UPLOADS_DESTINATION);
   await fs.emptyDir(uploadDirPath);
 }
 async function clearDatabase() {
   const db = mongoose.connection;
   await db.dropDatabase();
 }
-export async function connectDatabase(){
+export async function connectDatabase() {
   await mongoose.connect(getEnv("DATABASE_URL"), {
     useNewUrlParser: true,
     useUnifiedTopology: true,

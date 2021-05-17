@@ -3,6 +3,7 @@ import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import helmet from "helmet";
 import createError from "http-errors";
+import { DIRECTORY_NAME_VIEWS } from "./constants";
 
 type EnvKey =
   | "SLACK_CLIENT_ID"
@@ -85,7 +86,7 @@ export function ejsToHtml(
   ejsOptions: EjsOptions = {}
 ): Promise<string> {
   return ejs.renderFile(filePath, options, {
-    views: [path.join(__dirname, "../../views")],
+    views: [path.resolve(DIRECTORY_NAME_VIEWS)],
     ...ejsOptions,
   });
 }

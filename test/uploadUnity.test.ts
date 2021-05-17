@@ -99,9 +99,7 @@ describe("Unityゲームのアップロード", () => {
         .then(() =>
           fs.copy(
             unityGameWindowsPath,
-            path.join(
-              __dirname,
-              "../",
+            path.resolve(
               DIRECTORY_UPLOADS_DESTINATION,
               creatorId,
               gameId,
@@ -131,9 +129,7 @@ describe("Unityゲームのアップロード", () => {
         .then(() =>
           fs.copy(
             unityGameWindowsPath,
-            path.join(
-              __dirname,
-              "../",
+            path.resolve(
               DIRECTORY_UPLOADS_DESTINATION,
               creatorId,
               gameId,

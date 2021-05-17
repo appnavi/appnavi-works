@@ -40,7 +40,7 @@ app.use(
 );
 app.use(compression());
 // view engine setup
-app.set("views", path.join(__dirname, "..", DIRECTORY_NAME_VIEWS));
+app.set("views", path.resolve(DIRECTORY_NAME_VIEWS));
 app.engine("ejs", function (filePath, options, callback) {
   ejsToHtml(filePath, options as Record<string, unknown>)
     .then((it) => callback(null, it))
@@ -70,14 +70,10 @@ app.use(
     level: "info",
   })
 );
-const PATH_PUBLIC_DIRECTORY = path.join(__dirname, "..", DIRECTORY_NAME_PUBLIC);
+const PATH_PUBLIC_DIRECTORY = path.resolve(DIRECTORY_NAME_PUBLIC);
 app.use(ignoreTypescriptFile, express.static(PATH_PUBLIC_DIRECTORY));
 
-const PATH_PRIVATE_DIRECTORY = path.join(
-  __dirname,
-  "..",
-  DIRECTORY_NAME_PRIVATE
-);
+const PATH_PRIVATE_DIRECTORY = path.resolve(DIRECTORY_NAME_PRIVATE);
 
 app.use(
   URL_PREFIX_PRIVATE,

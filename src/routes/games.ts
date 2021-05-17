@@ -8,14 +8,14 @@ import {
 import { ejsToHtml } from "../utils/helpers";
 const gamesRouter = express.Router();
 gamesRouter.use(
-  express.static(path.join(__dirname, "../..", DIRECTORY_UPLOADS_DESTINATION)),
+  express.static(path.resolve(DIRECTORY_UPLOADS_DESTINATION)),
   serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
     template: (
       locals: serveIndex.Locals,
       callback: serveIndex.templateCallback
     ) => {
       ejsToHtml(
-        path.join(__dirname, "../..", DIRECTORY_NAME_VIEWS, "games.ejs"),
+        path.resolve(DIRECTORY_NAME_VIEWS, "games.ejs"),
         {
           ...locals,
         },
