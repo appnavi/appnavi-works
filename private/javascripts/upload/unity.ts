@@ -5,9 +5,6 @@ const creatorIdInput = document.querySelector(
 const gameIdInput = document.querySelector(
   'input[name="game_id"]'
 ) as HTMLInputElement;
-const overwriteCheckBox = document.querySelector(
-  'input[name="overwrites_existing"]'
-) as HTMLInputElement;
 const webglFilesInput = document.querySelector(
   'input[name="webgl"]'
 ) as HTMLInputElement;
@@ -187,10 +184,6 @@ form.addEventListener("submit", function (event) {
   request.open("POST", "", true);
   request.setRequestHeader("x-creator-id", creatorIdInput.value);
   request.setRequestHeader("x-game-id", gameIdInput.value);
-  request.setRequestHeader(
-    "x-overwrites-existing",
-    overwriteCheckBox.checked.toString()
-  );
   request.addEventListener("load", (ev) => {
     setUploading(false);
     let title =

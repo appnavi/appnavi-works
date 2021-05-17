@@ -13,7 +13,6 @@ import {
   getGameId,
   findGameInDatabase,
   uploadSchema,
-  getOverwritesExisting,
   calculateCurrentStorageSizeBytes,
   getLatestBackupIndex,
 } from "../services/games";
@@ -100,21 +99,17 @@ function validateParams(
 ) {
   const creatorId = getCreatorId(req);
   const gameId = getGameId(req);
-  const overwritesExisting = getOverwritesExisting(req);
 
   uploadSchema
     .validate({
       creatorId: creatorId,
       gameId: gameId,
-      overwritesExisting,
     })
     .then(() => {
       next();
     })
     .catch((err: { name: string; errors: string[] }) => {
-      next(
-        new UploadError(err.errors[0], [creatorId, gameId, overwritesExisting])
-      );
+      next(new UploadError(err.errors[0], [creatorId, gameId]));
     });
 }
 async function ensureStorageSpaceAvailable(

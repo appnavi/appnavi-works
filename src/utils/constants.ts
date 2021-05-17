@@ -11,7 +11,6 @@ export const DIRECTORY_NAME_BACKUPS = "backups";
 
 export const HEADER_CREATOR_ID = "x-creator-id";
 export const HEADER_GAME_ID = "x-game-id";
-export const HEADER_OVERWRITES_EXISTING = "x-overwrites-existing";
 
 export const STATUS_CODE_SUCCESS = 200;
 export const STATUS_CODE_REDIRECT_PERMANENT = 301;

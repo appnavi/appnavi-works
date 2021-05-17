@@ -2,7 +2,6 @@
 var form = document.querySelector("form");
 var creatorIdInput = document.querySelector('input[name="creator_id"]');
 var gameIdInput = document.querySelector('input[name="game_id"]');
-var overwriteCheckBox = document.querySelector('input[name="overwrites_existing"]');
 var webglFilesInput = document.querySelector('input[name="webgl"]');
 var windowsFilesInput = document.querySelector('input[name="windows"]');
 var webglFileFieldFrame = document.querySelector(".input-field.file-field-frame.webgl");
@@ -137,7 +136,6 @@ form.addEventListener("submit", function (event) {
     request.open("POST", "", true);
     request.setRequestHeader("x-creator-id", creatorIdInput.value);
     request.setRequestHeader("x-game-id", gameIdInput.value);
-    request.setRequestHeader("x-overwrites-existing", overwriteCheckBox.checked.toString());
     request.addEventListener("load", function (ev) {
         var _a;
         setUploading(false);

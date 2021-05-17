@@ -12,7 +12,6 @@ import {
   MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID as GAME_ID_INVALID,
   HEADER_CREATOR_ID,
   HEADER_GAME_ID,
-  HEADER_OVERWRITES_EXISTING,
   DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
 export const FIELD_WEBGL = "webgl";
@@ -39,7 +38,6 @@ export const gameIdSchema = yup
 export const uploadSchema = yup.object({
   creatorId: creatorIdSchema,
   gameId: gameIdSchema,
-  overwritesExisting: yup.boolean(),
 });
 
 export function getCreatorId(req: express.Request): string {
@@ -47,9 +45,6 @@ export function getCreatorId(req: express.Request): string {
 }
 export function getGameId(req: express.Request): string {
   return req.headers[HEADER_GAME_ID] as string;
-}
-export function getOverwritesExisting(req: express.Request): boolean {
-  return req.headers[HEADER_OVERWRITES_EXISTING] === "true";
 }
 export function getUnityDir(req: express.Request): string {
   const creator_id = getCreatorId(req);
