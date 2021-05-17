@@ -121,14 +121,14 @@ const unityStorage = multer.diskStorage({
     await fsExtra.ensureDir(dir);
     next(null, dir);
   },
-  filename: function (req, file, callback) {
+  filename: function (_req, file, callback) {
     callback(null, path.basename(file.originalname));
   },
 });
 export const unityUpload = multer({
   storage: unityStorage,
   preservePath: true,
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     switch (file.fieldname) {
       case FIELD_WINDOWS: {
         cb(null, path.extname(file.originalname) === ".zip");
