@@ -51,16 +51,22 @@ export function getUnityDir(req: express.Request): string {
   const game_id = getGameId(req);
   return path.join(creator_id, game_id);
 }
-export async function findGameInDatabase(
+export async function findOrCreateGame(
   req: express.Request
-): Promise<GameDocument | undefined> {
+): Promise<GameDocument> {
   const games = await GameModel.find({
     creatorId: getCreatorId(req),
     gameId: getGameId(req),
   });
   switch (games.length) {
     case 0:
-      return undefined;
+      return await GameModel.create({
+        creatorId: getCreatorId(req),
+        gameId: getGameId(req),
+        createdBy: req.user?.id,
+        totalFileSize: 0,
+        backupFileSizes: {},
+      });
     case 1:
       return games[0];
     default:

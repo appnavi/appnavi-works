@@ -1,7 +1,7 @@
 import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
-import { GameDocument, GameModel } from "../models/database";
+import { GameDocument } from "../models/database";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import {
@@ -11,10 +11,10 @@ import {
   fields,
   getCreatorId,
   getGameId,
-  findGameInDatabase,
   uploadSchema,
   calculateCurrentStorageSizeBytes,
   backupGame,
+  findOrCreateGame,
 } from "../services/games";
 import {
   URL_PREFIX_GAME,
@@ -60,7 +60,7 @@ uploadRouter
   .post(
     validateParams,
     ensureStorageSpaceAvailable,
-    fetchOrCreateGameDocument,
+    getGameDocument,
     preventEditByOtherPerson,
     validateDestination,
     beforeUpload,
@@ -125,24 +125,13 @@ async function ensureStorageSpaceAvailable(
   }
   next();
 }
-async function fetchOrCreateGameDocument(
+async function getGameDocument(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
   const locals = res.locals as Locals;
-  const game = await findGameInDatabase(req);
-  if (game !== undefined) {
-    locals.game = game;
-  } else {
-    locals.game = await GameModel.create({
-      creatorId: getCreatorId(req),
-      gameId: getGameId(req),
-      createdBy: req.user?.id,
-      totalFileSize: 0,
-      backupFileSizes: {},
-    });
-  }
+  locals.game = await findOrCreateGame(req);
   next();
 }
 function preventEditByOtherPerson(
