@@ -10,8 +10,7 @@ var windowsFileFieldFrame = document.querySelector(".input-field.file-field-fram
 var fileList = document.querySelector(".file-list");
 var uploadButton = document.querySelector(".uploadButton");
 var uploadingIndicator = document.querySelector(".uploadingIndicator");
-var dialog = document.querySelector("#result-dialog");
-var dialogContent = dialog.querySelector(".modal-content");
+var unityMessageDialog = document.querySelector("#result-dialog");
 document.addEventListener("DOMContentLoaded", function () {
     M.Collapsible.init(document.querySelector(".collapsible"), {
         onOpenStart: function (elm) {
@@ -23,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
             header.innerHTML = "keyboard_arrow_down";
         },
     });
-    M.Modal.init(dialog, {});
+    M.Modal.init(unityMessageDialog, {});
     setTimeout(function () { return M.updateTextFields(); }, 0);
 });
 function initDragAndDrop(fileInput, frame) {
@@ -45,9 +44,10 @@ webglFilesInput.addEventListener("change", function (_) {
 windowsFilesInput.addEventListener("change", function (_) {
     return onFilesDropped("windows", windowsFilesInput);
 });
-function openDialog(title, content) {
-    dialogContent.innerHTML = "<h4>" + title + "</h4>" + content;
-    M.Modal.getInstance(dialog).open();
+function showUnityMessageDialog(title, content) {
+    unityMessageDialog.querySelector(".title").textContent = title;
+    unityMessageDialog.querySelector(".message").innerHTML = content;
+    M.Modal.getInstance(unityMessageDialog).open();
 }
 function onMultipleFilesDropped(type, input) {
     var _a, _b, _c;
@@ -128,7 +128,7 @@ form.addEventListener("submit", function (event) {
     event.preventDefault();
     if (((_a = webglFilesInput.files) === null || _a === void 0 ? void 0 : _a.length) === 0 &&
         ((_b = windowsFilesInput.files) === null || _b === void 0 ? void 0 : _b.length) === 0) {
-        openDialog("ファイルが選択されていません", "<p>WebGLまたはWindowsのいずれかのファイルを選択してください</p>");
+        showUnityMessageDialog("ファイルが選択されていません", "WebGLまたはWindowsのいずれかのファイルを選択してください");
         return;
     }
     setUploading(true);
@@ -161,7 +161,7 @@ form.addEventListener("submit", function (event) {
         else {
             content = request.response;
         }
-        openDialog(title, content);
+        showUnityMessageDialog(title, content);
     });
     request.send(data);
 });

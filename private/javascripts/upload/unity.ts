@@ -28,8 +28,9 @@ const uploadButton = document.querySelector(
 const uploadingIndicator = document.querySelector(
   ".uploadingIndicator"
 ) as HTMLElement;
-const dialog = document.querySelector("#result-dialog") as HTMLElement;
-const dialogContent = dialog.querySelector(".modal-content") as HTMLElement;
+const unityMessageDialog = document.querySelector(
+  "#result-dialog"
+) as HTMLElement;
 
 //Materializeのロード
 document.addEventListener("DOMContentLoaded", function () {
@@ -47,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
       header.innerHTML = "keyboard_arrow_down";
     },
   });
-  M.Modal.init(dialog, {});
+  M.Modal.init(unityMessageDialog, {});
   setTimeout(() => M.updateTextFields(), 0);
 });
 
@@ -74,9 +75,10 @@ windowsFilesInput.addEventListener("change", (_) =>
   onFilesDropped("windows", windowsFilesInput)
 );
 
-function openDialog(title: string, content: string) {
-  dialogContent.innerHTML = `<h4>${title}</h4>${content}`;
-  M.Modal.getInstance(dialog).open();
+function showUnityMessageDialog(title: string, content: string) {
+  unityMessageDialog.querySelector(".title")!.textContent = title;
+  unityMessageDialog.querySelector(".message")!.innerHTML = content;
+  M.Modal.getInstance(unityMessageDialog).open();
 }
 
 function onMultipleFilesDropped(type: string, input: HTMLInputElement) {
@@ -172,9 +174,9 @@ form.addEventListener("submit", function (event) {
     webglFilesInput.files?.length === 0 &&
     windowsFilesInput.files?.length === 0
   ) {
-    openDialog(
+    showUnityMessageDialog(
       "ファイルが選択されていません",
-      "<p>WebGLまたはWindowsのいずれかのファイルを選択してください</p>"
+      "WebGLまたはWindowsのいずれかのファイルを選択してください"
     );
     return;
   }
@@ -210,7 +212,7 @@ form.addEventListener("submit", function (event) {
     } else {
       content = request.response;
     }
-    openDialog(title, content);
+    showUnityMessageDialog(title, content);
   });
   request.send(data);
 });
