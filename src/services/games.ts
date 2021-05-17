@@ -13,6 +13,7 @@ import {
   HEADER_CREATOR_ID,
   HEADER_GAME_ID,
   HEADER_OVERWRITES_EXISTING,
+  DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
 export const FIELD_WEBGL = "webgl";
 export const FIELD_WINDOWS = "windows";
@@ -70,6 +71,36 @@ export async function findGameInDatabase(
     default:
       throw new Error("同じゲームが複数登録されています");
   }
+}
+
+export async function listBackupFolderNames(
+  req: express.Request
+): Promise<string[]> {
+  const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, gameDir);
+  const backupExists = await fsExtra.pathExists(backupFolderPath);
+  if (!backupExists) {
+    return [];
+  }
+  const filesInbackupFolder = await fsExtra.readdir(backupFolderPath, {
+    withFileTypes: true,
+  });
+  return filesInbackupFolder
+    .filter((it) => it.isDirectory())
+    .map((it) => it.name);
+}
+
+export async function getLatestBackupIndex(
+  req: express.Request
+): Promise<number> {
+  const backupFolderNames = await listBackupFolderNames(req);
+  if (backupFolderNames.length == 0) {
+    return 0;
+  }
+  backupFolderNames.sort();
+  const latestBackupFolderName =
+    backupFolderNames[backupFolderNames.length - 1];
+  return parseInt(latestBackupFolderName);
 }
 
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {

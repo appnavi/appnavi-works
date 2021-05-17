@@ -1,8 +1,5 @@
 import { Document, model, Schema } from "mongoose";
 export interface GameDocument extends Document {
-  uploadStartedAt: Date;
-  uploadEndedAt: Date;
-  elapsedMillis: number;
   creatorId: string;
   gameId: string;
   createdBy: string;
@@ -11,9 +8,6 @@ export interface GameDocument extends Document {
 }
 const gameSchema = new Schema(
   {
-    uploadStartedAt: Date,
-    uploadEndedAt: Date,
-    elapsedMillis: Number,
     creatorId: String,
     gameId: String,
     createdBy: String,

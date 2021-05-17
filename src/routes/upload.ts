@@ -1,7 +1,7 @@
 import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
-import { GameModel } from "../models/database";
+import { GameDocument, GameModel } from "../models/database";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import {
@@ -15,12 +15,12 @@ import {
   uploadSchema,
   getOverwritesExisting,
   calculateCurrentStorageSizeBytes,
+  getLatestBackupIndex,
 } from "../services/games";
 import {
   URL_PREFIX_GAME,
   DIRECTORY_UPLOADS_DESTINATION,
   DIRECTORY_NAME_BACKUPS,
-  MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS as ALREADY_EXISTS,
   MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
   MESSAGE_UNITY_UPLOAD_STORAGE_FULL as STORAGE_FULL,
   MESSAGE_UNITY_UPLOAD_NO_FILES as NO_FILES,
@@ -35,13 +35,7 @@ import {
 
 interface Locals {
   uploadStartedAt: Date;
-  uploadEndedAt: Date;
-  elapsedMillis: number;
-  creatorId: string;
-  gameId: string;
-  createdBy: string;
-  paths: string[];
-  totalFileSize: number;
+  game: GameDocument;
 }
 class UploadError extends Error {
   constructor(message: string, public params: unknown[] = []) {
@@ -66,19 +60,19 @@ uploadRouter
   })
   .post(
     validateParams,
+    ensureStorageSpaceAvailable,
+    fetchOrCrateGameDocument,
     preventEditByOtherPerson,
     validateDestination,
-    ensureStorageSpaceAvailable,
     beforeUpload,
     unityUpload.fields(fields),
     ensureUploadSuccess,
-    createMetadata,
     saveToDatabase,
     logUploadSuccess,
     (_req, res) => {
       const locals = res.locals as Locals;
       res.send({
-        paths: locals.paths,
+        paths: locals.game.paths,
       });
     }
   );
@@ -123,17 +117,46 @@ function validateParams(
       );
     });
 }
-async function preventEditByOtherPerson(
-  req: express.Request,
+async function ensureStorageSpaceAvailable(
+  _req: express.Request,
   _res: express.Response,
   next: express.NextFunction
 ) {
-  const gameDocument = await findGameInDatabase(req);
-  if (gameDocument === undefined) {
-    next();
+  const gameStorageSizeBytes = getEnvNumber("GAME_STORAGE_SIZE_BYTES");
+  const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
+  if (gameStorageSizeBytes <= currentStorageSizeBytes) {
+    next(new UploadError(STORAGE_FULL));
     return;
   }
-  const createdBy = gameDocument.createdBy;
+  next();
+}
+async function fetchOrCrateGameDocument(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const locals = res.locals as Locals;
+  const game = await findGameInDatabase(req);
+  if (game !== undefined) {
+    locals.game = game;
+  } else {
+    locals.game = await GameModel.create({
+      creatorId: getCreatorId(req),
+      gameId: getGameId(req),
+      createdBy: req.user?.id,
+      paths: [],
+      totalFileSize: 0,
+    });
+  }
+  next();
+}
+function preventEditByOtherPerson(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const locals = res.locals as Locals;
+  const createdBy = locals.game.createdBy;
   if (createdBy === req.user?.user.id) {
     next();
     return;
@@ -148,32 +171,15 @@ async function validateDestination(
   const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
   const gamePath = path.resolve(gameDir);
   const exists = await fsExtra.pathExists(gamePath);
-  if (exists) {
-    if (!getOverwritesExisting(req)) {
-      next(new UploadError(ALREADY_EXISTS, [gameDir]));
-      return;
-    }
-    await fsExtra.move(
-      gamePath,
-      path.resolve(DIRECTORY_NAME_BACKUPS, gameDir),
-      {
-        overwrite: true,
-      }
-    );
-  }
-  next();
-}
-async function ensureStorageSpaceAvailable(
-  _req: express.Request,
-  _res: express.Response,
-  next: express.NextFunction
-) {
-  const gameStorageSizeBytes = getEnvNumber("GAME_STORAGE_SIZE_BYTES");
-  const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
-  if (gameStorageSizeBytes <= currentStorageSizeBytes) {
-    next(new UploadError(STORAGE_FULL));
+  if (!exists) {
+    next();
     return;
   }
+  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, gameDir);
+  const latestBackupIndex = await getLatestBackupIndex(req);
+  const backupIndex = (latestBackupIndex + 1).toString();
+  const backupToPath = path.join(backupFolderPath, backupIndex);
+  await fsExtra.move(gamePath, backupToPath);
   next();
 }
 function beforeUpload(
@@ -196,7 +202,28 @@ function ensureUploadSuccess(
   }
   next();
 }
-function createMetadata(
+async function saveToDatabase(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const locals = res.locals as Locals;
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  const totalFileSize =
+    locals.game.totalFileSize + calculateTotalFileSize(files, fields);
+  await locals.game.updateOne({
+    $set: {
+      paths: fields
+        .filter(({ name }) => files[name] !== undefined)
+        .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name)),
+      totalFileSize,
+    },
+  });
+  next();
+}
+function logUploadSuccess(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
@@ -204,53 +231,14 @@ function createMetadata(
   const locals = res.locals as Locals;
   const uploadStartedAt = locals.uploadStartedAt;
   const uploadEndedAt = new Date();
-  const files = req.files as {
-    [fieldname: string]: Express.Multer.File[];
-  };
-  res.locals = {
-    uploadStartedAt: uploadStartedAt,
-    uploadEndedAt: uploadEndedAt,
-    elapsedMillis: uploadEndedAt.getTime() - uploadStartedAt.getTime(),
+  const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
+  logger.system.info("アップロード成功", {
     creatorId: getCreatorId(req),
     gameId: getGameId(req),
-    createdBy: req.user?.user.id ?? "",
-    paths: fields
-      .filter(({ name }) => {
-        const files = req.files as {
-          [fieldname: string]: Express.Multer.File[];
-        };
-        return files[name] !== undefined;
-      })
-      .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name)),
-    totalFileSize: calculateTotalFileSize(files, fields),
-  } as Locals;
-  next();
-}
-async function saveToDatabase(
-  _req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const locals = res.locals as Locals;
-  await GameModel.updateOne(
-    {
-      creatorId: locals.creatorId,
-      gameId: locals.gameId,
-    },
-    {
-      $set: locals,
-    },
-    { upsert: true }
-  );
-  next();
-}
-function logUploadSuccess(
-  _req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const locals = res.locals as Locals;
-  logger.system.info("アップロード成功", locals);
+    uploadStartedAt,
+    uploadEndedAt,
+    elapsedMillis,
+  });
   next();
 }
 export { uploadRouter };

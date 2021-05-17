@@ -9,5 +9,7 @@ services:
       - ./public:/app/public
       - ./src:/app/src
       - ./views:/app/views
+      - ./uploads:/app/uploads
+      - ./backups:/app/backups
     env_file:
       - docker-dev.env
