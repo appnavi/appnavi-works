@@ -14,12 +14,11 @@ import {
   findGameInDatabase,
   uploadSchema,
   calculateCurrentStorageSizeBytes,
-  getLatestBackupIndex,
+  backupGame,
 } from "../services/games";
 import {
   URL_PREFIX_GAME,
   DIRECTORY_UPLOADS_DESTINATION,
-  DIRECTORY_NAME_BACKUPS,
   MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
   MESSAGE_UNITY_UPLOAD_STORAGE_FULL as STORAGE_FULL,
   MESSAGE_UNITY_UPLOAD_NO_FILES as NO_FILES,
@@ -141,6 +140,7 @@ async function fetchOrCrateGameDocument(
       createdBy: req.user?.id,
       paths: [],
       totalFileSize: 0,
+      backupFileSizes: {},
     });
   }
   next();
@@ -160,7 +160,7 @@ function preventEditByOtherPerson(
 }
 async function validateDestination(
   req: express.Request,
-  _res: express.Response,
+  res: express.Response,
   next: express.NextFunction
 ) {
   const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
@@ -170,11 +170,8 @@ async function validateDestination(
     next();
     return;
   }
-  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, gameDir);
-  const latestBackupIndex = await getLatestBackupIndex(req);
-  const backupIndex = (latestBackupIndex + 1).toString();
-  const backupToPath = path.join(backupFolderPath, backupIndex);
-  await fsExtra.move(gamePath, backupToPath);
+  const locals = res.locals as Locals;
+  await backupGame(req, locals.game);
   next();
 }
 function beforeUpload(
@@ -203,19 +200,15 @@ async function saveToDatabase(
   next: express.NextFunction
 ) {
   const locals = res.locals as Locals;
+  const game = locals.game;
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
   };
-  const totalFileSize =
-    locals.game.totalFileSize + calculateTotalFileSize(files, fields);
-  await locals.game.updateOne({
-    $set: {
-      paths: fields
-        .filter(({ name }) => files[name] !== undefined)
-        .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name)),
-      totalFileSize,
-    },
-  });
+  game.totalFileSize = calculateTotalFileSize(files, fields);
+  game.paths = fields
+    .filter(({ name }) => files[name] !== undefined)
+    .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name));
+  await game.save();
   next();
 }
 function logUploadSuccess(

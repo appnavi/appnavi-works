@@ -98,6 +98,20 @@ export async function getLatestBackupIndex(
   return parseInt(latestBackupFolderName);
 }
 
+export async function backupGame(
+  req: express.Request,
+  game: GameDocument
+): Promise<void> {
+  const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+  const gamePath = path.resolve(gameDir);
+  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, gameDir);
+  const latestBackupIndex = await getLatestBackupIndex(req);
+  const backupIndex = (latestBackupIndex + 1).toString();
+  const backupToPath = path.join(backupFolderPath, backupIndex);
+  await fsExtra.move(gamePath, backupToPath);
+  game.backupFileSizes.set(backupIndex, game.totalFileSize);
+}
+
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
   const games = await GameModel.find();
   return games.reduce(

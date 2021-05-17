@@ -1,10 +1,11 @@
-import { Document, model, Schema } from "mongoose";
+import { Document, model, Schema, Types } from "mongoose";
 export interface GameDocument extends Document {
   creatorId: string;
   gameId: string;
   createdBy: string;
   paths: string[];
   totalFileSize: number;
+  backupFileSizes: Types.Map<number>;
 }
 const gameSchema = new Schema(
   {
@@ -13,6 +14,10 @@ const gameSchema = new Schema(
     createdBy: String,
     paths: [String],
     totalFileSize: Number,
+    backupFileSizes: {
+      type: Map,
+      of: Number,
+    },
   },
   {
     timestamps: true,
