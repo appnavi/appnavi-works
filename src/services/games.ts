@@ -114,10 +114,12 @@ export async function backupGame(
 
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
   const games = await GameModel.find();
-  return games.reduce(
-    (accumulator, currentValue) => accumulator + currentValue.totalFileSize,
-    0
-  );
+  return games.reduce((accumulator, currentValue) => {
+    const totalBackupFileSizes = Array.from(
+      currentValue.backupFileSizes.values()
+    ).reduce((a, c) => a + c, 0);
+    return accumulator + currentValue.totalFileSize + totalBackupFileSizes;
+  }, 0);
 }
 
 export function calculateTotalFileSize(
