@@ -60,7 +60,7 @@ uploadRouter
   .post(
     validateParams,
     ensureStorageSpaceAvailable,
-    fetchOrCrateGameDocument,
+    fetchOrCreateGameDocument,
     preventEditByOtherPerson,
     validateDestination,
     beforeUpload,
@@ -125,7 +125,7 @@ async function ensureStorageSpaceAvailable(
   }
   next();
 }
-async function fetchOrCrateGameDocument(
+async function fetchOrCreateGameDocument(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
