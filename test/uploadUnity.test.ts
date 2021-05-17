@@ -55,7 +55,7 @@ describe("Unityゲームのアップロード", () => {
         .expect(CREATOR_ID_REQUIRED)
         .end(done);
     });
-    it("作者IDが設定されていないとアップロードできない", (done) => {
+    it("作者IDが不適切だとアップロードできない", (done) => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, encodeURI("テスト"))
@@ -74,7 +74,7 @@ describe("Unityゲームのアップロード", () => {
         .expect(GAME_ID_REQUIRED)
         .end(done);
     });
-    it("作者IDが設定されていないとアップロードできない", (done) => {
+    it("ゲームIDが不適切だとアップロードできない", (done) => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
