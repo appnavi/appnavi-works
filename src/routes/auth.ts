@@ -1,8 +1,7 @@
 import express from "express";
 import { passport } from "../app";
-import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
-import { isAuthenticated, redirect } from "../services/auth";
+import { findOrCreateUser, isAuthenticated, redirect } from "../services/auth";
 import { getContentSecurityPolicy, getEnv, render } from "../utils/helpers";
 
 const authRouter = express.Router();
@@ -48,15 +47,12 @@ authRouter.get(
     const userId = req.user?.user?.id ?? "";
     logger.system.info(`ユーザー${userId}がSlack認証でログインしました。`);
 
-    await UserModel.updateOne(
-      { userId },
-      {
-        $set: {
-          lastLogIn: new Date(),
-        },
+    const userDocument = await findOrCreateUser(req);
+    await userDocument.updateOne({
+      $set: {
+        lastLogIn: new Date(),
       },
-      { upsert: true }
-    );
+    });
     next();
   },
   (req, res) => {
