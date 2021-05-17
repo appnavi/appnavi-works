@@ -36,7 +36,7 @@ authRouter.get(
   passport.authenticate("slack", {
     failureRedirect: "/auth/error",
   }),
-  (req, res, next) => {
+  async (req, res, next) => {
     const workspaceId = req.user?.team?.id;
     if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
       logger.system.error(
@@ -45,8 +45,17 @@ authRouter.get(
       res.send("認証に失敗しました。").status(403).end();
       return;
     }
-    logger.system.info(
-      `ユーザー${req.user?.user.id ?? ""}がSlack認証でログインしました。`
+    const userId = req.user?.user?.id ?? "";
+    logger.system.info(`ユーザー${userId}がSlack認証でログインしました。`);
+
+    await UserModel.updateOne(
+      { userId },
+      {
+        $set: {
+          lastLogIn: new Date(),
+        },
+      },
+      { upsert: true }
     );
     next();
   },

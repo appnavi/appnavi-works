@@ -28,11 +28,13 @@ export const GameModel = model<GameDocument>("Game", gameSchema);
 export interface UserDocument extends Document {
   userId: string;
   defaultCreatorId: string;
+  lastLogIn: Date;
 }
 const userSchema = new Schema(
   {
     userId: String,
     defaultCreatorId: String,
+    lastLogIn: Date,
   },
   {
     timestamps: true,
