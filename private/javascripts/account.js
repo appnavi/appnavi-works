@@ -2,6 +2,8 @@
 var accountMessageDialog = document.querySelector(".modal");
 document.addEventListener("DOMContentLoaded", function () {
     M.Modal.init(accountMessageDialog, {});
+    M.Collapsible.init(document.querySelectorAll(".collapsible"), {});
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'), {});
 });
 document
     .querySelector(".default_creator_id-form")

@@ -1,9 +1,9 @@
 import express from "express";
 import multer from "multer";
-import { UserModel } from "../models/database";
+import { UserModel, WorkModel } from "../models/database";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import { creatorIdSchema } from "../services/works";
-import { STATUS_CODE_BAD_REQUEST } from "../utils/constants";
+import { STATUS_CODE_BAD_REQUEST, URL_PREFIX_WORK } from "../utils/constants";
 import { getContentSecurityPolicy, render, wrap } from "../utils/helpers";
 
 const accountRouter = express.Router();
@@ -11,17 +11,20 @@ accountRouter.use(getContentSecurityPolicy());
 
 accountRouter.use(ensureAuthenticated);
 
-accountRouter.get("/", (req, res, next) => {
-  getDefaultCreatorId(req)
-    .then((defaultCreatorId) => {
-      render("account", req, res, {
-        defaultCreatorId: defaultCreatorId,
-      });
-    })
-    .catch((err) => {
-      next(err);
+accountRouter.get(
+  "/",
+  wrap(async (req, res) => {
+    const defaultCreatorId = await getDefaultCreatorId(req);
+    const works = await WorkModel.find({
+      owner: req.user?.user.id,
     });
-});
+    render("account", req, res, {
+      defaultCreatorId,
+      works,
+      urlPrefix: URL_PREFIX_WORK,
+    });
+  })
+);
 accountRouter.post(
   "/default-creator-id",
   multer().none(),

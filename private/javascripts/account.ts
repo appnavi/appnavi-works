@@ -1,6 +1,8 @@
 const accountMessageDialog = document.querySelector(".modal") as HTMLElement;
 document.addEventListener("DOMContentLoaded", () => {
   M.Modal.init(accountMessageDialog, {});
+  M.Collapsible.init(document.querySelectorAll(".collapsible"), {});
+  M.Tooltip.init(document.querySelectorAll(".tooltipped"), {});
 });
 document
   .querySelector<HTMLFormElement>(".default_creator_id-form")!

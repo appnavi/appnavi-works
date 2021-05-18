@@ -15,18 +15,53 @@
       <div class="section">
         <h5 class="header">設定</h5>
         <form action="" method="POST" class="col s12 default_creator_id-form">
-        <div class="row">
-          <div class="input-field col s12">
-            <input id="default_creator_id" type="text" class="validate" name="default_creator_id" required value="<%- defaultCreatorId %>" pattern="^[0-9a-z\-]+$">
-            <label for="default_creator_id">デフォルトの作者ID</label>
-            <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="default_creator_id" type="text" class="validate" name="default_creator_id" required value="<%- defaultCreatorId %>" pattern="^[0-9a-z\-]+$">
+              <label for="default_creator_id">デフォルトの作者ID</label>
+              <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
+            </div>
           </div>
-        </div>
-        <div class="row center">
-          <button type="submit" class="btn uploadButton">設定する</button>
-        </div>
-      </form>
-    </div>
+          <div class="row center">
+            <button type="submit" class="btn uploadButton">設定する</button>
+          </div>
+        </form>
+      </div>
+      <div class="section">
+        <h3 class="header">作品＆バックアップ一覧</h3>
+        <% works.forEach(work=> { %> 
+          <ul class="collection with-header">
+            <div class="collection-header">
+              <h5>
+                <%- work.creatorId %>/<%- work.workId %>
+                <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="secondary-content tooltipped" data-position="top" data-tooltip="作品へ移動"><i class="material-icons">open_in_new</i></a>
+                <span class="tooltipped" style="float:right;margin-right: 10px;" data-position="top" data-tooltip="現在のゲームのファイルサイズ"><%- work.totalFileSize %>バイト</span>
+              </h5>
+            </div>
+            <% work.backups.forEach(backup =>{ %> 
+              <li class="collection-item avatar valign-wrapper">
+                <div class="row" style="width: 100%;margin-bottom:0">
+                  <div class="col s1">
+                    <%- backup.name %>
+                  </div>
+                  <div class="col s11">
+                    <%- backup.fileSize %>バイト
+                  </div>
+                </div>
+                <span class="secondary-content">
+                  <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn"><i class="material-icons left">restore</i>復元</a>
+                  <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn red"><i class="material-icons left">delete_forever</i>削除</a>
+                </span>
+              </li>
+            <% }) %> 
+            <% if(work.backups.length == 0){ %> 
+              <li class="collection-item">
+                バックアップはありません。
+              </li>
+            <% } %> 
+          </ul>
+        <% }) %> 
+      </div>
     </div>
   </main>
   <div class="modal">
