@@ -6,15 +6,15 @@ import { creatorIdSchema } from "../services/games";
 import { STATUS_CODE_BAD_REQUEST } from "../utils/constants";
 import { getContentSecurityPolicy, render } from "../utils/helpers";
 
-const profileRouter = express.Router();
-profileRouter.use(getContentSecurityPolicy());
+const accountRouter = express.Router();
+accountRouter.use(getContentSecurityPolicy());
 
-profileRouter.use(ensureAuthenticated);
+accountRouter.use(ensureAuthenticated);
 
-profileRouter.get("/", (req, res, next) => {
+accountRouter.get("/", (req, res, next) => {
   getDefaultCreatorId(req)
     .then((defaultCreatorId) => {
-      render("profile", req, res, {
+      render("account", req, res, {
         defaultCreatorId: defaultCreatorId,
       });
     })
@@ -22,7 +22,7 @@ profileRouter.get("/", (req, res, next) => {
       next(err);
     });
 });
-profileRouter.post("/default-creator-id", multer().none(), async (req, res) => {
+accountRouter.post("/default-creator-id", multer().none(), async (req, res) => {
   const defaultCreatorId = (req.body as Record<string, unknown>)[
     "default_creator_id"
   ] as string;
@@ -49,4 +49,4 @@ profileRouter.post("/default-creator-id", multer().none(), async (req, res) => {
   res.send(200).end();
 });
 
-export { profileRouter };
+export { accountRouter };

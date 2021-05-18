@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アカウント設定</title>
+  <title>アカウント</title>
   <%- include('common/head') %>
-  <script src="/private/javascripts/profile.js" defer></script>
+  <script src="/private/javascripts/account.js" defer></script>
 </head>
 <body>
   <%- include('common/navbar') %>
   <main>
     <div class="container">
-      <h3 class="header">アカウント設定</h3>
-      <form action="" method="POST" class="col s12 default_creator_id-form">
+      <h3 class="header">アカウント</h3>
+      <div class="section">
+        <h5 class="header">設定</h5>
+        <form action="" method="POST" class="col s12 default_creator_id-form">
         <div class="row">
           <div class="input-field col s12">
             <input id="default_creator_id" type="text" class="validate" name="default_creator_id" required value="<%- defaultCreatorId %>" pattern="^[0-9a-z\-]+$">
@@ -24,6 +26,7 @@
           <button type="submit" class="btn uploadButton">設定する</button>
         </div>
       </form>
+    </div>
     </div>
   </main>
   <div class="modal">
