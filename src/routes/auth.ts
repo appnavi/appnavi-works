@@ -2,7 +2,12 @@ import express from "express";
 import { passport } from "../app";
 import * as logger from "../modules/logger";
 import { findOrCreateUser, isAuthenticated, redirect } from "../services/auth";
-import { getContentSecurityPolicy, getEnv, render } from "../utils/helpers";
+import {
+  getContentSecurityPolicy,
+  getEnv,
+  render,
+  wrap,
+} from "../utils/helpers";
 
 const authRouter = express.Router();
 authRouter.use(
@@ -35,7 +40,7 @@ authRouter.get(
   passport.authenticate("slack", {
     failureRedirect: "/auth/error",
   }),
-  async (req, res, next) => {
+  wrap(async (req, res, next) => {
     const workspaceId = req.user?.team?.id;
     if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
       logger.system.error(
@@ -54,7 +59,7 @@ authRouter.get(
       },
     });
     next();
-  },
+  }),
   (req, res) => {
     redirect(req, res);
   }

@@ -90,3 +90,24 @@ export function ejsToHtml(
     ...ejsOptions,
   });
 }
+
+// http://expressjs.com/en/advanced/best-practice-performance.html#use-promises
+export function wrap(
+  asyncHandler: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => Promise<void>
+): (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => void {
+  return (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    asyncHandler(req, res, next).catch(next);
+  };
+}

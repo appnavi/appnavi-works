@@ -29,6 +29,7 @@ import {
   getEnv,
   getEnvNumber,
   render,
+  wrap,
 } from "../utils/helpers";
 
 interface Locals {
@@ -51,12 +52,14 @@ uploadRouter.use(getContentSecurityPolicy());
 
 uploadRouter
   .route("/unity")
-  .get(async function (req, res) {
-    render("upload/unity", req, res, {
-      defaultCreatorId: await getDefaultCreatorId(req),
-      url: getEnv("SITE_URL"),
-    });
-  })
+  .get(
+    wrap(async function (req, res) {
+      render("upload/unity", req, res, {
+        defaultCreatorId: await getDefaultCreatorId(req),
+        url: getEnv("SITE_URL"),
+      });
+    })
+  )
   .post(
     validateParams,
     ensureStorageSpaceAvailable,
@@ -112,28 +115,32 @@ function validateParams(
       next(new UploadError(err.errors[0], [creatorId, workId]));
     });
 }
-async function ensureStorageSpaceAvailable(
-  _req: express.Request,
-  _res: express.Response,
-  next: express.NextFunction
-) {
-  const workStorageSizeBytes = getEnvNumber("WORK_STORAGE_SIZE_BYTES");
-  const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
-  console.log(currentStorageSizeBytes);
-  if (workStorageSizeBytes <= currentStorageSizeBytes) {
-    next(new UploadError(STORAGE_FULL));
-    return;
-  }
-  next();
-}
-async function getWorkDocument(
+function ensureStorageSpaceAvailable(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
-  const locals = res.locals as Locals;
-  locals.work = await findOrCreateWork(req);
-  next();
+  return wrap(async (_req, _res, next) => {
+    const workStorageSizeBytes = getEnvNumber("WORK_STORAGE_SIZE_BYTES");
+    const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
+    console.log(currentStorageSizeBytes);
+    if (workStorageSizeBytes <= currentStorageSizeBytes) {
+      next(new UploadError(STORAGE_FULL));
+      return;
+    }
+    next();
+  })(req, res, next);
+}
+function getWorkDocument(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  return wrap(async (req, res, next) => {
+    const locals = res.locals as Locals;
+    locals.work = await findOrCreateWork(req);
+    next();
+  })(req, res, next);
 }
 function preventEditByOtherPerson(
   req: express.Request,
@@ -148,21 +155,23 @@ function preventEditByOtherPerson(
   }
   next(new UploadError(DIFFERENT_USER, [getUnityDir(req)]));
 }
-async function validateDestination(
+function validateDestination(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
-  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
-  const workPath = path.resolve(workDir);
-  const exists = await fsExtra.pathExists(workPath);
-  if (!exists) {
+  return wrap(async (req, res, next) => {
+    const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+    const workPath = path.resolve(workDir);
+    const exists = await fsExtra.pathExists(workPath);
+    if (!exists) {
+      next();
+      return;
+    }
+    const locals = res.locals as Locals;
+    await backupWork(req, locals.work);
     next();
-    return;
-  }
-  const locals = res.locals as Locals;
-  await backupWork(req, locals.work);
-  next();
+  })(req, res, next);
 }
 function beforeUpload(
   _req: express.Request,
@@ -184,22 +193,24 @@ function ensureUploadSuccess(
   }
   next();
 }
-async function saveToDatabase(
+function saveToDatabase(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
-  const locals = res.locals as Locals;
-  const work = locals.work;
-  const files = req.files as {
-    [fieldname: string]: Express.Multer.File[];
-  };
-  locals.paths = fields
-    .filter(({ name }) => files[name] !== undefined)
-    .map(({ name }) => path.join(URL_PREFIX_WORK, getUnityDir(req), name));
-  work.totalFileSize = calculateTotalFileSize(files, fields);
-  await work.save();
-  next();
+  return wrap(async (req, res, next) => {
+    const locals = res.locals as Locals;
+    const work = locals.work;
+    const files = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+    locals.paths = fields
+      .filter(({ name }) => files[name] !== undefined)
+      .map(({ name }) => path.join(URL_PREFIX_WORK, getUnityDir(req), name));
+    work.totalFileSize = calculateTotalFileSize(files, fields);
+    await work.save();
+    next();
+  })(req, res, next);
 }
 function logUploadSuccess(
   req: express.Request,
