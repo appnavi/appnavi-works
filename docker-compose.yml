@@ -1,6 +1,6 @@
 version: '3'
 services:
-  game-upload:
+  appnavi-works:
     build: .
     env_file:
       - node.env
@@ -13,14 +13,14 @@ services:
     expose: 
       - "27017"
     volumes:
-      - db-volume-game-upload:/data/db
-      - db-config-volume-game-upload:/data/configdb
+      - db-volume-appnavi-works:/data/db
+      - db-config-volume-appnavi-works:/data/configdb
     networks:
       - db
 
 volumes:
-  db-volume-game-upload:
-  db-config-volume-game-upload:
+  db-volume-appnavi-works:
+  db-config-volume-appnavi-works:
 
 networks:
   db:

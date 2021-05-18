@@ -1,6 +1,6 @@
 version: '3'
 services:
-  game-upload:
+  appnavi-works:
     command: "yarn run test"
     ports:
       - "3000:3000"

@@ -1,4 +1,4 @@
-# game-upload
+# appnavi-works
 
 アプリNavi部員作品のupload/serveを行うExpress製サーバーアプリケーション
 
@@ -24,7 +24,7 @@ bash dev.sh
 
 ### test
 
-game-uploadの単体テスト
+appnavi-worksの単体テスト
 
 ```sh
 bash test.sh
