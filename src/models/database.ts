@@ -2,7 +2,7 @@ import { Document, model, Schema, Types } from "mongoose";
 export interface WorkDocument extends Document {
   creatorId: string;
   workId: string;
-  createdBy: string;
+  owner: string;
   totalFileSize: number;
   backupFileSizes: Types.Map<number>;
 }
@@ -10,7 +10,7 @@ const workSchema = new Schema(
   {
     creatorId: String,
     workId: String,
-    createdBy: String,
+    owner: String,
     totalFileSize: Number,
     backupFileSizes: {
       type: Map,

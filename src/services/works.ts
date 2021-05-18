@@ -63,7 +63,7 @@ export async function findOrCreateWork(
       return await WorkModel.create({
         creatorId: getCreatorId(req),
         workId: getWorkId(req),
-        createdBy: req.user?.id,
+        owner: req.user?.id,
         totalFileSize: 0,
         backupFileSizes: {},
       });

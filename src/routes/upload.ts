@@ -140,8 +140,8 @@ function preventEditByOtherPerson(
   next: express.NextFunction
 ) {
   const locals = res.locals as Locals;
-  const createdBy = locals.work.createdBy;
-  if (createdBy === req.user?.user.id) {
+  const owner = locals.work.owner;
+  if (owner === req.user?.user.id) {
     next();
     return;
   }
