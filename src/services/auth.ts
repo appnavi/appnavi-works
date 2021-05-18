@@ -21,12 +21,13 @@ function setRedirect(req: express.Request): void {
 export async function findOrCreateUser(
   req: express.Request
 ): Promise<UserDocument> {
+  const userId = req.user?.user.id;
   const users = await UserModel.find({
-    userId: req.user?.user.id,
+    userId,
   });
   switch (users.length) {
     case 0:
-      return await UserModel.create({});
+      return await UserModel.create({ userId });
     case 1:
       return users[0];
     default:
