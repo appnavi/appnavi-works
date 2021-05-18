@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import { UserModel } from "../models/database";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
-import { creatorIdSchema } from "../services/games";
+import { creatorIdSchema } from "../services/works";
 import { STATUS_CODE_BAD_REQUEST } from "../utils/constants";
 import { getContentSecurityPolicy, render } from "../utils/helpers";
 

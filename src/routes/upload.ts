@@ -1,7 +1,7 @@
 import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
-import { GameDocument } from "../models/database";
+import { WorkDocument } from "../models/database";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import {
@@ -10,14 +10,14 @@ import {
   unityUpload,
   fields,
   getCreatorId,
-  getGameId,
+  getWorkId,
   uploadSchema,
   calculateCurrentStorageSizeBytes,
-  backupGame,
-  findOrCreateGame,
-} from "../services/games";
+  backupWork,
+  findOrCreateWork,
+} from "../services/works";
 import {
-  URL_PREFIX_GAME,
+  URL_PREFIX_WORK,
   DIRECTORY_UPLOADS_DESTINATION,
   MESSAGE_UNITY_UPLOAD_DIFFERENT_USER as DIFFERENT_USER,
   MESSAGE_UNITY_UPLOAD_STORAGE_FULL as STORAGE_FULL,
@@ -34,7 +34,7 @@ import {
 interface Locals {
   paths: string[];
   uploadStartedAt: Date;
-  game: GameDocument;
+  work: WorkDocument;
 }
 class UploadError extends Error {
   constructor(message: string, public params: unknown[] = []) {
@@ -60,7 +60,7 @@ uploadRouter
   .post(
     validateParams,
     ensureStorageSpaceAvailable,
-    getGameDocument,
+    getWorkDocument,
     preventEditByOtherPerson,
     validateDestination,
     beforeUpload,
@@ -98,18 +98,18 @@ function validateParams(
   next: express.NextFunction
 ) {
   const creatorId = getCreatorId(req);
-  const gameId = getGameId(req);
+  const workId = getWorkId(req);
 
   uploadSchema
     .validate({
       creatorId: creatorId,
-      gameId: gameId,
+      workId: workId,
     })
     .then(() => {
       next();
     })
     .catch((err: { name: string; errors: string[] }) => {
-      next(new UploadError(err.errors[0], [creatorId, gameId]));
+      next(new UploadError(err.errors[0], [creatorId, workId]));
     });
 }
 async function ensureStorageSpaceAvailable(
@@ -117,21 +117,21 @@ async function ensureStorageSpaceAvailable(
   _res: express.Response,
   next: express.NextFunction
 ) {
-  const gameStorageSizeBytes = getEnvNumber("GAME_STORAGE_SIZE_BYTES");
+  const workStorageSizeBytes = getEnvNumber("WORK_STORAGE_SIZE_BYTES");
   const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
-  if (gameStorageSizeBytes <= currentStorageSizeBytes) {
+  if (workStorageSizeBytes <= currentStorageSizeBytes) {
     next(new UploadError(STORAGE_FULL));
     return;
   }
   next();
 }
-async function getGameDocument(
+async function getWorkDocument(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
   const locals = res.locals as Locals;
-  locals.game = await findOrCreateGame(req);
+  locals.work = await findOrCreateWork(req);
   next();
 }
 function preventEditByOtherPerson(
@@ -140,7 +140,7 @@ function preventEditByOtherPerson(
   next: express.NextFunction
 ) {
   const locals = res.locals as Locals;
-  const createdBy = locals.game.createdBy;
+  const createdBy = locals.work.createdBy;
   if (createdBy === req.user?.user.id) {
     next();
     return;
@@ -152,15 +152,15 @@ async function validateDestination(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
-  const gamePath = path.resolve(gameDir);
-  const exists = await fsExtra.pathExists(gamePath);
+  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+  const workPath = path.resolve(workDir);
+  const exists = await fsExtra.pathExists(workPath);
   if (!exists) {
     next();
     return;
   }
   const locals = res.locals as Locals;
-  await backupGame(req, locals.game);
+  await backupWork(req, locals.work);
   next();
 }
 function beforeUpload(
@@ -189,15 +189,15 @@ async function saveToDatabase(
   next: express.NextFunction
 ) {
   const locals = res.locals as Locals;
-  const game = locals.game;
+  const work = locals.work;
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
   };
   locals.paths = fields
     .filter(({ name }) => files[name] !== undefined)
-    .map(({ name }) => path.join(URL_PREFIX_GAME, getUnityDir(req), name));
-  game.totalFileSize = calculateTotalFileSize(files, fields);
-  await game.save();
+    .map(({ name }) => path.join(URL_PREFIX_WORK, getUnityDir(req), name));
+  work.totalFileSize = calculateTotalFileSize(files, fields);
+  await work.save();
   next();
 }
 function logUploadSuccess(
@@ -211,7 +211,7 @@ function logUploadSuccess(
   const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
   logger.system.info("アップロード成功", {
     creatorId: getCreatorId(req),
-    gameId: getGameId(req),
+    workId: getWorkId(req),
     uploadStartedAt,
     uploadEndedAt,
     elapsedMillis,

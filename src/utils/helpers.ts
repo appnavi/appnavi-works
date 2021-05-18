@@ -15,7 +15,7 @@ type EnvKey =
   | "JWT_SECRET"
   | "DATABASE_URL"
   | "SITE_URL"
-  | "GAME_STORAGE_SIZE_BYTES"
+  | "WORK_STORAGE_SIZE_BYTES"
   | "PORT";
 export function getEnv(key: EnvKey): string {
   const val = process.env[key];
@@ -24,7 +24,7 @@ export function getEnv(key: EnvKey): string {
   }
   return val;
 }
-export function getEnvNumber(key: "GAME_STORAGE_SIZE_BYTES" | "PORT"): number {
+export function getEnvNumber(key: "WORK_STORAGE_SIZE_BYTES" | "PORT"): number {
   const env = getEnv(key);
   const envNumber = parseInt(env, 10);
   if (env !== envNumber.toString()) {

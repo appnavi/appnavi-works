@@ -1,4 +1,4 @@
-export const URL_PREFIX_GAME = "/games";
+export const URL_PREFIX_WORK = "/works";
 export const URL_PREFIX_PRIVATE = "/private";
 
 export const DIRECTORY_UPLOADS_DESTINATION = "uploads";
@@ -10,7 +10,7 @@ export const DIRECTORY_NAME_VIEWS = "views";
 export const DIRECTORY_NAME_BACKUPS = "backups";
 
 export const HEADER_CREATOR_ID = "x-creator-id";
-export const HEADER_GAME_ID = "x-game-id";
+export const HEADER_WORK_ID = "x-work-id";
 
 export const STATUS_CODE_SUCCESS = 200;
 export const STATUS_CODE_REDIRECT_PERMANENT = 301;
@@ -22,13 +22,13 @@ export const STATUS_CODE_SERVER_ERROR = 500; //TODO：STATUS_CODE_BAD_REQUESTに
 export const MESSAGE_UNITY_UPLOAD_CREATOR_ID_REQUIRED = "作者IDは必須です。";
 export const MESSAGE_UNITY_UPLOAD_CREATOR_ID_INVALID =
   "作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。";
-export const MESSAGE_UNITY_UPLOAD_GAME_ID_REQUIRED = "ゲームIDは必須です。";
-export const MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID =
-  "ゲームIDには数字・アルファベット小文字・ハイフンのみ使用できます。";
+export const MESSAGE_UNITY_UPLOAD_WORK_ID_REQUIRED = "作品IDは必須です。";
+export const MESSAGE_UNITY_UPLOAD_WORK_ID_INVALID =
+  "作品IDには数字・アルファベット小文字・ハイフンのみ使用できます。";
 export const MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS =
-  "ゲームが既に存在しています。上書きする場合はチェックボックスにチェックを入れてください。";
+  "作品が既に存在しています。上書きする場合はチェックボックスにチェックを入れてください。";
 export const MESSAGE_UNITY_UPLOAD_DIFFERENT_USER =
-  "別の人が既に投稿したゲームがあります。上書きすることはできません。";
+  "別の人が既に投稿した作品があります。上書きすることはできません。";
 export const MESSAGE_UNITY_UPLOAD_STORAGE_FULL =
   "スペースが十分ではありません。";
 export const MESSAGE_UNITY_UPLOAD_NO_FILES =

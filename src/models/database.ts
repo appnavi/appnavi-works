@@ -1,15 +1,15 @@
 import { Document, model, Schema, Types } from "mongoose";
-export interface GameDocument extends Document {
+export interface WorkDocument extends Document {
   creatorId: string;
-  gameId: string;
+  workId: string;
   createdBy: string;
   totalFileSize: number;
   backupFileSizes: Types.Map<number>;
 }
-const gameSchema = new Schema(
+const workSchema = new Schema(
   {
     creatorId: String,
-    gameId: String,
+    workId: String,
     createdBy: String,
     totalFileSize: Number,
     backupFileSizes: {
@@ -21,7 +21,7 @@ const gameSchema = new Schema(
     timestamps: true,
   }
 );
-export const GameModel = model<GameDocument>("Game", gameSchema);
+export const WorkModel = model<WorkDocument>("Work", workSchema);
 
 export interface UserDocument extends Document {
   userId: string;

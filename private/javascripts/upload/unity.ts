@@ -2,8 +2,8 @@ const form = document.querySelector("form") as HTMLFormElement;
 const creatorIdInput = document.querySelector(
   'input[name="creator_id"]'
 ) as HTMLInputElement;
-const gameIdInput = document.querySelector(
-  'input[name="game_id"]'
+const workIdInput = document.querySelector(
+  'input[name="work_id"]'
 ) as HTMLInputElement;
 const webglFilesInput = document.querySelector(
   'input[name="webgl"]'
@@ -153,15 +153,15 @@ creatorIdInput.addEventListener("change", (_) => {
   ) as HTMLDivElement;
   preview.innerHTML = creatorId;
 });
-gameIdInput.addEventListener("change", (_) => {
-  let gameId = gameIdInput.value;
-  if (gameId.length == 0) {
-    gameId = "(ゲームID)";
+workIdInput.addEventListener("change", (_) => {
+  let workId = workIdInput.value;
+  if (workId.length == 0) {
+    workId = "(作品ID)";
   }
   const preview = document.querySelector(
-    ".file-list-header>.game_id"
+    ".file-list-header>.work_id"
   ) as HTMLDivElement;
-  preview.innerHTML = gameId;
+  preview.innerHTML = workId;
 });
 
 //ファイルアップロード
@@ -183,7 +183,7 @@ form.addEventListener("submit", function (event) {
 
   request.open("POST", "", true);
   request.setRequestHeader("x-creator-id", creatorIdInput.value);
-  request.setRequestHeader("x-game-id", gameIdInput.value);
+  request.setRequestHeader("x-work-id", workIdInput.value);
   request.addEventListener("load", (ev) => {
     setUploading(false);
     let title =

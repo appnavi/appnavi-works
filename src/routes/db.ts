@@ -1,16 +1,16 @@
 import express from "express";
-import { GameModel, UserModel } from "../models/database";
+import { WorkModel, UserModel } from "../models/database";
 import { ensureAuthenticated } from "../services/auth";
 import { getContentSecurityPolicy, render } from "../utils/helpers";
 
 const dbRouter = express.Router();
 
 dbRouter.use(ensureAuthenticated, getContentSecurityPolicy());
-dbRouter.get("/games", function (req, res, next) {
-  GameModel.find()
-    .then((games) => {
-      render("db/games", req, res, {
-        games: games,
+dbRouter.get("/works", function (req, res, next) {
+  WorkModel.find()
+    .then((works) => {
+      render("db/works", req, res, {
+        works: works,
       });
     })
     .catch((err) => {

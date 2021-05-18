@@ -11,13 +11,13 @@ import * as logger from "./modules/logger";
 import { accountRouter } from "./routes/account";
 import { authRouter } from "./routes/auth";
 import { dbRouter } from "./routes/db";
-import { gamesRouter } from "./routes/games";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
+import { worksRouter } from "./routes/works";
 import { ensureAuthenticated } from "./services/auth";
 import {
   URL_PREFIX_PRIVATE,
-  URL_PREFIX_GAME,
+  URL_PREFIX_WORK,
   DIRECTORY_NAME_PRIVATE,
   DIRECTORY_NAME_PUBLIC,
   DIRECTORY_NAME_VIEWS,
@@ -86,7 +86,7 @@ app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/account", accountRouter);
 app.use("/upload", uploadRouter);
-app.use(URL_PREFIX_GAME, gamesRouter);
+app.use(URL_PREFIX_WORK, worksRouter);
 app.use("/db", dbRouter);
 
 // catch 404 and forward to error handler

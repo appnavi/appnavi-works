@@ -3,15 +3,15 @@ import express from "express";
 import fsExtra from "fs-extra";
 import multer from "multer";
 import * as yup from "yup";
-import { GameDocument, GameModel } from "../models/database";
+import { WorkDocument, WorkModel } from "../models/database";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
   MESSAGE_UNITY_UPLOAD_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
   MESSAGE_UNITY_UPLOAD_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
-  MESSAGE_UNITY_UPLOAD_GAME_ID_REQUIRED as GAME_ID_REQUIRED,
-  MESSAGE_UNITY_UPLOAD_GAME_ID_INVALID as GAME_ID_INVALID,
+  MESSAGE_UNITY_UPLOAD_WORK_ID_REQUIRED as WORK_ID_REQUIRED,
+  MESSAGE_UNITY_UPLOAD_WORK_ID_INVALID as WORK_ID_INVALID,
   HEADER_CREATOR_ID,
-  HEADER_GAME_ID,
+  HEADER_WORK_ID,
   DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
 export const FIELD_WEBGL = "webgl";
@@ -31,54 +31,54 @@ export const creatorIdSchema = yup
   .string()
   .matches(idRegex, CREATOR_ID_INVALID)
   .required(CREATOR_ID_REQUIRED);
-export const gameIdSchema = yup
+export const workIdSchema = yup
   .string()
-  .matches(idRegex, GAME_ID_INVALID)
-  .required(GAME_ID_REQUIRED);
+  .matches(idRegex, WORK_ID_INVALID)
+  .required(WORK_ID_REQUIRED);
 export const uploadSchema = yup.object({
   creatorId: creatorIdSchema,
-  gameId: gameIdSchema,
+  workId: workIdSchema,
 });
 
 export function getCreatorId(req: express.Request): string {
   return req.headers[HEADER_CREATOR_ID] as string;
 }
-export function getGameId(req: express.Request): string {
-  return req.headers[HEADER_GAME_ID] as string;
+export function getWorkId(req: express.Request): string {
+  return req.headers[HEADER_WORK_ID] as string;
 }
 export function getUnityDir(req: express.Request): string {
   const creator_id = getCreatorId(req);
-  const game_id = getGameId(req);
-  return path.join(creator_id, game_id);
+  const work_id = getWorkId(req);
+  return path.join(creator_id, work_id);
 }
-export async function findOrCreateGame(
+export async function findOrCreateWork(
   req: express.Request
-): Promise<GameDocument> {
-  const games = await GameModel.find({
+): Promise<WorkDocument> {
+  const works = await WorkModel.find({
     creatorId: getCreatorId(req),
-    gameId: getGameId(req),
+    workId: getWorkId(req),
   });
-  switch (games.length) {
+  switch (works.length) {
     case 0:
-      return await GameModel.create({
+      return await WorkModel.create({
         creatorId: getCreatorId(req),
-        gameId: getGameId(req),
+        workId: getWorkId(req),
         createdBy: req.user?.id,
         totalFileSize: 0,
         backupFileSizes: {},
       });
     case 1:
-      return games[0];
+      return works[0];
     default:
-      throw new Error("同じゲームが複数登録されています");
+      throw new Error("同じ作品が複数登録されています");
   }
 }
 
 export async function listBackupFolderNames(
   req: express.Request
 ): Promise<string[]> {
-  const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
-  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, gameDir);
+  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
   const backupExists = await fsExtra.pathExists(backupFolderPath);
   if (!backupExists) {
     return [];
@@ -104,23 +104,23 @@ export async function getLatestBackupIndex(
   return parseInt(latestBackupFolderName);
 }
 
-export async function backupGame(
+export async function backupWork(
   req: express.Request,
-  game: GameDocument
+  work: WorkDocument
 ): Promise<void> {
-  const gameDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
-  const gamePath = path.resolve(gameDir);
-  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, gameDir);
+  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+  const workPath = path.resolve(workDir);
+  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
   const latestBackupIndex = await getLatestBackupIndex(req);
   const backupIndex = (latestBackupIndex + 1).toString();
   const backupToPath = path.join(backupFolderPath, backupIndex);
-  await fsExtra.move(gamePath, backupToPath);
-  game.backupFileSizes.set(backupIndex, game.totalFileSize);
+  await fsExtra.move(workPath, backupToPath);
+  work.backupFileSizes.set(backupIndex, work.totalFileSize);
 }
 
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
-  const games = await GameModel.find();
-  return games.reduce((accumulator, currentValue) => {
+  const works = await WorkModel.find();
+  return works.reduce((accumulator, currentValue) => {
     const totalBackupFileSizes = Array.from(
       currentValue.backupFileSizes.values()
     ).reduce((a, c) => a + c, 0);

@@ -21,9 +21,9 @@
           <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
         </div>
         <div class="input-field">
-          <input id="game_id" type="text" class="validate" name="game_id" pattern="^[0-9a-z\-]+$" required
+          <input id="work_id" type="text" class="validate" name="work_id" pattern="^[0-9a-z\-]+$" required
             aria-required />
-          <label for="game_id">ゲームID</label>
+          <label for="work_id">作品ID</label>
           <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
         </div>
       </div>
@@ -67,8 +67,8 @@
             <span>プレビュー</span>
           </div>
           <div class="collapsible-body">
-            <div class="file-list-header"><%- url %>/games/<span class="creator_id"><%- defaultCreatorId ?? "(作者ID)" %></span>/<span
-                class="game_id">(ゲームID)</span>/</div>
+            <div class="file-list-header"><%- url %>/works/<span class="creator_id"><%- defaultCreatorId ?? "(作者ID)" %></span>/<span
+                class="work_id">(作品ID)</span>/</div>
             <div class="file-list">
               <ul>
                 <li class="webgl">webgl</li>

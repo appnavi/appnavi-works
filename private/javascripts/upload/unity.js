@@ -1,7 +1,7 @@
 "use strict";
 var form = document.querySelector("form");
 var creatorIdInput = document.querySelector('input[name="creator_id"]');
-var gameIdInput = document.querySelector('input[name="game_id"]');
+var workIdInput = document.querySelector('input[name="work_id"]');
 var webglFilesInput = document.querySelector('input[name="webgl"]');
 var windowsFilesInput = document.querySelector('input[name="windows"]');
 var webglFileFieldFrame = document.querySelector(".input-field.file-field-frame.webgl");
@@ -114,13 +114,13 @@ creatorIdInput.addEventListener("change", function (_) {
     var preview = document.querySelector(".file-list-header>.creator_id");
     preview.innerHTML = creatorId;
 });
-gameIdInput.addEventListener("change", function (_) {
-    var gameId = gameIdInput.value;
-    if (gameId.length == 0) {
-        gameId = "(ゲームID)";
+workIdInput.addEventListener("change", function (_) {
+    var workId = workIdInput.value;
+    if (workId.length == 0) {
+        workId = "(作品ID)";
     }
-    var preview = document.querySelector(".file-list-header>.game_id");
-    preview.innerHTML = gameId;
+    var preview = document.querySelector(".file-list-header>.work_id");
+    preview.innerHTML = workId;
 });
 form.addEventListener("submit", function (event) {
     var _a, _b;
@@ -135,7 +135,7 @@ form.addEventListener("submit", function (event) {
     var request = new XMLHttpRequest();
     request.open("POST", "", true);
     request.setRequestHeader("x-creator-id", creatorIdInput.value);
-    request.setRequestHeader("x-game-id", gameIdInput.value);
+    request.setRequestHeader("x-work-id", workIdInput.value);
     request.addEventListener("load", function (ev) {
         var _a;
         setUploading(false);
