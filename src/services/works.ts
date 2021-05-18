@@ -115,15 +115,16 @@ export async function backupWork(
   const backupIndex = (latestBackupIndex + 1).toString();
   const backupToPath = path.join(backupFolderPath, backupIndex);
   await fsExtra.move(workPath, backupToPath);
-  work.backupFileSizes.set(backupIndex, work.totalFileSize);
+  work.backups.push({ name: backupIndex, fileSize: work.totalFileSize });
 }
 
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
   const works = await WorkModel.find();
   return works.reduce((accumulator, currentValue) => {
-    const totalBackupFileSizes = Array.from(
-      currentValue.backupFileSizes.values()
-    ).reduce((a, c) => a + c, 0);
+    const totalBackupFileSizes = currentValue.backups.reduce(
+      (a, c) => a + c.fileSize,
+      0
+    );
     return accumulator + currentValue.totalFileSize + totalBackupFileSizes;
   }, 0);
 }

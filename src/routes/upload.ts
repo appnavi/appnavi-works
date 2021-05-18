@@ -119,6 +119,7 @@ async function ensureStorageSpaceAvailable(
 ) {
   const workStorageSizeBytes = getEnvNumber("WORK_STORAGE_SIZE_BYTES");
   const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
+  console.log(currentStorageSizeBytes);
   if (workStorageSizeBytes <= currentStorageSizeBytes) {
     next(new UploadError(STORAGE_FULL));
     return;
