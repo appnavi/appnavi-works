@@ -144,31 +144,33 @@ export function calculateTotalFileSize(
   return totalFileSize;
 }
 const unityStorage = multer.diskStorage({
-  destination: async (req, file, next) => {
-    const parentDir = path.join(
-      DIRECTORY_UPLOADS_DESTINATION,
-      getUnityDir(req),
-      file.fieldname
-    );
-    let dir: string;
-    switch (file.fieldname) {
-      case FIELD_WINDOWS: {
-        dir = parentDir;
-        break;
+  destination: (req, file, next) => {
+    (async () => {
+      const parentDir = path.join(
+        DIRECTORY_UPLOADS_DESTINATION,
+        getUnityDir(req),
+        file.fieldname
+      );
+      let dir: string;
+      switch (file.fieldname) {
+        case FIELD_WINDOWS: {
+          dir = parentDir;
+          break;
+        }
+        case FIELD_WEBGL: {
+          const folders = path.dirname(file.originalname).split("/");
+          folders.shift();
+          dir = path.join(parentDir, ...folders);
+          break;
+        }
+        default: {
+          next(new Error(`fieldname${file.fieldname}は不正です。`), "");
+          return;
+        }
       }
-      case FIELD_WEBGL: {
-        const folders = path.dirname(file.originalname).split("/");
-        folders.shift();
-        dir = path.join(parentDir, ...folders);
-        break;
-      }
-      default: {
-        next(new Error(`fieldname${file.fieldname}は不正です。`), "");
-        return;
-      }
-    }
-    await fsExtra.ensureDir(dir);
-    next(null, dir);
+      await fsExtra.ensureDir(dir);
+      next(null, dir);
+    })().catch((err) => next(err, ""));
   },
   filename: function (_req, file, callback) {
     callback(null, path.basename(file.originalname));
