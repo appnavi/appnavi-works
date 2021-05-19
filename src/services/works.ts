@@ -40,7 +40,7 @@ export async function findOrCreateWork(
         creatorId,
         workId,
         owner: userId,
-        totalFileSize: 0,
+        fileSize: 0,
         backupFileSizes: {},
       });
     case 1:
@@ -96,7 +96,7 @@ export async function backupWork(
   await fsExtra.move(workPath, backupToPath);
   work.backups.push({
     name: backupIndex,
-    fileSize: work.totalFileSize,
+    fileSize: work.fileSize,
     uploadedAt: work.uploadedAt,
   });
 }
@@ -123,7 +123,7 @@ export async function restoreBackup(
     throw new Error(`バックアップ${backupName}が見つかりませんでした。`);
   }
   await fsExtra.move(backupToRestorePath, workPath);
-  work.totalFileSize = backupToRestore.fileSize;
+  work.fileSize = backupToRestore.fileSize;
   work.backups.remove(backupToRestore);
   await work.save();
 }
@@ -158,21 +158,21 @@ export async function calculateCurrentStorageSizeBytes(): Promise<number> {
       (a, c) => a + c.fileSize,
       0
     );
-    return accumulator + currentValue.totalFileSize + totalBackupFileSizes;
+    return accumulator + currentValue.fileSize + totalBackupFileSizes;
   }, 0);
 }
 
-export function calculateTotalFileSize(
+export function calculateWorkFileSize(
   files: {
     [fieldname: string]: Express.Multer.File[];
   },
   fields: { name: string }[]
 ): number {
-  let totalFileSize = 0;
+  let fileSize = 0;
   fields.forEach(({ name }) =>
     (files[name] ?? []).forEach((file) => {
-      totalFileSize += file.size;
+      fileSize += file.size;
     })
   );
-  return totalFileSize;
+  return fileSize;
 }

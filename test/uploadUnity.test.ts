@@ -89,7 +89,7 @@ describe("Unity作品のアップロード", () => {
         creatorId: creatorId,
         workId: workId,
         createdBy: theirId,
-        totalFileSize: 100,
+        fileSize: 100,
       })
         .then(() =>
           fs.copy(
@@ -118,7 +118,7 @@ describe("Unity作品のアップロード", () => {
         creatorId: "large-work-creator",
         workId: "large-work",
         createdBy: theirId,
-        totalFileSize: getEnvNumber("WORK_STORAGE_SIZE_BYTES"),
+        fileSize: getEnvNumber("WORK_STORAGE_SIZE_BYTES"),
       }).then(() => {
         request(app)
           .post("/upload/unity")

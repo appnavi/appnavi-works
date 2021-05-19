@@ -10,7 +10,7 @@ import {
   getUserId,
 } from "../services/auth";
 import {
-  calculateTotalFileSize,
+  calculateWorkFileSize,
   uploadSchema,
   calculateCurrentStorageSizeBytes,
   backupWork,
@@ -309,7 +309,7 @@ function saveToDatabase(
     const files = req.files as {
       [fieldname: string]: Express.Multer.File[];
     };
-    work.totalFileSize = calculateTotalFileSize(files, fields);
+    work.fileSize = calculateWorkFileSize(files, fields);
     work.uploadedAt = locals.uploadEndedAt;
     await work.save();
     next();
