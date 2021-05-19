@@ -1,6 +1,4 @@
-const accountMessageDialog = document.querySelector(".modal") as HTMLElement;
 document.addEventListener("DOMContentLoaded", () => {
-  M.Modal.init(accountMessageDialog, {});
   M.Collapsible.init(document.querySelectorAll(".collapsible"), {});
   M.Tooltip.init(document.querySelectorAll(".tooltipped"), {});
 });
@@ -17,20 +15,22 @@ document
     request.open("POST", "/account/default-creator-id", true);
     request.addEventListener("load", () => {
       if (request.status === 200) {
-        showAccountMessageDialog("完了", "デフォルトの作者IDを設定しました。");
+        const message = document.createElement("p");
+        message.textContent = "デフォルトの作者IDを設定しました。";
+        showMessageDialog("完了", message);
       } else {
         const errors = JSON.parse(request.response).errors as string[];
-        showAccountMessageDialog("エラー", errors.join("\n"));
+        const message = document.createElement("div");
+        errors.forEach((error) => {
+          const errorMessage = document.querySelector("p");
+          errorMessage.textContent = error;
+          message.appendChild(errorMessage);
+        });
+        showMessageDialog("エラー", message);
       }
     });
     request.send(data);
   });
-
-function showAccountMessageDialog(title: string, message: string) {
-  accountMessageDialog.querySelector(".title")!.textContent = title;
-  accountMessageDialog.querySelector(".message")!.textContent = message;
-  M.Modal.getInstance(accountMessageDialog).open();
-}
 
 document.querySelectorAll(".restoreBackupButton").forEach((btn) => {
   btn.addEventListener("click", () => {
