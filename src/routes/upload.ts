@@ -226,6 +226,7 @@ function saveToDatabase(
       [fieldname: string]: Express.Multer.File[];
     };
     work.totalFileSize = calculateTotalFileSize(files, fields);
+    work.uploadedAt = locals.uploadEndedAt;
     await work.save();
     next();
   })(req, res, next);

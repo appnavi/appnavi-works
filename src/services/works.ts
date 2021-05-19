@@ -115,7 +115,11 @@ export async function backupWork(
   const backupIndex = (latestBackupIndex + 1).toString();
   const backupToPath = path.join(backupFolderPath, backupIndex);
   await fsExtra.move(workPath, backupToPath);
-  work.backups.push({ name: backupIndex, fileSize: work.totalFileSize });
+  work.backups.push({
+    name: backupIndex,
+    fileSize: work.totalFileSize,
+    uploadedAt: work.uploadedAt,
+  });
 }
 
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
