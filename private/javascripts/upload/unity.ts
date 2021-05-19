@@ -25,9 +25,6 @@ const uploadButton = document.querySelector(
 const uploadingIndicator = document.querySelector(
   ".uploadingIndicator"
 ) as HTMLElement;
-const unityMessageDialog = document.querySelector(
-  "#result-dialog"
-) as HTMLElement;
 
 //Materializeのロード
 document.addEventListener("DOMContentLoaded", function () {
@@ -45,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
       header.innerHTML = "keyboard_arrow_down";
     },
   });
-  M.Modal.init(unityMessageDialog, {});
   setTimeout(() => M.updateTextFields(), 0);
 });
 
@@ -71,12 +67,6 @@ webglFilesInput.addEventListener("change", (_) =>
 windowsFilesInput.addEventListener("change", (_) =>
   onFilesDropped("windows", windowsFilesInput)
 );
-
-function showUnityMessageDialog(title: string, content: string) {
-  unityMessageDialog.querySelector(".title")!.textContent = title;
-  unityMessageDialog.querySelector(".message")!.innerHTML = content;
-  M.Modal.getInstance(unityMessageDialog).open();
-}
 
 function onMultipleFilesDropped(type: string, input: HTMLInputElement) {
   const message = document.querySelector(
@@ -171,10 +161,10 @@ form.addEventListener("submit", function (event) {
     webglFilesInput.files?.length === 0 &&
     windowsFilesInput.files?.length === 0
   ) {
-    showUnityMessageDialog(
-      "ファイルが選択されていません",
-      "WebGLまたはWindowsのいずれかのファイルを選択してください"
-    );
+    const content = document.createElement("div");
+    content.textContent =
+      "WebGLまたはWindowsのいずれかのファイルを選択してください";
+    showMessageDialog("ファイルが選択されていません", content);
     return;
   }
   setUploading(true);
@@ -186,26 +176,38 @@ form.addEventListener("submit", function (event) {
   request.setRequestHeader("x-work-id", workIdInput.value);
   request.addEventListener("load", (ev) => {
     setUploading(false);
-    let title =
+    const title =
       request.status === 200
         ? "アップロードに成功しました"
         : "アップロードに失敗しました";
-    let content = "";
+    const content = document.createElement("div");
     if (request.status === 200) {
       const paths = (JSON.parse(request.response).paths as string[]) ?? [];
       paths
         .map((p) => p.replace(/\\/g, "/"))
         .forEach((p) => {
           const url = `${location.origin}${p}`;
-          content += `<p><a href="${url}">${url}</a>にアップロードしました。</p>`;
+          const workUrlHolder = document.createElement("p");
+          const workUrl = document.createElement("a");
+          workUrl.href = url;
+          workUrl.textContent = url;
+          workUrlHolder.appendChild(workUrl);
+          workUrlHolder.appendChild(
+            document.createTextNode("にアップロードしました。")
+          );
+          content.appendChild(workUrlHolder);
         });
     } else if (request.status === 401) {
-      content =
-        "<p>ログインしなおす必要があります。</p><p>ページを再読み込みしてください</>";
+      content.appendChild(
+        document.createTextNode("ログインしなおす必要があります。")
+      );
+      content.appendChild(
+        document.createTextNode("ページを再読み込みしてください。")
+      );
     } else {
-      content = request.response;
+      content.appendChild(document.createTextNode(request.response));
     }
-    showUnityMessageDialog(title, content);
+    showMessageDialog(title, content);
   });
   request.send(data);
 });
