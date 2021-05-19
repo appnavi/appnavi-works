@@ -47,8 +47,8 @@ describe("GET", () => {
           .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
           .end(done);
       });
-      it("/profileはログイン必須", (done) => {
-        requireAuthenticated("/profile", done);
+      it("/accountはログイン必須", (done) => {
+        requireAuthenticated("/account", done);
       });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
@@ -58,17 +58,17 @@ describe("GET", () => {
           .end(done);
       });
     });
-    describe("gamesRouter", () => {
-      it("/gamesページをGETできる(URLは/games/になる)", (done) => {
+    describe("worksRouter", () => {
+      it("/worksページをGETできる(URLは/works/になる)", (done) => {
         request(app)
-          .get("/games")
+          .get("/works")
           .expect("Content-Type", /html/)
           .expect(STATUS_CODE_REDIRECT_PERMANENT)
-          .expect("Location", "/games/")
+          .expect("Location", "/works/")
           .end(done);
       });
-      it("/games/ページをGETできる", (done) => {
-        canAccessTo("/games/", done);
+      it("/works/ページをGETできる", (done) => {
+        canAccessTo("/works/", done);
       });
     });
     describe("indexRouter", () => {
@@ -101,8 +101,8 @@ describe("GET", () => {
           .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
           .end(done);
       });
-      it("/profileをGETできる", (done) => {
-        canAccessTo("/profile", done);
+      it("/accountをGETできる", (done) => {
+        canAccessTo("/account", done);
       });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
@@ -112,18 +112,18 @@ describe("GET", () => {
           .end(done);
       });
     });
-    describe("gamesRouter", () => {
-      it("/gamesページをGETできる(URLは/games/になる)", (done) => {
+    describe("worksRouter", () => {
+      it("/worksページをGETできる(URLは/works/になる)", (done) => {
         request(app)
-          .get("/games")
+          .get("/works")
           .expect("Content-Type", /html/)
           .expect(STATUS_CODE_REDIRECT_PERMANENT)
-          .expect("Location", "/games/")
+          .expect("Location", "/works/")
           .end(done);
       });
-      it("/games/ページをGETできる", (done) => {
+      it("/works/ページをGETできる", (done) => {
         request(app)
-          .get("/games/")
+          .get("/works/")
           .expect("Content-Type", /html/)
           .expect(STATUS_CODE_SUCCESS)
           .end(done);
