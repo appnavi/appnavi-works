@@ -9,7 +9,6 @@ var windowsFileFieldFrame = document.querySelector(".input-field.file-field-fram
 var fileList = document.querySelector(".file-list");
 var uploadButton = document.querySelector(".uploadButton");
 var uploadingIndicator = document.querySelector(".uploadingIndicator");
-var unityMessageDialog = document.querySelector("#result-dialog");
 document.addEventListener("DOMContentLoaded", function () {
     M.Collapsible.init(document.querySelector(".collapsible"), {
         onOpenStart: function (elm) {
@@ -21,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
             header.innerHTML = "keyboard_arrow_down";
         },
     });
-    M.Modal.init(unityMessageDialog, {});
     setTimeout(function () { return M.updateTextFields(); }, 0);
 });
 function initDragAndDrop(fileInput, frame) {
@@ -43,11 +41,6 @@ webglFilesInput.addEventListener("change", function (_) {
 windowsFilesInput.addEventListener("change", function (_) {
     return onFilesDropped("windows", windowsFilesInput);
 });
-function showUnityMessageDialog(title, content) {
-    unityMessageDialog.querySelector(".title").textContent = title;
-    unityMessageDialog.querySelector(".message").innerHTML = content;
-    M.Modal.getInstance(unityMessageDialog).open();
-}
 function onMultipleFilesDropped(type, input) {
     var _a, _b, _c;
     var message = document.querySelector(".message-hidden-folder-files." + type);
@@ -127,7 +120,10 @@ form.addEventListener("submit", function (event) {
     event.preventDefault();
     if (((_a = webglFilesInput.files) === null || _a === void 0 ? void 0 : _a.length) === 0 &&
         ((_b = windowsFilesInput.files) === null || _b === void 0 ? void 0 : _b.length) === 0) {
-        showUnityMessageDialog("ファイルが選択されていません", "WebGLまたはWindowsのいずれかのファイルを選択してください");
+        var content = document.createElement("div");
+        content.textContent =
+            "WebGLまたはWindowsのいずれかのファイルを選択してください";
+        showMessageDialog("ファイルが選択されていません", content);
         return;
     }
     setUploading(true);
@@ -142,24 +138,30 @@ form.addEventListener("submit", function (event) {
         var title = request.status === 200
             ? "アップロードに成功しました"
             : "アップロードに失敗しました";
-        var content = "";
+        var content = document.createElement("div");
         if (request.status === 200) {
             var paths = (_a = JSON.parse(request.response).paths) !== null && _a !== void 0 ? _a : [];
             paths
                 .map(function (p) { return p.replace(/\\/g, "/"); })
                 .forEach(function (p) {
                 var url = "" + location.origin + p;
-                content += "<p><a href=\"" + url + "\">" + url + "</a>\u306B\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3057\u307E\u3057\u305F\u3002</p>";
+                var workUrlHolder = document.createElement("p");
+                var workUrl = document.createElement("a");
+                workUrl.href = url;
+                workUrl.textContent = url;
+                workUrlHolder.appendChild(workUrl);
+                workUrlHolder.appendChild(document.createTextNode("にアップロードしました。"));
+                content.appendChild(workUrlHolder);
             });
         }
         else if (request.status === 401) {
-            content =
-                "<p>ログインしなおす必要があります。</p><p>ページを再読み込みしてください</>";
+            content.appendChild(document.createTextNode("ログインしなおす必要があります。"));
+            content.appendChild(document.createTextNode("ページを再読み込みしてください。"));
         }
         else {
-            content = request.response;
+            content.appendChild(document.createTextNode(request.response));
         }
-        showUnityMessageDialog(title, content);
+        showMessageDialog(title, content);
     });
     request.send(data);
 });
