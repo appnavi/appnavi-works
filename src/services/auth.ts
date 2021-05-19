@@ -21,7 +21,7 @@ function setRedirect(req: express.Request): void {
 export async function findOrCreateUser(
   req: express.Request
 ): Promise<UserDocument> {
-  const userId = req.user?.user.id;
+  const userId = getUserId(req);
   const users = await UserModel.find({
     userId,
   });
@@ -76,4 +76,12 @@ export function ensureAuthenticated(
 
 export function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
+}
+
+export function getUserId(req: express.Request): string {
+  const userId = req.user?.id;
+  if (userId === undefined) {
+    throw new Error("ユーザーIDを取得できませんでした。");
+  }
+  return userId;
 }

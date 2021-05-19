@@ -4,7 +4,11 @@ import fsExtra from "fs-extra";
 import multer from "multer";
 import { WorkDocument } from "../models/database";
 import * as logger from "../modules/logger";
-import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
+import {
+  ensureAuthenticated,
+  getDefaultCreatorId,
+  getUserId,
+} from "../services/auth";
 import {
   calculateTotalFileSize,
   uploadSchema,
@@ -206,7 +210,7 @@ function getWorkDocument(
     locals.work = await findOrCreateWork(
       getCreatorIdFromHeader(req),
       getWorkIdFromHeader(req),
-      req.user?.id ?? ""
+      getUserId(req) ?? ""
     );
     next();
   })(req, res, next);
@@ -218,7 +222,7 @@ function preventEditByOtherPerson(
 ) {
   const locals = res.locals as Locals;
   const owner = locals.work.owner;
-  if (owner === req.user?.user.id) {
+  if (owner === getUserId(req)) {
     next();
     return;
   }

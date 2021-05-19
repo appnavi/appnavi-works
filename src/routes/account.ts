@@ -2,7 +2,11 @@ import express from "express";
 import multer from "multer";
 import * as yup from "yup";
 import { UserModel, WorkModel } from "../models/database";
-import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
+import {
+  ensureAuthenticated,
+  getDefaultCreatorId,
+  getUserId,
+} from "../services/auth";
 import {
   creatorIdSchema,
   deleteBackup,
@@ -28,7 +32,7 @@ accountRouter.get(
   wrap(async (req, res) => {
     const defaultCreatorId = await getDefaultCreatorId(req);
     const works = await WorkModel.find({
-      owner: req.user?.user.id,
+      owner: getUserId(req),
     });
     render("account", req, res, {
       defaultCreatorId,
@@ -55,7 +59,7 @@ accountRouter.post(
     }
     await UserModel.updateOne(
       {
-        userId: req.user?.user.id,
+        userId: getUserId(req),
       },
       {
         $set: {
@@ -95,7 +99,11 @@ accountRouter.post(
       return;
     }
     const { creatorId, workId, backupName } = params;
-    const work = await findOrCreateWork(creatorId, workId, req.user?.id ?? "");
+    const work = await findOrCreateWork(
+      creatorId,
+      workId,
+      getUserId(req) ?? ""
+    );
     await restoreBackup(creatorId, workId, work, backupName);
     res.status(STATUS_CODE_SUCCESS).end();
   })
@@ -119,7 +127,11 @@ accountRouter.post(
       return;
     }
     const { creatorId, workId, backupName } = params;
-    const work = await findOrCreateWork(creatorId, workId, req.user?.id ?? "");
+    const work = await findOrCreateWork(
+      creatorId,
+      workId,
+      getUserId(req) ?? ""
+    );
     await deleteBackup(creatorId, workId, work, backupName);
     res.status(STATUS_CODE_SUCCESS).end();
   })
