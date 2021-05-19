@@ -2,7 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
   M.Modal.init(document.querySelectorAll(".modal"), {});
 });
 
-function showMessageDialog(title: string, content: HTMLElement) {
+function showMessageDialog(
+  title: string,
+  content: HTMLElement,
+  onClose: () => void = () => {}
+) {
   const dialog = document.querySelector<HTMLDivElement>(
     ".messageDialog.modal"
   )!;
@@ -10,15 +14,15 @@ function showMessageDialog(title: string, content: HTMLElement) {
   const contentHolder = dialog.querySelector(".content")!;
   contentHolder.innerHTML = "";
   contentHolder.appendChild(content);
-  M.Modal.getInstance(dialog).open();
+  const instance = M.Modal.getInstance(dialog);
+  instance.options.onCloseEnd = () => onClose();
+  instance.open();
 }
 function showConfirmDialog(
   title: string,
   content: HTMLElement,
-  positiveButtonLabel: string,
-  onPositiveButtonPressed: () => void,
-  negativeButtonLabel: string,
-  onNegativeButtonPressed: () => void
+  positiveButton: { label: string; classes?: string[]; onPresed?: () => void },
+  negativeButton: { label: string; classes?: string[]; onPresed?: () => void }
 ) {
   const dialog = document.querySelector<HTMLDivElement>(
     ".confirmDialog.modal"
@@ -27,15 +31,21 @@ function showConfirmDialog(
   const contentHolder = dialog.querySelector(".content")!;
   contentHolder.innerHTML = "";
   contentHolder.appendChild(content);
-  const positiveButton = dialog.querySelector<HTMLDivElement>(
-    ".positiveButton"
-  )!;
-  positiveButton.textContent = positiveButtonLabel;
-  positiveButton.addEventListener("click", onPositiveButtonPressed);
-  const negativeButton = dialog.querySelector<HTMLDivElement>(
-    ".negativeButton"
-  )!;
-  negativeButton.textContent = negativeButtonLabel;
-  negativeButton.addEventListener("click", onNegativeButtonPressed);
+  const positive = dialog.querySelector<HTMLDivElement>(".positiveButton")!;
+  positive.classList.add(
+    ...(positiveButton.classes ?? ["waves-effect", "waves-light", "btn"])
+  );
+  positive.textContent = positiveButton.label;
+  if (positiveButton.onPresed !== undefined) {
+    positive.addEventListener("click", positiveButton.onPresed);
+  }
+  const negative = dialog.querySelector<HTMLDivElement>(".negativeButton")!;
+  negative.classList.add(
+    ...(negativeButton.classes ?? ["waves-effect", "waves-light", "btn", "red"])
+  );
+  negative.textContent = negativeButton.label;
+  if (negativeButton.onPresed !== undefined) {
+    negative.addEventListener("click", negativeButton.onPresed);
+  }
   M.Modal.getInstance(dialog).open();
 }

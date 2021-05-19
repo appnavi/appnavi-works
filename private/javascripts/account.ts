@@ -42,18 +42,38 @@ document.querySelectorAll(".restoreBackupButton").forEach((btn) => {
     showConfirmDialog(
       "確認",
       message,
-      "復元する",
-      () => {
-        restoreBackup(creatorId, workId, backupName);
+      {
+        label: "復元する",
+        onPresed: () => {
+          restoreBackup(creatorId, workId, backupName);
+        },
       },
-      "キャンセル",
-      () => {}
+      { label: "キャンセル" }
     );
   });
 });
 document.querySelectorAll(".deleteBackupButton").forEach((btn) => {
   btn.addEventListener("click", () => {
-    alert("バックアップの削除機能は未実装です。");
+    const creatorId = btn.attributes.getNamedItem("data-creator-id")!.value;
+    const workId = btn.attributes.getNamedItem("data-work-id")!.value;
+    const backupName = btn.attributes.getNamedItem("data-backup-name")!.value;
+    const message = document.createElement("p");
+    message.textContent = `バックアップ${backupName}を削除しますか？`;
+    showConfirmDialog(
+      "確認",
+      message,
+      {
+        label: "削除する",
+        classes: ["waves-effect", "waves-light", "btn", "red"],
+        onPresed: () => {
+          deleteBackup(creatorId, workId, backupName);
+        },
+      },
+      {
+        label: "キャンセル",
+        classes: ["waves-effect", "waves-light", "btn-flat"],
+      }
+    );
   });
 });
 
@@ -69,6 +89,33 @@ function restoreBackup(creatorId: string, workId: string, backupName: string) {
       var message = document.createElement("p");
       message.textContent = `バックアップ${backupName}を復元しました。`;
       showMessageDialog("完了", message);
+    } else {
+      const errors = JSON.parse(request.response).errors as string[];
+      const message = document.createElement("div");
+      errors.forEach((error) => {
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = error;
+        message.appendChild(errorMessage);
+      });
+      showMessageDialog("エラー", message);
+    }
+  });
+  request.send(data);
+}
+function deleteBackup(creatorId: string, workId: string, backupName: string) {
+  const request = new XMLHttpRequest();
+  request.open("POST", "/account/delete-work-backup", true);
+  const data = new FormData();
+  data.append("creatorId", creatorId);
+  data.append("workId", workId);
+  data.append("backupName", backupName);
+  request.addEventListener("load", function () {
+    if (request.status === 200) {
+      var message = document.createElement("p");
+      message.textContent = `バックアップ${backupName}を削除しました。`;
+      showMessageDialog("完了", message, () => {
+        location.reload();
+      });
     } else {
       const errors = JSON.parse(request.response).errors as string[];
       const message = document.createElement("div");
