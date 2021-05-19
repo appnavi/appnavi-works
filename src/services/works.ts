@@ -1,7 +1,5 @@
 import path from "path";
-import express from "express";
 import fsExtra from "fs-extra";
-import multer from "multer";
 import * as yup from "yup";
 import { WorkDocument, WorkModel } from "../models/database";
 import {
@@ -10,21 +8,8 @@ import {
   MESSAGE_UNITY_UPLOAD_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
   MESSAGE_UNITY_UPLOAD_WORK_ID_REQUIRED as WORK_ID_REQUIRED,
   MESSAGE_UNITY_UPLOAD_WORK_ID_INVALID as WORK_ID_INVALID,
-  HEADER_CREATOR_ID,
-  HEADER_WORK_ID,
   DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
-export const FIELD_WEBGL = "webgl";
-export const FIELD_WINDOWS = "windows";
-export const fields = [
-  {
-    name: FIELD_WEBGL,
-  },
-  {
-    name: FIELD_WINDOWS,
-    maxCount: 1,
-  },
-];
 
 const idRegex = /^[0-9a-z-]+$/;
 export const creatorIdSchema = yup
@@ -40,30 +25,21 @@ export const uploadSchema = yup.object({
   workId: workIdSchema,
 });
 
-export function getCreatorId(req: express.Request): string {
-  return req.headers[HEADER_CREATOR_ID] as string;
-}
-export function getWorkId(req: express.Request): string {
-  return req.headers[HEADER_WORK_ID] as string;
-}
-export function getUnityDir(req: express.Request): string {
-  const creator_id = getCreatorId(req);
-  const work_id = getWorkId(req);
-  return path.join(creator_id, work_id);
-}
 export async function findOrCreateWork(
-  req: express.Request
+  creatorId: string,
+  workId: string,
+  userId: string
 ): Promise<WorkDocument> {
   const works = await WorkModel.find({
-    creatorId: getCreatorId(req),
-    workId: getWorkId(req),
+    creatorId,
+    workId,
   });
   switch (works.length) {
     case 0:
       return await WorkModel.create({
-        creatorId: getCreatorId(req),
-        workId: getWorkId(req),
-        owner: req.user?.id,
+        creatorId,
+        workId,
+        owner: userId,
         totalFileSize: 0,
         backupFileSizes: {},
       });
@@ -75,9 +51,10 @@ export async function findOrCreateWork(
 }
 
 export async function listBackupFolderNames(
-  req: express.Request
+  creatorId: string,
+  workId: string
 ): Promise<string[]> {
-  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
   const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
   const backupExists = await fsExtra.pathExists(backupFolderPath);
   if (!backupExists) {
@@ -92,9 +69,10 @@ export async function listBackupFolderNames(
 }
 
 export async function getLatestBackupIndex(
-  req: express.Request
+  creatorId: string,
+  workId: string
 ): Promise<number> {
-  const backupFolderNames = await listBackupFolderNames(req);
+  const backupFolderNames = await listBackupFolderNames(creatorId, workId);
   if (backupFolderNames.length == 0) {
     return 0;
   }
@@ -105,13 +83,14 @@ export async function getLatestBackupIndex(
 }
 
 export async function backupWork(
-  req: express.Request,
+  creatorId: string,
+  workId: string,
   work: WorkDocument
 ): Promise<void> {
-  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
   const workPath = path.resolve(workDir);
   const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
-  const latestBackupIndex = await getLatestBackupIndex(req);
+  const latestBackupIndex = await getLatestBackupIndex(creatorId, workId);
   const backupIndex = (latestBackupIndex + 1).toString();
   const backupToPath = path.join(backupFolderPath, backupIndex);
   await fsExtra.move(workPath, backupToPath);
@@ -147,58 +126,3 @@ export function calculateTotalFileSize(
   );
   return totalFileSize;
 }
-const unityStorage = multer.diskStorage({
-  destination: (req, file, next) => {
-    (async () => {
-      const parentDir = path.join(
-        DIRECTORY_UPLOADS_DESTINATION,
-        getUnityDir(req),
-        file.fieldname
-      );
-      let dir: string;
-      switch (file.fieldname) {
-        case FIELD_WINDOWS: {
-          dir = parentDir;
-          break;
-        }
-        case FIELD_WEBGL: {
-          const folders = path.dirname(file.originalname).split("/");
-          folders.shift();
-          dir = path.join(parentDir, ...folders);
-          break;
-        }
-        default: {
-          next(new Error(`fieldname${file.fieldname}は不正です。`), "");
-          return;
-        }
-      }
-      await fsExtra.ensureDir(dir);
-      next(null, dir);
-    })().catch((err) => next(err, ""));
-  },
-  filename: function (_req, file, callback) {
-    callback(null, path.basename(file.originalname));
-  },
-});
-export const unityUpload = multer({
-  storage: unityStorage,
-  preservePath: true,
-  fileFilter: (_req, file, cb) => {
-    switch (file.fieldname) {
-      case FIELD_WINDOWS: {
-        cb(null, path.extname(file.originalname) === ".zip");
-        break;
-      }
-      case FIELD_WEBGL: {
-        const folders = path.dirname(file.originalname).split("/");
-        //隠しフォルダ内のファイルではないか
-        cb(null, !folders.find((f) => f.startsWith(".")));
-        break;
-      }
-      default: {
-        cb(new Error(`fieldname${file.fieldname}は不正です。`));
-        return;
-      }
-    }
-  },
-});

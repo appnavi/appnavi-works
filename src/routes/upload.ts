@@ -1,16 +1,12 @@
 import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
+import multer from "multer";
 import { WorkDocument } from "../models/database";
 import * as logger from "../modules/logger";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import {
-  getUnityDir,
   calculateTotalFileSize,
-  unityUpload,
-  fields,
-  getCreatorId,
-  getWorkId,
   uploadSchema,
   calculateCurrentStorageSizeBytes,
   backupWork,
@@ -23,6 +19,8 @@ import {
   MESSAGE_UNITY_UPLOAD_STORAGE_FULL as STORAGE_FULL,
   MESSAGE_UNITY_UPLOAD_NO_FILES as NO_FILES,
   STATUS_CODE_BAD_REQUEST,
+  HEADER_CREATOR_ID,
+  HEADER_WORK_ID,
 } from "../utils/constants";
 import {
   getContentSecurityPolicy,
@@ -47,6 +45,79 @@ class UploadError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
+const FIELD_WEBGL = "webgl";
+const FIELD_WINDOWS = "windows";
+const fields = [
+  {
+    name: FIELD_WEBGL,
+  },
+  {
+    name: FIELD_WINDOWS,
+    maxCount: 1,
+  },
+];
+function getCreatorIdFromHeader(req: express.Request): string {
+  return req.headers[HEADER_CREATOR_ID] as string;
+}
+function getWorkIdFromHeader(req: express.Request): string {
+  return req.headers[HEADER_WORK_ID] as string;
+}
+const unityStorage = multer.diskStorage({
+  destination: (req, file, next) => {
+    (async () => {
+      const parentDir = path.join(
+        DIRECTORY_UPLOADS_DESTINATION,
+        getCreatorIdFromHeader(req),
+        getWorkIdFromHeader(req),
+        file.fieldname
+      );
+      let dir: string;
+      switch (file.fieldname) {
+        case FIELD_WINDOWS: {
+          dir = parentDir;
+          break;
+        }
+        case FIELD_WEBGL: {
+          const folders = path.dirname(file.originalname).split("/");
+          folders.shift();
+          dir = path.join(parentDir, ...folders);
+          break;
+        }
+        default: {
+          next(new Error(`fieldname${file.fieldname}は不正です。`), "");
+          return;
+        }
+      }
+      await fsExtra.ensureDir(dir);
+      next(null, dir);
+    })().catch((err) => next(err, ""));
+  },
+  filename: function (_req, file, callback) {
+    callback(null, path.basename(file.originalname));
+  },
+});
+const unityUpload = multer({
+  storage: unityStorage,
+  preservePath: true,
+  fileFilter: (_req, file, cb) => {
+    switch (file.fieldname) {
+      case FIELD_WINDOWS: {
+        cb(null, path.extname(file.originalname) === ".zip");
+        break;
+      }
+      case FIELD_WEBGL: {
+        const folders = path.dirname(file.originalname).split("/");
+        //隠しフォルダ内のファイルではないか
+        cb(null, !folders.find((f) => f.startsWith(".")));
+        break;
+      }
+      default: {
+        cb(new Error(`fieldname${file.fieldname}は不正です。`));
+        return;
+      }
+    }
+  },
+});
 
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
@@ -97,14 +168,13 @@ uploadRouter.use(function (
   logger.system.error(`アップロード失敗：${err.message}`, ...params);
   res.status(STATUS_CODE_BAD_REQUEST).send(err.message);
 });
-
 function validateParams(
   req: express.Request,
   _res: express.Response,
   next: express.NextFunction
 ) {
-  const creatorId = getCreatorId(req);
-  const workId = getWorkId(req);
+  const creatorId = getCreatorIdFromHeader(req);
+  const workId = getWorkIdFromHeader(req);
 
   uploadSchema
     .validate({
@@ -140,7 +210,11 @@ function getWorkDocument(
 ) {
   return wrap(async (req, res, next) => {
     const locals = res.locals as Locals;
-    locals.work = await findOrCreateWork(req);
+    locals.work = await findOrCreateWork(
+      getCreatorIdFromHeader(req),
+      getWorkIdFromHeader(req),
+      req.user?.id ?? ""
+    );
     next();
   })(req, res, next);
 }
@@ -155,7 +229,11 @@ function preventEditByOtherPerson(
     next();
     return;
   }
-  next(new UploadError(DIFFERENT_USER, [getUnityDir(req)]));
+  next(
+    new UploadError(DIFFERENT_USER, [
+      path.join(getCreatorIdFromHeader(req), getWorkIdFromHeader(req)),
+    ])
+  );
 }
 function validateDestination(
   req: express.Request,
@@ -163,7 +241,9 @@ function validateDestination(
   next: express.NextFunction
 ) {
   return wrap(async (req, res, next) => {
-    const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, getUnityDir(req));
+    const creatorId = getCreatorIdFromHeader(req);
+    const workId = getWorkIdFromHeader(req);
+    const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
     const workPath = path.resolve(workDir);
     const exists = await fsExtra.pathExists(workPath);
     if (!exists) {
@@ -171,7 +251,7 @@ function validateDestination(
       return;
     }
     const locals = res.locals as Locals;
-    await backupWork(req, locals.work);
+    await backupWork(creatorId, workId, locals.work);
     next();
   })(req, res, next);
 }
@@ -211,7 +291,14 @@ function setLocals(
   };
   locals.paths = fields
     .filter(({ name }) => files[name] !== undefined)
-    .map(({ name }) => path.join(URL_PREFIX_WORK, getUnityDir(req), name));
+    .map(({ name }) =>
+      path.join(
+        URL_PREFIX_WORK,
+        getCreatorIdFromHeader(req),
+        getWorkIdFromHeader(req),
+        name
+      )
+    );
   next();
 }
 function saveToDatabase(
@@ -238,8 +325,8 @@ function logUploadSuccess(
 ) {
   const locals = res.locals as Locals;
   logger.system.info("アップロード成功", {
-    creatorId: getCreatorId(req),
-    workId: getWorkId(req),
+    creatorId: getCreatorIdFromHeader(req),
+    workId: getWorkIdFromHeader(req),
     uploadStartedAt: locals.uploadStartedAt,
     uploadEndedAt: locals.uploadEndedAt,
     elapsedMillis: locals.elapsedMillis,
