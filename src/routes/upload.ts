@@ -39,9 +39,9 @@ class UploadError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
-const FIELD_WEBGL = "webgl";
-const FIELD_WINDOWS = "windows";
-const fields = [
+export const FIELD_WEBGL = "webgl";
+export const FIELD_WINDOWS = "windows";
+export const fields = [
   {
     name: FIELD_WEBGL,
   },

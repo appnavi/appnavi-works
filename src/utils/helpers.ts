@@ -1,7 +1,6 @@
 import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
-import helmet from "helmet";
 import createError from "http-errors";
 import { DIRECTORY_NAME_VIEWS } from "./constants";
 
