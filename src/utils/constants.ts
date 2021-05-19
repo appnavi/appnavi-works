@@ -25,8 +25,6 @@ export const MESSAGE_UNITY_UPLOAD_CREATOR_ID_INVALID =
 export const MESSAGE_UNITY_UPLOAD_WORK_ID_REQUIRED = "作品IDは必須です。";
 export const MESSAGE_UNITY_UPLOAD_WORK_ID_INVALID =
   "作品IDには数字・アルファベット小文字・ハイフンのみ使用できます。";
-export const MESSAGE_UNITY_UPLOAD_ALREADY_EXISTS =
-  "作品が既に存在しています。上書きする場合はチェックボックスにチェックを入れてください。";
 export const MESSAGE_UNITY_UPLOAD_DIFFERENT_USER =
   "別の人が既に投稿した作品があります。上書きすることはできません。";
 export const MESSAGE_UNITY_UPLOAD_STORAGE_FULL =
