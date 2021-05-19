@@ -44,8 +44,17 @@
                   <div class="col s1">
                     <%- backup.name %>
                   </div>
-                  <div class="col s8">
+                  <div class="col s4">
                     <%- backup.fileSize %>バイト
+                  </div>
+                  <div class="col s4">
+                    <%- backup.uploadedAt.getFullYear() %>年
+                    <%- backup.uploadedAt.getMonth() + 1 %>月
+                    <%- backup.uploadedAt.getDate() %>日
+                    <%- backup.uploadedAt.getHours() %>時
+                    <%- backup.uploadedAt.getMinutes() %>分
+                    <%- backup.uploadedAt.getSeconds() %>秒
+                    アップロード
                   </div>
                   <div class="col s3 right-align">
                     <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn"><i class="material-icons left">restore</i>復元</a>
