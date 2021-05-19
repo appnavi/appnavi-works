@@ -68,10 +68,10 @@
                       アップロード
                     </div>
                     <div class="col s4 right-align">
-                      <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn">
+                      <a class="waves-effect waves-light btn restoreBackupButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
                         <i class="material-icons left">restore</i>復元
                       </a>
-                      <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn red">
+                      <a class="waves-effect waves-light btn red">
                         <i class="material-icons left">delete_forever</i>削除
                       </a>
                     </div>      

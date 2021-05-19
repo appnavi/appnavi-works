@@ -30,3 +30,14 @@ function showAccountMessageDialog(title, message) {
     accountMessageDialog.querySelector(".message").textContent = message;
     M.Modal.getInstance(accountMessageDialog).open();
 }
+document.querySelectorAll(".restoreBackupButton").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+        var request = new XMLHttpRequest();
+        request.open("POST", "/account/restore-work-backup", true);
+        var data = new FormData();
+        data.append("creatorId", btn.attributes.getNamedItem("data-creator-id").value);
+        data.append("workId", btn.attributes.getNamedItem("data-work-id").value);
+        data.append("backupName", btn.attributes.getNamedItem("data-backup-name").value);
+        request.send(data);
+    });
+});

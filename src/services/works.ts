@@ -101,6 +101,32 @@ export async function backupWork(
   });
 }
 
+export async function restoreBackup(
+  creatorId: string,
+  workId: string,
+  work: WorkDocument,
+  backupName: string
+): Promise<void> {
+  await backupWork(creatorId, workId, work);
+  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
+  const workPath = path.resolve(workDir);
+  const backupToRestorePath = path.resolve(
+    DIRECTORY_NAME_BACKUPS,
+    workDir,
+    backupName
+  );
+  const backupToRestore = work.backups.find((it) => it.name === backupName);
+  if (
+    backupToRestore === undefined ||
+    !(await fsExtra.pathExists(backupToRestorePath))
+  ) {
+    throw new Error(`バックアップ${backupName}が見つかりませんでした。`);
+  }
+  await fsExtra.move(backupToRestorePath, workPath);
+  work.totalFileSize = backupToRestore.fileSize;
+  await work.save();
+}
+
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
   const works = await WorkModel.find();
   return works.reduce((accumulator, currentValue) => {

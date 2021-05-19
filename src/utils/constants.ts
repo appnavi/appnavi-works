@@ -33,3 +33,6 @@ export const MESSAGE_UNITY_UPLOAD_STORAGE_FULL =
   "スペースが十分ではありません。";
 export const MESSAGE_UNITY_UPLOAD_NO_FILES =
   "アップロードするファイルがありません。";
+export const MESSAGE_BACKUP_NAME_REQUIRED = "バックアップ名は必須です。";
+export const MESSAGE_BACKUP_NAME_INVALID =
+  "バックアップ名には数字のみである必要があります。";
