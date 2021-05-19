@@ -39,19 +39,19 @@
               </h5>
             </div>
             <% work.backups.forEach(backup =>{ %> 
-              <li class="collection-item avatar valign-wrapper">
-                <div class="row" style="width: 100%;margin-bottom:0">
+              <li class="collection-item valign-wrapper">
+                <div class="row valign-wrapper" style="width: 100%; margin-bottom:0;">
                   <div class="col s1">
                     <%- backup.name %>
                   </div>
-                  <div class="col s11">
+                  <div class="col s8">
                     <%- backup.fileSize %>バイト
                   </div>
+                  <div class="col s3 right-align">
+                    <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn"><i class="material-icons left">restore</i>復元</a>
+                    <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn red"><i class="material-icons left">delete_forever</i>削除</a>
+                  </div>      
                 </div>
-                <span class="secondary-content">
-                  <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn"><i class="material-icons left">restore</i>復元</a>
-                  <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn red"><i class="material-icons left">delete_forever</i>削除</a>
-                </span>
               </li>
             <% }) %> 
             <% if(work.backups.length == 0){ %> 
