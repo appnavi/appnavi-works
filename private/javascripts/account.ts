@@ -51,6 +51,11 @@ document.querySelectorAll(".restoreBackupButton").forEach((btn) => {
     );
   });
 });
+document.querySelectorAll(".deleteBackupButton").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    alert("バックアップの削除機能は未実装です。");
+  });
+});
 
 function restoreBackup(creatorId: string, workId: string, backupName: string) {
   const request = new XMLHttpRequest();
