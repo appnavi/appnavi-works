@@ -5,6 +5,7 @@ import { UserModel, WorkModel } from "../models/database";
 import { ensureAuthenticated, getDefaultCreatorId } from "../services/auth";
 import {
   creatorIdSchema,
+  deleteBackup,
   findOrCreateWork,
   restoreBackup,
   workIdSchema,
@@ -71,7 +72,7 @@ const backupNameSchema = yup
   .string()
   .matches(/^\d+$/, MESSAGE_BACKUP_NAME_INVALID)
   .required(MESSAGE_BACKUP_NAME_REQUIRED);
-const restoreBackupSchema = yup.object({
+const backupSchema = yup.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
   backupName: backupNameSchema,
@@ -86,7 +87,7 @@ accountRouter.post(
       backupName: string;
     };
     try {
-      await restoreBackupSchema.validate(params);
+      await backupSchema.validate(params);
     } catch (e) {
       const err = e as { name: string; errors: string[] };
       res.status(STATUS_CODE_BAD_REQUEST).send({
@@ -97,6 +98,30 @@ accountRouter.post(
     const { creatorId, workId, backupName } = params;
     const work = await findOrCreateWork(creatorId, workId, req.user?.id ?? "");
     await restoreBackup(creatorId, workId, work, backupName);
+    res.status(STATUS_CODE_SUCCESS).end();
+  })
+);
+accountRouter.post(
+  "/delete-work-backup",
+  multer().none(),
+  wrap(async (req, res) => {
+    const params = req.body as {
+      creatorId: string;
+      workId: string;
+      backupName: string;
+    };
+    try {
+      await backupSchema.validate(params);
+    } catch (e) {
+      const err = e as { name: string; errors: string[] };
+      res.status(STATUS_CODE_BAD_REQUEST).send({
+        errors: err.errors,
+      });
+      return;
+    }
+    const { creatorId, workId, backupName } = params;
+    const work = await findOrCreateWork(creatorId, workId, req.user?.id ?? "");
+    await deleteBackup(creatorId, workId, work, backupName);
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );

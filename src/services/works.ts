@@ -126,6 +126,29 @@ export async function restoreBackup(
   work.totalFileSize = backupToRestore.fileSize;
   await work.save();
 }
+export async function deleteBackup(
+  creatorId: string,
+  workId: string,
+  work: WorkDocument,
+  backupName: string
+): Promise<void> {
+  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
+  const backupToDeletePath = path.resolve(
+    DIRECTORY_NAME_BACKUPS,
+    workDir,
+    backupName
+  );
+  const backupToDelete = work.backups.find((it) => it.name === backupName);
+  if (
+    backupToDelete === undefined ||
+    !(await fsExtra.pathExists(backupToDeletePath))
+  ) {
+    throw new Error(`バックアップ${backupName}が見つかりませんでした。`);
+  }
+  await fsExtra.remove(backupToDeletePath);
+  work.backups.remove(backupToDelete);
+  await work.save();
+}
 
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
   const works = await WorkModel.find();
