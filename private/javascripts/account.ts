@@ -39,12 +39,12 @@ document.querySelectorAll(".restoreBackupButton").forEach((btn) => {
     const data = new FormData();
     data.append(
       "creatorId",
-      btn.attributes.getNamedItem("data-creator-id").value
+      btn.attributes.getNamedItem("data-creator-id")!.value
     );
-    data.append("workId", btn.attributes.getNamedItem("data-work-id").value);
+    data.append("workId", btn.attributes.getNamedItem("data-work-id")!.value);
     data.append(
       "backupName",
-      btn.attributes.getNamedItem("data-backup-name").value
+      btn.attributes.getNamedItem("data-backup-name")!.value
     );
     request.send(data);
   });
