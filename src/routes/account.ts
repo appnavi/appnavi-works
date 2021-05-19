@@ -18,8 +18,8 @@ import {
   URL_PREFIX_WORK,
   STATUS_CODE_BAD_REQUEST,
   STATUS_CODE_SUCCESS,
-  MESSAGE_BACKUP_NAME_REQUIRED,
-  MESSAGE_BACKUP_NAME_INVALID,
+  ERROR_MESSAGE_BACKUP_NAME_REQUIRED,
+  ERROR_MESSAGE_BACKUP_NAME_INVALID,
 } from "../utils/constants";
 import { render, wrap } from "../utils/helpers";
 
@@ -73,8 +73,8 @@ accountRouter.post(
 );
 const backupNameSchema = yup
   .string()
-  .matches(/^\d+$/, MESSAGE_BACKUP_NAME_INVALID)
-  .required(MESSAGE_BACKUP_NAME_REQUIRED);
+  .matches(/^\d+$/, ERROR_MESSAGE_BACKUP_NAME_INVALID)
+  .required(ERROR_MESSAGE_BACKUP_NAME_REQUIRED);
 const backupSchema = yup.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
