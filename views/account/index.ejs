@@ -30,45 +30,62 @@
       <div class="section">
         <h3 class="header">作品＆バックアップ一覧</h3>
         <% works.forEach(work=> { %> 
-          <ul class="collection with-header">
-            <div class="collection-header">
-              <h5>
-                <%- work.creatorId %>/<%- work.workId %>
-                <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="secondary-content tooltipped" data-position="top" data-tooltip="作品へ移動"><i class="material-icons">open_in_new</i></a>
-                <span class="tooltipped" style="float:right;margin-right: 10px;" data-position="top" data-tooltip="現在のゲームのファイルサイズ"><%- work.totalFileSize %>バイト</span>
-              </h5>
-            </div>
-            <% work.backups.forEach(backup =>{ %> 
-              <li class="collection-item valign-wrapper">
-                <div class="row valign-wrapper" style="width: 100%; margin-bottom:0;">
-                  <div class="col s1">
-                    <%- backup.name %>
-                  </div>
-                  <div class="col s4">
-                    <%- backup.fileSize %>バイト
-                  </div>
-                  <div class="col s4">
-                    <%- backup.uploadedAt.getFullYear() %>年
-                    <%- backup.uploadedAt.getMonth() + 1 %>月
-                    <%- backup.uploadedAt.getDate() %>日
-                    <%- backup.uploadedAt.getHours() %>時
-                    <%- backup.uploadedAt.getMinutes() %>分
-                    <%- backup.uploadedAt.getSeconds() %>秒
-                    アップロード
-                  </div>
-                  <div class="col s3 right-align">
-                    <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn"><i class="material-icons left">restore</i>復元</a>
-                    <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn red"><i class="material-icons left">delete_forever</i>削除</a>
-                  </div>      
-                </div>
+          <div class="section">
+            <h4><%- work.creatorId %>/<%- work.workId %></h4>
+            <ul>
+              <li>ファイルサイズ：<%- work.totalFileSize %>バイト</li>
+              <li>
+                <%- work.uploadedAt.getFullYear() %>年
+                <%- work.uploadedAt.getMonth() + 1 %>月
+                <%- work.uploadedAt.getDate() %>日
+                <%- work.uploadedAt.getHours() %>時
+                <%- work.uploadedAt.getMinutes() %>分
+                <%- work.uploadedAt.getSeconds() %>秒
+                アップロード
               </li>
-            <% }) %> 
-            <% if(work.backups.length == 0){ %> 
-              <li class="collection-item">
-                バックアップはありません。
-              </li>
-            <% } %> 
-          </ul>
+            </ul>
+            <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="btn">作品へ移動</a>
+            <ul class="collection with-header">
+              <div class="collection-header">
+                <h5>バックアップ</h5>
+              </div>
+              <% work.backups.forEach(backup =>{ %> 
+                <li class="collection-item valign-wrapper">
+                  <div class="row valign-wrapper" style="width: 100%; margin-bottom:0;">
+                    <div class="col s1">
+                      <%- backup.name %>
+                    </div>
+                    <div class="col s3">
+                      <%- backup.fileSize %>バイト
+                    </div>
+                    <div class="col s4">
+                      <%- backup.uploadedAt.getFullYear() %>年
+                      <%- backup.uploadedAt.getMonth() + 1 %>月
+                      <%- backup.uploadedAt.getDate() %>日
+                      <%- backup.uploadedAt.getHours() %>時
+                      <%- backup.uploadedAt.getMinutes() %>分
+                      <%- backup.uploadedAt.getSeconds() %>秒
+                      アップロード
+                    </div>
+                    <div class="col s4 right-align">
+                      <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn">
+                        <i class="material-icons left">restore</i>復元
+                      </a>
+                      <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="waves-effect waves-light btn red">
+                        <i class="material-icons left">delete_forever</i>削除
+                      </a>
+                    </div>      
+                  </div>
+                </li>
+              <% }) %> 
+              <% if(work.backups.length == 0){ %> 
+                <li class="collection-item">
+                  バックアップはありません。
+                </li>
+              <% } %> 
+            </ul>
+          </div>
+          <div class="divider"></div>
         <% }) %> 
       </div>
     </div>
