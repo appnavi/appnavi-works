@@ -79,7 +79,7 @@ document.querySelectorAll(".deleteBackupButton").forEach((btn) => {
 
 function restoreBackup(creatorId: string, workId: string, backupName: string) {
   const request = new XMLHttpRequest();
-  request.open("POST", "/account/restore-work-backup", true);
+  request.open("POST", "/account/backup/restore", true);
   const data = new FormData();
   data.append("creatorId", creatorId);
   data.append("workId", workId);
@@ -104,7 +104,7 @@ function restoreBackup(creatorId: string, workId: string, backupName: string) {
 }
 function deleteBackup(creatorId: string, workId: string, backupName: string) {
   const request = new XMLHttpRequest();
-  request.open("POST", "/account/delete-work-backup", true);
+  request.open("POST", "/account/backup/delete", true);
   const data = new FormData();
   data.append("creatorId", creatorId);
   data.append("workId", workId);

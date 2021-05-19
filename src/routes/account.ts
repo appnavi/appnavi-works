@@ -78,7 +78,7 @@ const backupSchema = yup.object({
   backupName: backupNameSchema,
 });
 accountRouter.post(
-  "/restore-work-backup",
+  "/backup/restore",
   multer().none(),
   wrap(async (req, res) => {
     const params = req.body as {
@@ -102,7 +102,7 @@ accountRouter.post(
   })
 );
 accountRouter.post(
-  "/delete-work-backup",
+  "/backup/delete",
   multer().none(),
   wrap(async (req, res) => {
     const params = req.body as {
