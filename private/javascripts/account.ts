@@ -88,7 +88,9 @@ function restoreBackup(creatorId: string, workId: string, backupName: string) {
     if (request.status === 200) {
       var message = document.createElement("p");
       message.textContent = `バックアップ${backupName}を復元しました。`;
-      showMessageDialog("完了", message);
+      showMessageDialog("完了", message, () => {
+        location.reload();
+      });
     } else {
       const errors = JSON.parse(request.response).errors as string[];
       const message = document.createElement("div");
