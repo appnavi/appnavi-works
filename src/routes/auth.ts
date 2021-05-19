@@ -2,26 +2,9 @@ import express from "express";
 import { passport } from "../app";
 import * as logger from "../modules/logger";
 import { findOrCreateUser, isAuthenticated, redirect } from "../services/auth";
-import {
-  getContentSecurityPolicy,
-  getEnv,
-  render,
-  wrap,
-} from "../utils/helpers";
+import { getEnv, render, wrap } from "../utils/helpers";
 
 const authRouter = express.Router();
-authRouter.use(
-  getContentSecurityPolicy({
-    "img-src": [
-      "'self'",
-      "secure.gravatar.com",
-      "i0.wp.com",
-      "https://api.slack.com/img/sign_in_with_slack.png",
-      "https://a.slack-edge.com/80588/img/sign_in_with_slack.png",
-      "https://avatars.slack-edge.com",
-    ],
-  })
-);
 
 authRouter.get("/error", (req, res, next) => {
   next(new Error("ログイン失敗"));

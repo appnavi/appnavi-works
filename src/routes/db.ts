@@ -1,11 +1,11 @@
 import express from "express";
 import { WorkModel, UserModel } from "../models/database";
 import { ensureAuthenticated } from "../services/auth";
-import { getContentSecurityPolicy, render } from "../utils/helpers";
+import { render } from "../utils/helpers";
 
 const dbRouter = express.Router();
 
-dbRouter.use(ensureAuthenticated, getContentSecurityPolicy());
+dbRouter.use(ensureAuthenticated);
 dbRouter.get("/works", function (req, res, next) {
   WorkModel.find()
     .then((works) => {

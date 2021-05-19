@@ -22,13 +22,7 @@ import {
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
 } from "../utils/constants";
-import {
-  getContentSecurityPolicy,
-  getEnv,
-  getEnvNumber,
-  render,
-  wrap,
-} from "../utils/helpers";
+import { getEnv, getEnvNumber, render, wrap } from "../utils/helpers";
 
 interface Locals {
   paths: string[];
@@ -121,7 +115,6 @@ const unityUpload = multer({
 
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
-uploadRouter.use(getContentSecurityPolicy());
 
 uploadRouter
   .route("/unity")

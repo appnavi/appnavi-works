@@ -17,10 +17,9 @@ import {
   MESSAGE_BACKUP_NAME_REQUIRED,
   MESSAGE_BACKUP_NAME_INVALID,
 } from "../utils/constants";
-import { getContentSecurityPolicy, render, wrap } from "../utils/helpers";
+import { render, wrap } from "../utils/helpers";
 
 const accountRouter = express.Router();
-accountRouter.use(getContentSecurityPolicy());
 
 accountRouter.use(ensureAuthenticated);
 
