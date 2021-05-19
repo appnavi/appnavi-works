@@ -35,6 +35,8 @@ import {
 interface Locals {
   paths: string[];
   uploadStartedAt: Date;
+  uploadEndedAt: Date;
+  elapsedMillis: number;
   work: WorkDocument;
 }
 class UploadError extends Error {
@@ -69,6 +71,7 @@ uploadRouter
     beforeUpload,
     unityUpload.fields(fields),
     ensureUploadSuccess,
+    setLocals,
     saveToDatabase,
     logUploadSuccess,
     (_req, res) => {
@@ -193,6 +196,25 @@ function ensureUploadSuccess(
   }
   next();
 }
+function setLocals(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const locals = res.locals as Locals;
+  const uploadStartedAt = locals.uploadStartedAt;
+  locals.uploadEndedAt = new Date();
+  locals.elapsedMillis =
+    locals.uploadEndedAt.getTime() - uploadStartedAt.getTime();
+
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  locals.paths = fields
+    .filter(({ name }) => files[name] !== undefined)
+    .map(({ name }) => path.join(URL_PREFIX_WORK, getUnityDir(req), name));
+  next();
+}
 function saveToDatabase(
   req: express.Request,
   res: express.Response,
@@ -204,9 +226,6 @@ function saveToDatabase(
     const files = req.files as {
       [fieldname: string]: Express.Multer.File[];
     };
-    locals.paths = fields
-      .filter(({ name }) => files[name] !== undefined)
-      .map(({ name }) => path.join(URL_PREFIX_WORK, getUnityDir(req), name));
     work.totalFileSize = calculateTotalFileSize(files, fields);
     await work.save();
     next();
@@ -218,15 +237,12 @@ function logUploadSuccess(
   next: express.NextFunction
 ) {
   const locals = res.locals as Locals;
-  const uploadStartedAt = locals.uploadStartedAt;
-  const uploadEndedAt = new Date();
-  const elapsedMillis = uploadEndedAt.getTime() - uploadStartedAt.getTime();
   logger.system.info("アップロード成功", {
     creatorId: getCreatorId(req),
     workId: getWorkId(req),
-    uploadStartedAt,
-    uploadEndedAt,
-    elapsedMillis,
+    uploadStartedAt: locals.uploadStartedAt,
+    uploadEndedAt: locals.uploadEndedAt,
+    elapsedMillis: locals.elapsedMillis,
   });
   next();
 }
