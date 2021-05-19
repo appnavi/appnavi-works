@@ -7,7 +7,9 @@ function showMessageDialog(title: string, content: HTMLElement) {
     ".messageDialog.modal"
   )!;
   dialog.querySelector(".title")!.textContent = title;
-  dialog.querySelector(".content")!.appendChild(content);
+  const contentHolder = dialog.querySelector(".content")!;
+  contentHolder.innerHTML = "";
+  contentHolder.appendChild(content);
   M.Modal.getInstance(dialog).open();
 }
 function showConfirmDialog(
@@ -22,7 +24,9 @@ function showConfirmDialog(
     ".confirmDialog.modal"
   )!;
   dialog.querySelector(".title")!.textContent = title;
-  dialog.querySelector(".content")!.appendChild(content);
+  const contentHolder = dialog.querySelector(".content")!;
+  contentHolder.innerHTML = "";
+  contentHolder.appendChild(content);
   const positiveButton = dialog.querySelector<HTMLDivElement>(
     ".positiveButton"
   )!;
