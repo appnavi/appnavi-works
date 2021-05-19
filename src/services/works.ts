@@ -124,6 +124,7 @@ export async function restoreBackup(
   }
   await fsExtra.move(backupToRestorePath, workPath);
   work.totalFileSize = backupToRestore.fileSize;
+  work.backups.remove(backupToRestore);
   await work.save();
 }
 export async function deleteBackup(
