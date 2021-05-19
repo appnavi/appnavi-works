@@ -22,7 +22,7 @@ document
         const errors = JSON.parse(request.response).errors as string[];
         const message = document.createElement("div");
         errors.forEach((error) => {
-          const errorMessage = document.querySelector("p");
+          const errorMessage = document.createElement("p");
           errorMessage.textContent = error;
           message.appendChild(errorMessage);
         });
@@ -34,18 +34,46 @@ document
 
 document.querySelectorAll(".restoreBackupButton").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const request = new XMLHttpRequest();
-    request.open("POST", "/account/restore-work-backup", true);
-    const data = new FormData();
-    data.append(
-      "creatorId",
-      btn.attributes.getNamedItem("data-creator-id")!.value
+    const creatorId = btn.attributes.getNamedItem("data-creator-id")!.value;
+    const workId = btn.attributes.getNamedItem("data-work-id")!.value;
+    const backupName = btn.attributes.getNamedItem("data-backup-name")!.value;
+    const message = document.createElement("p");
+    message.textContent = `バックアップ${backupName}を復元しますか？`;
+    showConfirmDialog(
+      "確認",
+      message,
+      "復元する",
+      () => {
+        restoreBackup(creatorId, workId, backupName);
+      },
+      "キャンセル",
+      () => {}
     );
-    data.append("workId", btn.attributes.getNamedItem("data-work-id")!.value);
-    data.append(
-      "backupName",
-      btn.attributes.getNamedItem("data-backup-name")!.value
-    );
-    request.send(data);
   });
 });
+
+function restoreBackup(creatorId: string, workId: string, backupName: string) {
+  const request = new XMLHttpRequest();
+  request.open("POST", "/account/restore-work-backup", true);
+  const data = new FormData();
+  data.append("creatorId", creatorId);
+  data.append("workId", workId);
+  data.append("backupName", backupName);
+  request.addEventListener("load", function () {
+    if (request.status === 200) {
+      var message = document.createElement("p");
+      message.textContent = `バックアップ${backupName}を復元しました。`;
+      showMessageDialog("完了", message);
+    } else {
+      const errors = JSON.parse(request.response).errors as string[];
+      const message = document.createElement("div");
+      errors.forEach((error) => {
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = error;
+        message.appendChild(errorMessage);
+      });
+      showMessageDialog("エラー", message);
+    }
+  });
+  request.send(data);
+}
