@@ -8,6 +8,10 @@ import {
 import { ejsToHtml } from "../utils/helpers";
 const worksRouter = express.Router();
 worksRouter.use(
+  (_req, res, next) => {
+    res.removeHeader("x-frame-options");
+    next();
+  },
   express.static(path.resolve(DIRECTORY_UPLOADS_DESTINATION)),
   serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
     template: (
