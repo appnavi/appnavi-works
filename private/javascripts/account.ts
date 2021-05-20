@@ -36,9 +36,9 @@ document
   .querySelectorAll<HTMLButtonElement>(".restoreBackupButton")
   .forEach((btn) => {
     btn.addEventListener("click", () => {
-      const creatorId = btn.dataset["creatorId"];
-      const workId = btn.dataset["workId"];
-      const backupName = btn.dataset["backupName"];
+      const creatorId = btn.dataset["creatorId"]!;
+      const workId = btn.dataset["workId"]!;
+      const backupName = btn.dataset["backupName"]!;
       const message = document.createElement("p");
       message.textContent = `バックアップ${backupName}を復元しますか？`;
       showConfirmDialog(
@@ -58,9 +58,9 @@ document
   .querySelectorAll<HTMLButtonElement>(".deleteBackupButton")
   .forEach((btn) => {
     btn.addEventListener("click", () => {
-      const creatorId = btn.dataset["creatorId"];
-      const workId = btn.dataset["workId"];
-      const backupName = btn.dataset["backupName"];
+      const creatorId = btn.dataset["creatorId"]!;
+      const workId = btn.dataset["workId"]!;
+      const backupName = btn.dataset["backupName"]!;
       const message = document.createElement("p");
       message.textContent = `バックアップ${backupName}を削除しますか？`;
       showConfirmDialog(
