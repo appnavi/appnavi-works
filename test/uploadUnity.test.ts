@@ -32,7 +32,7 @@ const unityWorkWindowsName = "unity-correct-zip.zip";
 const unityWorkWindowsPath = path.join(__dirname, unityWorkWindowsName);
 
 describe("Unity作品のアップロード", () => {
-  before(async () => {
+  beforeAll(async () => {
     await connectDatabase();
   });
   beforeEach(async () => {
@@ -42,8 +42,8 @@ describe("Unity作品のアップロード", () => {
     request(app).post("/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
   });
   describe("ログイン時", () => {
-    before(() => login(app, myId));
-    after(() => logout(app));
+    beforeAll(() => login(app, myId));
+    afterAll(() => logout(app));
 
     it("作者IDが設定されていないとアップロードできない", (done) => {
       request(app)

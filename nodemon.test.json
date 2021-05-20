@@ -1,5 +1,5 @@
 {
   "watch": ["src", "test"],
   "ext": "ts",
-  "exec": "mocha --require ts-node/register --project tsconfig.test.json \"test/**/*.test.ts\""
+  "exec": "jest"
 }

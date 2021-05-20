@@ -9,14 +9,14 @@ import {
 } from "../src/utils/constants";
 const passportStub = require("passport-stub");
 
-function requireAuthenticated(path: string, done: Mocha.Done) {
+function requireAuthenticated(path: string, done: jest.DoneCallback) {
   return request(app)
     .get(path)
     .expect(STATUS_CODE_REDIRECT_TEMPORARY)
     .expect("Location", "/auth")
     .end(done);
 }
-function canAccessTo(path: string, done: Mocha.Done) {
+function canAccessTo(path: string, done: jest.DoneCallback) {
   return request(app)
     .get(path)
     .expect(STATUS_CODE_SUCCESS)
@@ -31,7 +31,7 @@ function canAccessTo(path: string, done: Mocha.Done) {
 }
 
 describe("GET", () => {
-  before(async () => {
+  beforeAll(async () => {
     await connectDatabase();
     await clearData();
   });
@@ -84,8 +84,8 @@ describe("GET", () => {
   });
 
   describe("ログイン時", () => {
-    before(() => login(app, myId));
-    after(() => logout(app));
+    beforeAll(() => login(app, myId));
+    afterAll(() => logout(app));
     describe("authRouter", () => {
       it("/authをGETをGETすると/にリダイレクトされる", (done) => {
         request(app)
