@@ -2,8 +2,6 @@ version: '3'
 services:
   appnavi-works:
     command: "yarn run test"
-    ports:
-      - "3000:3000"
     volumes: 
       - ./test:/app/test
       - ./src:/app/src
