@@ -134,7 +134,6 @@ describe("Unity作品のアップロード", () => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_WORK_ID, workId)
-        .attach(FIELD_WINDOWS, unityWorkWindowsPath)
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(CREATOR_ID_REQUIRED)
         .end(done);
@@ -144,7 +143,6 @@ describe("Unity作品のアップロード", () => {
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, encodeURI("テスト"))
         .set(HEADER_WORK_ID, workId)
-        .attach(FIELD_WINDOWS, unityWorkWindowsPath)
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(CREATOR_ID_INVALID)
         .end(done);
@@ -153,7 +151,6 @@ describe("Unity作品のアップロード", () => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
-        .attach(FIELD_WINDOWS, unityWorkWindowsPath)
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(WORK_ID_REQUIRED)
         .end(done);
@@ -163,7 +160,6 @@ describe("Unity作品のアップロード", () => {
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
         .set(HEADER_WORK_ID, encodeURI("テスト"))
-        .attach(FIELD_WINDOWS, unityWorkWindowsPath)
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(WORK_ID_INVALID)
         .end(done);
@@ -191,7 +187,6 @@ describe("Unity作品のアップロード", () => {
             .post("/upload/unity")
             .set(HEADER_CREATOR_ID, creatorId)
             .set(HEADER_WORK_ID, workId)
-            .attach(FIELD_WINDOWS, unityWorkWindowsPath)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(DIFFERENT_USER)
             .end(done);
@@ -208,7 +203,6 @@ describe("Unity作品のアップロード", () => {
           .post("/upload/unity")
           .set(HEADER_CREATOR_ID, creatorId)
           .set(HEADER_WORK_ID, workId)
-          .attach(FIELD_WINDOWS, unityWorkWindowsPath)
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(STORAGE_FULL)
           .end(done);
