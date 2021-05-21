@@ -1,9 +1,6 @@
 import mongoose from "mongoose";
-import request from "supertest";
-import { app } from "../src/app";
 import { DIRECTORY_UPLOADS_DESTINATION } from "../src/utils/constants";
-import { getEnv, getEnvNumber } from "../src/utils/helpers";
-import { login, logout, myId } from "./auth";
+import { getEnv } from "../src/utils/helpers";
 import fs from "fs-extra";
 import path from "path";
 

@@ -1,12 +1,11 @@
 import { Express } from "express";
 
-//import passportStub from "passport-stub";
 const passportStub = require("passport-stub");
 
 const myId = "userABC";
 const theirId = "userDEF";
 
-function login(app: Express, userId: string): void{
+function login(app: Express, userId: string): void {
   passportStub.install(app);
   passportStub.login({
     ok: true,
@@ -39,7 +38,7 @@ function login(app: Express, userId: string): void{
     displayName: "test_display_name",
   });
 }
-function logout(app: Express){
+function logout(app: Express) {
   passportStub.logout();
   passportStub.uninstall(app);
 }
