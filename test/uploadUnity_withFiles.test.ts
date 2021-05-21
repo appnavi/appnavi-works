@@ -116,11 +116,12 @@ const workId = "work";
 const unityWorkWindowsName = "unity-correct-zip.zip";
 const unityWorkWindowsPath = path.join(__dirname, unityWorkWindowsName);
 
-describe("Unity作品のアップロード（ファイルあり）", () => {
+describe.only("Unity作品のアップロード（ファイルあり）", () => {
   beforeAll(async () => {
     await connectDatabase();
+    await clearData();
   });
-  beforeEach(async () => {
+  afterEach(async () => {
     await clearData();
   });
   it("非ログイン時にはアップロードができない", (done) => {
