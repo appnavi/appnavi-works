@@ -4,22 +4,22 @@ import * as yup from "yup";
 import { WorkDocument, WorkModel } from "../models/database";
 import {
   DIRECTORY_UPLOADS_DESTINATION,
-  ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
-  ERROR_MESSAGE_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
-  ERROR_MESSAGE_WORK_ID_REQUIRED as WORK_ID_REQUIRED,
-  ERROR_MESSAGE_WORK_ID_INVALID as WORK_ID_INVALID,
+  ERROR_MESSAGE_CREATOR_ID_REQUIRED,
+  ERROR_MESSAGE_CREATOR_ID_INVALID,
+  ERROR_MESSAGE_WORK_ID_REQUIRED,
+  ERROR_MESSAGE_WORK_ID_INVALID,
   DIRECTORY_NAME_BACKUPS,
 } from "../utils/constants";
 
 const idRegex = /^[0-9a-z-]+$/;
 export const creatorIdSchema = yup
   .string()
-  .matches(idRegex, CREATOR_ID_INVALID)
-  .required(CREATOR_ID_REQUIRED);
+  .matches(idRegex, ERROR_MESSAGE_CREATOR_ID_INVALID)
+  .required(ERROR_MESSAGE_CREATOR_ID_REQUIRED);
 export const workIdSchema = yup
   .string()
-  .matches(idRegex, WORK_ID_INVALID)
-  .required(WORK_ID_REQUIRED);
+  .matches(idRegex, ERROR_MESSAGE_WORK_ID_INVALID)
+  .required(ERROR_MESSAGE_WORK_ID_REQUIRED);
 export const uploadSchema = yup.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
