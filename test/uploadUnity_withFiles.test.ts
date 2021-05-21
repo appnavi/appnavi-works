@@ -99,14 +99,12 @@ import {
   ERROR_MESSAGE_WORK_ID_INVALID as WORK_ID_INVALID,
   ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
-  ERROR_MESSAGE_NO_FILES as NO_FILES,
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
 } from "../src/utils/constants";
 import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
 import { clearData, connectDatabase } from "./common";
-import fs from "fs-extra";
 import path from "path";
 import { WorkModel } from "../src/models/database";
 

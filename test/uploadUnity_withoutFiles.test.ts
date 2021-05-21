@@ -1,7 +1,6 @@
 import request from "supertest";
 import { app } from "../src/app";
 import {
-  DIRECTORY_UPLOADS_DESTINATION,
   STATUS_CODE_BAD_REQUEST,
   STATUS_CODE_UNAUTHORIZED,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
@@ -17,8 +16,6 @@ import {
 import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
 import { clearData, connectDatabase } from "./common";
-import fs from "fs-extra";
-import path from "path";
 import { WorkModel } from "../src/models/database";
 
 const creatorId = "creator";
