@@ -94,7 +94,7 @@ const unityStorage = multer.diskStorage({
     callback(null, path.basename(file.originalname));
   },
 });
-const unityUpload = multer({
+export const unityUpload = multer({
   storage: unityStorage,
   preservePath: true,
   fileFilter: (_req, file, cb) => {
