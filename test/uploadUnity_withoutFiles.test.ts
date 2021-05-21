@@ -23,8 +23,6 @@ import { WorkModel } from "../src/models/database";
 
 const creatorId = "creator";
 const workId = "work";
-const unityWorkWindowsName = "unity-correct-zip.zip";
-const unityWorkWindowsPath = path.join(__dirname, unityWorkWindowsName);
 
 describe("Unity作品のアップロード（ファイルなし）", () => {
   beforeAll(async () => {
@@ -81,27 +79,15 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
         workId: workId,
         createdBy: theirId,
         fileSize: 100,
-      })
-        .then(() =>
-          fs.copy(
-            unityWorkWindowsPath,
-            path.resolve(
-              DIRECTORY_UPLOADS_DESTINATION,
-              creatorId,
-              workId,
-              unityWorkWindowsName
-            )
-          )
-        )
-        .then(() => {
-          request(app)
-            .post("/upload/unity")
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_WORK_ID, workId)
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(DIFFERENT_USER)
-            .end(done);
-        });
+      }).then(() => {
+        request(app)
+          .post("/upload/unity")
+          .set(HEADER_CREATOR_ID, creatorId)
+          .set(HEADER_WORK_ID, workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(DIFFERENT_USER)
+          .end(done);
+      });
     });
     it("ストレージ容量の上限を上回っている場合はアップロードできない", (done) => {
       WorkModel.create({
