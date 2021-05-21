@@ -107,6 +107,7 @@ import { login, logout, myId, theirId } from "./auth";
 import { clearData, connectDatabase } from "./common";
 import path from "path";
 import { WorkModel } from "../src/models/database";
+import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 
 const creatorId = "creator";
 const workId = "work";
@@ -205,7 +206,12 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
             ),
           })
         )
-        .end(done);
+        .end((err, res) => {
+          calculateCurrentStorageSizeBytes().then((it) => {
+            expect(it).toBe(600);
+            done();
+          });
+        });
     });
   });
 });
