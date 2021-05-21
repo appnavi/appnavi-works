@@ -77,7 +77,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
       WorkModel.create({
         creatorId: creatorId,
         workId: workId,
-        createdBy: theirId,
+        owner: theirId,
         fileSize: 100,
       }).then(() => {
         request(app)
@@ -93,7 +93,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
       WorkModel.create({
         creatorId: "large-work-creator",
         workId: "large-work",
-        createdBy: theirId,
+        owner: theirId,
         fileSize: getEnvNumber("WORK_STORAGE_SIZE_BYTES"),
       }).then(() => {
         request(app)
