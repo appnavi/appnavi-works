@@ -8,17 +8,17 @@ multer.mockImplementation(() => {
   return {
     none() {
       return (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
+        _req: express.Request,
+        _res: express.Response,
+        _next: express.NextFunction
       ) => {
         throw new Error("MOCK ERROR");
       };
     },
-    fields(fields: string) {
+    fields(_fields: string) {
       return (
         req: express.Request,
-        res: express.Response,
+        _res: express.Response,
         next: express.NextFunction
       ) => {
         const createMockFile = (
@@ -206,7 +206,7 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
             ),
           })
         )
-        .end((err, res) => {
+        .end((_err, _res) => {
           calculateCurrentStorageSizeBytes().then((it) => {
             expect(it).toBe(600);
             done();
