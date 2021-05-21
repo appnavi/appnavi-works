@@ -84,7 +84,6 @@ multer.mockImplementation(() => {
   };
 });
 
-import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../src/app";
 import { fields, FIELD_WEBGL, FIELD_WINDOWS } from "../src/routes/upload";
@@ -104,7 +103,7 @@ import {
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
 } from "../src/utils/constants";
-import { getEnv, getEnvNumber } from "../src/utils/helpers";
+import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
 import { clearData, connectDatabase } from "./common";
 import fs from "fs-extra";
@@ -116,7 +115,7 @@ const workId = "work";
 const unityWorkWindowsName = "unity-correct-zip.zip";
 const unityWorkWindowsPath = path.join(__dirname, unityWorkWindowsName);
 
-describe.only("Unity作品のアップロード（ファイルあり）", () => {
+describe("Unity作品のアップロード（ファイルあり）", () => {
   beforeAll(async () => {
     await connectDatabase();
     await clearData();

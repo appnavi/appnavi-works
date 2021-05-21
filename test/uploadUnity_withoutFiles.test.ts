@@ -1,15 +1,8 @@
-import express from "express";
-import * as multer from "multer";
-import { Readable } from "stream";
-import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../src/app";
-import { FIELD_WEBGL, FIELD_WINDOWS } from "../src/routes/upload";
 import {
-  URL_PREFIX_WORK,
   DIRECTORY_UPLOADS_DESTINATION,
   STATUS_CODE_BAD_REQUEST,
-  STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
   ERROR_MESSAGE_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
@@ -21,7 +14,7 @@ import {
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
 } from "../src/utils/constants";
-import { getEnv, getEnvNumber } from "../src/utils/helpers";
+import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
 import { clearData, connectDatabase } from "./common";
 import fs from "fs-extra";
