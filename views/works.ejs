@@ -18,13 +18,9 @@
         <% const currentDirectory = directories.pop(); %> 
         <% directories.forEach((value, i)=>{ %>
           <% const link=`/${directories.slice(0, i + 1).join("/")}` %>
-          <a class="breadcrumb" href="<%- link %>">
-            <%- value %>
-          </a>
+          <a class="breadcrumb" href="<%- link %>"><%- value %></a>
         <% }) %>
-        <span class="breadcrumb">
-          <%- currentDirectory %>
-        </span>
+        <span class="breadcrumb"><%- currentDirectory %></span>
       </div>
     </div>
   </nav>
