@@ -64,4 +64,8 @@ typings/
 /uploads/
 /backups/
 /private/javascripts/**/*.js
+/private/stylesheets/**/*.css
+/private/stylesheets/**/*.css.map
 /public/javascripts/**/*.js
+/public/stylesheets/**/*.css
+/public/stylesheets/**/*.css.map
