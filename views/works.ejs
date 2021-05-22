@@ -4,6 +4,7 @@
 <head>
   <title>HOME</title>
   <%- include('common/head') %>
+  <link rel="stylesheet" href="/stylesheets/works.css">
 </head>
 
 <body>
@@ -30,8 +31,8 @@
   <main class="container">
     <div class="row">
       <% fileList.filter((file)=>file.name !== "..").forEach((file)=>{ %>
-        <% const icon=file.stat.isDirectory() ? '<i class="fas fa-folder fa-10x"></i>'
-          : '<i class="fas fa-file fa-10x"></i>' ; %>
+        <% const icon=file.stat.isDirectory() ? '<i class="fas fa-folder"></i>'
+          : '<i class="fas fa-file"></i>' ; %>
         <div class="col s6 l3 center">
           <a href="<%- directory %><%- file.name %>">
             <div class="card hoverable file-card">
