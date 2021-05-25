@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { DIRECTORY_UPLOADS_DESTINATION } from "../src/utils/constants";
+import { DIRECTORY_NAME_UPLOADS } from "../src/utils/constants";
 import { getEnv } from "../src/utils/helpers";
 import fs from "fs-extra";
 import path from "path";
 
 async function clearUploadDestination() {
-  const uploadDirPath = path.resolve(DIRECTORY_UPLOADS_DESTINATION);
+  const uploadDirPath = path.resolve(DIRECTORY_NAME_UPLOADS);
   await fs.emptyDir(uploadDirPath);
 }
 async function clearDatabase() {

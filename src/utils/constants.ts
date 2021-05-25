@@ -1,12 +1,11 @@
 export const URL_PREFIX_WORK = "/works";
 export const URL_PREFIX_PRIVATE = "/private";
 
-export const DIRECTORY_UPLOADS_DESTINATION = "uploads";
-
 //srcディレクトリからのフォルダの相対パス
 export const DIRECTORY_NAME_PRIVATE = "private";
 export const DIRECTORY_NAME_PUBLIC = "public";
 export const DIRECTORY_NAME_VIEWS = "views";
+export const DIRECTORY_NAME_UPLOADS = "uploads";
 export const DIRECTORY_NAME_BACKUPS = "backups";
 
 export const HEADER_CREATOR_ID = "x-creator-id";

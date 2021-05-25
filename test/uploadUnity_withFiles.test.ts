@@ -30,7 +30,7 @@ multer.mockImplementation(() => {
           size: number
         ): Express.Multer.File => {
           const destination = path.join(
-            DIRECTORY_UPLOADS_DESTINATION,
+            DIRECTORY_NAME_UPLOADS,
             creatorId,
             workId,
             fieldname
@@ -89,7 +89,7 @@ import { app } from "../src/app";
 import { fields, FIELD_WEBGL, FIELD_WINDOWS } from "../src/routes/upload";
 import {
   URL_PREFIX_WORK,
-  DIRECTORY_UPLOADS_DESTINATION,
+  DIRECTORY_NAME_UPLOADS,
   STATUS_CODE_BAD_REQUEST,
   STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,

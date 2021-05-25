@@ -3,7 +3,7 @@ import express from "express";
 import serveIndex from "serve-index";
 import {
   DIRECTORY_NAME_VIEWS,
-  DIRECTORY_UPLOADS_DESTINATION,
+  DIRECTORY_NAME_UPLOADS,
 } from "../utils/constants";
 import { ejsToHtml } from "../utils/helpers";
 const worksRouter = express.Router();
@@ -12,8 +12,8 @@ worksRouter.use(
     res.removeHeader("x-frame-options");
     next();
   },
-  express.static(path.resolve(DIRECTORY_UPLOADS_DESTINATION)),
-  serveIndex(DIRECTORY_UPLOADS_DESTINATION, {
+  express.static(path.resolve(DIRECTORY_NAME_UPLOADS)),
+  serveIndex(DIRECTORY_NAME_UPLOADS, {
     template: (
       locals: serveIndex.Locals,
       callback: serveIndex.templateCallback

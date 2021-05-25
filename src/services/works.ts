@@ -3,7 +3,7 @@ import fsExtra from "fs-extra";
 import * as yup from "yup";
 import { WorkDocument, WorkModel } from "../models/database";
 import {
-  DIRECTORY_UPLOADS_DESTINATION,
+  DIRECTORY_NAME_UPLOADS,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
   ERROR_MESSAGE_CREATOR_ID_INVALID,
   ERROR_MESSAGE_WORK_ID_REQUIRED,
@@ -54,7 +54,7 @@ export async function listBackupFolderNames(
   creatorId: string,
   workId: string
 ): Promise<string[]> {
-  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
+  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
   const backupExists = await fsExtra.pathExists(backupFolderPath);
   if (!backupExists) {
@@ -87,7 +87,7 @@ export async function backupWork(
   workId: string,
   work: WorkDocument
 ): Promise<void> {
-  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
+  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const workPath = path.resolve(workDir);
   const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
   const latestBackupIndex = await getLatestBackupIndex(creatorId, workId);
@@ -108,7 +108,7 @@ export async function restoreBackup(
   backupName: string
 ): Promise<void> {
   await backupWork(creatorId, workId, work);
-  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
+  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const workPath = path.resolve(workDir);
   const backupToRestorePath = path.resolve(
     DIRECTORY_NAME_BACKUPS,
@@ -133,7 +133,7 @@ export async function deleteBackup(
   work: WorkDocument,
   backupName: string
 ): Promise<void> {
-  const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
+  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const backupToDeletePath = path.resolve(
     DIRECTORY_NAME_BACKUPS,
     workDir,

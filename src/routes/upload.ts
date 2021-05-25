@@ -18,7 +18,7 @@ import {
 } from "../services/works";
 import {
   URL_PREFIX_WORK,
-  DIRECTORY_UPLOADS_DESTINATION,
+  DIRECTORY_NAME_UPLOADS,
   ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
   ERROR_MESSAGE_NO_FILES as NO_FILES,
@@ -64,7 +64,7 @@ const unityStorage = multer.diskStorage({
   destination: (req, file, next) => {
     (async () => {
       const parentDir = path.join(
-        DIRECTORY_UPLOADS_DESTINATION,
+        DIRECTORY_NAME_UPLOADS,
         getCreatorIdFromHeader(req),
         getWorkIdFromHeader(req),
         file.fieldname
@@ -240,7 +240,7 @@ function validateDestination(
   return wrap(async (req, res, next) => {
     const creatorId = getCreatorIdFromHeader(req);
     const workId = getWorkIdFromHeader(req);
-    const workDir = path.join(DIRECTORY_UPLOADS_DESTINATION, creatorId, workId);
+    const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
     const workPath = path.resolve(workDir);
     const exists = await fsExtra.pathExists(workPath);
     if (!exists) {
