@@ -1,12 +1,15 @@
 import mongoose from "mongoose";
-import { DIRECTORY_NAME_UPLOADS } from "../src/utils/constants";
+import {
+  DIRECTORY_NAME_BACKUPS,
+  DIRECTORY_NAME_UPLOADS,
+} from "../src/utils/constants";
 import { getEnv } from "../src/utils/helpers";
 import fs from "fs-extra";
 import path from "path";
 
-async function clearUploadDestination() {
-  const uploadDirPath = path.resolve(DIRECTORY_NAME_UPLOADS);
-  await fs.emptyDir(uploadDirPath);
+async function clearFolders() {
+  await fs.emptyDir(path.resolve(DIRECTORY_NAME_UPLOADS));
+  await fs.emptyDir(path.resolve(DIRECTORY_NAME_BACKUPS));
 }
 async function clearDatabase() {
   const db = mongoose.connection;
@@ -20,6 +23,6 @@ export async function connectDatabase() {
 }
 
 export async function clearData() {
-  await clearUploadDestination();
+  await clearFolders();
   await clearDatabase();
 }
