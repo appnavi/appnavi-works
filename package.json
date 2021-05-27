@@ -21,7 +21,7 @@
     "lint": "run-s eslint:server check-types",
     "format": "prettier --write src/**/*.{js,ts,json}",
     "lint:fix": "run-s check-types format eslint:server:fix ",
-    "test": "nodemon -L --config nodemon.test.json",
+    "test": "jest --verbose",
     "prepare": "husky install"
   },
   "dependencies": {
