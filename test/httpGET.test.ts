@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../src/app";
 import { login, logout, myId } from "./auth";
-import { clearData, connectDatabase } from "./common";
+import { connectDatabase, ensureUploadFoldersExist } from "./common";
 import {
   STATUS_CODE_SUCCESS,
   STATUS_CODE_REDIRECT_PERMANENT,
@@ -31,8 +31,8 @@ function canAccessTo(path: string, done: jest.DoneCallback) {
 
 describe("GET", () => {
   beforeAll(async () => {
-    await connectDatabase();
-    await clearData();
+    await connectDatabase("1");
+    await ensureUploadFoldersExist();
   });
   describe("非ログイン時", () => {
     describe("authRouter", () => {

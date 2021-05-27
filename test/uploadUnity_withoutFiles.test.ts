@@ -15,19 +15,19 @@ import {
 } from "../src/utils/constants";
 import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
-import { clearData, connectDatabase } from "./common";
+import { clearData, connectDatabase, ensureUploadFoldersExist } from "./common";
 import { WorkModel } from "../src/models/database";
 
-const creatorId = "creator";
-const workId = "work";
+const creatorId = "creator-3";
+const workId = "work-3";
 
 describe("Unity作品のアップロード（ファイルなし）", () => {
   beforeAll(async () => {
-    await connectDatabase();
-    await clearData();
+    await connectDatabase("3");
+    await ensureUploadFoldersExist();
   });
   afterEach(async () => {
-    await clearData();
+    await clearData(creatorId, workId);
   });
   it("非ログイン時にはアップロードができない", (done) => {
     request(app).post("/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
