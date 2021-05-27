@@ -7,7 +7,6 @@ import {
   STATUS_CODE_REDIRECT_PERMANENT,
   STATUS_CODE_REDIRECT_TEMPORARY,
 } from "../src/utils/constants";
-const passportStub = require("passport-stub");
 
 function requireAuthenticated(path: string, done: jest.DoneCallback) {
   return request(app)
