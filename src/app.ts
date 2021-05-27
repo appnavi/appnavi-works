@@ -88,16 +88,16 @@ app.use(
     level: "info",
   })
 );
-const PATH_PUBLIC_DIRECTORY = path.resolve(DIRECTORY_NAME_PUBLIC);
-app.use(ignoreTypescriptFile, express.static(PATH_PUBLIC_DIRECTORY));
 
-const PATH_PRIVATE_DIRECTORY = path.resolve(DIRECTORY_NAME_PRIVATE);
-
+app.use(
+  ignoreTypescriptFile,
+  express.static(path.resolve(DIRECTORY_NAME_PUBLIC))
+);
 app.use(
   URL_PREFIX_PRIVATE,
   ensureAuthenticated,
   ignoreTypescriptFile,
-  express.static(PATH_PRIVATE_DIRECTORY)
+  express.static(path.resolve(DIRECTORY_NAME_PRIVATE))
 );
 
 app.use("/", indexRouter);
