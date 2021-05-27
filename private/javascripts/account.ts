@@ -1,3 +1,4 @@
+/// <reference path="./common/dialogs.ts" />
 document.addEventListener("DOMContentLoaded", () => {
   M.Collapsible.init(document.querySelectorAll(".collapsible"), {});
   M.Tooltip.init(document.querySelectorAll(".tooltipped"), {});

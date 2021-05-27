@@ -1,3 +1,4 @@
+/// <reference path="../common/dialogs.ts" />
 const form = document.querySelector("form") as HTMLFormElement;
 const creatorIdInput = document.querySelector(
   'input[name="creator_id"]'
