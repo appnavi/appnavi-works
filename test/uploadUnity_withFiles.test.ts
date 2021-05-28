@@ -111,8 +111,9 @@ async function uploadAllMockFiles(
   };
 }
 
-// TODO：mockをspyOnに変更
-// TODO：正しくファイルが作成されたか・正しくバックアップが作成されたかのテストを作成
+// TODO：正しくファイルが作成されたかのテストを作成
+// TODO：正しくバックアップが作成されたかのテストを作成
+
 // @ts-ignore
 multer.mockImplementation((options) => {
   const actual = jest.requireActual("multer")(options);
