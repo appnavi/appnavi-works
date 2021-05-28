@@ -320,3 +320,36 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
     });
   });
 });
+describe("Unity作品のリネーム", () => {
+  beforeAll(async () => {
+    await connectDatabase("2");
+    await ensureUploadFoldersExist();
+    login(app, myId);
+  });
+  afterEach(async () => {
+    await clearData(creatorId, workId);
+  });
+  afterAll(() => logout(app));
+  it("条件を満たしていればリネームに成功する", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_SUCCESS)
+          .end(done);
+      });
+  });
+});
