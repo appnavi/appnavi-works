@@ -93,6 +93,33 @@
       </div>
     </div>
   </main>
+  <div class="renameWorkDialog modal">
+    <div class="modal-content">
+      <h4 class="title">作品ID・作者IDの編集</h4>
+      <div class="content">
+        <div class="row">
+          <form class="col s12">
+            <div class="row">
+              <div class="input-field col s6">
+                <input id="renamedCreatorId" name="renamedCreatorId" type="text" class="validate" pattern="^[0-9a-z\-]+$" required>
+                <label for="renamedCreatorId">作者ID</label>
+                <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
+              </div>
+              <div class="input-field col s6">
+                <input id="renamedWorkId" name="renamedWorkId" type="text" class="validate" pattern="^[0-9a-z\-]+$" required>
+                <label for="renamedWorkId">作品ID</label>
+                <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close negativeButton waves-effect waves-light btn-flat">キャンセル</a>
+      <a href="#!" class="modal-close positiveButton waves-effect waves-light btn">編集する</a>
+    </div>
+  </div>
   <%- include('common/dialogs') %>
   <%- include('common/footer') %>
   <%- include('common/scripts') %>
