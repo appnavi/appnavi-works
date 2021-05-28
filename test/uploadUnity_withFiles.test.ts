@@ -254,12 +254,11 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
         .end((_err, _res) => {
           new Promise<void>(async (resolve) => {
             const size = await calculateCurrentStorageSizeBytes();
-            expect(size).toBe(
-              mockFiles.reduce(
-                (accumlator, current) => accumlator + current.file.length,
-                0
-              )
+            const actualSize = mockFiles.reduce(
+              (accumlator, current) => accumlator + current.file.length,
+              0
             );
+            expect(size).toBe(actualSize);
             await Promise.all(
               mockFiles.map((mockFile) =>
                 fsExtra
