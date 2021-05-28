@@ -56,6 +56,60 @@ const mockFiles: MockFile[] = [
     file: fsExtra.readFileSync("test/mock-files/unity-zip.zip"),
   },
 ];
+async function uploadMockFile(
+  mockFile: MockFile,
+  creatorId: string,
+  workId: string
+): Promise<Express.Multer.File> {
+  const destination = path.join(
+    DIRECTORY_NAME_UPLOADS,
+    creatorId,
+    workId,
+    mockFile.fieldname
+  );
+  const uploadPath = path.join(
+    destination,
+    mockFile.subfoldername,
+    mockFile.filename
+  );
+  await fsExtra.ensureDir(path.dirname(uploadPath));
+  await fsExtra.writeFile(uploadPath, mockFile.file);
+  return {
+    fieldname: mockFile.fieldname,
+    filename: mockFile.filename,
+    mimetype: mockFile.mimetype,
+    destination,
+    originalname: path.join(
+      mockFile.foldername,
+      mockFile.subfoldername,
+      mockFile.filename
+    ),
+    encoding: "7bit",
+    path: uploadPath,
+    buffer: Buffer.from([]),
+    stream: Readable.from([]),
+    size: mockFile.file.length,
+  };
+}
+async function uploadAllMockFiles(
+  creatorId: string,
+  workId: string
+): Promise<{
+  [fieldname: string]: Express.Multer.File[];
+}> {
+  return {
+    [UPLOAD_UNITY_FIELD_WEBGL]: await Promise.all(
+      mockFiles
+        .filter((it) => it.fieldname === UPLOAD_UNITY_FIELD_WEBGL)
+        .map((it) => uploadMockFile(it, creatorId, workId))
+    ),
+    [UPLOAD_UNITY_FIELD_WINDOWS]: await Promise.all(
+      mockFiles
+        .filter((it) => it.fieldname === UPLOAD_UNITY_FIELD_WINDOWS)
+        .map((it) => uploadMockFile(it, creatorId, workId))
+    ),
+  };
+}
 
 // TODO：mockをspyOnに変更
 // TODO：正しくファイルが作成されたか・正しくバックアップが作成されたかのテストを作成
@@ -68,46 +122,10 @@ multer.mockImplementation((options) => {
       _res: express.Response,
       next: express.NextFunction
     ) => {
-      const uploadMockFile = (mockFile: MockFile): Express.Multer.File => {
-        const destination = path.join(
-          DIRECTORY_NAME_UPLOADS,
-          creatorId,
-          workId,
-          mockFile.fieldname
-        );
-        const uploadPath = path.join(
-          destination,
-          mockFile.subfoldername,
-          mockFile.filename
-        );
-        fsExtra.ensureDirSync(path.dirname(uploadPath));
-        fsExtra.writeFileSync(uploadPath, mockFile.file);
-        return {
-          fieldname: mockFile.fieldname,
-          filename: mockFile.filename,
-          mimetype: mockFile.mimetype,
-          destination,
-          originalname: path.join(
-            mockFile.foldername,
-            mockFile.subfoldername,
-            mockFile.filename
-          ),
-          encoding: "7bit",
-          path: uploadPath,
-          buffer: Buffer.from([]),
-          stream: Readable.from([]),
-          size: mockFile.file.length,
-        };
-      };
-      req.files = {
-        [UPLOAD_UNITY_FIELD_WEBGL]: mockFiles
-          .filter((it) => it.fieldname === UPLOAD_UNITY_FIELD_WEBGL)
-          .map((it) => uploadMockFile(it)),
-        [UPLOAD_UNITY_FIELD_WINDOWS]: mockFiles
-          .filter((it) => it.fieldname === UPLOAD_UNITY_FIELD_WINDOWS)
-          .map((it) => uploadMockFile(it)),
-      };
-      return next();
+      uploadAllMockFiles(creatorId, workId).then((files) => {
+        req.files = files;
+        next();
+      });
     };
   };
   return actual;
