@@ -22,7 +22,14 @@ export async function connectDatabase(databaseId: string) {
 }
 async function clearFolders(creatorId: string, workId: string) {
   await fs.emptyDir(path.resolve(DIRECTORY_NAME_UPLOADS, creatorId, workId));
-  await fs.emptyDir(path.resolve(DIRECTORY_NAME_BACKUPS, creatorId, workId));
+  await fs.emptyDir(
+    path.resolve(
+      DIRECTORY_NAME_BACKUPS,
+      DIRECTORY_NAME_UPLOADS,
+      creatorId,
+      workId
+    )
+  );
 }
 async function clearDatabase() {
   const collections = mongoose.connection.collections;
