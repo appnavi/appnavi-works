@@ -25,6 +25,36 @@ export const uploadSchema = yup.object({
   workId: workIdSchema,
 });
 
+async function findWorkOrThrow(
+  creatorId: string,
+  workId: string,
+  userId: string
+): Promise<WorkDocument> {
+  const works = await WorkModel.find({
+    creatorId,
+    workId,
+  });
+  switch (works.length) {
+    case 0:
+      return await WorkModel.create({
+        creatorId,
+        workId,
+        owner: userId,
+        fileSize: 0,
+        backupFileSizes: {},
+      });
+    case 1: {
+      const work = works[0];
+      if (work.owner !== userId) {
+        throw new Error("この作品の所有者ではありません。");
+      }
+      return work;
+    }
+    default:
+      throw new Error("同じ作品が複数登録されています");
+  }
+}
+
 export async function findOrCreateWork(
   creatorId: string,
   workId: string,
@@ -104,9 +134,10 @@ export async function backupWork(
 export async function restoreBackup(
   creatorId: string,
   workId: string,
-  work: WorkDocument,
+  userId: string,
   backupName: string
 ): Promise<void> {
+  const work = await findWorkOrThrow(creatorId, workId, userId);
   await backupWork(creatorId, workId, work);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const workPath = path.resolve(workDir);
@@ -130,9 +161,10 @@ export async function restoreBackup(
 export async function deleteBackup(
   creatorId: string,
   workId: string,
-  work: WorkDocument,
+  userId: string,
   backupName: string
 ): Promise<void> {
+  const work = await findWorkOrThrow(creatorId, workId, userId);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const backupToDeletePath = path.resolve(
     DIRECTORY_NAME_BACKUPS,

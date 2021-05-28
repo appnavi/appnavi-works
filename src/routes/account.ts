@@ -10,7 +10,6 @@ import {
 import {
   creatorIdSchema,
   deleteBackup,
-  findOrCreateWork,
   restoreBackup,
   workIdSchema,
 } from "../services/works";
@@ -99,12 +98,7 @@ accountRouter.post(
       return;
     }
     const { creatorId, workId, backupName } = params;
-    const work = await findOrCreateWork(
-      creatorId,
-      workId,
-      getUserId(req) ?? ""
-    );
-    await restoreBackup(creatorId, workId, work, backupName);
+    await restoreBackup(creatorId, workId, getUserId(req), backupName);
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );
@@ -127,12 +121,7 @@ accountRouter.post(
       return;
     }
     const { creatorId, workId, backupName } = params;
-    const work = await findOrCreateWork(
-      creatorId,
-      workId,
-      getUserId(req) ?? ""
-    );
-    await deleteBackup(creatorId, workId, work, backupName);
+    await deleteBackup(creatorId, workId, getUserId(req), backupName);
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );
