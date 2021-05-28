@@ -20,6 +20,7 @@ import {
   UPLOAD_UNITY_FIELD_WEBGL,
   UPLOAD_UNITY_FIELD_WINDOWS,
   UPLOAD_UNITY_FIELDS,
+  DIRECTORY_NAME_BACKUPS,
 } from "../src/utils/constants";
 
 type MockFile = {
@@ -123,8 +124,6 @@ async function uploadAllMockFiles(
     ),
   };
 }
-
-// TODO：正しくバックアップが作成されたかのテストを作成
 
 // @ts-ignore
 multer.mockImplementation((options) => {
@@ -268,6 +267,64 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
             );
             resolve();
           }).then(done);
+        });
+    });
+    it("条件を満たしたアップロードを2回すると、バックアップが作成されアップロードにも成功する", (done) => {
+      request(app)
+        .post("/upload/unity")
+        .set(HEADER_CREATOR_ID, creatorId)
+        .set(HEADER_WORK_ID, workId)
+        .end(() => {
+          request(app)
+            .post("/upload/unity")
+            .set(HEADER_CREATOR_ID, creatorId)
+            .set(HEADER_WORK_ID, workId)
+            .expect(STATUS_CODE_SUCCESS)
+            .expect(
+              JSON.stringify({
+                paths: UPLOAD_UNITY_FIELDS.map((field) =>
+                  path.join(URL_PREFIX_WORK, creatorId, workId, field.name)
+                ),
+              })
+            )
+            .end((_err, _res) => {
+              new Promise<void>(async (resolve) => {
+                const size = await calculateCurrentStorageSizeBytes();
+                const actualSize = mockFiles.reduce(
+                  (accumlator, current) => accumlator + current.file.length,
+                  0
+                );
+                expect(size).toBe(actualSize * 2);
+                await Promise.all(
+                  mockFiles.map((mockFile) =>
+                    fsExtra
+                      .pathExists(
+                        mockFileUploadPath(mockFile, creatorId, workId)
+                      )
+                      .then((exists) => expect(exists))
+                  )
+                );
+                await Promise.all(
+                  mockFiles.map((mockFile) =>
+                    fsExtra
+                      .pathExists(
+                        path.join(
+                          DIRECTORY_NAME_BACKUPS,
+                          DIRECTORY_NAME_UPLOADS,
+                          creatorId,
+                          workId,
+                          "1",
+                          mockFile.fieldname,
+                          mockFile.subfoldername,
+                          mockFile.filename
+                        )
+                      )
+                      .then((exists) => expect(exists))
+                  )
+                );
+                resolve();
+              }).then(done);
+            });
         });
     });
   });
