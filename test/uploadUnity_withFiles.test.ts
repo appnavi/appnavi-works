@@ -6,84 +6,75 @@ jest.mock("multer");
 // TODO：mockをspyOnに変更
 // TODO：正しくファイルが作成されたか・正しくバックアップが作成されたかのテストを作成
 // @ts-ignore
-multer.mockImplementation(() => {
-  return {
-    none() {
-      return (
-        _req: express.Request,
-        _res: express.Response,
-        _next: express.NextFunction
-      ) => {
-        throw new Error("MOCK ERROR");
-      };
-    },
-    fields(_fields: string) {
-      return (
-        req: express.Request,
-        _res: express.Response,
-        next: express.NextFunction
-      ) => {
-        const createMockFile = (
-          fieldname: string,
-          foldername: string,
-          subfoldername: string,
-          filename: string,
-          mimetype: string,
-          size: number
-        ): Express.Multer.File => {
-          const destination = path.join(
-            DIRECTORY_NAME_UPLOADS,
-            creatorId,
-            workId,
-            fieldname
-          );
-          return {
-            fieldname,
-            originalname: path.join(foldername, subfoldername, filename),
-            encoding: "7bit",
-            mimetype,
-            destination,
-            filename,
-            path: path.join(destination, subfoldername, filename),
-            size,
-            buffer: Buffer.from([]),
-            stream: Readable.from([]),
-          };
+multer.mockImplementation((options) => {
+  const actual = jest.requireActual("multer")(options);
+  actual.fields = function fields(_fields: string) {
+    return (
+      req: express.Request,
+      _res: express.Response,
+      next: express.NextFunction
+    ) => {
+      const createMockFile = (
+        fieldname: string,
+        foldername: string,
+        subfoldername: string,
+        filename: string,
+        mimetype: string,
+        size: number
+      ): Express.Multer.File => {
+        const destination = path.join(
+          DIRECTORY_NAME_UPLOADS,
+          creatorId,
+          workId,
+          fieldname
+        );
+        return {
+          fieldname,
+          originalname: path.join(foldername, subfoldername, filename),
+          encoding: "7bit",
+          mimetype,
+          destination,
+          filename,
+          path: path.join(destination, subfoldername, filename),
+          size,
+          buffer: Buffer.from([]),
+          stream: Readable.from([]),
         };
-        req.files = {
-          [FIELD_WEBGL]: [
-            createMockFile(
-              FIELD_WEBGL,
-              "unity-webgl",
-              "",
-              "index.html",
-              "text/html",
-              100
-            ),
-            createMockFile(
-              FIELD_WEBGL,
-              "unity-webgl",
-              "subfolder",
-              "script.js",
-              "text/javascript",
-              200
-            ),
-          ],
-          [FIELD_WINDOWS]: [
-            createMockFile(
-              FIELD_WINDOWS,
-              "",
-              "",
-              "unity-zip.zip",
-              "application/zip",
-              300
-            ),
-          ],
-        };
-        return next();
       };
-    },
+      req.files = {
+        [FIELD_WEBGL]: [
+          createMockFile(
+            FIELD_WEBGL,
+            "unity-webgl",
+            "",
+            "index.html",
+            "text/html",
+            100
+          ),
+          createMockFile(
+            FIELD_WEBGL,
+            "unity-webgl",
+            "subfolder",
+            "script.js",
+            "text/javascript",
+            200
+          ),
+        ],
+        [FIELD_WINDOWS]: [
+          createMockFile(
+            FIELD_WINDOWS,
+            "",
+            "",
+            "unity-zip.zip",
+            "application/zip",
+            300
+          ),
+        ],
+      };
+      return next();
+    };
   };
+  return actual;
 });
 
 import request from "supertest";
