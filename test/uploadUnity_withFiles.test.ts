@@ -30,6 +30,29 @@ type MockFile = {
   mimetype: string;
   file: Buffer;
 };
+function mockFileDestination(
+  mockFile: MockFile,
+  creatorId: string,
+  workId: string
+): string {
+  return path.join(
+    DIRECTORY_NAME_UPLOADS,
+    creatorId,
+    workId,
+    mockFile.fieldname
+  );
+}
+function mockFileUploadPath(
+  mockFile: MockFile,
+  creatorId: string,
+  workId: string
+): string {
+  return path.join(
+    mockFileDestination(mockFile, creatorId, workId),
+    mockFile.subfoldername,
+    mockFile.filename
+  );
+}
 const mockFiles: MockFile[] = [
   {
     fieldname: UPLOAD_UNITY_FIELD_WEBGL,
@@ -61,24 +84,14 @@ async function uploadMockFile(
   creatorId: string,
   workId: string
 ): Promise<Express.Multer.File> {
-  const destination = path.join(
-    DIRECTORY_NAME_UPLOADS,
-    creatorId,
-    workId,
-    mockFile.fieldname
-  );
-  const uploadPath = path.join(
-    destination,
-    mockFile.subfoldername,
-    mockFile.filename
-  );
+  const uploadPath = mockFileUploadPath(mockFile, creatorId, workId);
   await fsExtra.ensureDir(path.dirname(uploadPath));
   await fsExtra.writeFile(uploadPath, mockFile.file);
   return {
     fieldname: mockFile.fieldname,
     filename: mockFile.filename,
     mimetype: mockFile.mimetype,
-    destination,
+    destination: mockFileDestination(mockFile, creatorId, workId),
     originalname: path.join(
       mockFile.foldername,
       mockFile.subfoldername,
@@ -247,6 +260,7 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
                 0
               )
             );
+
             done();
           });
         });
