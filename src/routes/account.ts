@@ -10,6 +10,7 @@ import {
 import {
   creatorIdSchema,
   deleteBackup,
+  renameWork,
   restoreBackup,
   workIdSchema,
 } from "../services/works";
@@ -126,4 +127,41 @@ accountRouter.post(
   })
 );
 //TODO：作品の作者名・作品名リネーム機能（データベースの情報書き換え＆ファイル移動）(パス："/work/rename")
+const renameWorkSchema = yup.object({
+  creatorId: creatorIdSchema,
+  workId: workIdSchema,
+  renamedCreatorId: creatorIdSchema,
+  renamedWorkId: workIdSchema,
+});
+accountRouter.post(
+  "/work/rename",
+  multer().none(),
+  wrap(async (req, res) => {
+    console.log(req.body);
+    const params = req.body as {
+      creatorId: string;
+      workId: string;
+      renamedCreatorId: string;
+      renamedWorkId: string;
+    };
+    try {
+      await renameWorkSchema.validate(params);
+    } catch (e) {
+      const err = e as { name: string; errors: string[] };
+      res.status(STATUS_CODE_BAD_REQUEST).send({
+        errors: err.errors,
+      });
+      return;
+    }
+    const { creatorId, workId, renamedCreatorId, renamedWorkId } = params;
+    await renameWork(
+      creatorId,
+      workId,
+      getUserId(req),
+      renamedCreatorId,
+      renamedWorkId
+    );
+    res.status(STATUS_CODE_SUCCESS).end();
+  })
+);
 export { accountRouter };

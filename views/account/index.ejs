@@ -45,6 +45,9 @@
               </li>
             </ul>
             <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="btn">作品へ移動</a>
+            <a class="waves-effect waves-light btn renameWorkButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>">
+              <i class="material-icons left">edit</i>作者名・作品名の編集
+            </a>
             <ul class="collection with-header">
               <div class="collection-header">
                 <h5>バックアップ</h5>

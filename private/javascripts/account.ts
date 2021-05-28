@@ -81,6 +81,46 @@ document
       );
     });
   });
+document
+  .querySelectorAll<HTMLButtonElement>(".renameWorkButton")
+  .forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const creatorId = btn.dataset["creatorId"]!;
+      const workId = btn.dataset["workId"]!;
+      const renamedCreatorId = prompt(
+        "編集後の作者IDを入力してください。（編集しない場合は入力せずにOKを押してください。）",
+        creatorId
+      );
+      const renamedWorkId = prompt(
+        "編集後の作品IDを入力してください。（編集しない場合は入力せずにOKを押してください。）",
+        workId
+      );
+      if (creatorId === renamedCreatorId && workId === renamedWorkId) {
+        showMessageDialog(
+          "編集をキャンセルしました",
+          document.createElement("div")
+        );
+        return;
+      }
+      const message = document.createElement("p");
+      message.append("作者ID・作品IDを編集しますか？");
+      showConfirmDialog(
+        "確認",
+        message,
+        {
+          label: "編集する",
+          classes: ["waves-effect", "waves-light", "btn"],
+          onPresed: () => {
+            renameWork(creatorId, workId, renamedCreatorId, renamedWorkId);
+          },
+        },
+        {
+          label: "キャンセル",
+          classes: ["waves-effect", "waves-light", "btn-flat"],
+        }
+      );
+    });
+  });
 
 function restoreBackup(creatorId: string, workId: string, backupName: string) {
   const request = new XMLHttpRequest();
@@ -133,6 +173,32 @@ function deleteBackup(creatorId: string, workId: string, backupName: string) {
       });
       showMessageDialog("エラー", message);
     }
+  });
+  request.send(data);
+}
+function renameWork(
+  creatorId: string,
+  workId: string,
+  renamedCreatorId: string,
+  renamedWorkId: string
+) {
+  const data = new FormData();
+  data.append("creatorId", creatorId);
+  data.append("workId", workId);
+  data.append("renamedCreatorId", renamedCreatorId);
+  data.append("renamedWorkId", renamedWorkId);
+  const request = new XMLHttpRequest();
+  request.open("POST", "/account/work/rename", true);
+  request.addEventListener("load", function (ev) {
+    const title =
+      request.status === 200 ? "編集に成功しました" : "編集に失敗しました";
+    const content = document.createElement("div");
+    if (request.status !== 200) {
+      content.appendChild(document.createTextNode(request.response));
+    }
+    showMessageDialog(title, content, () => {
+      location.reload();
+    });
   });
   request.send(data);
 }

@@ -183,6 +183,40 @@ export async function deleteBackup(
   work.backups.remove(backupToDelete);
   await work.save();
 }
+export async function renameWork(
+  creatorId: string,
+  workId: string,
+  userId: string,
+  renamedCreatorId: string,
+  renamedWorkId: string
+): Promise<void> {
+  const work = await findWorkOrThrow(creatorId, workId, userId);
+  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
+  const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
+  const renamedWorks = await WorkModel.find({
+    creatorId: renamedCreatorId,
+    workId: renamedWorkId,
+  });
+  if (renamedWorks.length > 0) {
+    throw new Error("既に作品が存在します。");
+  }
+  const renamedDir = path.join(
+    DIRECTORY_NAME_UPLOADS,
+    renamedCreatorId,
+    renamedWorkId
+  );
+  const renamedPath = path.resolve(renamedDir);
+  await fsExtra.emptydir(path.resolve(renamedPath, ".."));
+  await fsExtra.move(path.resolve(workDir), renamedPath);
+  if (await fsExtra.pathExists(backupPath)) {
+    const renamedBackupPath = path.resolve(DIRECTORY_NAME_BACKUPS, renamedDir);
+    await fsExtra.emptydir(path.resolve(renamedBackupPath, ".."));
+    await fsExtra.move(backupPath, renamedBackupPath);
+  }
+  work.creatorId = renamedCreatorId;
+  work.workId = renamedWorkId;
+  await work.save();
+}
 
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
   const works = await WorkModel.find();
