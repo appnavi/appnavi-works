@@ -190,6 +190,9 @@ export async function renameWork(
   renamedCreatorId: string,
   renamedWorkId: string
 ): Promise<void> {
+  if (creatorId === renamedCreatorId && workId === renamedWorkId) {
+    throw new Error("リネーム前とリネーム後が同じです。");
+  }
   const work = await findWorkOrThrow(creatorId, workId, userId);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
@@ -198,7 +201,7 @@ export async function renameWork(
     workId: renamedWorkId,
   });
   if (renamedWorks.length > 0) {
-    throw new Error("既に作品が存在します。");
+    throw new Error("既に作品が存在する作品ID・作者IDにはリネームできません。");
   }
   const renamedDir = path.join(
     DIRECTORY_NAME_UPLOADS,
