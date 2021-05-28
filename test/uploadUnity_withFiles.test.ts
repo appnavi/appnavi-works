@@ -1,7 +1,43 @@
 import express from "express";
 import * as multer from "multer";
-import { Readable } from "stream";
 jest.mock("multer");
+import { Readable } from "stream";
+import fsExtra from "fs-extra";
+
+type MockFile = {
+  fieldname: string;
+  foldername: string;
+  subfoldername: string;
+  filename: string;
+  mimetype: string;
+  file: Buffer;
+};
+const mockFiles: MockFile[] = [
+  {
+    fieldname: "webgl",
+    foldername: "unity-webgl",
+    subfoldername: "",
+    filename: "index.html",
+    mimetype: "text/html",
+    file: fsExtra.readFileSync("test/mock-files/index.html"),
+  },
+  {
+    fieldname: "webgl",
+    foldername: "unity-webgl",
+    subfoldername: "subfolder",
+    filename: "script.js",
+    mimetype: "text/javascript",
+    file: fsExtra.readFileSync("test/mock-files/script.js"),
+  },
+  {
+    fieldname: "windows",
+    foldername: "",
+    subfoldername: "",
+    filename: "unity-zip.zip",
+    mimetype: "application/zip",
+    file: fsExtra.readFileSync("test/mock-files/unity-zip.zip"),
+  },
+];
 
 // TODO：mockをspyOnに変更
 // TODO：正しくファイルが作成されたか・正しくバックアップが作成されたかのテストを作成
@@ -14,62 +50,44 @@ multer.mockImplementation((options) => {
       _res: express.Response,
       next: express.NextFunction
     ) => {
-      const createMockFile = (
-        fieldname: string,
-        foldername: string,
-        subfoldername: string,
-        filename: string,
-        mimetype: string,
-        size: number
-      ): Express.Multer.File => {
+      const uploadMockFile = (mockFile: MockFile): Express.Multer.File => {
         const destination = path.join(
           DIRECTORY_NAME_UPLOADS,
           creatorId,
           workId,
-          fieldname
+          mockFile.fieldname
         );
-        return {
-          fieldname,
-          originalname: path.join(foldername, subfoldername, filename),
-          encoding: "7bit",
-          mimetype,
+        const uploadPath = path.join(
           destination,
-          filename,
-          path: path.join(destination, subfoldername, filename),
-          size,
+          mockFile.subfoldername,
+          mockFile.filename
+        );
+        fsExtra.ensureDirSync(path.dirname(uploadPath));
+        fsExtra.writeFileSync(uploadPath, mockFile.file);
+        return {
+          fieldname: mockFile.fieldname,
+          filename: mockFile.filename,
+          mimetype: mockFile.mimetype,
+          destination,
+          originalname: path.join(
+            mockFile.foldername,
+            mockFile.subfoldername,
+            mockFile.filename
+          ),
+          encoding: "7bit",
+          path: uploadPath,
           buffer: Buffer.from([]),
           stream: Readable.from([]),
+          size: mockFile.file.length,
         };
       };
       req.files = {
-        [FIELD_WEBGL]: [
-          createMockFile(
-            FIELD_WEBGL,
-            "unity-webgl",
-            "",
-            "index.html",
-            "text/html",
-            100
-          ),
-          createMockFile(
-            FIELD_WEBGL,
-            "unity-webgl",
-            "subfolder",
-            "script.js",
-            "text/javascript",
-            200
-          ),
-        ],
-        [FIELD_WINDOWS]: [
-          createMockFile(
-            FIELD_WINDOWS,
-            "",
-            "",
-            "unity-zip.zip",
-            "application/zip",
-            300
-          ),
-        ],
+        [FIELD_WEBGL]: mockFiles
+          .filter((it) => it.fieldname === FIELD_WEBGL)
+          .map((it) => uploadMockFile(it)),
+        [FIELD_WINDOWS]: mockFiles
+          .filter((it) => it.fieldname === FIELD_WINDOWS)
+          .map((it) => uploadMockFile(it)),
       };
       return next();
     };
@@ -201,7 +219,12 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
         )
         .end((_err, _res) => {
           calculateCurrentStorageSizeBytes().then((it) => {
-            expect(it).toBe(600);
+            expect(it).toBe(
+              mockFiles.reduce(
+                (accumlator, current) => accumlator + current.file.length,
+                0
+              )
+            );
             done();
           });
         });
