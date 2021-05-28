@@ -165,10 +165,11 @@ export async function deleteBackup(
   backupName: string
 ): Promise<void> {
   const work = await findWorkOrThrow(creatorId, workId, userId);
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const backupToDeletePath = path.resolve(
     DIRECTORY_NAME_BACKUPS,
-    workDir,
+    DIRECTORY_NAME_UPLOADS,
+    creatorId,
+    workId,
     backupName
   );
   const backupToDelete = work.backups.find((it) => it.name === backupName);

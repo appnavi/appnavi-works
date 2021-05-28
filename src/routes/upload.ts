@@ -55,7 +55,7 @@ function getWorkIdFromHeader(req: express.Request): string {
 const unityStorage = multer.diskStorage({
   destination: (req, file, next) => {
     (async () => {
-      const parentDir = path.join(
+      const parentDir = path.resolve(
         DIRECTORY_NAME_UPLOADS,
         getCreatorIdFromHeader(req),
         getWorkIdFromHeader(req),
@@ -232,8 +232,7 @@ function validateDestination(
   return wrap(async (req, res, next) => {
     const creatorId = getCreatorIdFromHeader(req);
     const workId = getWorkIdFromHeader(req);
-    const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
-    const workPath = path.resolve(workDir);
+    const workPath = path.resolve(DIRECTORY_NAME_UPLOADS, creatorId, workId);
     const exists = await fsExtra.pathExists(workPath);
     if (!exists) {
       next();
