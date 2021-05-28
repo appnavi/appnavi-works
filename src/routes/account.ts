@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import * as yup from "yup";
 import { UserModel, WorkModel } from "../models/database";
+import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
   getDefaultCreatorId,
@@ -154,13 +155,19 @@ accountRouter.post(
       return;
     }
     const { creatorId, workId, renamedCreatorId, renamedWorkId } = params;
-    await renameWork(
-      creatorId,
-      workId,
-      getUserId(req),
-      renamedCreatorId,
-      renamedWorkId
-    );
+    try {
+      await renameWork(
+        creatorId,
+        workId,
+        getUserId(req),
+        renamedCreatorId,
+        renamedWorkId
+      );
+    } catch (e) {
+      const err = e as Error;
+      logger.system.error(`作品のリネーム失敗：${err.message}`);
+      res.status(STATUS_CODE_BAD_REQUEST).send((e as Error).message);
+    }
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );

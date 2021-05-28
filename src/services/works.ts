@@ -24,7 +24,6 @@ export const uploadSchema = yup.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
 });
-
 async function findWorkOrThrow(
   creatorId: string,
   workId: string,

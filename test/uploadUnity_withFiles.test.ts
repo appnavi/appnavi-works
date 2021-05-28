@@ -330,6 +330,28 @@ describe("Unity作品のリネーム", () => {
     await clearData(creatorId, workId);
   });
   afterAll(() => logout(app));
+  it("存在しない作品はリネームできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId + "-1")
+          .field("workId", workId + "-1")
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .end(done);
+      });
+  });
   it("条件を満たしていればリネームに成功する", (done) => {
     testSuccessfulUpload()
       .then(async () => {
