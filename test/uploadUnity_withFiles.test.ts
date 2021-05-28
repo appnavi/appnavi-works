@@ -274,61 +274,58 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
             .then(done);
         });
     });
-    it("条件を満たしたアップロードを2回すると、バックアップが作成されアップロードにも成功する", (done) => {
+    it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
         .set(HEADER_WORK_ID, workId)
-        .end(() => {
-          request(app)
-            .post("/upload/unity")
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_WORK_ID, workId)
-            .expect(STATUS_CODE_SUCCESS)
-            .expect(
-              JSON.stringify({
-                paths: UPLOAD_UNITY_FIELDS.map((field) =>
-                  path.join(URL_PREFIX_WORK, creatorId, workId, field.name)
-                ),
-              })
-            )
-            .end((_err, _res) => {
-              new Promise<void>(async (resolve) => {
-                const size = await calculateCurrentStorageSizeBytes();
-                const actualSize = mockFiles.reduce(
-                  (accumlator, current) => accumlator + current.file.length,
-                  0
-                );
-                expect(size).toBe(actualSize * 2);
-                await Promise.all(
-                  mockFiles.map((mockFile) =>
-                    fsExtra
-                      .pathExists(
-                        mockFileUploadPath(mockFile, creatorId, workId)
-                      )
-                      .then((exists) => expect(exists))
-                  )
-                );
-                await Promise.all(
-                  mockFiles.map((mockFile) =>
-                    fsExtra
-                      .pathExists(
-                        path.join(
-                          DIRECTORY_NAME_BACKUPS,
-                          DIRECTORY_NAME_UPLOADS,
-                          creatorId,
-                          workId,
-                          "1",
-                          mockFile.fieldname,
-                          mockFile.subfoldername,
-                          mockFile.filename
-                        )
-                      )
-                      .then((exists) => expect(exists))
-                  )
-                );
-                resolve();
-              }).then(done);
+        .end((err, res) => {
+          expect(err).toBeNull();
+          hasUploadSucceeded(res)
+            .then(async () => {
+              const size = await calculateCurrentStorageSizeBytes();
+              const actualSize = mockFiles.reduce(
+                (accumlator, current) => accumlator + current.file.length,
+                0
+              );
+              expect(size).toBe(actualSize);
+            })
+            .then(() => {
+              request(app)
+                .post("/upload/unity")
+                .set(HEADER_CREATOR_ID, creatorId)
+                .set(HEADER_WORK_ID, workId)
+                .end((err, res) => {
+                  expect(err).toBeNull();
+                  hasUploadSucceeded(res)
+                    .then(async () => {
+                      const size = await calculateCurrentStorageSizeBytes();
+                      const actualSize = mockFiles.reduce(
+                        (accumlator, current) =>
+                          accumlator + current.file.length,
+                        0
+                      );
+                      expect(size).toBe(actualSize * 2);
+                    })
+                    .then(async () => {
+                      mockFiles.forEach(async (mockFile) => {
+                        const exists = await fsExtra.pathExists(
+                          path.join(
+                            DIRECTORY_NAME_BACKUPS,
+                            DIRECTORY_NAME_UPLOADS,
+                            creatorId,
+                            workId,
+                            "1",
+                            mockFile.fieldname,
+                            mockFile.subfoldername,
+                            mockFile.filename
+                          )
+                        );
+                        expect(exists).toBe(true);
+                      });
+                    })
+                    .then(done);
+                });
             });
         });
     });
