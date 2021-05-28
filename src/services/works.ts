@@ -36,13 +36,7 @@ async function findWorkOrThrow(
   });
   switch (works.length) {
     case 0:
-      return await WorkModel.create({
-        creatorId,
-        workId,
-        owner: userId,
-        fileSize: 0,
-        backupFileSizes: {},
-      });
+      throw new Error("作品が存在しません。");
     case 1: {
       const work = works[0];
       if (work.owner !== userId) {
