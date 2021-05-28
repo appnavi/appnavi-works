@@ -3,6 +3,24 @@ import * as multer from "multer";
 jest.mock("multer");
 import { Readable } from "stream";
 import fsExtra from "fs-extra";
+import {
+  URL_PREFIX_WORK,
+  DIRECTORY_NAME_UPLOADS,
+  STATUS_CODE_BAD_REQUEST,
+  STATUS_CODE_SUCCESS,
+  STATUS_CODE_UNAUTHORIZED,
+  ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
+  ERROR_MESSAGE_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
+  ERROR_MESSAGE_WORK_ID_REQUIRED as WORK_ID_REQUIRED,
+  ERROR_MESSAGE_WORK_ID_INVALID as WORK_ID_INVALID,
+  ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
+  ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
+  HEADER_CREATOR_ID,
+  HEADER_WORK_ID,
+  UPLOAD_UNITY_FIELD_WEBGL,
+  UPLOAD_UNITY_FIELD_WINDOWS,
+  UPLOAD_UNITY_FIELDS,
+} from "../src/utils/constants";
 
 type MockFile = {
   fieldname: string;
@@ -14,7 +32,7 @@ type MockFile = {
 };
 const mockFiles: MockFile[] = [
   {
-    fieldname: "webgl",
+    fieldname: UPLOAD_UNITY_FIELD_WEBGL,
     foldername: "unity-webgl",
     subfoldername: "",
     filename: "index.html",
@@ -22,7 +40,7 @@ const mockFiles: MockFile[] = [
     file: fsExtra.readFileSync("test/mock-files/index.html"),
   },
   {
-    fieldname: "webgl",
+    fieldname: UPLOAD_UNITY_FIELD_WEBGL,
     foldername: "unity-webgl",
     subfoldername: "subfolder",
     filename: "script.js",
@@ -30,7 +48,7 @@ const mockFiles: MockFile[] = [
     file: fsExtra.readFileSync("test/mock-files/script.js"),
   },
   {
-    fieldname: "windows",
+    fieldname: UPLOAD_UNITY_FIELD_WINDOWS,
     foldername: "",
     subfoldername: "",
     filename: "unity-zip.zip",
@@ -82,11 +100,11 @@ multer.mockImplementation((options) => {
         };
       };
       req.files = {
-        [FIELD_WEBGL]: mockFiles
-          .filter((it) => it.fieldname === FIELD_WEBGL)
+        [UPLOAD_UNITY_FIELD_WEBGL]: mockFiles
+          .filter((it) => it.fieldname === UPLOAD_UNITY_FIELD_WEBGL)
           .map((it) => uploadMockFile(it)),
-        [FIELD_WINDOWS]: mockFiles
-          .filter((it) => it.fieldname === FIELD_WINDOWS)
+        [UPLOAD_UNITY_FIELD_WINDOWS]: mockFiles
+          .filter((it) => it.fieldname === UPLOAD_UNITY_FIELD_WINDOWS)
           .map((it) => uploadMockFile(it)),
       };
       return next();
@@ -97,22 +115,7 @@ multer.mockImplementation((options) => {
 
 import request from "supertest";
 import { app } from "../src/app";
-import { fields, FIELD_WEBGL, FIELD_WINDOWS } from "../src/routes/upload";
-import {
-  URL_PREFIX_WORK,
-  DIRECTORY_NAME_UPLOADS,
-  STATUS_CODE_BAD_REQUEST,
-  STATUS_CODE_SUCCESS,
-  STATUS_CODE_UNAUTHORIZED,
-  ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
-  ERROR_MESSAGE_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
-  ERROR_MESSAGE_WORK_ID_REQUIRED as WORK_ID_REQUIRED,
-  ERROR_MESSAGE_WORK_ID_INVALID as WORK_ID_INVALID,
-  ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
-  ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
-  HEADER_CREATOR_ID,
-  HEADER_WORK_ID,
-} from "../src/utils/constants";
+
 import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
 import { clearData, connectDatabase, ensureUploadFoldersExist } from "./common";
@@ -212,7 +215,7 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
         .expect(STATUS_CODE_SUCCESS)
         .expect(
           JSON.stringify({
-            paths: fields.map((field) =>
+            paths: UPLOAD_UNITY_FIELDS.map((field) =>
               path.join(URL_PREFIX_WORK, creatorId, workId, field.name)
             ),
           })

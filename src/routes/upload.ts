@@ -25,6 +25,9 @@ import {
   STATUS_CODE_BAD_REQUEST,
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
+  UPLOAD_UNITY_FIELD_WINDOWS,
+  UPLOAD_UNITY_FIELD_WEBGL,
+  UPLOAD_UNITY_FIELDS,
 } from "../utils/constants";
 import { getEnv, getEnvNumber, render, wrap } from "../utils/helpers";
 
@@ -43,17 +46,6 @@ class UploadError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
-export const FIELD_WEBGL = "webgl";
-export const FIELD_WINDOWS = "windows";
-export const fields = [
-  {
-    name: FIELD_WEBGL,
-  },
-  {
-    name: FIELD_WINDOWS,
-    maxCount: 1,
-  },
-];
 function getCreatorIdFromHeader(req: express.Request): string {
   return req.headers[HEADER_CREATOR_ID] as string;
 }
@@ -71,11 +63,11 @@ const unityStorage = multer.diskStorage({
       );
       let dir: string;
       switch (file.fieldname) {
-        case FIELD_WINDOWS: {
+        case UPLOAD_UNITY_FIELD_WINDOWS: {
           dir = parentDir;
           break;
         }
-        case FIELD_WEBGL: {
+        case UPLOAD_UNITY_FIELD_WEBGL: {
           const folders = path.dirname(file.originalname).split("/");
           folders.shift();
           dir = path.join(parentDir, ...folders);
@@ -99,11 +91,11 @@ export const unityUpload = multer({
   preservePath: true,
   fileFilter: (_req, file, cb) => {
     switch (file.fieldname) {
-      case FIELD_WINDOWS: {
+      case UPLOAD_UNITY_FIELD_WINDOWS: {
         cb(null, path.extname(file.originalname) === ".zip");
         break;
       }
-      case FIELD_WEBGL: {
+      case UPLOAD_UNITY_FIELD_WEBGL: {
         const folders = path.dirname(file.originalname).split("/");
         //隠しフォルダ内のファイルではないか
         cb(null, !folders.find((f) => f.startsWith(".")));
@@ -137,7 +129,7 @@ uploadRouter
     preventEditByOtherPerson,
     validateDestination,
     beforeUpload,
-    unityUpload.fields(fields),
+    unityUpload.fields(UPLOAD_UNITY_FIELDS),
     ensureUploadSuccess,
     setLocals,
     saveToDatabase,
@@ -286,16 +278,16 @@ function setLocals(
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
   };
-  locals.paths = fields
-    .filter(({ name }) => files[name] !== undefined)
-    .map(({ name }) =>
-      path.join(
-        URL_PREFIX_WORK,
-        getCreatorIdFromHeader(req),
-        getWorkIdFromHeader(req),
-        name
-      )
-    );
+  locals.paths = UPLOAD_UNITY_FIELDS.filter(
+    ({ name }) => files[name] !== undefined
+  ).map(({ name }) =>
+    path.join(
+      URL_PREFIX_WORK,
+      getCreatorIdFromHeader(req),
+      getWorkIdFromHeader(req),
+      name
+    )
+  );
   next();
 }
 function saveToDatabase(
@@ -309,7 +301,7 @@ function saveToDatabase(
     const files = req.files as {
       [fieldname: string]: Express.Multer.File[];
     };
-    work.fileSize = calculateWorkFileSize(files, fields);
+    work.fileSize = calculateWorkFileSize(files, UPLOAD_UNITY_FIELDS);
     work.uploadedAt = locals.uploadEndedAt;
     await work.save();
     next();

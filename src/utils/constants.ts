@@ -31,3 +31,15 @@ export const ERROR_MESSAGE_NO_FILES = "アップロードするファイルが�
 export const ERROR_MESSAGE_BACKUP_NAME_REQUIRED = "バックアップ名は必須です。";
 export const ERROR_MESSAGE_BACKUP_NAME_INVALID =
   "バックアップ名には数字のみである必要があります。";
+
+export const UPLOAD_UNITY_FIELD_WEBGL = "webgl";
+export const UPLOAD_UNITY_FIELD_WINDOWS = "windows";
+export const UPLOAD_UNITY_FIELDS = [
+  {
+    name: UPLOAD_UNITY_FIELD_WEBGL,
+  },
+  {
+    name: UPLOAD_UNITY_FIELD_WINDOWS,
+    maxCount: 1,
+  },
+];
