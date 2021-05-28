@@ -156,6 +156,24 @@ import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 const creatorId = "creator-2";
 const workId = "work-2";
 
+async function hasUploadSucceeded(res: request.Response): Promise<void> {
+  expect(res.status).toBe(STATUS_CODE_SUCCESS);
+  expect(res.text).toBe(
+    JSON.stringify({
+      paths: UPLOAD_UNITY_FIELDS.map((field) =>
+        path.join(URL_PREFIX_WORK, creatorId, workId, field.name)
+      ),
+    })
+  );
+  await Promise.all(
+    mockFiles.map((mockFile) =>
+      fsExtra
+        .pathExists(mockFileUploadPath(mockFile, creatorId, workId))
+        .then((exists) => expect(exists).toBe(true))
+    )
+  );
+}
+
 describe("Unity作品のアップロード（ファイルあり）", () => {
   beforeAll(async () => {
     await connectDatabase("2");
@@ -242,31 +260,18 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
         .set(HEADER_WORK_ID, workId)
-        .expect(STATUS_CODE_SUCCESS)
-        .expect(
-          JSON.stringify({
-            paths: UPLOAD_UNITY_FIELDS.map((field) =>
-              path.join(URL_PREFIX_WORK, creatorId, workId, field.name)
-            ),
-          })
-        )
-        .end((_err, _res) => {
-          new Promise<void>(async (resolve) => {
-            const size = await calculateCurrentStorageSizeBytes();
-            const actualSize = mockFiles.reduce(
-              (accumlator, current) => accumlator + current.file.length,
-              0
-            );
-            expect(size).toBe(actualSize);
-            await Promise.all(
-              mockFiles.map((mockFile) =>
-                fsExtra
-                  .pathExists(mockFileUploadPath(mockFile, creatorId, workId))
-                  .then((exists) => expect(exists))
-              )
-            );
-            resolve();
-          }).then(done);
+        .end((err, res) => {
+          expect(err).toBeNull();
+          hasUploadSucceeded(res)
+            .then(async () => {
+              const size = await calculateCurrentStorageSizeBytes();
+              const actualSize = mockFiles.reduce(
+                (accumlator, current) => accumlator + current.file.length,
+                0
+              );
+              expect(size).toBe(actualSize);
+            })
+            .then(done);
         });
     });
     it("条件を満たしたアップロードを2回すると、バックアップが作成されアップロードにも成功する", (done) => {

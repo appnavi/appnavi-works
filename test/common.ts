@@ -7,8 +7,16 @@ import fs from "fs-extra";
 import path from "path";
 
 export async function ensureUploadFoldersExist() {
-  await fs.emptyDir(path.resolve(DIRECTORY_NAME_UPLOADS));
-  await fs.emptyDir(path.resolve(DIRECTORY_NAME_BACKUPS));
+  await fs.rm(path.resolve(DIRECTORY_NAME_UPLOADS), {
+    recursive: true,
+    force: true,
+  });
+  await fs.mkdir(path.resolve(DIRECTORY_NAME_UPLOADS), { recursive: true });
+  await fs.rm(path.resolve(DIRECTORY_NAME_BACKUPS), {
+    recursive: true,
+    force: true,
+  });
+  await fs.mkdir(path.resolve(DIRECTORY_NAME_BACKUPS), { recursive: true });
 }
 
 export async function connectDatabase(databaseId: string) {
