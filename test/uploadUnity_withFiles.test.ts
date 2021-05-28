@@ -124,7 +124,6 @@ async function uploadAllMockFiles(
   };
 }
 
-// TODO：正しくファイルが作成されたかのテストを作成
 // TODO：正しくバックアップが作成されたかのテストを作成
 
 // @ts-ignore
@@ -253,16 +252,23 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
           })
         )
         .end((_err, _res) => {
-          calculateCurrentStorageSizeBytes().then((it) => {
-            expect(it).toBe(
+          new Promise<void>(async (resolve) => {
+            const size = await calculateCurrentStorageSizeBytes();
+            expect(size).toBe(
               mockFiles.reduce(
                 (accumlator, current) => accumlator + current.file.length,
                 0
               )
             );
-
-            done();
-          });
+            await Promise.all(
+              mockFiles.map((mockFile) =>
+                fsExtra
+                  .pathExists(mockFileUploadPath(mockFile, creatorId, workId))
+                  .then((exists) => expect(exists))
+              )
+            );
+            resolve();
+          }).then(done);
         });
     });
   });
