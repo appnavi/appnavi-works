@@ -174,6 +174,19 @@ async function hasUploadSucceeded(res: request.Response): Promise<void> {
   );
 }
 
+async function testSuccessfulUpload(): Promise<void> {
+  return new Promise((resolve) => {
+    request(app)
+      .post("/upload/unity")
+      .set(HEADER_CREATOR_ID, creatorId)
+      .set(HEADER_WORK_ID, workId)
+      .end((err, res) => {
+        expect(err).toBeNull();
+        hasUploadSucceeded(res).then(resolve);
+      });
+  });
+}
+
 describe("Unity作品のアップロード（ファイルあり）", () => {
   beforeAll(async () => {
     await connectDatabase("2");
@@ -256,78 +269,54 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
       });
     });
     it("条件を満たしていればアップロードできる", (done) => {
-      request(app)
-        .post("/upload/unity")
-        .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, workId)
-        .end((err, res) => {
-          expect(err).toBeNull();
-          hasUploadSucceeded(res)
-            .then(async () => {
-              const size = await calculateCurrentStorageSizeBytes();
-              const actualSize = mockFiles.reduce(
-                (accumlator, current) => accumlator + current.file.length,
-                0
-              );
-              expect(size).toBe(actualSize);
-            })
-            .then(done);
-        });
+      testSuccessfulUpload()
+        .then(async () => {
+          const size = await calculateCurrentStorageSizeBytes();
+          const actualSize = mockFiles.reduce(
+            (accumlator, current) => accumlator + current.file.length,
+            0
+          );
+          expect(size).toBe(actualSize);
+        })
+        .then(done);
     });
     it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
-      request(app)
-        .post("/upload/unity")
-        .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, workId)
-        .end((err, res) => {
-          expect(err).toBeNull();
-          hasUploadSucceeded(res)
-            .then(async () => {
-              const size = await calculateCurrentStorageSizeBytes();
-              const actualSize = mockFiles.reduce(
-                (accumlator, current) => accumlator + current.file.length,
-                0
-              );
-              expect(size).toBe(actualSize);
-            })
-            .then(() => {
-              request(app)
-                .post("/upload/unity")
-                .set(HEADER_CREATOR_ID, creatorId)
-                .set(HEADER_WORK_ID, workId)
-                .end((err, res) => {
-                  expect(err).toBeNull();
-                  hasUploadSucceeded(res)
-                    .then(async () => {
-                      const size = await calculateCurrentStorageSizeBytes();
-                      const actualSize = mockFiles.reduce(
-                        (accumlator, current) =>
-                          accumlator + current.file.length,
-                        0
-                      );
-                      expect(size).toBe(actualSize * 2);
-                    })
-                    .then(async () => {
-                      mockFiles.forEach(async (mockFile) => {
-                        const exists = await fsExtra.pathExists(
-                          path.join(
-                            DIRECTORY_NAME_BACKUPS,
-                            DIRECTORY_NAME_UPLOADS,
-                            creatorId,
-                            workId,
-                            "1",
-                            mockFile.fieldname,
-                            mockFile.subfoldername,
-                            mockFile.filename
-                          )
-                        );
-                        expect(exists).toBe(true);
-                      });
-                    })
-                    .then(done);
-                });
-            });
-        });
+      testSuccessfulUpload()
+        .then(async () => {
+          const size = await calculateCurrentStorageSizeBytes();
+          const actualSize = mockFiles.reduce(
+            (accumlator, current) => accumlator + current.file.length,
+            0
+          );
+          expect(size).toBe(actualSize);
+        })
+        .then(testSuccessfulUpload)
+        .then(async () => {
+          const size = await calculateCurrentStorageSizeBytes();
+          const actualSize = mockFiles.reduce(
+            (accumlator, current) => accumlator + current.file.length,
+            0
+          );
+          expect(size).toBe(actualSize * 2);
+        })
+        .then(async () => {
+          mockFiles.forEach(async (mockFile) => {
+            const exists = await fsExtra.pathExists(
+              path.join(
+                DIRECTORY_NAME_BACKUPS,
+                DIRECTORY_NAME_UPLOADS,
+                creatorId,
+                workId,
+                "1",
+                mockFile.fieldname,
+                mockFile.subfoldername,
+                mockFile.filename
+              )
+            );
+            expect(exists).toBe(true);
+          });
+        })
+        .then(done);
     });
   });
 });
