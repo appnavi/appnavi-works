@@ -167,12 +167,14 @@ import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 const creatorId = "creator-2";
 const workId = "work-2";
 
-async function expectUploadedFilesExists(): Promise<void> {
+async function expectUploadedFilesExists(
+  exists: boolean = true
+): Promise<void> {
   mockFiles.forEach(async (mockFile) => {
-    const exists = await fsExtra.pathExists(
+    const actualExists = await fsExtra.pathExists(
       mockFileUploadPath(mockFile, creatorId, workId)
     );
-    expect(exists).toBe(true);
+    expect(actualExists).toBe(exists);
   });
 }
 async function expectUploadSucceeded(res: request.Response): Promise<void> {
@@ -186,9 +188,12 @@ async function expectUploadSucceeded(res: request.Response): Promise<void> {
   );
   await expectUploadedFilesExists();
 }
-async function expectBackupFilesExists(backupName: string): Promise<void> {
+async function expectBackupFilesExists(
+  backupName: string,
+  exists: boolean = true
+): Promise<void> {
   mockFiles.forEach(async (mockFile) => {
-    const exists = await fsExtra.pathExists(
+    const actualExists = await fsExtra.pathExists(
       path.join(
         DIRECTORY_NAME_BACKUPS,
         DIRECTORY_NAME_UPLOADS,
@@ -200,7 +205,7 @@ async function expectBackupFilesExists(backupName: string): Promise<void> {
         mockFile.filename
       )
     );
-    expect(exists).toBe(true);
+    expect(actualExists).toBe(exists);
   });
 }
 async function expectStorageSizeSameToActualSize(
@@ -675,14 +680,7 @@ describe("Unity作品の削除", () => {
         const storageSize = await calculateCurrentStorageSizeBytes();
         expect(storageSize).toBe(0);
       })
-      .then(async () => {
-        mockFiles.forEach(async (mockFile) => {
-          const exists = await fsExtra.pathExists(
-            mockFileUploadPath(mockFile, creatorId, workId)
-          );
-          expect(exists).toBe(false);
-        });
-      })
+      .then(() => expectUploadedFilesExists(false))
       .then(done);
   });
   it("条件を満たしていれば作品の削除に成功する（バックアップも削除される）", (done) => {
@@ -703,31 +701,8 @@ describe("Unity作品の削除", () => {
         const storageSize = await calculateCurrentStorageSizeBytes();
         expect(storageSize).toBe(0);
       })
-      .then(async () => {
-        mockFiles.forEach(async (mockFile) => {
-          const exists = await fsExtra.pathExists(
-            mockFileUploadPath(mockFile, creatorId, workId)
-          );
-          expect(exists).toBe(false);
-        });
-      })
-      .then(() => {
-        mockFiles.forEach(async (mockFile) => {
-          const exists = await fsExtra.pathExists(
-            path.join(
-              DIRECTORY_NAME_BACKUPS,
-              DIRECTORY_NAME_UPLOADS,
-              creatorId,
-              workId,
-              "1",
-              mockFile.fieldname,
-              mockFile.subfoldername,
-              mockFile.filename
-            )
-          );
-          expect(exists).toBe(false);
-        });
-      })
+      .then(() => expectUploadedFilesExists(false))
+      .then(() => expectBackupFilesExists("1", false))
       .then(done);
   });
 });
@@ -823,7 +798,7 @@ describe("Unity作品のバックアップ", () => {
             })
         )
         .then(() => expectStorageSizeSameToActualSize(1))
-        .then(expectUploadedFilesExists)
+        .then(() => expectUploadedFilesExists())
         .then(() => expectBackupFilesExists("2"))
         .then(done);
     });
@@ -911,24 +886,8 @@ describe("Unity作品のバックアップ", () => {
             })
         )
         .then(() => expectStorageSizeSameToActualSize(0))
-        .then(expectUploadedFilesExists)
-        .then(async () => {
-          mockFiles.forEach(async (mockFile) => {
-            const exists = await fsExtra.pathExists(
-              path.join(
-                DIRECTORY_NAME_BACKUPS,
-                DIRECTORY_NAME_UPLOADS,
-                creatorId,
-                workId,
-                "1",
-                mockFile.fieldname,
-                mockFile.subfoldername,
-                mockFile.filename
-              )
-            );
-            expect(exists).toBe(false);
-          });
-        })
+        .then(() => expectUploadedFilesExists())
+        .then(() => expectBackupFilesExists("1", false))
         .then(done);
     });
   });
