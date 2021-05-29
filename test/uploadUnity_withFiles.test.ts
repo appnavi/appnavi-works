@@ -249,6 +249,11 @@ describe("Unity作品関連(非ログイン時)", () => {
       .post("/account/work/rename")
       .expect(STATUS_CODE_UNAUTHORIZED, done);
   });
+  it("非ログイン時には削除できない", (done) => {
+    request(app)
+      .post("/account/work/delete")
+      .expect(STATUS_CODE_UNAUTHORIZED, done);
+  });
   it("非ログイン時にはバックアップを復元できない", (done) => {
     request(app)
       .post("/account/backup/restore")
@@ -567,6 +572,163 @@ describe("Unity作品のリネーム", () => {
           .expect(STATUS_CODE_SUCCESS)
           .end(done);
       });
+  });
+});
+describe("Unity作品の削除", () => {
+  beforeAll(async () => {
+    await connectDatabase("2");
+    await ensureUploadFoldersExist();
+    login(app, myId);
+  });
+  afterEach(async () => {
+    await clearData(creatorId, workId);
+  });
+  afterAll(() => logout(app));
+  it("作者IDが設定されていないと削除できない", (done) => {
+    request(app)
+      .post("/account/work/delete")
+      .type("form")
+      .field("workId", workId)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+      .end(done);
+  });
+  it("作者IDが不適切だと削除できない", (done) => {
+    request(app)
+      .post("/account/work/delete")
+      .type("form")
+      .field("creatorId", INVALID_ID)
+      .field("workId", workId)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+      .end(done);
+  });
+  it("作品IDが設定されていないと削除できない", (done) => {
+    request(app)
+      .post("/account/work/delete")
+      .type("form")
+      .field("creatorId", creatorId)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+      .end(done);
+  });
+  it("作品IDが不適切だと削除できない", (done) => {
+    request(app)
+      .post("/account/work/delete")
+      .type("form")
+      .field("creatorId", creatorId)
+      .field("workId", INVALID_ID)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+      .end(done);
+  });
+  it("存在しない作品は削除できない", (done) => {
+    request(app)
+      .post("/account/work/delete")
+      .type("form")
+      .field("creatorId", creatorId)
+      .field("workId", workId)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [WORK_NOT_FOUND] }))
+      .end(done);
+  });
+  it("別人の投稿した作品は削除できない", (done) => {
+    testSuccessfulUpload()
+      .then(() => expectStorageSizeSameToActualSize(0))
+      .then(async () => {
+        const works = await WorkModel.find({
+          creatorId: creatorId,
+          workId: workId,
+        });
+        expect(works.length).toBe(1);
+        const work = works[0];
+        work.owner = theirId;
+        work.save();
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/delete")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_DIFFERENT_OWNER] }))
+          .end(done);
+      });
+  });
+  it("条件を満たしていれば作品の削除に成功する", (done) => {
+    testSuccessfulUpload()
+      .then(() => expectStorageSizeSameToActualSize(0))
+      .then(
+        () =>
+          new Promise<void>((resolve) => {
+            request(app)
+              .post("/account/work/delete")
+              .type("form")
+              .field("creatorId", creatorId)
+              .field("workId", workId)
+              .expect(STATUS_CODE_SUCCESS)
+              .end(resolve);
+          })
+      )
+      .then(async () => {
+        const storageSize = await calculateCurrentStorageSizeBytes();
+        expect(storageSize).toBe(0);
+      })
+      .then(async () => {
+        mockFiles.forEach(async (mockFile) => {
+          const exists = await fsExtra.pathExists(
+            mockFileUploadPath(mockFile, creatorId, workId)
+          );
+          expect(exists).toBe(false);
+        });
+      })
+      .then(done);
+  });
+  it("条件を満たしていれば作品の削除に成功する（バックアップも削除される）", (done) => {
+    testSuccessfulUploadTwice()
+      .then(
+        () =>
+          new Promise<void>((resolve) => {
+            request(app)
+              .post("/account/work/delete")
+              .type("form")
+              .field("creatorId", creatorId)
+              .field("workId", workId)
+              .expect(STATUS_CODE_SUCCESS)
+              .end(resolve);
+          })
+      )
+      .then(async () => {
+        const storageSize = await calculateCurrentStorageSizeBytes();
+        expect(storageSize).toBe(0);
+      })
+      .then(async () => {
+        mockFiles.forEach(async (mockFile) => {
+          const exists = await fsExtra.pathExists(
+            mockFileUploadPath(mockFile, creatorId, workId)
+          );
+          expect(exists).toBe(false);
+        });
+      })
+      .then(() => {
+        mockFiles.forEach(async (mockFile) => {
+          const exists = await fsExtra.pathExists(
+            path.join(
+              DIRECTORY_NAME_BACKUPS,
+              DIRECTORY_NAME_UPLOADS,
+              creatorId,
+              workId,
+              "1",
+              mockFile.fieldname,
+              mockFile.subfoldername,
+              mockFile.filename
+            )
+          );
+          expect(exists).toBe(false);
+        });
+      })
+      .then(done);
   });
 });
 describe("Unity作品のバックアップ", () => {

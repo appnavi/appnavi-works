@@ -116,6 +116,39 @@ document
       instance.open();
     });
   });
+document
+  .querySelectorAll<HTMLButtonElement>(".deleteWorkButton")
+  .forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const creatorId = btn.dataset["creatorId"]!;
+      const workId = btn.dataset["workId"]!;
+      const content = document.createElement("div");
+      let subContent = document.createElement("h5");
+      subContent.innerText = `作品"${creatorId}/${workId}"を削除してもよろしいですか？`;
+      content.append(subContent);
+      subContent = document.createElement("p");
+      subContent.innerText = "この作品の全てのバックアップも削除されます。";
+      content.append(subContent);
+      subContent = document.createElement("p");
+      subContent.innerText = "削除した後は元の戻すことはできません。";
+      content.append(subContent);
+      showConfirmDialog(
+        "確認",
+        content,
+        {
+          label: "削除",
+          classes: ["waves-effect", "waves-light", "btn", "red"],
+          onPresed: () => {
+            deleteWork(creatorId, workId);
+          },
+        },
+        {
+          label: "キャンセル",
+          classes: ["waves-effect", "waves-light", "btn-flat"],
+        }
+      );
+    });
+  });
 
 function restoreBackup(creatorId: string, workId: string, backupName: string) {
   const request = new XMLHttpRequest();
@@ -187,6 +220,34 @@ function renameWork(
   request.addEventListener("load", function (ev) {
     const title =
       request.status === 200 ? "編集に成功しました" : "編集に失敗しました";
+    const content = document.createElement("div");
+    if (request.status === 400) {
+      const errors = (JSON.parse(request.response).errors as string[]) ?? [];
+      errors.forEach((err) => {
+        const errorText = document.createElement("p");
+        errorText.innerText = err;
+        content.append(errorText);
+      });
+    } else if (request.status !== 200) {
+      content.appendChild(document.createTextNode(request.response));
+    }
+    showMessageDialog(title, content, () => {
+      if (request.status === 200) {
+        location.reload();
+      }
+    });
+  });
+  request.send(data);
+}
+function deleteWork(creatorId: string, workId: string) {
+  const data = new FormData();
+  data.append("creatorId", creatorId);
+  data.append("workId", workId);
+  const request = new XMLHttpRequest();
+  request.open("POST", "/account/work/delete", true);
+  request.addEventListener("load", function (ev) {
+    const title =
+      request.status === 200 ? "削除しました" : "削除に失敗しました";
     const content = document.createElement("div");
     if (request.status === 400) {
       const errors = (JSON.parse(request.response).errors as string[]) ?? [];

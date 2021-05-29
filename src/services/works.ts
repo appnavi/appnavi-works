@@ -223,6 +223,18 @@ export async function renameWork(
   work.workId = renamedWorkId;
   await work.save();
 }
+export async function deleteWork(
+  creatorId: string,
+  workId: string,
+  userId: string
+): Promise<void> {
+  const work = await findOwnWorkOrThrow(creatorId, workId, userId);
+  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
+  const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
+  await fsExtra.rm(path.resolve(workDir), { recursive: true, force: true });
+  await fsExtra.rm(backupPath, { recursive: true, force: true });
+  await work.delete();
+}
 
 export async function calculateCurrentStorageSizeBytes(): Promise<number> {
   const works = await WorkModel.find();

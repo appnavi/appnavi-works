@@ -10,6 +10,7 @@ import {
 import {
   creatorIdSchema,
   deleteBackup,
+  deleteWork,
   renameWork,
   restoreBackup,
   workIdSchema,
@@ -21,7 +22,11 @@ import {
   ERROR_MESSAGE_BACKUP_NAME_REQUIRED,
   ERROR_MESSAGE_BACKUP_NAME_INVALID,
 } from "../utils/constants";
-import { BadRequestError, RenameWorkError } from "../utils/errors";
+import {
+  BadRequestError,
+  DeleteWorkError,
+  RenameWorkError,
+} from "../utils/errors";
 import { render, wrap } from "../utils/helpers";
 
 const accountRouter = express.Router();
@@ -162,6 +167,36 @@ accountRouter.post(
     } catch (err) {
       if (err instanceof BadRequestError) {
         throw new RenameWorkError([err.message], params);
+      }
+    }
+    res.status(STATUS_CODE_SUCCESS).end();
+  })
+);
+const deleteWorkSchema = yup.object({
+  creatorId: creatorIdSchema,
+  workId: workIdSchema,
+});
+accountRouter.post(
+  "/work/delete",
+  multer().none(),
+  wrap(async (req, res) => {
+    console.log(req.body);
+    const params = req.body as {
+      creatorId: string;
+      workId: string;
+    };
+    try {
+      await deleteWorkSchema.validate(params);
+    } catch (e) {
+      const err = e as { name: string; errors: string[] };
+      throw new DeleteWorkError(err.errors, params);
+    }
+    const { creatorId, workId } = params;
+    try {
+      await deleteWork(creatorId, workId, getUserId(req));
+    } catch (err) {
+      if (err instanceof BadRequestError) {
+        throw new DeleteWorkError([err.message], params);
       }
     }
     res.status(STATUS_CODE_SUCCESS).end();
