@@ -99,7 +99,7 @@ document
       renamedCreatorIdInput.value = creatorId;
       renamedWorkIdInput.value = workId;
       const instance = M.Modal.getInstance(dialog);
-      dialog.querySelector(".edit").addEventListener("click", () => {
+      dialog.querySelector(".edit")!.addEventListener("click", () => {
         const renamedCreatorId = renamedCreatorIdInput.value;
         const renamedWorkId = renamedWorkIdInput.value;
         if (creatorId === renamedCreatorId && workId === renamedWorkId) {
