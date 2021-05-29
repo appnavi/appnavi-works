@@ -26,7 +26,7 @@ import { WorkModel } from "../src/models/database";
 const creatorId = "creator-3";
 const workId = "work-3";
 
-describe("POST", () => {
+describe("POST（MulterのMockなし）", () => {
   beforeAll(async () => {
     await connectDatabase("3");
     await ensureUploadFoldersExist();
@@ -36,15 +36,17 @@ describe("POST", () => {
     await clearData(creatorId, workId);
   });
   afterAll(() => logout(app));
-  describe("Unity作品のアップロード（ファイルなし）", () => {
-    it("作品がなければアップロードできない", (done) => {
-      request(app)
-        .post("/upload/unity")
-        .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, workId)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [NO_FILES] }))
-        .end(done);
+  describe("uploadRouter", () => {
+    describe("Unity作品のアップロード", () => {
+      it("作品がなければアップロードできない", (done) => {
+        request(app)
+          .post("/upload/unity")
+          .set(HEADER_CREATOR_ID, creatorId)
+          .set(HEADER_WORK_ID, workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [NO_FILES] }))
+          .end(done);
+      });
     });
   });
 });
