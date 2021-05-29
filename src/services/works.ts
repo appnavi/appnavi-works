@@ -30,7 +30,7 @@ export const uploadSchema = yup.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
 });
-async function findWorkOrThrow(
+async function findOwnWorkOrThrow(
   creatorId: string,
   workId: string,
   userId: string
@@ -136,7 +136,7 @@ export async function restoreBackup(
   userId: string,
   backupName: string
 ): Promise<void> {
-  const work = await findWorkOrThrow(creatorId, workId, userId);
+  const work = await findOwnWorkOrThrow(creatorId, workId, userId);
   await backupWork(creatorId, workId, work);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const workPath = path.resolve(workDir);
@@ -163,7 +163,7 @@ export async function deleteBackup(
   userId: string,
   backupName: string
 ): Promise<void> {
-  const work = await findWorkOrThrow(creatorId, workId, userId);
+  const work = await findOwnWorkOrThrow(creatorId, workId, userId);
   const backupToDeletePath = path.resolve(
     DIRECTORY_NAME_BACKUPS,
     DIRECTORY_NAME_UPLOADS,
@@ -192,7 +192,7 @@ export async function renameWork(
   if (creatorId === renamedCreatorId && workId === renamedWorkId) {
     throw new BadRequestError(ERROR_MESSAGE_RENAME_TO_SAME);
   }
-  const work = await findWorkOrThrow(creatorId, workId, userId);
+  const work = await findOwnWorkOrThrow(creatorId, workId, userId);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
   const renamedWorks = await WorkModel.find({
