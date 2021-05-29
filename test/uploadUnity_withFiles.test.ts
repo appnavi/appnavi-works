@@ -656,4 +656,108 @@ describe("Unity作品のバックアップ", () => {
         .then(done);
     });
   });
+  describe("バックアップ削除", () => {
+    it("作者IDが設定されていないとバックアップを削除できない", (done) => {
+      request(app)
+        .post("/account/backup/delete")
+        .type("form")
+        .field("workId", workId)
+        .field("backupName", "1")
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+        .end(done);
+    });
+    it("作者IDが不適切だとバックアップを削除できない", (done) => {
+      request(app)
+        .post("/account/backup/delete")
+        .type("form")
+        .field("creatorId", INVALID_ID)
+        .field("workId", workId)
+        .field("backupName", "1")
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+        .end(done);
+    });
+    it("作品IDが設定されていないとバックアップを削除できない", (done) => {
+      request(app)
+        .post("/account/backup/delete")
+        .type("form")
+        .field("creatorId", creatorId)
+        .field("backupName", "1")
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+        .end(done);
+    });
+    it("作品IDが不適切だとバックアップを削除できない", (done) => {
+      request(app)
+        .post("/account/backup/delete")
+        .type("form")
+        .field("creatorId", creatorId)
+        .field("workId", INVALID_ID)
+        .field("backupName", "1")
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+        .end(done);
+    });
+    it("バックアップ名が設定されていないとバックアップを削除できない", (done) => {
+      request(app)
+        .post("/account/backup/delete")
+        .type("form")
+        .field("creatorId", creatorId)
+        .field("workId", workId)
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [BACKUP_NAME_REQUIRED] }))
+        .end(done);
+    });
+    it("バックアップ名が不適切だとバックアップを削除できない", (done) => {
+      request(app)
+        .post("/account/backup/delete")
+        .type("form")
+        .field("creatorId", creatorId)
+        .field("workId", workId)
+        .field("backupName", INVALID_ID)
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [BACKUP_NAME_INVALID] }))
+        .end(done);
+    });
+    it("条件を満たしているとバックアップを削除できる", (done) => {
+      testSuccessfulUploadTwice()
+        .then(
+          () =>
+            new Promise<void>((resolve) => {
+              request(app)
+                .post("/account/backup/delete")
+                .type("form")
+                .field("creatorId", creatorId)
+                .field("workId", workId)
+                .field("backupName", "1")
+                .expect(STATUS_CODE_SUCCESS)
+                .end((err) => {
+                  expect(err).toBeNull();
+                  resolve();
+                });
+            })
+        )
+        .then(() => expectStorageSizeSameToActualSize(0))
+        .then(expectUploadedFilesExists)
+        .then(async () => {
+          mockFiles.forEach(async (mockFile) => {
+            const exists = await fsExtra.pathExists(
+              path.join(
+                DIRECTORY_NAME_BACKUPS,
+                DIRECTORY_NAME_UPLOADS,
+                creatorId,
+                workId,
+                "1",
+                mockFile.fieldname,
+                mockFile.subfoldername,
+                mockFile.filename
+              )
+            );
+            expect(exists).toBe(false);
+          });
+        })
+        .then(done);
+    });
+  });
 });
