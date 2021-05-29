@@ -74,7 +74,7 @@ accountRouter.post(
       },
       { upsert: true }
     );
-    res.send(STATUS_CODE_SUCCESS).end();
+    res.status(STATUS_CODE_SUCCESS).end();
   })
 );
 const backupNameSchema = yup
