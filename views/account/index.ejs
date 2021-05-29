@@ -28,7 +28,7 @@
         </form>
       </div>
       <div class="section">
-        <h3 class="header">作品＆バックアップ一覧</h3>
+        <h3 class="header">作品一覧</h3>
         <% works.forEach(work=> { %> 
           <div class="section">
             <h4><%- work.creatorId %>/<%- work.workId %></h4>
@@ -46,48 +46,45 @@
             <a class="waves-effect waves-light btn red deleteWorkButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>">
               <i class="material-icons left">delete</i>作品の削除
             </a>
-            <ul class="collection with-header">
-              <div class="collection-header">
-                <h5>バックアップ</h5>
-              </div>
-              <% work.backups.forEach(backup =>{ %> 
-                <li class="collection-item valign-wrapper">
-                  <div class="row valign-wrapper" style="width: 100%; margin-bottom:0;">
-                    <div class="col s1">
-                      <%- backup.name %>
+            <% if(work.backups.length > 0){ %> 
+              <ul class="collection with-header">
+                <div class="collection-header">
+                  <h5>バックアップ</h5>
+                </div>
+                <% work.backups.forEach(backup =>{ %> 
+                  <li class="collection-item valign-wrapper">
+                    <div class="row valign-wrapper" style="width: 100%; margin-bottom:0;">
+                      <div class="col s1">
+                        <%- backup.name %>
+                      </div>
+                      <div class="col s3">
+                        <%- backup.fileSize %>バイト
+                      </div>
+                      <div class="col s4">
+                        <%- backup.uploadedAt.getFullYear() %>年
+                        <%- backup.uploadedAt.getMonth() + 1 %>月
+                        <%- backup.uploadedAt.getDate() %>日
+                        <%- backup.uploadedAt.getHours() %>時
+                        <%- backup.uploadedAt.getMinutes() %>分
+                        <%- backup.uploadedAt.getSeconds() %>秒
+                        アップロード
+                      </div>
+                      <div class="col s4 right-align">
+                        <a class="waves-effect waves-light btn restoreBackupButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
+                          <i class="material-icons left">restore</i>復元
+                        </a>
+                        <a class="waves-effect waves-light btn red deleteBackupButton"  data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
+                          <i class="material-icons left">delete_forever</i>削除
+                        </a>
+                      </div>      
                     </div>
-                    <div class="col s3">
-                      <%- backup.fileSize %>バイト
-                    </div>
-                    <div class="col s4">
-                      <%- backup.uploadedAt.getFullYear() %>年
-                      <%- backup.uploadedAt.getMonth() + 1 %>月
-                      <%- backup.uploadedAt.getDate() %>日
-                      <%- backup.uploadedAt.getHours() %>時
-                      <%- backup.uploadedAt.getMinutes() %>分
-                      <%- backup.uploadedAt.getSeconds() %>秒
-                      アップロード
-                    </div>
-                    <div class="col s4 right-align">
-                      <a class="waves-effect waves-light btn restoreBackupButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
-                        <i class="material-icons left">restore</i>復元
-                      </a>
-                      <a class="waves-effect waves-light btn red deleteBackupButton"  data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
-                        <i class="material-icons left">delete_forever</i>削除
-                      </a>
-                    </div>      
-                  </div>
-                </li>
-              <% }) %> 
-              <% if(work.backups.length == 0){ %> 
-                <li class="collection-item">
-                  バックアップはありません。
-                </li>
-              <% } %> 
-            </ul>
+                  </li>
+                <% }) %> 
+              </ul>
+            <% } %> 
           </div>
-          <div class="divider"></div>
         <% }) %> 
+        <div class="divider"></div>
       </div>
     </div>
   </main>
