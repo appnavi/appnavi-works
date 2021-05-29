@@ -127,7 +127,6 @@ accountRouter.post(
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );
-//TODO：作品の作者名・作品名リネーム機能（データベースの情報書き換え＆ファイル移動）(パス："/work/rename")
 const renameWorkSchema = yup.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
