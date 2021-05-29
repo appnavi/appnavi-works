@@ -17,12 +17,7 @@
             <div>デフォルトの作者ID：<%- user.defaultCreatorId ?? "未設定" %> </div>
             <div>
               最終ログイン：
-              <%- user.lastLogIn.getFullYear() %>年
-              <%- user.lastLogIn.getMonth() + 1 %>月
-              <%- user.lastLogIn.getDate() %>日
-              <%- user.lastLogIn.getHours() %>時
-              <%- user.lastLogIn.getMinutes() %>分
-              <%- user.lastLogIn.getSeconds() %>秒 
+              <%- include ("common/format-date", {date: user.lastLogIn}) %> 
             </div>
             <% if (user.works.length > 0) { %> 
               <ul class="collection with-header">

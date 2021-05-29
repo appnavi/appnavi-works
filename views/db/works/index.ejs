@@ -15,12 +15,7 @@
           <div>所有者のSlackユーザーID：<%- work.owner %> </div>
           <div>ファイルサイズ：<%- work.fileSize %>バイト</div>
           <div>
-            <%- work.uploadedAt.getFullYear() %>年
-            <%- work.uploadedAt.getMonth() + 1 %>月
-            <%- work.uploadedAt.getDate() %>日
-            <%- work.uploadedAt.getHours() %>時
-            <%- work.uploadedAt.getMinutes() %>分
-            <%- work.uploadedAt.getSeconds() %>秒
+            <%- include ("common/format-date", {date: work.uploadedAt}) %> 
             アップロード
           </div>
         </div>
