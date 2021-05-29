@@ -217,7 +217,7 @@ function renameWork(
   data.append("renamedWorkId", renamedWorkId);
   const request = new XMLHttpRequest();
   request.open("POST", "/account/work/rename", true);
-  request.addEventListener("load", function (ev) {
+  request.addEventListener("load", function () {
     const title =
       request.status === 200 ? "編集に成功しました" : "編集に失敗しました";
     const content = document.createElement("div");
@@ -245,7 +245,7 @@ function deleteWork(creatorId: string, workId: string) {
   data.append("workId", workId);
   const request = new XMLHttpRequest();
   request.open("POST", "/account/work/delete", true);
-  request.addEventListener("load", function (ev) {
+  request.addEventListener("load", function () {
     const title =
       request.status === 200 ? "削除しました" : "削除に失敗しました";
     const content = document.createElement("div");
