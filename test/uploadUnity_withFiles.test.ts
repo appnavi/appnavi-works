@@ -152,7 +152,12 @@ import { app } from "../src/app";
 
 import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
-import { clearData, connectDatabase, ensureUploadFoldersExist } from "./common";
+import {
+  clearData,
+  connectDatabase,
+  ensureUploadFoldersExist,
+  INVALID_ID,
+} from "./common";
 import path from "path";
 import { WorkModel } from "../src/models/database";
 import { calculateCurrentStorageSizeBytes } from "../src/services/works";
@@ -217,7 +222,7 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
     it("作者IDが不適切だとアップロードできない", (done) => {
       request(app)
         .post("/upload/unity")
-        .set(HEADER_CREATOR_ID, encodeURI("テスト"))
+        .set(HEADER_CREATOR_ID, encodeURI(INVALID_ID))
         .set(HEADER_WORK_ID, workId)
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
@@ -235,7 +240,7 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, encodeURI("テスト"))
+        .set(HEADER_WORK_ID, encodeURI(INVALID_ID))
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
         .end(done);
@@ -370,7 +375,7 @@ describe("Unity作品のリネーム", () => {
         request(app)
           .post("/account/work/rename")
           .type("form")
-          .field("creatorId", "テスト")
+          .field("creatorId", INVALID_ID)
           .field("workId", workId)
           .field("renamedCreatorId", creatorId + "-2")
           .field("renamedWorkId", workId + "-2")
@@ -416,7 +421,7 @@ describe("Unity作品のリネーム", () => {
           .post("/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
-          .field("workId", "テスト")
+          .field("workId", INVALID_ID)
           .field("renamedCreatorId", creatorId + "-2")
           .field("renamedWorkId", workId + "-2")
           .expect(STATUS_CODE_BAD_REQUEST)
@@ -462,7 +467,7 @@ describe("Unity作品のリネーム", () => {
           .type("form")
           .field("creatorId", creatorId + "-2")
           .field("workId", workId)
-          .field("renamedCreatorId", "テスト")
+          .field("renamedCreatorId", INVALID_ID)
           .field("renamedWorkId", workId + "-2")
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
@@ -508,7 +513,7 @@ describe("Unity作品のリネーム", () => {
           .field("creatorId", creatorId)
           .field("workId", workId + "-2")
           .field("renamedCreatorId", creatorId + "-2")
-          .field("renamedWorkId", "テスト")
+          .field("renamedWorkId", INVALID_ID)
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
           .end(done);

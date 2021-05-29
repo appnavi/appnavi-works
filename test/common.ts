@@ -6,6 +6,8 @@ import {
 import fs from "fs-extra";
 import path from "path";
 
+export const INVALID_ID = "テスト";
+
 export async function ensureUploadFoldersExist() {
   await fs.rm(path.resolve(DIRECTORY_NAME_UPLOADS), {
     recursive: true,

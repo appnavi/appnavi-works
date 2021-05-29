@@ -15,7 +15,12 @@ import {
 } from "../src/utils/constants";
 import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
-import { clearData, connectDatabase, ensureUploadFoldersExist } from "./common";
+import {
+  clearData,
+  connectDatabase,
+  ensureUploadFoldersExist,
+  INVALID_ID,
+} from "./common";
 import { WorkModel } from "../src/models/database";
 
 const creatorId = "creator-3";
@@ -47,7 +52,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
     it("作者IDが不適切だとアップロードできない", (done) => {
       request(app)
         .post("/upload/unity")
-        .set(HEADER_CREATOR_ID, encodeURI("テスト"))
+        .set(HEADER_CREATOR_ID, encodeURI(INVALID_ID))
         .set(HEADER_WORK_ID, workId)
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
@@ -65,7 +70,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, encodeURI("テスト"))
+        .set(HEADER_WORK_ID, encodeURI(INVALID_ID))
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
         .end(done);
