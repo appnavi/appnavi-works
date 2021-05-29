@@ -34,7 +34,7 @@ function login(app: Express, userId: string): void {
       image_default: "test_team_image_default",
     },
     provider: "test_provider",
-    id: "test_id",
+    id: userId,
     displayName: "test_display_name",
   });
 }
