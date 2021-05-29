@@ -434,6 +434,18 @@ describe("Unity作品のリネーム", () => {
       .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
       .end(done);
   });
+  it("リネーム前とリネーム後が同じだとはリネームできない", (done) => {
+    request(app)
+      .post("/account/work/rename")
+      .type("form")
+      .field("creatorId", creatorId)
+      .field("workId", workId)
+      .field("renamedCreatorId", creatorId)
+      .field("renamedWorkId", workId)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_SAME] }))
+      .end(done);
+  });
   it("存在しない作品はリネームできない", (done) => {
     request(app)
       .post("/account/work/rename")
@@ -471,18 +483,6 @@ describe("Unity作品のリネーム", () => {
           .expect(JSON.stringify({ errors: [WORK_DIFFERENT_OWNER] }))
           .end(done);
       });
-  });
-  it("リネーム前とリネーム後が同じだとはリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", workId)
-      .field("renamedCreatorId", creatorId)
-      .field("renamedWorkId", workId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_SAME] }))
-      .end(done);
   });
   it("既に存在する作品を上書きするようなリネームはできない", (done) => {
     testSuccessfulUpload()
