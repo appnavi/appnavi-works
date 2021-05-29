@@ -206,11 +206,11 @@ export async function renameWork(
     renamedWorkId
   );
   const renamedPath = path.resolve(renamedDir);
-  await fsExtra.emptydir(path.resolve(renamedPath, ".."));
+  await fsExtra.ensureDir(path.resolve(renamedPath, ".."));
   await fsExtra.move(path.resolve(workDir), renamedPath);
   if (await fsExtra.pathExists(backupPath)) {
     const renamedBackupPath = path.resolve(DIRECTORY_NAME_BACKUPS, renamedDir);
-    await fsExtra.emptydir(path.resolve(renamedBackupPath, ".."));
+    await fsExtra.ensureDir(path.resolve(renamedBackupPath, ".."));
     await fsExtra.move(backupPath, renamedBackupPath);
   }
   work.creatorId = renamedCreatorId;
