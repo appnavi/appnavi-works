@@ -249,6 +249,16 @@ describe("Unity作品関連(非ログイン時)", () => {
       .post("/account/work/rename")
       .expect(STATUS_CODE_UNAUTHORIZED, done);
   });
+  it("非ログイン時にはバックアップを復元できない", (done) => {
+    request(app)
+      .post("/account/backup/restore")
+      .expect(STATUS_CODE_UNAUTHORIZED, done);
+  });
+  it("非ログイン時にはバックアップを削除できない", (done) => {
+    request(app)
+      .post("/account/backup/delete")
+      .expect(STATUS_CODE_UNAUTHORIZED, done);
+  });
 });
 describe("Unity作品のアップロード（ファイルあり）", () => {
   beforeAll(async () => {
