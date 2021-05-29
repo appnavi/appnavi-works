@@ -50,7 +50,7 @@ async function findWorkOrThrow(
       return work;
     }
     default:
-      throw new BadRequestError(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
+      throw new Error(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
   }
 }
 
@@ -75,7 +75,7 @@ export async function findOrCreateWork(
     case 1:
       return works[0];
     default:
-      throw new Error("同じ作品が複数登録されています");
+      throw new Error(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
   }
 }
 
