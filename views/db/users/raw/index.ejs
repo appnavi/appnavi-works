@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <title>ユーザー一覧</title>
+  <title>データベースの内容（ユーザー一覧）</title>
   <%- include('common/head') %> 
 </head>
 <body>
   <%- include('common/navbar') %> 
   <main class="container">
-    <h3 class="header">ユーザー一覧</h3>
+    <h3 class="header">データベースの内容（ユーザー一覧）</h3>
     <div class="card">
       <div class="card-content">
         <pre><%- (typeof users !== "undefined") ? JSON.stringify(users, null, 2) : "" %></pre>

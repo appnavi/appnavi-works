@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <title>作品一覧</title>
+  <title>データベースの内容（作品一覧）</title>
   <%- include('common/head') %> 
 </head>
 <body>
   <%- include('common/navbar') %> 
   <main class="container">
-    <h3 class="header">作品一覧</h3>
+    <h3 class="header">データベースの内容（作品一覧）</h3>
     <div class="card">
       <div class="card-content">
         <pre><%- (typeof works !== "undefined") ? JSON.stringify(works, null, 2) : "" %></pre>
