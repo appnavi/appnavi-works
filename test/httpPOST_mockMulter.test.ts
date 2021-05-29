@@ -241,332 +241,225 @@ async function testSuccessfulUploadTwice(): Promise<void> {
       .then(resolve);
   });
 }
-describe("Unity作品関連(非ログイン時)", () => {
+describe("POST（MulterのMockあり）", () => {
   beforeAll(async () => {
     await connectDatabase("2");
     await ensureUploadFoldersExist();
-  });
-  it("非ログイン時にはアップロードができない", (done) => {
-    request(app).post("/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
-  });
-  it("非ログイン時にはリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .expect(STATUS_CODE_UNAUTHORIZED, done);
-  });
-  it("非ログイン時には削除できない", (done) => {
-    request(app)
-      .post("/account/work/delete")
-      .expect(STATUS_CODE_UNAUTHORIZED, done);
-  });
-  it("非ログイン時にはバックアップを復元できない", (done) => {
-    request(app)
-      .post("/account/backup/restore")
-      .expect(STATUS_CODE_UNAUTHORIZED, done);
-  });
-  it("非ログイン時にはバックアップを削除できない", (done) => {
-    request(app)
-      .post("/account/backup/delete")
-      .expect(STATUS_CODE_UNAUTHORIZED, done);
-  });
-});
-describe("Unity作品のアップロード（ファイルあり）", () => {
-  beforeAll(async () => {
-    await connectDatabase("2");
-    await ensureUploadFoldersExist();
-    login(app, myId);
   });
   afterEach(async () => {
     await clearData(creatorId, workId);
   });
-  afterAll(() => logout(app));
-  it("作者IDが設定されていないとアップロードできない", (done) => {
-    request(app)
-      .post("/upload/unity")
-      .set(HEADER_WORK_ID, workId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-      .end(done);
-  });
-  it("作者IDが不適切だとアップロードできない", (done) => {
-    request(app)
-      .post("/upload/unity")
-      .set(HEADER_CREATOR_ID, encodeURI(INVALID_ID))
-      .set(HEADER_WORK_ID, workId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-      .end(done);
-  });
-  it("作品IDが設定されていないとアップロードできない", (done) => {
-    request(app)
-      .post("/upload/unity")
-      .set(HEADER_CREATOR_ID, creatorId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-      .end(done);
-  });
-  it("作品IDが不適切だとアップロードできない", (done) => {
-    request(app)
-      .post("/upload/unity")
-      .set(HEADER_CREATOR_ID, creatorId)
-      .set(HEADER_WORK_ID, encodeURI(INVALID_ID))
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-      .end(done);
-  });
-  it("別人の投稿した作品は上書きアップロードできない", (done) => {
-    WorkModel.create({
-      creatorId: creatorId,
-      workId: workId,
-      owner: theirId,
-      fileSize: 100,
-    }).then(() => {
+  describe("非ログイン時", () => {
+    it("非ログイン時にはアップロードができない", (done) => {
+      request(app).post("/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
+    });
+    it("非ログイン時にはリネームできない", (done) => {
       request(app)
-        .post("/upload/unity")
-        .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, workId)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [DIFFERENT_USER] }))
-        .end(done);
+        .post("/account/work/rename")
+        .expect(STATUS_CODE_UNAUTHORIZED, done);
+    });
+    it("非ログイン時には削除できない", (done) => {
+      request(app)
+        .post("/account/work/delete")
+        .expect(STATUS_CODE_UNAUTHORIZED, done);
+    });
+    it("非ログイン時にはバックアップを復元できない", (done) => {
+      request(app)
+        .post("/account/backup/restore")
+        .expect(STATUS_CODE_UNAUTHORIZED, done);
+    });
+    it("非ログイン時にはバックアップを削除できない", (done) => {
+      request(app)
+        .post("/account/backup/delete")
+        .expect(STATUS_CODE_UNAUTHORIZED, done);
     });
   });
-  it("ストレージ容量の上限を上回っている場合はアップロードできない", (done) => {
-    WorkModel.create({
-      creatorId: "large-work-creator",
-      workId: "large-work",
-      owner: theirId,
-      fileSize: getEnvNumber("WORK_STORAGE_SIZE_BYTES"),
-    }).then(() => {
-      request(app)
-        .post("/upload/unity")
-        .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, workId)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [STORAGE_FULL] }))
-        .end(done);
-    });
-  });
-  it("条件を満たしていればアップロードできる", (done) => {
-    testSuccessfulUpload()
-      .then(() => expectStorageSizeSameToActualSize(0))
-      .then(done);
-  });
-  it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
-    testSuccessfulUploadTwice().then(done);
-  });
-});
-describe("Unity作品のリネーム", () => {
-  beforeAll(async () => {
-    await connectDatabase("2");
-    await ensureUploadFoldersExist();
-    login(app, myId);
-  });
-  afterEach(async () => {
-    await clearData(creatorId, workId);
-  });
-  afterAll(() => logout(app));
-  it("作者IDが設定されていないとリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("workId", workId)
-      .field("renamedCreatorId", creatorId + "-2")
-      .field("renamedWorkId", workId + "-2")
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-      .end(done);
-  });
-  it("作者IDが不適切だとリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", INVALID_ID)
-      .field("workId", workId)
-      .field("renamedCreatorId", creatorId + "-2")
-      .field("renamedWorkId", workId + "-2")
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-      .end(done);
-  });
-  it("作品IDが設定されていないとリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("renamedCreatorId", creatorId + "-2")
-      .field("renamedWorkId", workId + "-2")
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-      .end(done);
-  });
-  it("作品IDが不適切だとリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", INVALID_ID)
-      .field("renamedCreatorId", creatorId + "-2")
-      .field("renamedWorkId", workId + "-2")
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-      .end(done);
-  });
-  it("リネーム後の作者IDが設定されていないとリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", workId)
-      .field("renamedWorkId", workId + "-2")
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-      .end(done);
-  });
-  it("リネーム後の作者IDが不適切だとリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId + "-2")
-      .field("workId", workId)
-      .field("renamedCreatorId", INVALID_ID)
-      .field("renamedWorkId", workId + "-2")
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-      .end(done);
-  });
-  it("リネーム後の作品IDが設定されていないとリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", workId)
-      .field("renamedCreatorId", creatorId + "-2")
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-      .end(done);
-  });
-  it("リネーム後の作品IDが不適切だとリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", workId + "-2")
-      .field("renamedCreatorId", creatorId + "-2")
-      .field("renamedWorkId", INVALID_ID)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-      .end(done);
-  });
-  it("リネーム前とリネーム後が同じだとはリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", workId)
-      .field("renamedCreatorId", creatorId)
-      .field("renamedWorkId", workId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_SAME] }))
-      .end(done);
-  });
-  it("存在しない作品はリネームできない", (done) => {
-    request(app)
-      .post("/account/work/rename")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", workId)
-      .field("renamedCreatorId", creatorId + "-2")
-      .field("renamedWorkId", workId + "-2")
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_NOT_FOUND] }))
-      .end(done);
-  });
-  it("別人の投稿した作品はリネームできない", (done) => {
-    testSuccessfulUpload()
-      .then(() => expectStorageSizeSameToActualSize(0))
-      .then(async () => {
-        const works = await WorkModel.find({
+  describe("ログイン時", () => {
+    beforeAll(() => login(app, myId));
+    afterAll(() => logout(app));
+
+    describe("Unity作品のアップロード（ファイルあり）", () => {
+      it("作者IDが設定されていないとアップロードできない", (done) => {
+        request(app)
+          .post("/upload/unity")
+          .set(HEADER_WORK_ID, workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+          .end(done);
+      });
+      it("作者IDが不適切だとアップロードできない", (done) => {
+        request(app)
+          .post("/upload/unity")
+          .set(HEADER_CREATOR_ID, encodeURI(INVALID_ID))
+          .set(HEADER_WORK_ID, workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+          .end(done);
+      });
+      it("作品IDが設定されていないとアップロードできない", (done) => {
+        request(app)
+          .post("/upload/unity")
+          .set(HEADER_CREATOR_ID, creatorId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+          .end(done);
+      });
+      it("作品IDが不適切だとアップロードできない", (done) => {
+        request(app)
+          .post("/upload/unity")
+          .set(HEADER_CREATOR_ID, creatorId)
+          .set(HEADER_WORK_ID, encodeURI(INVALID_ID))
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+          .end(done);
+      });
+      it("別人の投稿した作品は上書きアップロードできない", (done) => {
+        WorkModel.create({
           creatorId: creatorId,
           workId: workId,
+          owner: theirId,
+          fileSize: 100,
+        }).then(() => {
+          request(app)
+            .post("/upload/unity")
+            .set(HEADER_CREATOR_ID, creatorId)
+            .set(HEADER_WORK_ID, workId)
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [DIFFERENT_USER] }))
+            .end(done);
         });
-        expect(works.length).toBe(1);
-        const work = works[0];
-        work.owner = theirId;
-        work.save();
-      })
-      .then(() => {
+      });
+      it("ストレージ容量の上限を上回っている場合はアップロードできない", (done) => {
+        WorkModel.create({
+          creatorId: "large-work-creator",
+          workId: "large-work",
+          owner: theirId,
+          fileSize: getEnvNumber("WORK_STORAGE_SIZE_BYTES"),
+        }).then(() => {
+          request(app)
+            .post("/upload/unity")
+            .set(HEADER_CREATOR_ID, creatorId)
+            .set(HEADER_WORK_ID, workId)
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [STORAGE_FULL] }))
+            .end(done);
+        });
+      });
+      it("条件を満たしていればアップロードできる", (done) => {
+        testSuccessfulUpload()
+          .then(() => expectStorageSizeSameToActualSize(0))
+          .then(done);
+      });
+      it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
+        testSuccessfulUploadTwice().then(done);
+      });
+    });
+    describe("Unity作品のリネーム", () => {
+      it("作者IDが設定されていないとリネームできない", (done) => {
         request(app)
           .post("/account/work/rename")
           .type("form")
-          .field("creatorId", creatorId)
           .field("workId", workId)
           .field("renamedCreatorId", creatorId + "-2")
           .field("renamedWorkId", workId + "-2")
           .expect(STATUS_CODE_BAD_REQUEST)
-          .expect(JSON.stringify({ errors: [WORK_DIFFERENT_OWNER] }))
+          .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
           .end(done);
       });
-  });
-  it("既に存在する作品を上書きするようなリネームはできない", (done) => {
-    testSuccessfulUpload()
-      .then(() => expectStorageSizeSameToActualSize(0))
-      .then(() =>
-        WorkModel.create({
-          creatorId: creatorId + "2",
-          workId: workId + "2",
-          owner: theirId,
-          fileSize: 100,
-        })
-      )
-      .then(() => {
+      it("作者IDが不適切だとリネームできない", (done) => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", INVALID_ID)
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+          .end(done);
+      });
+      it("作品IDが設定されていないとリネームできない", (done) => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+          .end(done);
+      });
+      it("作品IDが不適切だとリネームできない", (done) => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", INVALID_ID)
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+          .end(done);
+      });
+      it("リネーム後の作者IDが設定されていないとリネームできない", (done) => {
         request(app)
           .post("/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
-          .field("renamedCreatorId", creatorId + "2")
-          .field("renamedWorkId", workId + "2")
+          .field("renamedWorkId", workId + "-2")
           .expect(STATUS_CODE_BAD_REQUEST)
-          .expect(
-            JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_EXISTING] })
-          )
+          .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
           .end(done);
       });
-  });
-  it("条件を満たしていれば作者IDのリネームに成功する", (done) => {
-    testSuccessfulUpload()
-      .then(() => expectStorageSizeSameToActualSize(0))
-      .then(() => {
+      it("リネーム後の作者IDが不適切だとリネームできない", (done) => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId + "-2")
+          .field("workId", workId)
+          .field("renamedCreatorId", INVALID_ID)
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+          .end(done);
+      });
+      it("リネーム後の作品IDが設定されていないとリネームできない", (done) => {
         request(app)
           .post("/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
           .field("renamedCreatorId", creatorId + "-2")
-          .field("renamedWorkId", workId)
-          .expect(STATUS_CODE_SUCCESS)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
           .end(done);
       });
-  });
-  it("条件を満たしていれば作品IDのリネームに成功する", (done) => {
-    testSuccessfulUpload()
-      .then(() => expectStorageSizeSameToActualSize(0))
-      .then(() => {
+      it("リネーム後の作品IDが不適切だとリネームできない", (done) => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId + "-2")
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", INVALID_ID)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+          .end(done);
+      });
+      it("リネーム前とリネーム後が同じだとはリネームできない", (done) => {
         request(app)
           .post("/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
           .field("renamedCreatorId", creatorId)
-          .field("renamedWorkId", workId + "-2")
-          .expect(STATUS_CODE_SUCCESS)
+          .field("renamedWorkId", workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_SAME] }))
           .end(done);
       });
-  });
-  it("条件を満たしていれば作者IDと作品ID両方のリネームに成功する", (done) => {
-    testSuccessfulUpload()
-      .then(() => expectStorageSizeSameToActualSize(0))
-      .then(() => {
+      it("存在しない作品はリネームできない", (done) => {
         request(app)
           .post("/account/work/rename")
           .type("form")
@@ -574,321 +467,403 @@ describe("Unity作品のリネーム", () => {
           .field("workId", workId)
           .field("renamedCreatorId", creatorId + "-2")
           .field("renamedWorkId", workId + "-2")
-          .expect(STATUS_CODE_SUCCESS)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_NOT_FOUND] }))
           .end(done);
       });
-  });
-});
-describe("Unity作品の削除", () => {
-  beforeAll(async () => {
-    await connectDatabase("2");
-    await ensureUploadFoldersExist();
-    login(app, myId);
-  });
-  afterEach(async () => {
-    await clearData(creatorId, workId);
-  });
-  afterAll(() => logout(app));
-  it("作者IDが設定されていないと削除できない", (done) => {
-    request(app)
-      .post("/account/work/delete")
-      .type("form")
-      .field("workId", workId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-      .end(done);
-  });
-  it("作者IDが不適切だと削除できない", (done) => {
-    request(app)
-      .post("/account/work/delete")
-      .type("form")
-      .field("creatorId", INVALID_ID)
-      .field("workId", workId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-      .end(done);
-  });
-  it("作品IDが設定されていないと削除できない", (done) => {
-    request(app)
-      .post("/account/work/delete")
-      .type("form")
-      .field("creatorId", creatorId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-      .end(done);
-  });
-  it("作品IDが不適切だと削除できない", (done) => {
-    request(app)
-      .post("/account/work/delete")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", INVALID_ID)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-      .end(done);
-  });
-  it("存在しない作品は削除できない", (done) => {
-    request(app)
-      .post("/account/work/delete")
-      .type("form")
-      .field("creatorId", creatorId)
-      .field("workId", workId)
-      .expect(STATUS_CODE_BAD_REQUEST)
-      .expect(JSON.stringify({ errors: [WORK_NOT_FOUND] }))
-      .end(done);
-  });
-  it("別人の投稿した作品は削除できない", (done) => {
-    testSuccessfulUpload()
-      .then(() => expectStorageSizeSameToActualSize(0))
-      .then(async () => {
-        const works = await WorkModel.find({
-          creatorId: creatorId,
-          workId: workId,
-        });
-        expect(works.length).toBe(1);
-        const work = works[0];
-        work.owner = theirId;
-        work.save();
-      })
-      .then(() => {
+      it("別人の投稿した作品はリネームできない", (done) => {
+        testSuccessfulUpload()
+          .then(() => expectStorageSizeSameToActualSize(0))
+          .then(async () => {
+            const works = await WorkModel.find({
+              creatorId: creatorId,
+              workId: workId,
+            });
+            expect(works.length).toBe(1);
+            const work = works[0];
+            work.owner = theirId;
+            work.save();
+          })
+          .then(() => {
+            request(app)
+              .post("/account/work/rename")
+              .type("form")
+              .field("creatorId", creatorId)
+              .field("workId", workId)
+              .field("renamedCreatorId", creatorId + "-2")
+              .field("renamedWorkId", workId + "-2")
+              .expect(STATUS_CODE_BAD_REQUEST)
+              .expect(JSON.stringify({ errors: [WORK_DIFFERENT_OWNER] }))
+              .end(done);
+          });
+      });
+      it("既に存在する作品を上書きするようなリネームはできない", (done) => {
+        testSuccessfulUpload()
+          .then(() => expectStorageSizeSameToActualSize(0))
+          .then(() =>
+            WorkModel.create({
+              creatorId: creatorId + "2",
+              workId: workId + "2",
+              owner: theirId,
+              fileSize: 100,
+            })
+          )
+          .then(() => {
+            request(app)
+              .post("/account/work/rename")
+              .type("form")
+              .field("creatorId", creatorId)
+              .field("workId", workId)
+              .field("renamedCreatorId", creatorId + "2")
+              .field("renamedWorkId", workId + "2")
+              .expect(STATUS_CODE_BAD_REQUEST)
+              .expect(
+                JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_EXISTING] })
+              )
+              .end(done);
+          });
+      });
+      it("条件を満たしていれば作者IDのリネームに成功する", (done) => {
+        testSuccessfulUpload()
+          .then(() => expectStorageSizeSameToActualSize(0))
+          .then(() => {
+            request(app)
+              .post("/account/work/rename")
+              .type("form")
+              .field("creatorId", creatorId)
+              .field("workId", workId)
+              .field("renamedCreatorId", creatorId + "-2")
+              .field("renamedWorkId", workId)
+              .expect(STATUS_CODE_SUCCESS)
+              .end(done);
+          });
+      });
+      it("条件を満たしていれば作品IDのリネームに成功する", (done) => {
+        testSuccessfulUpload()
+          .then(() => expectStorageSizeSameToActualSize(0))
+          .then(() => {
+            request(app)
+              .post("/account/work/rename")
+              .type("form")
+              .field("creatorId", creatorId)
+              .field("workId", workId)
+              .field("renamedCreatorId", creatorId)
+              .field("renamedWorkId", workId + "-2")
+              .expect(STATUS_CODE_SUCCESS)
+              .end(done);
+          });
+      });
+      it("条件を満たしていれば作者IDと作品ID両方のリネームに成功する", (done) => {
+        testSuccessfulUpload()
+          .then(() => expectStorageSizeSameToActualSize(0))
+          .then(() => {
+            request(app)
+              .post("/account/work/rename")
+              .type("form")
+              .field("creatorId", creatorId)
+              .field("workId", workId)
+              .field("renamedCreatorId", creatorId + "-2")
+              .field("renamedWorkId", workId + "-2")
+              .expect(STATUS_CODE_SUCCESS)
+              .end(done);
+          });
+      });
+    });
+    describe("Unity作品の削除", () => {
+      it("作者IDが設定されていないと削除できない", (done) => {
+        request(app)
+          .post("/account/work/delete")
+          .type("form")
+          .field("workId", workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+          .end(done);
+      });
+      it("作者IDが不適切だと削除できない", (done) => {
+        request(app)
+          .post("/account/work/delete")
+          .type("form")
+          .field("creatorId", INVALID_ID)
+          .field("workId", workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+          .end(done);
+      });
+      it("作品IDが設定されていないと削除できない", (done) => {
+        request(app)
+          .post("/account/work/delete")
+          .type("form")
+          .field("creatorId", creatorId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+          .end(done);
+      });
+      it("作品IDが不適切だと削除できない", (done) => {
+        request(app)
+          .post("/account/work/delete")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", INVALID_ID)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+          .end(done);
+      });
+      it("存在しない作品は削除できない", (done) => {
         request(app)
           .post("/account/work/delete")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
           .expect(STATUS_CODE_BAD_REQUEST)
-          .expect(JSON.stringify({ errors: [WORK_DIFFERENT_OWNER] }))
+          .expect(JSON.stringify({ errors: [WORK_NOT_FOUND] }))
           .end(done);
       });
-  });
-  it("条件を満たしていれば作品の削除に成功する", (done) => {
-    testSuccessfulUpload()
-      .then(() => expectStorageSizeSameToActualSize(0))
-      .then(
-        () =>
-          new Promise<void>((resolve) => {
+      it("別人の投稿した作品は削除できない", (done) => {
+        testSuccessfulUpload()
+          .then(() => expectStorageSizeSameToActualSize(0))
+          .then(async () => {
+            const works = await WorkModel.find({
+              creatorId: creatorId,
+              workId: workId,
+            });
+            expect(works.length).toBe(1);
+            const work = works[0];
+            work.owner = theirId;
+            work.save();
+          })
+          .then(() => {
             request(app)
               .post("/account/work/delete")
               .type("form")
               .field("creatorId", creatorId)
               .field("workId", workId)
-              .expect(STATUS_CODE_SUCCESS)
-              .end(resolve);
+              .expect(STATUS_CODE_BAD_REQUEST)
+              .expect(JSON.stringify({ errors: [WORK_DIFFERENT_OWNER] }))
+              .end(done);
+          });
+      });
+      it("条件を満たしていれば作品の削除に成功する", (done) => {
+        testSuccessfulUpload()
+          .then(() => expectStorageSizeSameToActualSize(0))
+          .then(
+            () =>
+              new Promise<void>((resolve) => {
+                request(app)
+                  .post("/account/work/delete")
+                  .type("form")
+                  .field("creatorId", creatorId)
+                  .field("workId", workId)
+                  .expect(STATUS_CODE_SUCCESS)
+                  .end(resolve);
+              })
+          )
+          .then(async () => {
+            const storageSize = await calculateCurrentStorageSizeBytes();
+            expect(storageSize).toBe(0);
           })
-      )
-      .then(async () => {
-        const storageSize = await calculateCurrentStorageSizeBytes();
-        expect(storageSize).toBe(0);
-      })
-      .then(() => expectUploadedFilesExists(false))
-      .then(done);
-  });
-  it("条件を満たしていれば作品の削除に成功する（バックアップも削除される）", (done) => {
-    testSuccessfulUploadTwice()
-      .then(
-        () =>
-          new Promise<void>((resolve) => {
-            request(app)
-              .post("/account/work/delete")
-              .type("form")
-              .field("creatorId", creatorId)
-              .field("workId", workId)
-              .expect(STATUS_CODE_SUCCESS)
-              .end(resolve);
+          .then(() => expectUploadedFilesExists(false))
+          .then(done);
+      });
+      it("条件を満たしていれば作品の削除に成功する（バックアップも削除される）", (done) => {
+        testSuccessfulUploadTwice()
+          .then(
+            () =>
+              new Promise<void>((resolve) => {
+                request(app)
+                  .post("/account/work/delete")
+                  .type("form")
+                  .field("creatorId", creatorId)
+                  .field("workId", workId)
+                  .expect(STATUS_CODE_SUCCESS)
+                  .end(resolve);
+              })
+          )
+          .then(async () => {
+            const storageSize = await calculateCurrentStorageSizeBytes();
+            expect(storageSize).toBe(0);
           })
-      )
-      .then(async () => {
-        const storageSize = await calculateCurrentStorageSizeBytes();
-        expect(storageSize).toBe(0);
-      })
-      .then(() => expectUploadedFilesExists(false))
-      .then(() => expectBackupFilesExists("1", false))
-      .then(done);
-  });
-});
-describe("Unity作品のバックアップ", () => {
-  beforeAll(async () => {
-    await connectDatabase("2");
-    await ensureUploadFoldersExist();
-    login(app, myId);
-  });
-  afterEach(async () => {
-    await clearData(creatorId, workId);
-  });
-  describe("バックアップ復元", () => {
-    it("作者IDが設定されていないとバックアップを復元できない", (done) => {
-      request(app)
-        .post("/account/backup/restore")
-        .type("form")
-        .field("workId", workId)
-        .field("backupName", "1")
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-        .end(done);
+          .then(() => expectUploadedFilesExists(false))
+          .then(() => expectBackupFilesExists("1", false))
+          .then(done);
+      });
     });
-    it("作者IDが不適切だとバックアップを復元できない", (done) => {
-      request(app)
-        .post("/account/backup/restore")
-        .type("form")
-        .field("creatorId", INVALID_ID)
-        .field("workId", workId)
-        .field("backupName", "1")
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-        .end(done);
-    });
-    it("作品IDが設定されていないとバックアップを復元できない", (done) => {
-      request(app)
-        .post("/account/backup/restore")
-        .type("form")
-        .field("creatorId", creatorId)
-        .field("backupName", "1")
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-        .end(done);
-    });
-    it("作品IDが不適切だとバックアップを復元できない", (done) => {
-      request(app)
-        .post("/account/backup/restore")
-        .type("form")
-        .field("creatorId", creatorId)
-        .field("workId", INVALID_ID)
-        .field("backupName", "1")
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-        .end(done);
-    });
-    it("バックアップ名が設定されていないとバックアップを復元できない", (done) => {
-      request(app)
-        .post("/account/backup/restore")
-        .type("form")
-        .field("creatorId", creatorId)
-        .field("workId", workId)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [BACKUP_NAME_REQUIRED] }))
-        .end(done);
-    });
-    it("バックアップ名が不適切だとバックアップを復元できない", (done) => {
-      request(app)
-        .post("/account/backup/restore")
-        .type("form")
-        .field("creatorId", creatorId)
-        .field("workId", workId)
-        .field("backupName", INVALID_ID)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [BACKUP_NAME_INVALID] }))
-        .end(done);
-    });
-    it("条件を満たしているとバックアップを復元できる", (done) => {
-      testSuccessfulUploadTwice()
-        .then(
-          () =>
-            new Promise<void>((resolve) => {
-              request(app)
-                .post("/account/backup/restore")
-                .type("form")
-                .field("creatorId", creatorId)
-                .field("workId", workId)
-                .field("backupName", "1")
-                .expect(STATUS_CODE_SUCCESS)
-                .end((err) => {
-                  expect(err).toBeNull();
-                  resolve();
-                });
-            })
-        )
-        .then(() => expectStorageSizeSameToActualSize(1))
-        .then(() => expectUploadedFilesExists())
-        .then(() => expectBackupFilesExists("2"))
-        .then(done);
-    });
-  });
-  describe("バックアップ削除", () => {
-    it("作者IDが設定されていないとバックアップを削除できない", (done) => {
-      request(app)
-        .post("/account/backup/delete")
-        .type("form")
-        .field("workId", workId)
-        .field("backupName", "1")
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-        .end(done);
-    });
-    it("作者IDが不適切だとバックアップを削除できない", (done) => {
-      request(app)
-        .post("/account/backup/delete")
-        .type("form")
-        .field("creatorId", INVALID_ID)
-        .field("workId", workId)
-        .field("backupName", "1")
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-        .end(done);
-    });
-    it("作品IDが設定されていないとバックアップを削除できない", (done) => {
-      request(app)
-        .post("/account/backup/delete")
-        .type("form")
-        .field("creatorId", creatorId)
-        .field("backupName", "1")
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-        .end(done);
-    });
-    it("作品IDが不適切だとバックアップを削除できない", (done) => {
-      request(app)
-        .post("/account/backup/delete")
-        .type("form")
-        .field("creatorId", creatorId)
-        .field("workId", INVALID_ID)
-        .field("backupName", "1")
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-        .end(done);
-    });
-    it("バックアップ名が設定されていないとバックアップを削除できない", (done) => {
-      request(app)
-        .post("/account/backup/delete")
-        .type("form")
-        .field("creatorId", creatorId)
-        .field("workId", workId)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [BACKUP_NAME_REQUIRED] }))
-        .end(done);
-    });
-    it("バックアップ名が不適切だとバックアップを削除できない", (done) => {
-      request(app)
-        .post("/account/backup/delete")
-        .type("form")
-        .field("creatorId", creatorId)
-        .field("workId", workId)
-        .field("backupName", INVALID_ID)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [BACKUP_NAME_INVALID] }))
-        .end(done);
-    });
-    it("条件を満たしているとバックアップを削除できる", (done) => {
-      testSuccessfulUploadTwice()
-        .then(
-          () =>
-            new Promise<void>((resolve) => {
-              request(app)
-                .post("/account/backup/delete")
-                .type("form")
-                .field("creatorId", creatorId)
-                .field("workId", workId)
-                .field("backupName", "1")
-                .expect(STATUS_CODE_SUCCESS)
-                .end((err) => {
-                  expect(err).toBeNull();
-                  resolve();
-                });
-            })
-        )
-        .then(() => expectStorageSizeSameToActualSize(0))
-        .then(() => expectUploadedFilesExists())
-        .then(() => expectBackupFilesExists("1", false))
-        .then(done);
+    describe("Unity作品のバックアップ", () => {
+      describe("バックアップ復元", () => {
+        it("作者IDが設定されていないとバックアップを復元できない", (done) => {
+          request(app)
+            .post("/account/backup/restore")
+            .type("form")
+            .field("workId", workId)
+            .field("backupName", "1")
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+            .end(done);
+        });
+        it("作者IDが不適切だとバックアップを復元できない", (done) => {
+          request(app)
+            .post("/account/backup/restore")
+            .type("form")
+            .field("creatorId", INVALID_ID)
+            .field("workId", workId)
+            .field("backupName", "1")
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+            .end(done);
+        });
+        it("作品IDが設定されていないとバックアップを復元できない", (done) => {
+          request(app)
+            .post("/account/backup/restore")
+            .type("form")
+            .field("creatorId", creatorId)
+            .field("backupName", "1")
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+            .end(done);
+        });
+        it("作品IDが不適切だとバックアップを復元できない", (done) => {
+          request(app)
+            .post("/account/backup/restore")
+            .type("form")
+            .field("creatorId", creatorId)
+            .field("workId", INVALID_ID)
+            .field("backupName", "1")
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+            .end(done);
+        });
+        it("バックアップ名が設定されていないとバックアップを復元できない", (done) => {
+          request(app)
+            .post("/account/backup/restore")
+            .type("form")
+            .field("creatorId", creatorId)
+            .field("workId", workId)
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [BACKUP_NAME_REQUIRED] }))
+            .end(done);
+        });
+        it("バックアップ名が不適切だとバックアップを復元できない", (done) => {
+          request(app)
+            .post("/account/backup/restore")
+            .type("form")
+            .field("creatorId", creatorId)
+            .field("workId", workId)
+            .field("backupName", INVALID_ID)
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [BACKUP_NAME_INVALID] }))
+            .end(done);
+        });
+        it("条件を満たしているとバックアップを復元できる", (done) => {
+          testSuccessfulUploadTwice()
+            .then(
+              () =>
+                new Promise<void>((resolve) => {
+                  request(app)
+                    .post("/account/backup/restore")
+                    .type("form")
+                    .field("creatorId", creatorId)
+                    .field("workId", workId)
+                    .field("backupName", "1")
+                    .expect(STATUS_CODE_SUCCESS)
+                    .end((err) => {
+                      expect(err).toBeNull();
+                      resolve();
+                    });
+                })
+            )
+            .then(() => expectStorageSizeSameToActualSize(1))
+            .then(() => expectUploadedFilesExists())
+            .then(() => expectBackupFilesExists("2"))
+            .then(done);
+        });
+      });
+      describe("バックアップ削除", () => {
+        it("作者IDが設定されていないとバックアップを削除できない", (done) => {
+          request(app)
+            .post("/account/backup/delete")
+            .type("form")
+            .field("workId", workId)
+            .field("backupName", "1")
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+            .end(done);
+        });
+        it("作者IDが不適切だとバックアップを削除できない", (done) => {
+          request(app)
+            .post("/account/backup/delete")
+            .type("form")
+            .field("creatorId", INVALID_ID)
+            .field("workId", workId)
+            .field("backupName", "1")
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+            .end(done);
+        });
+        it("作品IDが設定されていないとバックアップを削除できない", (done) => {
+          request(app)
+            .post("/account/backup/delete")
+            .type("form")
+            .field("creatorId", creatorId)
+            .field("backupName", "1")
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+            .end(done);
+        });
+        it("作品IDが不適切だとバックアップを削除できない", (done) => {
+          request(app)
+            .post("/account/backup/delete")
+            .type("form")
+            .field("creatorId", creatorId)
+            .field("workId", INVALID_ID)
+            .field("backupName", "1")
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+            .end(done);
+        });
+        it("バックアップ名が設定されていないとバックアップを削除できない", (done) => {
+          request(app)
+            .post("/account/backup/delete")
+            .type("form")
+            .field("creatorId", creatorId)
+            .field("workId", workId)
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [BACKUP_NAME_REQUIRED] }))
+            .end(done);
+        });
+        it("バックアップ名が不適切だとバックアップを削除できない", (done) => {
+          request(app)
+            .post("/account/backup/delete")
+            .type("form")
+            .field("creatorId", creatorId)
+            .field("workId", workId)
+            .field("backupName", INVALID_ID)
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [BACKUP_NAME_INVALID] }))
+            .end(done);
+        });
+        it("条件を満たしているとバックアップを削除できる", (done) => {
+          testSuccessfulUploadTwice()
+            .then(
+              () =>
+                new Promise<void>((resolve) => {
+                  request(app)
+                    .post("/account/backup/delete")
+                    .type("form")
+                    .field("creatorId", creatorId)
+                    .field("workId", workId)
+                    .field("backupName", "1")
+                    .expect(STATUS_CODE_SUCCESS)
+                    .end((err) => {
+                      expect(err).toBeNull();
+                      resolve();
+                    });
+                })
+            )
+            .then(() => expectStorageSizeSameToActualSize(0))
+            .then(() => expectUploadedFilesExists())
+            .then(() => expectBackupFilesExists("1", false))
+            .then(done);
+        });
+      });
     });
   });
 });
