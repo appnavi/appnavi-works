@@ -167,7 +167,7 @@ import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 const creatorId = "creator-2";
 const workId = "work-2";
 
-async function hasUploadSucceeded(res: request.Response): Promise<void> {
+async function expectUploadSucceeded(res: request.Response): Promise<void> {
   expect(res.status).toBe(STATUS_CODE_SUCCESS);
   expect(res.text).toBe(
     JSON.stringify({
@@ -184,6 +184,16 @@ async function hasUploadSucceeded(res: request.Response): Promise<void> {
     )
   );
 }
+async function expectStorageSizeSameToActualSize(
+  backupCount: number
+): Promise<void> {
+  const size = await calculateCurrentStorageSizeBytes();
+  const mockFileSize = mockFiles.reduce(
+    (accumlator, current) => accumlator + current.file.length,
+    0
+  );
+  expect(size).toBe(mockFileSize * (backupCount + 1));
+}
 
 async function testSuccessfulUpload(): Promise<void> {
   return new Promise((resolve) => {
@@ -193,30 +203,16 @@ async function testSuccessfulUpload(): Promise<void> {
       .set(HEADER_WORK_ID, workId)
       .end((err, res) => {
         expect(err).toBeNull();
-        hasUploadSucceeded(res).then(resolve);
+        expectUploadSucceeded(res).then(resolve);
       });
   });
 }
 async function testSuccessfulUploadTwice(): Promise<void> {
   return new Promise<void>((resolve) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(testSuccessfulUpload)
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize * 2);
-      })
+      .then(() => expectStorageSizeSameToActualSize(1))
       .then(async () => {
         mockFiles.forEach(async (mockFile) => {
           const exists = await fsExtra.pathExists(
@@ -329,14 +325,7 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
   });
   it("条件を満たしていればアップロードできる", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(done);
   });
   it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
@@ -355,14 +344,7 @@ describe("Unity作品のリネーム", () => {
   afterAll(() => logout(app));
   it("作者IDが設定されていないとリネームできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -377,14 +359,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("作者IDが不適切だとリネームできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -400,14 +375,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("作品IDが設定されていないとリネームできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -422,14 +390,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("作品IDが不適切だとアップロードできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -445,14 +406,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("リネーム後の作者IDが設定されていないとリネームできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -467,14 +421,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("リネーム後の作者IDが不適切だとリネームできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -490,14 +437,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("リネーム後の作品IDが設定されていないとリネームできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -512,14 +452,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("リネーム後の作品IDが不適切だとアップロードできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -547,14 +480,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("別人の投稿した作品はリネームできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(async () => {
         const works = await WorkModel.find({
           creatorId: creatorId,
@@ -580,14 +506,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("リネーム前とリネーム後が同じだとはリネームできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -603,14 +522,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("既に存在する作品を上書きするようなリネームはできない", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() =>
         WorkModel.create({
           creatorId: creatorId + "2",
@@ -636,14 +548,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("条件を満たしていれば作者IDのリネームに成功する", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -658,14 +563,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("条件を満たしていれば作品IDのリネームに成功する", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -680,14 +578,7 @@ describe("Unity作品のリネーム", () => {
   });
   it("条件を満たしていれば作者IDと作品ID両方のリネームに成功する", (done) => {
     testSuccessfulUpload()
-      .then(async () => {
-        const size = await calculateCurrentStorageSizeBytes();
-        const actualSize = mockFiles.reduce(
-          (accumlator, current) => accumlator + current.file.length,
-          0
-        );
-        expect(size).toBe(actualSize);
-      })
+      .then(() => expectStorageSizeSameToActualSize(0))
       .then(() => {
         request(app)
           .post("/account/work/rename")
@@ -792,14 +683,8 @@ describe("Unity作品のバックアップ", () => {
                 });
             })
         )
-        .then(async () => {
-          const size = await calculateCurrentStorageSizeBytes();
-          const actualSize = mockFiles.reduce(
-            (accumlator, current) => accumlator + current.file.length,
-            0
-          );
-          expect(size).toBe(actualSize * 2);
-        })
+        .then(() => expectStorageSizeSameToActualSize(1))
+
         .then(async () => {
           mockFiles.forEach(async (mockFile) => {
             const exists = await fsExtra.pathExists(
