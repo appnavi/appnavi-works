@@ -30,8 +30,19 @@ dbRouter.get(
   "/users",
   wrap(async (req, res) => {
     const users = await UserModel.find();
+    const userWithWorks = await Promise.all(
+      users.map(async (user) => {
+        const works = await WorkModel.find({ owner: user.userId });
+        return {
+          ...user.toObject(),
+          works,
+        };
+      })
+    );
+    console.log(userWithWorks);
     render("db/users", req, res, {
-      users: users,
+      urlPrefix: URL_PREFIX_WORK,
+      users: userWithWorks,
     });
   })
 );

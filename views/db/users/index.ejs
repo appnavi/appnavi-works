@@ -24,6 +24,14 @@
               <%- user.lastLogIn.getMinutes() %>分
               <%- user.lastLogIn.getSeconds() %>秒 
             </div>
+            <% if (user.works.length > 0) { %> 
+              <ul class="collection with-header">
+                <li class="collection-header"><h6>作品</h6></li>
+                <% user.works.forEach(work=>{ %> 
+                  <li class="collection-item"><a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" target="_blank"><%- work.creatorId %>/<%- work.workId %></a></li>
+                <% }) %> 
+              </ul>   
+            <% } %> 
           </div>
         </div>
       <% }) %>
