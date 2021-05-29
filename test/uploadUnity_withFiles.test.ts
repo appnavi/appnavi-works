@@ -235,102 +235,110 @@ async function testSuccessfulUploadTwice(): Promise<void> {
       .then(resolve);
   });
 }
-describe("Unity作品のアップロード（ファイルあり）", () => {
+describe("Unity作品関連(非ログイン時)", () => {
   beforeAll(async () => {
     await connectDatabase("2");
     await ensureUploadFoldersExist();
   });
-  afterEach(async () => {
-    await clearData(creatorId, workId);
-  });
   it("非ログイン時にはアップロードができない", (done) => {
     request(app).post("/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
   });
-  describe("ログイン時", () => {
-    beforeAll(() => login(app, myId));
-    afterAll(() => logout(app));
-
-    it("作者IDが設定されていないとアップロードできない", (done) => {
-      request(app)
-        .post("/upload/unity")
-        .set(HEADER_WORK_ID, workId)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-        .end(done);
-    });
-    it("作者IDが不適切だとアップロードできない", (done) => {
-      request(app)
-        .post("/upload/unity")
-        .set(HEADER_CREATOR_ID, encodeURI(INVALID_ID))
-        .set(HEADER_WORK_ID, workId)
-        .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-        .end(done);
-    });
-    it("作品IDが設定されていないとアップロードできない", (done) => {
+  it("非ログイン時にはリネームできない", (done) => {
+    request(app)
+      .post("/account/work/rename")
+      .expect(STATUS_CODE_UNAUTHORIZED, done);
+  });
+});
+describe("Unity作品のアップロード（ファイルあり）", () => {
+  beforeAll(async () => {
+    await connectDatabase("2");
+    await ensureUploadFoldersExist();
+    login(app, myId);
+  });
+  afterEach(async () => {
+    await clearData(creatorId, workId);
+  });
+  afterAll(() => logout(app));
+  it("作者IDが設定されていないとアップロードできない", (done) => {
+    request(app)
+      .post("/upload/unity")
+      .set(HEADER_WORK_ID, workId)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+      .end(done);
+  });
+  it("作者IDが不適切だとアップロードできない", (done) => {
+    request(app)
+      .post("/upload/unity")
+      .set(HEADER_CREATOR_ID, encodeURI(INVALID_ID))
+      .set(HEADER_WORK_ID, workId)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+      .end(done);
+  });
+  it("作品IDが設定されていないとアップロードできない", (done) => {
+    request(app)
+      .post("/upload/unity")
+      .set(HEADER_CREATOR_ID, creatorId)
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+      .end(done);
+  });
+  it("作品IDが不適切だとアップロードできない", (done) => {
+    request(app)
+      .post("/upload/unity")
+      .set(HEADER_CREATOR_ID, creatorId)
+      .set(HEADER_WORK_ID, encodeURI(INVALID_ID))
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+      .end(done);
+  });
+  it("別人の投稿した作品は上書きアップロードできない", (done) => {
+    WorkModel.create({
+      creatorId: creatorId,
+      workId: workId,
+      owner: theirId,
+      fileSize: 100,
+    }).then(() => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
+        .set(HEADER_WORK_ID, workId)
         .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+        .expect(JSON.stringify({ errors: [DIFFERENT_USER] }))
         .end(done);
     });
-    it("作品IDが不適切だとアップロードできない", (done) => {
+  });
+  it("ストレージ容量の上限を上回っている場合はアップロードできない", (done) => {
+    WorkModel.create({
+      creatorId: "large-work-creator",
+      workId: "large-work",
+      owner: theirId,
+      fileSize: getEnvNumber("WORK_STORAGE_SIZE_BYTES"),
+    }).then(() => {
       request(app)
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, encodeURI(INVALID_ID))
+        .set(HEADER_WORK_ID, workId)
         .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+        .expect(JSON.stringify({ errors: [STORAGE_FULL] }))
         .end(done);
     });
-    it("別人の投稿した作品は上書きアップロードできない", (done) => {
-      WorkModel.create({
-        creatorId: creatorId,
-        workId: workId,
-        owner: theirId,
-        fileSize: 100,
-      }).then(() => {
-        request(app)
-          .post("/upload/unity")
-          .set(HEADER_CREATOR_ID, creatorId)
-          .set(HEADER_WORK_ID, workId)
-          .expect(STATUS_CODE_BAD_REQUEST)
-          .expect(JSON.stringify({ errors: [DIFFERENT_USER] }))
-          .end(done);
-      });
-    });
-    it("ストレージ容量の上限を上回っている場合はアップロードできない", (done) => {
-      WorkModel.create({
-        creatorId: "large-work-creator",
-        workId: "large-work",
-        owner: theirId,
-        fileSize: getEnvNumber("WORK_STORAGE_SIZE_BYTES"),
-      }).then(() => {
-        request(app)
-          .post("/upload/unity")
-          .set(HEADER_CREATOR_ID, creatorId)
-          .set(HEADER_WORK_ID, workId)
-          .expect(STATUS_CODE_BAD_REQUEST)
-          .expect(JSON.stringify({ errors: [STORAGE_FULL] }))
-          .end(done);
-      });
-    });
-    it("条件を満たしていればアップロードできる", (done) => {
-      testSuccessfulUpload()
-        .then(async () => {
-          const size = await calculateCurrentStorageSizeBytes();
-          const actualSize = mockFiles.reduce(
-            (accumlator, current) => accumlator + current.file.length,
-            0
-          );
-          expect(size).toBe(actualSize);
-        })
-        .then(done);
-    });
-    it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
-      testSuccessfulUploadTwice().then(done);
-    });
+  });
+  it("条件を満たしていればアップロードできる", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(done);
+  });
+  it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
+    testSuccessfulUploadTwice().then(done);
   });
 });
 describe("Unity作品のリネーム", () => {
