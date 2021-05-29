@@ -80,6 +80,20 @@ describe("GET", () => {
         requireAuthenticated("/upload/unity", done);
       });
     });
+    describe("dbRouter", () => {
+      it("/db/worksはログイン必須", (done) => {
+        requireAuthenticated("/db/works", done);
+      });
+      it("/db/works/rawはログイン必須", (done) => {
+        requireAuthenticated("/db/works/raw", done);
+      });
+      it("/db/usersはログイン必須", (done) => {
+        requireAuthenticated("/db/users", done);
+      });
+      it("/db/users/rawはログイン必須", (done) => {
+        requireAuthenticated("/db/users/raw", done);
+      });
+    });
   });
 
   describe("ログイン時", () => {
@@ -136,6 +150,20 @@ describe("GET", () => {
     describe("uploadRouter", () => {
       it("/upload/unityをGETできる", (done) => {
         canAccessTo("/upload/unity", done);
+      });
+    });
+    describe("dbRouter", () => {
+      it("/db/worksをGETできる", (done) => {
+        canAccessTo("/db/works", done);
+      });
+      it("/db/works/rawをGETできる", (done) => {
+        canAccessTo("/db/works/raw", done);
+      });
+      it("/db/usersをGETできる", (done) => {
+        canAccessTo("/db/users", done);
+      });
+      it("/db/users/rawをGETできる", (done) => {
+        canAccessTo("/db/users/raw", done);
       });
     });
   });
