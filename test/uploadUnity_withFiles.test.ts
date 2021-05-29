@@ -17,6 +17,8 @@ import {
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
   ERROR_MESSAGE_WORK_NOT_FOUND as WORK_NOT_FOUND,
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER as WORK_DIFFERENT_OWNER,
+  ERROR_MESSAGE_BACKUP_NAME_REQUIRED as BACKUP_NAME_REQUIRED,
+  ERROR_MESSAGE_BACKUP_NAME_INVALID as BACKUP_NAME_INVALID,
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
   UPLOAD_UNITY_FIELD_WEBGL,
@@ -697,5 +699,140 @@ describe("Unity作品のリネーム", () => {
           .expect(STATUS_CODE_SUCCESS)
           .end(done);
       });
+  });
+});
+describe("Unity作品のバックアップ", () => {
+  beforeAll(async () => {
+    await connectDatabase("2");
+    await ensureUploadFoldersExist();
+    login(app, myId);
+  });
+  afterEach(async () => {
+    await clearData(creatorId, workId);
+  });
+  describe("バックアップ復元", () => {
+    it("作者IDが設定されていないとバックアップを復元できない", (done) => {
+      request(app)
+        .post("/account/backup/restore")
+        .type("form")
+        .field("workId", workId)
+        .field("backupName", "1")
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+        .end(done);
+    });
+    it("作者IDが不適切だとバックアップを復元できない", (done) => {
+      request(app)
+        .post("/account/backup/restore")
+        .type("form")
+        .field("creatorId", INVALID_ID)
+        .field("workId", workId)
+        .field("backupName", "1")
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+        .end(done);
+    });
+    it("作品IDが設定されていないとバックアップを復元できない", (done) => {
+      request(app)
+        .post("/account/backup/restore")
+        .type("form")
+        .field("creatorId", creatorId)
+        .field("backupName", "1")
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+        .end(done);
+    });
+    it("作品IDが不適切だとバックアップを復元できない", (done) => {
+      request(app)
+        .post("/account/backup/restore")
+        .type("form")
+        .field("creatorId", creatorId)
+        .field("workId", INVALID_ID)
+        .field("backupName", "1")
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+        .end(done);
+    });
+    it("バックアップ名が設定されていないとバックアップを復元できない", (done) => {
+      request(app)
+        .post("/account/backup/restore")
+        .type("form")
+        .field("creatorId", creatorId)
+        .field("workId", workId)
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [BACKUP_NAME_REQUIRED] }))
+        .end(done);
+    });
+    it("バックアップ名が不適切だとバックアップを復元できない", (done) => {
+      request(app)
+        .post("/account/backup/restore")
+        .type("form")
+        .field("creatorId", creatorId)
+        .field("workId", workId)
+        .field("backupName", INVALID_ID)
+        .expect(STATUS_CODE_BAD_REQUEST)
+        .expect(JSON.stringify({ errors: [BACKUP_NAME_INVALID] }))
+        .end(done);
+    });
+    it("条件を満たしているとバックアップを復元できる", (done) => {
+      testSuccessfulUploadTwice()
+        .then(
+          () =>
+            new Promise<void>((resolve) => {
+              request(app)
+                .post("/account/backup/restore")
+                .type("form")
+                .field("creatorId", creatorId)
+                .field("workId", workId)
+                .field("backupName", "1")
+                .expect(STATUS_CODE_SUCCESS)
+                .end((err, res) => {
+                  expect(err).toBeNull();
+                  resolve();
+                });
+            })
+        )
+        .then(async () => {
+          const size = await calculateCurrentStorageSizeBytes();
+          const actualSize = mockFiles.reduce(
+            (accumlator, current) => accumlator + current.file.length,
+            0
+          );
+          expect(size).toBe(actualSize * 2);
+        })
+        .then(async () => {
+          mockFiles.forEach(async (mockFile) => {
+            const exists = await fsExtra.pathExists(
+              path.join(
+                DIRECTORY_NAME_UPLOADS,
+                creatorId,
+                workId,
+                mockFile.fieldname,
+                mockFile.subfoldername,
+                mockFile.filename
+              )
+            );
+            expect(exists).toBe(true);
+          });
+        })
+        .then(async () => {
+          mockFiles.forEach(async (mockFile) => {
+            const exists = await fsExtra.pathExists(
+              path.join(
+                DIRECTORY_NAME_BACKUPS,
+                DIRECTORY_NAME_UPLOADS,
+                creatorId,
+                workId,
+                "2",
+                mockFile.fieldname,
+                mockFile.subfoldername,
+                mockFile.filename
+              )
+            );
+            expect(exists).toBe(true);
+          });
+        })
+        .then(done);
+    });
   });
 });
