@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>作品一覧</title>
+  <%- include('common/head') %> 
+</head>
+<body>
+  <%- include('common/navbar') %> 
+  <main class="container">
+    <h3 class="header">作品一覧</h3>
+    <% (works ?? []).forEach(work=>{ %>
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title"><%- work.creatorId %>/<%- work.workId %></span>
+          <div>所有者のSlackユーザーID：<%- work.owner %> </div>
+          <div>ファイルサイズ：<%- work.fileSize %>バイト</div>
+          <div>
+            <%- work.uploadedAt.getFullYear() %>年
+            <%- work.uploadedAt.getMonth() + 1 %>月
+            <%- work.uploadedAt.getDate() %>日
+            <%- work.uploadedAt.getHours() %>時
+            <%- work.uploadedAt.getMinutes() %>分
+            <%- work.uploadedAt.getSeconds() %>秒
+            アップロード
+          </div>
+        </div>
+        <div class="card-action">
+          <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="teal-text" target="_blank"><i class="material-icons left">open_in_new</i>作品へ移動</a>
+        </div>
+      </div>
+    <% }) %>
+  </main>
+  <%- include('common/footer') %> 
+  <%- include('common/scripts') %> 
+</body>
+</html>

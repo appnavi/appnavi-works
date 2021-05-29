@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <title>ユーザー一覧</title>
+  <%- include('common/head') %>
+</head>
+
+<body>
+  <%- include('common/navbar') %>
+    <main class="container">
+      <h3 class="header">ユーザー一覧</h3>
+      <% (users ?? []).forEach(user=>{ %>
+        <div class="card">
+          <div class="card-content">
+            <div>SlackのユーザーID：<%- user.userId %> </div>
+            <div>デフォルトの作者ID：<%- user.defaultCreatorId ?? "未設定" %> </div>
+            <div>
+              最終ログイン：
+              <%- user.lastLogIn.getFullYear() %>年
+              <%- user.lastLogIn.getMonth() + 1 %>月
+              <%- user.lastLogIn.getDate() %>日
+              <%- user.lastLogIn.getHours() %>時
+              <%- user.lastLogIn.getMinutes() %>分
+              <%- user.lastLogIn.getSeconds() %>秒 
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </main>
+    <%- include('common/footer') %>
+      <%- include('common/scripts') %>
+</body>
+
+</html>
