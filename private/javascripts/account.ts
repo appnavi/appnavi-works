@@ -99,10 +99,7 @@ document
       renamedCreatorIdInput.value = creatorId;
       renamedWorkIdInput.value = workId;
       const instance = M.Modal.getInstance(dialog);
-      instance.options.onOpenEnd = () => {
-        M.updateTextFields();
-      };
-      instance.options.onCloseEnd = () => {
+      dialog.querySelector(".edit").addEventListener("click", () => {
         const renamedCreatorId = renamedCreatorIdInput.value;
         const renamedWorkId = renamedWorkIdInput.value;
         if (creatorId === renamedCreatorId && workId === renamedWorkId) {
@@ -112,6 +109,9 @@ document
           return;
         }
         renameWork(creatorId, workId, renamedCreatorId, renamedWorkId);
+      });
+      instance.options.onOpenEnd = () => {
+        M.updateTextFields();
       };
       instance.open();
     });
