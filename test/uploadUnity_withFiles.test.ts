@@ -195,7 +195,46 @@ async function testSuccessfulUpload(): Promise<void> {
       });
   });
 }
-
+async function testSuccessfulUploadTwice(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(testSuccessfulUpload)
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize * 2);
+      })
+      .then(async () => {
+        mockFiles.forEach(async (mockFile) => {
+          const exists = await fsExtra.pathExists(
+            path.join(
+              DIRECTORY_NAME_BACKUPS,
+              DIRECTORY_NAME_UPLOADS,
+              creatorId,
+              workId,
+              "1",
+              mockFile.fieldname,
+              mockFile.subfoldername,
+              mockFile.filename
+            )
+          );
+          expect(exists).toBe(true);
+        });
+      })
+      .then(resolve);
+  });
+}
 describe("Unity作品のアップロード（ファイルあり）", () => {
   beforeAll(async () => {
     await connectDatabase("2");
@@ -290,42 +329,7 @@ describe("Unity作品のアップロード（ファイルあり）", () => {
         .then(done);
     });
     it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
-      testSuccessfulUpload()
-        .then(async () => {
-          const size = await calculateCurrentStorageSizeBytes();
-          const actualSize = mockFiles.reduce(
-            (accumlator, current) => accumlator + current.file.length,
-            0
-          );
-          expect(size).toBe(actualSize);
-        })
-        .then(testSuccessfulUpload)
-        .then(async () => {
-          const size = await calculateCurrentStorageSizeBytes();
-          const actualSize = mockFiles.reduce(
-            (accumlator, current) => accumlator + current.file.length,
-            0
-          );
-          expect(size).toBe(actualSize * 2);
-        })
-        .then(async () => {
-          mockFiles.forEach(async (mockFile) => {
-            const exists = await fsExtra.pathExists(
-              path.join(
-                DIRECTORY_NAME_BACKUPS,
-                DIRECTORY_NAME_UPLOADS,
-                creatorId,
-                workId,
-                "1",
-                mockFile.fieldname,
-                mockFile.subfoldername,
-                mockFile.filename
-              )
-            );
-            expect(exists).toBe(true);
-          });
-        })
-        .then(done);
+      testSuccessfulUploadTwice().then(done);
     });
   });
 });
