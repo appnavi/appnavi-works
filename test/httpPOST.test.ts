@@ -12,6 +12,7 @@ import {
   ERROR_MESSAGE_NO_FILES as NO_FILES,
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
+  STATUS_CODE_SUCCESS,
 } from "../src/utils/constants";
 import { getEnvNumber } from "../src/utils/helpers";
 import { login, logout, myId, theirId } from "./auth";
@@ -21,7 +22,7 @@ import {
   ensureUploadFoldersExist,
   INVALID_ID,
 } from "./common";
-import { WorkModel } from "../src/models/database";
+import { UserModel, WorkModel } from "../src/models/database";
 
 const creatorId = "creator-3";
 const workId = "work-3";
@@ -46,6 +47,43 @@ describe("POST（MulterのMockなし）", () => {
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [NO_FILES] }))
           .end(done);
+      });
+    });
+  });
+  describe("accountRouter", () => {
+    describe("デフォルトの作者ID", () => {
+      it("作者IDが設定されていないとデフォルトの作者IDを設定できない", (done) => {
+        request(app)
+          .post("/account/default-creator-id")
+          .type("form")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+          .end(done);
+      });
+      it("作者IDが不適切だとデフォルトの作者IDを設定できない", (done) => {
+        request(app)
+          .post("/account/default-creator-id")
+          .type("form")
+          .field("default_creator_id", INVALID_ID)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+          .end(done);
+      });
+      it("条件を満たしていればデフォルトの作者IDを設定できる", (done) => {
+        request(app)
+          .post("/account/default-creator-id")
+          .type("form")
+          .field("default_creator_id", creatorId)
+          .expect(STATUS_CODE_SUCCESS)
+          .end((err) => {
+            expect(err).toBeNull();
+            UserModel.find().then((users) => {
+              console.log(users);
+              expect(users.length).toBe(1);
+              expect(users[0].defaultCreatorId).toBe(creatorId);
+              done();
+            });
+          });
       });
     });
   });
