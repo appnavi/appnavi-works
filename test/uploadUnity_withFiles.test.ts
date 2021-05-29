@@ -167,6 +167,14 @@ import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 const creatorId = "creator-2";
 const workId = "work-2";
 
+async function expectUploadedFilesExists(): Promise<void> {
+  mockFiles.forEach(async (mockFile) => {
+    const exists = await fsExtra.pathExists(
+      mockFileUploadPath(mockFile, creatorId, workId)
+    );
+    expect(exists).toBe(true);
+  });
+}
 async function expectUploadSucceeded(res: request.Response): Promise<void> {
   expect(res.status).toBe(STATUS_CODE_SUCCESS);
   expect(res.text).toBe(
@@ -176,13 +184,24 @@ async function expectUploadSucceeded(res: request.Response): Promise<void> {
       ),
     })
   );
-  await Promise.all(
-    mockFiles.map((mockFile) =>
-      fsExtra
-        .pathExists(mockFileUploadPath(mockFile, creatorId, workId))
-        .then((exists) => expect(exists).toBe(true))
-    )
-  );
+  await expectUploadedFilesExists();
+}
+async function expectBackupFilesExists(backupName: string): Promise<void> {
+  mockFiles.forEach(async (mockFile) => {
+    const exists = await fsExtra.pathExists(
+      path.join(
+        DIRECTORY_NAME_BACKUPS,
+        DIRECTORY_NAME_UPLOADS,
+        creatorId,
+        workId,
+        backupName,
+        mockFile.fieldname,
+        mockFile.subfoldername,
+        mockFile.filename
+      )
+    );
+    expect(exists).toBe(true);
+  });
 }
 async function expectStorageSizeSameToActualSize(
   backupCount: number
@@ -213,23 +232,7 @@ async function testSuccessfulUploadTwice(): Promise<void> {
       .then(() => expectStorageSizeSameToActualSize(0))
       .then(testSuccessfulUpload)
       .then(() => expectStorageSizeSameToActualSize(1))
-      .then(async () => {
-        mockFiles.forEach(async (mockFile) => {
-          const exists = await fsExtra.pathExists(
-            path.join(
-              DIRECTORY_NAME_BACKUPS,
-              DIRECTORY_NAME_UPLOADS,
-              creatorId,
-              workId,
-              "1",
-              mockFile.fieldname,
-              mockFile.subfoldername,
-              mockFile.filename
-            )
-          );
-          expect(exists).toBe(true);
-        });
-      })
+      .then(() => expectBackupFilesExists("1"))
       .then(resolve);
   });
 }
@@ -641,46 +644,15 @@ describe("Unity作品のバックアップ", () => {
                 .field("workId", workId)
                 .field("backupName", "1")
                 .expect(STATUS_CODE_SUCCESS)
-                .end((err, res) => {
+                .end((err) => {
                   expect(err).toBeNull();
                   resolve();
                 });
             })
         )
         .then(() => expectStorageSizeSameToActualSize(1))
-
-        .then(async () => {
-          mockFiles.forEach(async (mockFile) => {
-            const exists = await fsExtra.pathExists(
-              path.join(
-                DIRECTORY_NAME_UPLOADS,
-                creatorId,
-                workId,
-                mockFile.fieldname,
-                mockFile.subfoldername,
-                mockFile.filename
-              )
-            );
-            expect(exists).toBe(true);
-          });
-        })
-        .then(async () => {
-          mockFiles.forEach(async (mockFile) => {
-            const exists = await fsExtra.pathExists(
-              path.join(
-                DIRECTORY_NAME_BACKUPS,
-                DIRECTORY_NAME_UPLOADS,
-                creatorId,
-                workId,
-                "2",
-                mockFile.fieldname,
-                mockFile.subfoldername,
-                mockFile.filename
-              )
-            );
-            expect(exists).toBe(true);
-          });
-        })
+        .then(expectUploadedFilesExists)
+        .then(() => expectBackupFilesExists("2"))
         .then(done);
     });
   });
