@@ -2,7 +2,6 @@ import express from "express";
 import multer from "multer";
 import * as yup from "yup";
 import { UserModel, WorkModel } from "../models/database";
-import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
   getDefaultCreatorId,
@@ -22,6 +21,7 @@ import {
   ERROR_MESSAGE_BACKUP_NAME_REQUIRED,
   ERROR_MESSAGE_BACKUP_NAME_INVALID,
 } from "../utils/constants";
+import { BadRequestError, RenameWorkError } from "../utils/errors";
 import { render, wrap } from "../utils/helpers";
 
 const accountRouter = express.Router();
@@ -149,10 +149,7 @@ accountRouter.post(
       await renameWorkSchema.validate(params);
     } catch (e) {
       const err = e as { name: string; errors: string[] };
-      res.status(STATUS_CODE_BAD_REQUEST).send({
-        errors: err.errors,
-      });
-      return;
+      throw new RenameWorkError(err.errors, params);
     }
     const { creatorId, workId, renamedCreatorId, renamedWorkId } = params;
     try {
@@ -163,10 +160,10 @@ accountRouter.post(
         renamedCreatorId,
         renamedWorkId
       );
-    } catch (e) {
-      const err = e as Error;
-      logger.system.error(`作品のリネーム失敗：${err.message}`);
-      res.status(STATUS_CODE_BAD_REQUEST).send((e as Error).message);
+    } catch (err) {
+      if (err instanceof BadRequestError) {
+        throw new RenameWorkError([err.message], params);
+      }
     }
     res.status(STATUS_CODE_SUCCESS).end();
   })

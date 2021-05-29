@@ -22,13 +22,13 @@ import {
   ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
   ERROR_MESSAGE_NO_FILES as NO_FILES,
-  STATUS_CODE_BAD_REQUEST,
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
   UPLOAD_UNITY_FIELD_WINDOWS,
   UPLOAD_UNITY_FIELD_WEBGL,
   UPLOAD_UNITY_FIELDS,
 } from "../utils/constants";
+import { UploadError } from "../utils/errors";
 import { getEnv, getEnvNumber, render, wrap } from "../utils/helpers";
 
 interface Locals {
@@ -37,14 +37,6 @@ interface Locals {
   uploadEndedAt: Date;
   elapsedMillis: number;
   work: WorkDocument;
-}
-class UploadError extends Error {
-  constructor(message: string, public params: unknown[] = []) {
-    super(message);
-    this.name = new.target.name;
-    // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
-    Object.setPrototypeOf(this, new.target.prototype);
-  }
 }
 function getCreatorIdFromHeader(req: express.Request): string {
   return req.headers[HEADER_CREATOR_ID] as string;
@@ -142,21 +134,6 @@ uploadRouter
     }
   );
 
-uploadRouter.use(function (
-  err: NodeJS.Dict<unknown>,
-  _req: express.Request,
-  res: express.Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
-) {
-  if (!(err instanceof UploadError)) {
-    next(err);
-    return;
-  }
-  const params = err.params;
-  logger.system.error(`アップロード失敗：${err.message}`, ...params);
-  res.status(STATUS_CODE_BAD_REQUEST).send(err.message);
-});
 function validateParams(
   req: express.Request,
   _res: express.Response,
@@ -174,7 +151,7 @@ function validateParams(
       next();
     })
     .catch((err: { name: string; errors: string[] }) => {
-      next(new UploadError(err.errors[0], [creatorId, workId]));
+      next(new UploadError(err.errors, [creatorId, workId]));
     });
 }
 function ensureStorageSpaceAvailable(
@@ -186,7 +163,7 @@ function ensureStorageSpaceAvailable(
     const workStorageSizeBytes = getEnvNumber("WORK_STORAGE_SIZE_BYTES");
     const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
     if (workStorageSizeBytes <= currentStorageSizeBytes) {
-      next(new UploadError(STORAGE_FULL));
+      next(new UploadError([STORAGE_FULL]));
       return;
     }
     next();
@@ -219,9 +196,10 @@ function preventEditByOtherPerson(
     return;
   }
   next(
-    new UploadError(DIFFERENT_USER, [
-      path.join(getCreatorIdFromHeader(req), getWorkIdFromHeader(req)),
-    ])
+    new UploadError(
+      [DIFFERENT_USER],
+      [path.join(getCreatorIdFromHeader(req), getWorkIdFromHeader(req))]
+    )
   );
 }
 function validateDestination(
@@ -258,7 +236,7 @@ function ensureUploadSuccess(
   next: express.NextFunction
 ) {
   if (Object.keys(req.files ?? {}).length === 0) {
-    next(new UploadError(NO_FILES));
+    next(new UploadError([NO_FILES]));
     return;
   }
   next();

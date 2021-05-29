@@ -188,11 +188,20 @@ function renameWork(
     const title =
       request.status === 200 ? "編集に成功しました" : "編集に失敗しました";
     const content = document.createElement("div");
-    if (request.status !== 200) {
+    if (request.status === 400) {
+      const errors = (JSON.parse(request.response).errors as string[]) ?? [];
+      errors.forEach((err) => {
+        const errorText = document.createElement("p");
+        errorText.innerText = err;
+        content.append(errorText);
+      });
+    } else if (request.status !== 200) {
       content.appendChild(document.createTextNode(request.response));
     }
     showMessageDialog(title, content, () => {
-      location.reload();
+      if (request.status === 200) {
+        location.reload();
+      }
     });
   });
   request.send(data);

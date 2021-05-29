@@ -23,6 +23,7 @@ import {
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_SERVER_ERROR,
 } from "./utils/constants";
+import { BadRequestError } from "./utils/errors";
 import {
   ejsToHtml,
   getEnv,
@@ -122,15 +123,21 @@ app.use(function (
   res.locals.message = err.message;
   res.locals.status = err.status;
   res.locals.error = req.app.get("env") === "development" ? err : {};
-  if (err.status !== 404) {
+  const status =
+    typeof err.status === "number" ? err.status : STATUS_CODE_SERVER_ERROR;
+  if (status !== 404) {
     logger.system.error("エラーが発生しました。", err);
   }
 
   // render the error page
-  const status =
-    typeof err.status === "number" ? err.status : STATUS_CODE_SERVER_ERROR;
   res.status(status);
-  render("error", req, res);
+  if (err instanceof BadRequestError) {
+    res.send({
+      errors: err.errors,
+    });
+  } else {
+    render("error", req, res);
+  }
 });
 
 export { passport, app };

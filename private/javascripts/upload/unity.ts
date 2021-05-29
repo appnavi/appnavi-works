@@ -205,6 +205,13 @@ form.addEventListener("submit", function (event) {
       content.appendChild(
         document.createTextNode("ページを再読み込みしてください。")
       );
+    } else if (request.status === 400) {
+      const errors = (JSON.parse(request.response).errors as string[]) ?? [];
+      errors.forEach((err) => {
+        const errorText = document.createElement("p");
+        errorText.innerText = err;
+        content.append(errorText);
+      });
     } else {
       content.appendChild(document.createTextNode(request.response));
     }

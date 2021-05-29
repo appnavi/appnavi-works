@@ -9,7 +9,11 @@ import {
   ERROR_MESSAGE_WORK_ID_REQUIRED,
   ERROR_MESSAGE_WORK_ID_INVALID,
   DIRECTORY_NAME_BACKUPS,
+  ERROR_MESSAGE_WORK_NOT_FOUND,
+  ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
+  ERROR_MESSAGE_MULTIPLE_WORKS_FOUND,
 } from "../utils/constants";
+import { BadRequestError } from "../utils/errors";
 
 const idRegex = /^[0-9a-z-]+$/;
 export const creatorIdSchema = yup
@@ -35,16 +39,16 @@ async function findWorkOrThrow(
   });
   switch (works.length) {
     case 0:
-      throw new Error("作品が存在しません。");
+      throw new BadRequestError(ERROR_MESSAGE_WORK_NOT_FOUND);
     case 1: {
       const work = works[0];
       if (work.owner !== userId) {
-        throw new Error("この作品の所有者ではありません。");
+        throw new BadRequestError(ERROR_MESSAGE_WORK_DIFFERENT_OWNER);
       }
       return work;
     }
     default:
-      throw new Error("同じ作品が複数登録されています");
+      throw new BadRequestError(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
   }
 }
 
@@ -184,7 +188,7 @@ export async function renameWork(
   renamedWorkId: string
 ): Promise<void> {
   if (creatorId === renamedCreatorId && workId === renamedWorkId) {
-    throw new Error("リネーム前とリネーム後が同じです。");
+    throw new BadRequestError("リネーム前とリネーム後が同じです。");
   }
   const work = await findWorkOrThrow(creatorId, workId, userId);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
@@ -194,7 +198,7 @@ export async function renameWork(
     workId: renamedWorkId,
   });
   if (renamedWorks.length > 0) {
-    throw new Error("既に作品が存在する作品ID・作者IDにはリネームできません。");
+    throw new BadRequestError("既に存在する作品を上書きすることはできません。");
   }
   const renamedDir = path.join(
     DIRECTORY_NAME_UPLOADS,

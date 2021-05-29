@@ -41,7 +41,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
         .post("/upload/unity")
         .set(HEADER_WORK_ID, workId)
         .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(CREATOR_ID_REQUIRED)
+        .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
         .end(done);
     });
     it("作者IDが不適切だとアップロードできない", (done) => {
@@ -50,7 +50,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
         .set(HEADER_CREATOR_ID, encodeURI("テスト"))
         .set(HEADER_WORK_ID, workId)
         .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(CREATOR_ID_INVALID)
+        .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
         .end(done);
     });
     it("作品IDが設定されていないとアップロードできない", (done) => {
@@ -58,7 +58,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
         .post("/upload/unity")
         .set(HEADER_CREATOR_ID, creatorId)
         .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(WORK_ID_REQUIRED)
+        .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
         .end(done);
     });
     it("作品IDが不適切だとアップロードできない", (done) => {
@@ -67,7 +67,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
         .set(HEADER_CREATOR_ID, creatorId)
         .set(HEADER_WORK_ID, encodeURI("テスト"))
         .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(WORK_ID_INVALID)
+        .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
         .end(done);
     });
     it("別人の投稿した作品は上書きアップロードできない", (done) => {
@@ -82,7 +82,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
           .set(HEADER_CREATOR_ID, creatorId)
           .set(HEADER_WORK_ID, workId)
           .expect(STATUS_CODE_BAD_REQUEST)
-          .expect(DIFFERENT_USER)
+          .expect(JSON.stringify({ errors: [DIFFERENT_USER] }))
           .end(done);
       });
     });
@@ -98,7 +98,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
           .set(HEADER_CREATOR_ID, creatorId)
           .set(HEADER_WORK_ID, workId)
           .expect(STATUS_CODE_BAD_REQUEST)
-          .expect(STORAGE_FULL)
+          .expect(JSON.stringify({ errors: [STORAGE_FULL] }))
           .end(done);
       });
     });
@@ -108,7 +108,7 @@ describe("Unity作品のアップロード（ファイルなし）", () => {
         .set(HEADER_CREATOR_ID, creatorId)
         .set(HEADER_WORK_ID, workId)
         .expect(STATUS_CODE_BAD_REQUEST)
-        .expect(NO_FILES)
+        .expect(JSON.stringify({ errors: [NO_FILES] }))
         .end(done);
     });
   });
