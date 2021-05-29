@@ -29,7 +29,7 @@ authRouter.get(
       logger.system.error(
         `違うワークスペース${workspaceId ?? ""}の人がログインしようとしました。`
       );
-      res.send("認証に失敗しました。").status(403).end();
+      res.status(403).json("認証に失敗しました。").end();
       return;
     }
     const userId = req.user?.user?.id ?? "";

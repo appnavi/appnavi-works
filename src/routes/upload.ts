@@ -128,7 +128,7 @@ uploadRouter
     logUploadSuccess,
     (_req, res) => {
       const locals = res.locals as Locals;
-      res.send({
+      res.json({
         paths: locals.paths,
       });
     }

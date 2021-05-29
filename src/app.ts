@@ -132,7 +132,7 @@ app.use(function (
   // render the error page
   res.status(status);
   if (err instanceof BadRequestError) {
-    res.send({
+    res.json({
       errors: err.errors,
     });
   } else {
