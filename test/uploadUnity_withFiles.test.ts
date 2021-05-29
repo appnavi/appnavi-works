@@ -16,12 +16,15 @@ import {
   ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
   ERROR_MESSAGE_WORK_NOT_FOUND as WORK_NOT_FOUND,
+  ERROR_MESSAGE_WORK_DIFFERENT_OWNER as WORK_DIFFERENT_OWNER,
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
   UPLOAD_UNITY_FIELD_WEBGL,
   UPLOAD_UNITY_FIELD_WINDOWS,
   UPLOAD_UNITY_FIELDS,
   DIRECTORY_NAME_BACKUPS,
+  ERROR_MESSAGE_RENAME_TO_SAME,
+  ERROR_MESSAGE_RENAME_TO_EXISTING,
 } from "../src/utils/constants";
 
 type MockFile = {
@@ -331,7 +334,7 @@ describe("Unity作品のリネーム", () => {
     await clearData(creatorId, workId);
   });
   afterAll(() => logout(app));
-  it("存在しない作品はリネームできない", (done) => {
+  it("作者IDが設定されていないとリネームできない", (done) => {
     testSuccessfulUpload()
       .then(async () => {
         const size = await calculateCurrentStorageSizeBytes();
@@ -345,16 +348,318 @@ describe("Unity作品のリネーム", () => {
         request(app)
           .post("/account/work/rename")
           .type("form")
-          .field("creatorId", creatorId + "-1")
-          .field("workId", workId + "-1")
+          .field("workId", workId)
           .field("renamedCreatorId", creatorId + "-2")
           .field("renamedWorkId", workId + "-2")
           .expect(STATUS_CODE_BAD_REQUEST)
-          .expect(JSON.stringify({ errors: [WORK_NOT_FOUND] }))
+          .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
           .end(done);
       });
   });
-  it("条件を満たしていればリネームに成功する", (done) => {
+  it("作者IDが不適切だとリネームできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", "テスト")
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+          .end(done);
+      });
+  });
+  it("作品IDが設定されていないとリネームできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+          .end(done);
+      });
+  });
+  it("作品IDが不適切だとアップロードできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", "テスト")
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+          .end(done);
+      });
+  });
+  it("リネーム後の作者IDが設定されていないとリネームできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
+          .end(done);
+      });
+  });
+  it("リネーム後の作者IDが不適切だとリネームできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId + "-2")
+          .field("workId", workId)
+          .field("renamedCreatorId", "テスト")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
+          .end(done);
+      });
+  });
+  it("リネーム後の作品IDが設定されていないとリネームできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
+          .end(done);
+      });
+  });
+  it("リネーム後の作品IDが不適切だとアップロードできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId + "-2")
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", "テスト")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
+          .end(done);
+      });
+  });
+  it("存在しない作品はリネームできない", (done) => {
+    request(app)
+      .post("/account/work/rename")
+      .type("form")
+      .field("creatorId", creatorId)
+      .field("workId", workId)
+      .field("renamedCreatorId", creatorId + "-2")
+      .field("renamedWorkId", workId + "-2")
+      .expect(STATUS_CODE_BAD_REQUEST)
+      .expect(JSON.stringify({ errors: [WORK_NOT_FOUND] }))
+      .end(done);
+  });
+  it("別人の投稿した作品はリネームできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(async () => {
+        const works = await WorkModel.find({
+          creatorId: creatorId,
+          workId: workId,
+        });
+        expect(works.length).toBe(1);
+        const work = works[0];
+        work.owner = theirId;
+        work.save();
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [WORK_DIFFERENT_OWNER] }))
+          .end(done);
+      });
+  });
+  it("リネーム前とリネーム後が同じだとはリネームできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId)
+          .field("renamedWorkId", workId)
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_SAME] }))
+          .end(done);
+      });
+  });
+  it("既に存在する作品を上書きするようなリネームはできない", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() =>
+        WorkModel.create({
+          creatorId: creatorId + "2",
+          workId: workId + "2",
+          owner: theirId,
+          fileSize: 100,
+        })
+      )
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId + "2")
+          .field("renamedWorkId", workId + "2")
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(
+            JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_EXISTING] })
+          )
+          .end(done);
+      });
+  });
+  it("条件を満たしていれば作者IDのリネームに成功する", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId + "-2")
+          .field("renamedWorkId", workId)
+          .expect(STATUS_CODE_SUCCESS)
+          .end(done);
+      });
+  });
+  it("条件を満たしていれば作品IDのリネームに成功する", (done) => {
+    testSuccessfulUpload()
+      .then(async () => {
+        const size = await calculateCurrentStorageSizeBytes();
+        const actualSize = mockFiles.reduce(
+          (accumlator, current) => accumlator + current.file.length,
+          0
+        );
+        expect(size).toBe(actualSize);
+      })
+      .then(() => {
+        request(app)
+          .post("/account/work/rename")
+          .type("form")
+          .field("creatorId", creatorId)
+          .field("workId", workId)
+          .field("renamedCreatorId", creatorId)
+          .field("renamedWorkId", workId + "-2")
+          .expect(STATUS_CODE_SUCCESS)
+          .end(done);
+      });
+  });
+  it("条件を満たしていれば作者IDと作品ID両方のリネームに成功する", (done) => {
     testSuccessfulUpload()
       .then(async () => {
         const size = await calculateCurrentStorageSizeBytes();

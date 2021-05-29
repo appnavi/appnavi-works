@@ -36,6 +36,10 @@ export const ERROR_MESSAGE_WORK_DIFFERENT_OWNER =
   "こ作品の所有者ではありません。";
 export const ERROR_MESSAGE_MULTIPLE_WORKS_FOUND =
   "同じ作品が複数登録されています。";
+export const ERROR_MESSAGE_RENAME_TO_SAME =
+  "リネーム前とリネーム後が同じです。";
+export const ERROR_MESSAGE_RENAME_TO_EXISTING =
+  "既に存在する作品を上書きすることはできません。";
 
 export const UPLOAD_UNITY_FIELD_WEBGL = "webgl";
 export const UPLOAD_UNITY_FIELD_WINDOWS = "windows";

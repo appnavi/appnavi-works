@@ -12,6 +12,8 @@ import {
   ERROR_MESSAGE_WORK_NOT_FOUND,
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
   ERROR_MESSAGE_MULTIPLE_WORKS_FOUND,
+  ERROR_MESSAGE_RENAME_TO_SAME,
+  ERROR_MESSAGE_RENAME_TO_EXISTING,
 } from "../utils/constants";
 import { BadRequestError } from "../utils/errors";
 
@@ -188,7 +190,7 @@ export async function renameWork(
   renamedWorkId: string
 ): Promise<void> {
   if (creatorId === renamedCreatorId && workId === renamedWorkId) {
-    throw new BadRequestError("リネーム前とリネーム後が同じです。");
+    throw new BadRequestError(ERROR_MESSAGE_RENAME_TO_SAME);
   }
   const work = await findWorkOrThrow(creatorId, workId, userId);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
@@ -198,7 +200,7 @@ export async function renameWork(
     workId: renamedWorkId,
   });
   if (renamedWorks.length > 0) {
-    throw new BadRequestError("既に存在する作品を上書きすることはできません。");
+    throw new BadRequestError(ERROR_MESSAGE_RENAME_TO_EXISTING);
   }
   const renamedDir = path.join(
     DIRECTORY_NAME_UPLOADS,
