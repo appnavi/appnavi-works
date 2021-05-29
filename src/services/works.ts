@@ -14,8 +14,9 @@ import {
   ERROR_MESSAGE_MULTIPLE_WORKS_FOUND,
   ERROR_MESSAGE_RENAME_TO_SAME,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
+  ERROR_MESSAGE_BACKUP_NOT_FOUND,
 } from "../utils/constants";
-import { BadRequestError } from "../utils/errors";
+import { BadRequestError, RestoreBackupError } from "../utils/errors";
 
 const idRegex = /^[0-9a-z-]+$/;
 export const creatorIdSchema = yup
@@ -150,7 +151,10 @@ export async function restoreBackup(
     backupToRestore === undefined ||
     !(await fsExtra.pathExists(backupToRestorePath))
   ) {
-    throw new Error(`バックアップ${backupName}が見つかりませんでした。`);
+    throw new RestoreBackupError(
+      [ERROR_MESSAGE_BACKUP_NOT_FOUND],
+      [creatorId, workId, userId, backupName]
+    );
   }
   await fsExtra.move(backupToRestorePath, workPath);
   work.fileSize = backupToRestore.fileSize;

@@ -40,6 +40,8 @@ export const ERROR_MESSAGE_RENAME_TO_SAME =
   "リネーム前とリネーム後が同じです。";
 export const ERROR_MESSAGE_RENAME_TO_EXISTING =
   "既に存在する作品を上書きすることはできません。";
+export const ERROR_MESSAGE_BACKUP_NOT_FOUND =
+  "バックアップが見つかりませんでした。";
 
 export const UPLOAD_UNITY_FIELD_WEBGL = "webgl";
 export const UPLOAD_UNITY_FIELD_WINDOWS = "windows";
