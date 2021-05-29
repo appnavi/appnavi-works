@@ -376,7 +376,7 @@ describe("Unity作品のリネーム", () => {
       .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
       .end(done);
   });
-  it("作品IDが不適切だとアップロードできない", (done) => {
+  it("作品IDが不適切だとリネームできない", (done) => {
     request(app)
       .post("/account/work/rename")
       .type("form")
@@ -422,7 +422,7 @@ describe("Unity作品のリネーム", () => {
       .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
       .end(done);
   });
-  it("リネーム後の作品IDが不適切だとアップロードできない", (done) => {
+  it("リネーム後の作品IDが不適切だとリネームできない", (done) => {
     request(app)
       .post("/account/work/rename")
       .type("form")
