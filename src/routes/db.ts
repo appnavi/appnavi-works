@@ -6,10 +6,11 @@ import { render } from "../utils/helpers";
 const dbRouter = express.Router();
 
 dbRouter.use(ensureAuthenticated);
-dbRouter.get("/works", function (req, res, next) {
+
+dbRouter.get("/works/raw", function (req, res, next) {
   WorkModel.find()
     .then((works) => {
-      render("db/works", req, res, {
+      render("db/works/raw", req, res, {
         works: works,
       });
     })
@@ -17,10 +18,11 @@ dbRouter.get("/works", function (req, res, next) {
       next(err);
     });
 });
-dbRouter.get("/users", function (req, res, next) {
+
+dbRouter.get("/users/raw", function (req, res, next) {
   UserModel.find()
     .then((users) => {
-      render("db/users", req, res, {
+      render("db/users/raw", req, res, {
         users: users,
       });
     })
