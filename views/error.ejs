@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html lang="ja">
-
-<head>
-  <title>エラー</title>
-  <%- include('common/head') %> 
-</head>
-
-<body>
-  <%- include('common/navbar') %> 
-  <main>
-    <div class="container">
-      <h3 class="header">
-        <% if (status===404){ %>
-          ページが見つかりませんでした
-        <% }else{ %>
-          エラーが発生しました：<%= status %>
+  <head>
+    <title>エラー</title>
+    <%- include('common/head') %>
+  </head>
+  <body>
+    <%- include('common/navbar') %>
+    <main>
+      <div class="container">
+        <h3 class="header">
+          <% if (status===404){ %>
+            ページが見つかりませんでした
+          <% }else{ %>
+            エラーが発生しました：<%= status %>
+          <% } %>
+        </h3>
+        <p class="flow-text">
+          <%= message %>
+        </p>
+        <% if (error.stack) { %>
+          <div class=""> <%= error.stack %> </div>
         <% } %>
-      </h3>
-      <p class="flow-text">
-        <%= message %>
-      </p>
-      <% if (error.stack) { %> 
-        <div class=""> <%= error.stack %> </div>
-      <% } %> 
-    </div>
-  </main>
-  <%- include('common/footer') %> 
-  <%- include('common/scripts') %> 
-</body>
-
+      </div>
+    </main>
+    <%- include('common/footer') %>
+    <%- include('common/scripts') %>
+  </body>
 </html>

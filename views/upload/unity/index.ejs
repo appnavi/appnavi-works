@@ -1,94 +1,91 @@
 <!DOCTYPE html>
 <html lang="ja">
-
-<head>
-  <title>アップロード</title>
-  <%- include('common/head') %>
-  <script src="/private/javascripts/upload/unity.js" defer></script>
-  <link rel="stylesheet" href="/private/stylesheets/upload/unity.css">
-</head>
-
-<body>
-  <%- include('common/navbar') %>
-  <main class="container">
-    <h3 class="header">Unityゲームを投稿する</h3>
-    <form action="webgl" method="POST" enctype="multipart/form-data">
-      <div class="row card-panel">
-        <div class="input-field">
-          <input id="creator_id" type="text" class="validate" name="creator_id" pattern="^[0-9a-z\-]+$" required
+  <head>
+    <title>アップロード</title>
+    <%- include('common/head') %>
+    <script src="/private/javascripts/upload/unity.js" defer></script>
+    <link rel="stylesheet" href="/private/stylesheets/upload/unity.css">
+  </head>
+  <body>
+    <%- include('common/navbar') %>
+    <main class="container">
+      <h3 class="header">Unityゲームを投稿する</h3>
+      <form action="webgl" method="POST" enctype="multipart/form-data">
+        <div class="row card-panel">
+          <div class="input-field">
+            <input id="creator_id" type="text" class="validate" name="creator_id" pattern="^[0-9a-z\-]+$" required
             aria-required value="<%- defaultCreatorId %>"/>
-          <label for="creator_id">作者ID</label>
-          <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
-        </div>
-        <div class="input-field">
-          <input id="work_id" type="text" class="validate" name="work_id" pattern="^[0-9a-z\-]+$" required
+            <label for="creator_id">作者ID</label>
+            <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
+          </div>
+          <div class="input-field">
+            <input id="work_id" type="text" class="validate" name="work_id" pattern="^[0-9a-z\-]+$" required
             aria-required />
-          <label for="work_id">作品ID</label>
-          <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
-        </div>
-      </div>
-      <div class="row card-panel">
-        <h4 class="upload-text">WebGL(フォルダ)</h4>
-        <blockquote class="message-hidden-folder-files webgl hide">
-          隠しフォルダ(.gitなど)内のフォルダはアップロードされません。
-        </blockquote>
-        <div class="input-field file-field-frame webgl">
-          <div class="placeholder">
-            <h6>
-              ここにフォルダをドロップ
-            </h6>
-            <div>または</div>
-            <h6>
-              クリックしてフォルダを選択
-            </h6>
+            <label for="work_id">作品ID</label>
+            <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
           </div>
-          <input class="file-path validate" type="file" name="webgl" webkitdirectory/>
         </div>
-      </div>
-      <div class="row card-panel">
-        <h4 class="upload-text">Windows(Zipファイル)</h4>
-        <div class="input-field file-field-frame windows">
-          <div class="placeholder">
-            <h6>
-              ここにZipファイルをドロップ
-            </h6>
-            <div>または</div>
-            <h6>
-              クリックしてZipファイルを選択
-            </h6>
-          </div>
-          <input class="file-path validate" type="file" name="windows" accept=".zip"/>
-        </div>
-      </div>
-      <ul class="collapsible">
-        <li>
-          <div class="collapsible-header">
-            <i class="material-icons">keyboard_arrow_down</i>
-            <span>プレビュー</span>
-          </div>
-          <div class="collapsible-body">
-            <div class="file-list-header"><%- url %>/works/<span class="creator_id"><%- defaultCreatorId ?? "(作者ID)" %></span>/<span
-                class="work_id">(作品ID)</span>/</div>
-            <div class="file-list">
-              <ul>
-                <li class="webgl">webgl</li>
-                <li class="windows">windows</li>
-              </ul>
+        <div class="row card-panel">
+          <h4 class="upload-text">WebGL(フォルダ)</h4>
+          <blockquote class="message-hidden-folder-files webgl hide">
+            隠しフォルダ(.gitなど)内のフォルダはアップロードされません。
+          </blockquote>
+          <div class="input-field file-field-frame webgl">
+            <div class="placeholder">
+              <h6>
+                ここにフォルダをドロップ
+              </h6>
+              <div>または</div>
+              <h6>
+                クリックしてフォルダを選択
+              </h6>
             </div>
+            <input class="file-path validate" type="file" name="webgl" webkitdirectory/>
           </div>
-        </li>
-      </ul>
-      <div class="row center">
-        <button type="submit" class="btn uploadButton">アップロードする</button>
+        </div>
+        <div class="row card-panel">
+          <h4 class="upload-text">Windows(Zipファイル)</h4>
+          <div class="input-field file-field-frame windows">
+            <div class="placeholder">
+              <h6>
+                ここにZipファイルをドロップ
+              </h6>
+              <div>または</div>
+              <h6>
+                クリックしてZipファイルを選択
+              </h6>
+            </div>
+            <input class="file-path validate" type="file" name="windows" accept=".zip"/>
+          </div>
+        </div>
+        <ul class="collapsible">
+          <li>
+            <div class="collapsible-header">
+              <i class="material-icons">keyboard_arrow_down</i>
+              <span>プレビュー</span>
+            </div>
+            <div class="collapsible-body">
+              <div class="file-list-header"><%- url %>/works/<span class="creator_id"><%- defaultCreatorId ?? "(作者ID)" %></span>/<span
+                class="work_id">(作品ID)</span>/</div>
+              <div class="file-list">
+                <ul>
+                  <li class="webgl">webgl</li>
+                  <li class="windows">windows</li>
+                </ul>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="row center">
+          <button type="submit" class="btn uploadButton">アップロードする</button>
+        </div>
+      </form>
+      <div class="uploadingIndicator progress hide">
+        <div class="indeterminate"></div>
       </div>
-    </form>
-    <div class="uploadingIndicator progress hide">
-      <div class="indeterminate"></div>
-    </div>
-  </main>
-  <%- include('common/dialogs') %>
-  <%- include('common/footer') %>
-  <%- include('common/scripts') %>
-</body>
-
+    </main>
+    <%- include('common/dialogs') %>
+    <%- include('common/footer') %>
+    <%- include('common/scripts') %>
+  </body>
 </html>

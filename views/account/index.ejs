@@ -1,122 +1,122 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アカウント</title>
-  <%- include('common/head') %>
-  <script src="/private/javascripts/account.js" defer></script>
-</head>
-<body>
-  <%- include('common/navbar') %>
-  <main>
-    <div class="container">
-      <h3 class="header">アカウント</h3>
-      <div class="section">
-        <h5 class="header">設定</h5>
-        <form action="" method="POST" class="col s12 default_creator_id-form">
-          <div class="row">
-            <div class="input-field col s12">
-              <input id="default_creator_id" type="text" class="validate" name="default_creator_id" required value="<%- defaultCreatorId %>" pattern="^[0-9a-z\-]+$">
-              <label for="default_creator_id">デフォルトの作者ID</label>
-              <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
-            </div>
-          </div>
-          <div class="row center">
-            <button type="submit" class="btn uploadButton">設定する</button>
-          </div>
-        </form>
-      </div>
-      <div class="section">
-        <h3 class="header">作品一覧</h3>
-        <% works.forEach(work=> { %> 
-          <div class="section">
-            <h4><%- work.creatorId %>/<%- work.workId %></h4>
-            <ul>
-              <li>ファイルサイズ：<%- work.fileSize %>バイト</li>
-              <li>
-                <%- include ("common/format-date", {date: work.uploadedAt}) %> 
-                アップロード
-              </li>
-            </ul>
-            <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="btn" target="_blank"><i class="material-icons left">open_in_new</i>作品へ移動</a>
-            <a class="waves-effect waves-light btn renameWorkButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>">
-              <i class="material-icons left">edit</i>作者名・作品名の編集
-            </a>
-            <a class="waves-effect waves-light btn red deleteWorkButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>">
-              <i class="material-icons left">delete</i>作品の削除
-            </a>
-            <% if(work.backups.length > 0){ %> 
-              <ul class="collection with-header">
-                <div class="collection-header">
-                  <h5>バックアップ</h5>
-                </div>
-                <% work.backups.forEach(backup =>{ %> 
-                  <li class="collection-item valign-wrapper">
-                    <div class="row valign-wrapper" style="width: 100%; margin-bottom:0;">
-                      <div class="col s1">
-                        <%- backup.name %>
-                      </div>
-                      <div class="col s3">
-                        <%- backup.fileSize %>バイト
-                      </div>
-                      <div class="col s4">
-                        <%- backup.uploadedAt.getFullYear() %>年
-                        <%- backup.uploadedAt.getMonth() + 1 %>月
-                        <%- backup.uploadedAt.getDate() %>日
-                        <%- backup.uploadedAt.getHours() %>時
-                        <%- backup.uploadedAt.getMinutes() %>分
-                        <%- backup.uploadedAt.getSeconds() %>秒
-                        アップロード
-                      </div>
-                      <div class="col s4 right-align">
-                        <a class="waves-effect waves-light btn restoreBackupButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
-                          <i class="material-icons left">restore</i>復元
-                        </a>
-                        <a class="waves-effect waves-light btn red deleteBackupButton"  data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
-                          <i class="material-icons left">delete_forever</i>削除
-                        </a>
-                      </div>      
-                    </div>
-                  </li>
-                <% }) %> 
-              </ul>
-            <% } %> 
-          </div>
-        <% }) %> 
-        <div class="divider"></div>
-      </div>
-    </div>
-  </main>
-  <div class="renameWorkDialog modal">
-    <div class="modal-content">
-      <h4 class="title">作品ID・作者IDの編集</h4>
-      <div class="content">
-        <div class="row">
-          <form class="col s12">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アカウント</title>
+    <%- include('common/head') %>
+    <script src="/private/javascripts/account.js" defer></script>
+  </head>
+  <body>
+    <%- include('common/navbar') %>
+    <main>
+      <div class="container">
+        <h3 class="header">アカウント</h3>
+        <div class="section">
+          <h5 class="header">設定</h5>
+          <form action="" method="POST" class="col s12 default_creator_id-form">
             <div class="row">
-              <div class="input-field col s6">
-                <input id="renamedCreatorId" name="renamedCreatorId" type="text" class="validate" pattern="^[0-9a-z\-]+$" required>
-                <label for="renamedCreatorId">作者ID</label>
+              <div class="input-field col s12">
+                <input id="default_creator_id" type="text" class="validate" name="default_creator_id" required value="<%- defaultCreatorId %>" pattern="^[0-9a-z\-]+$">
+                <label for="default_creator_id">デフォルトの作者ID</label>
                 <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
               </div>
-              <div class="input-field col s6">
-                <input id="renamedWorkId" name="renamedWorkId" type="text" class="validate" pattern="^[0-9a-z\-]+$" required>
-                <label for="renamedWorkId">作品ID</label>
-                <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
-              </div>
+            </div>
+            <div class="row center">
+              <button type="submit" class="btn uploadButton">設定する</button>
             </div>
           </form>
         </div>
+        <div class="section">
+          <h3 class="header">作品一覧</h3>
+          <% works.forEach(work=> { %>
+            <div class="section">
+              <h4><%- work.creatorId %>/<%- work.workId %></h4>
+              <ul>
+                <li>ファイルサイズ：<%- work.fileSize %>バイト</li>
+                <li>
+                  <%- include ("common/format-date", {date: work.uploadedAt}) %>
+                  アップロード
+                </li>
+              </ul>
+              <a href="<%- urlPrefix %>/<%- work.creatorId %>/<%- work.workId %>" class="btn" target="_blank"><i class="material-icons left">open_in_new</i>作品へ移動</a>
+              <a class="waves-effect waves-light btn renameWorkButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>">
+                <i class="material-icons left">edit</i>作者名・作品名の編集
+              </a>
+              <a class="waves-effect waves-light btn red deleteWorkButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>">
+                <i class="material-icons left">delete</i>作品の削除
+              </a>
+              <% if(work.backups.length > 0){ %>
+                <ul class="collection with-header">
+                  <div class="collection-header">
+                    <h5>バックアップ</h5>
+                  </div>
+                  <% work.backups.forEach(backup =>{ %>
+                    <li class="collection-item valign-wrapper">
+                      <div class="row valign-wrapper" style="width: 100%; margin-bottom:0;">
+                        <div class="col s1">
+                          <%- backup.name %>
+                        </div>
+                        <div class="col s3">
+                          <%- backup.fileSize %>バイト
+                        </div>
+                        <div class="col s4">
+                          <%- backup.uploadedAt.getFullYear() %>年
+                          <%- backup.uploadedAt.getMonth() + 1 %>月
+                          <%- backup.uploadedAt.getDate() %>日
+                          <%- backup.uploadedAt.getHours() %>時
+                          <%- backup.uploadedAt.getMinutes() %>分
+                          <%- backup.uploadedAt.getSeconds() %>秒
+                          アップロード
+                        </div>
+                        <div class="col s4 right-align">
+                          <a class="waves-effect waves-light btn restoreBackupButton" data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
+                            <i class="material-icons left">restore</i>復元
+                          </a>
+                          <a class="waves-effect waves-light btn red deleteBackupButton"  data-creator-id="<%- work.creatorId %>" data-work-id="<%- work.workId %>" data-backup-name="<%- backup.name %>">
+                            <i class="material-icons left">delete_forever</i>削除
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                  <% }) %>
+                </ul>
+              <% } %>
+            </div>
+          <% }) %>
+          <div class="divider"></div>
+        </div>
+      </div>
+    </main>
+    <div class="renameWorkDialog modal">
+      <div class="modal-content">
+        <h4 class="title">作品ID・作者IDの編集</h4>
+        <div class="content">
+          <div class="row">
+            <form class="col s12">
+              <div class="row">
+                <div class="input-field col s6">
+                  <input id="renamedCreatorId" name="renamedCreatorId" type="text" class="validate" pattern="^[0-9a-z\-]+$" required>
+                  <label for="renamedCreatorId">作者ID</label>
+                  <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
+                </div>
+                <div class="input-field col s6">
+                  <input id="renamedWorkId" name="renamedWorkId" type="text" class="validate" pattern="^[0-9a-z\-]+$" required>
+                  <label for="renamedWorkId">作品ID</label>
+                  <span class="helper-text" data-error="数字・アルファベット小文字・ハイフンのみで入力してください" data-success="問題なし"></span>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-close negativeButton waves-effect waves-light btn-flat cancel">キャンセル</a>
+        <a href="#!" class="modal-close positiveButton waves-effect waves-light btn edit">編集する</a>
       </div>
     </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close negativeButton waves-effect waves-light btn-flat cancel">キャンセル</a>
-      <a href="#!" class="modal-close positiveButton waves-effect waves-light btn edit">編集する</a>
-    </div>
-  </div>
-  <%- include('common/dialogs') %>
-  <%- include('common/footer') %>
-  <%- include('common/scripts') %>
-</body>
+    <%- include('common/dialogs') %>
+    <%- include('common/footer') %>
+    <%- include('common/scripts') %>
+  </body>
 </html>

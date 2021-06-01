@@ -1,50 +1,47 @@
 <!DOCTYPE html>
 <html lang="ja">
-
-<head>
-  <title>HOME</title>
-  <%- include('common/head') %>
-  <link rel="stylesheet" href="/stylesheets/works.css">
-</head>
-
-<body>
-  <nav class="nav-extended">
-    <div class="nav-wrapper">
-      <a class="brand-logo center" href="https://opuappnavi.com/#/">アプリNavi</a>
-    </div>
-    <div class="nav-content row">
-      <div class="col s11 offset-s1">
-        <% const directories = directory.split("/").filter((p)=> p.length > 0) %>
-        <% const currentDirectory = directories.pop(); %> 
-        <% directories.forEach((value, i)=>{ %>
-          <% const link=`/${directories.slice(0, i + 1).join("/")}` %>
-          <a class="breadcrumb" href="<%- link %>"><%- value %></a>
-        <% }) %>
-        <span class="breadcrumb"><%- currentDirectory %></span>
+  <head>
+    <title>HOME</title>
+    <%- include('common/head') %>
+    <link rel="stylesheet" href="/stylesheets/works.css">
+  </head>
+  <body>
+    <nav class="nav-extended">
+      <div class="nav-wrapper">
+        <a class="brand-logo center" href="https://opuappnavi.com/#/">アプリNavi</a>
       </div>
-    </div>
-  </nav>
-  <main class="container">
-    <div class="row">
-      <% fileList.filter((file)=>file.name !== "..").forEach((file)=>{ %>
-        <% const icon=file.stat.isDirectory() ? '<i class="fas fa-folder"></i>'
-          : '<i class="fas fa-file"></i>' ; %>
-        <div class="col s6 l3 center">
-          <a href="<%- directory %><%- file.name %>">
-            <div class="card hoverable file-card">
-              <div class="card-image">
-                <%- icon %>
-              </div>
-              <span class="card-title truncate">
-                <%- file.name %>
-              </span>
-            </div>
-          </a>
+      <div class="nav-content row">
+        <div class="col s11 offset-s1">
+          <% const directories = directory.split("/").filter((p)=> p.length > 0) %>
+          <% const currentDirectory = directories.pop(); %>
+          <% directories.forEach((value, i)=>{ %>
+            <% const link=`/${directories.slice(0, i + 1).join("/")}` %>
+            <a class="breadcrumb" href="<%- link %>"><%- value %></a>
+          <% }) %>
+          <span class="breadcrumb"><%- currentDirectory %></span>
         </div>
-      <% }) %>
-    </div>
-  </main>
-  <%- include('common/scripts') %>
-</body>
-
+      </div>
+    </nav>
+    <main class="container">
+      <div class="row">
+        <% fileList.filter((file)=>file.name !== "..").forEach((file)=>{ %>
+          <% const icon=file.stat.isDirectory() ? '<i class="fas fa-folder"></i>'
+          : '<i class="fas fa-file"></i>' ; %>
+          <div class="col s6 l3 center">
+            <a href="<%- directory %><%- file.name %>">
+              <div class="card hoverable file-card">
+                <div class="card-image">
+                  <%- icon %>
+                </div>
+                <span class="card-title truncate">
+                  <%- file.name %>
+                </span>
+              </div>
+            </a>
+          </div>
+        <% }) %>
+      </div>
+    </main>
+    <%- include('common/scripts') %>
+  </body>
 </html>
