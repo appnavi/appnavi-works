@@ -32,7 +32,12 @@ authRouter.get(
       res.status(403).json("認証に失敗しました。").end();
       return;
     }
-    const userId = req.user?.id ?? "";
+    const userId = req.user?.id;
+    if (userId === undefined) {
+      logger.system.error(`ユーザーIDが取得できませんでした`, req.user);
+      res.status(403).json("認証に失敗しました。").end();
+      return;
+    }
     logger.system.info(`ユーザー${userId}がSlack認証でログインしました。`);
 
     const userDocument = await findOrCreateUser(req);
