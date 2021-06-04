@@ -31,6 +31,7 @@ authRouter
   .post(
     passport.authenticate("local", { failWithError: true }),
     afterGuestLogIn,
+    logLastLogin,
     (req, res) => {
       redirect(req, res);
     }
