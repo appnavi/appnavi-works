@@ -1,5 +1,6 @@
 # フォルダ構造
 
+- 📁[.husky](#husky)  
 - 📁[backups](#backups)  
   - 📁[uploads](#backupsuploads)  
 - 📁[dist](#dist)  
@@ -45,6 +46,10 @@
 - [docker-test.env](#docker-testenv)
 
 ---
+
+## 📁.husky
+
+gitのコマンド実行時に自動実行する処理を指定するファイルがあるフォルダー。
 
 ## 📁backups
 
