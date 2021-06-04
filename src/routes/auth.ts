@@ -17,7 +17,7 @@ authRouter.get("/", function (req, res) {
     res.redirect("/");
     return;
   }
-  render("auth/login", req, res);
+  render("auth", req, res);
 });
 authRouter
   .route("/guest")
@@ -43,8 +43,7 @@ authRouter.use(
     err: NodeJS.Dict<unknown>,
     req: express.Request,
     res: express.Response,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
+    next: express.NextFunction
   ) => {
     if (
       typeof err.status === "number" &&
