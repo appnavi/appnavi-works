@@ -9,24 +9,32 @@
     <main>
       <div class="container">
         <h3 class="header">ログイン</h3>
-        <p class="flow-text">
-          このサイトはアプリNavi部員専用です。アプリNavi部員でない人はアクセスすることができません。
-        </p>
-        <p class="flow-text">
-          アプリNavi部員は下のボタンを押してログインしてください。
-        </p>
-        <div class="center-align">
-          <a href="/auth/slack">
-            <img
+        <div class="section">
+          <p class="flow-text">
+            このサイトはアプリNavi部員専用です。アプリNavi部員でない人はアクセスすることができません。
+          </p>
+          <p class="flow-text">
+            アプリNavi部員は下のボタンを押してログインしてください。
+          </p>
+          <div class="center-align">
+            <a href="/auth/slack">
+              <img
               src="https://api.slack.com/img/sign_in_with_slack.png"
               style="width: 172px; height: 40px"
               alt="Sign In With Slack"
-            />
+              />
             </a>
           </div>
         </div>
-      </main>
-      <%- include('common/footer') %>
-      <%- include('common/scripts') %>
-    </body>
-  </html>
+        <div class="section">
+          <p class="flow-text">ゲストとしてログインするには下のボタンを押してください。</p>
+          <div class="center-align">
+            <a href="/auth/guest" class="btn-large">ゲストとしてログインする</a>
+          </div>
+        </div>
+      </div>
+    </main>
+    <%- include('common/footer') %>
+    <%- include('common/scripts') %>
+  </body>
+</html>
