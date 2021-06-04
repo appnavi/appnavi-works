@@ -28,3 +28,8 @@ type SlackUser = {
   id: string;
   displayName: string;
 };
+type GuestUser = {
+  id: string;
+  name: string;
+  isGuest: true;
+};

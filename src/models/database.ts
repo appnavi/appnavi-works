@@ -31,12 +31,17 @@ export const WorkModel = model<WorkDocument>("Work", workSchema);
 export interface UserDocument extends Document {
   userId: string;
   defaultCreatorId: string;
+  hashedPassword?: string;
   lastLogIn: Date;
 }
 const userSchema = new Schema(
   {
     userId: String,
     defaultCreatorId: String,
+    hashedPassword: {
+      type: String,
+      required: false,
+    },
     lastLogIn: Date,
   },
   {

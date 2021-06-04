@@ -37,6 +37,14 @@ function isObject(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x != null;
 }
 
+export function isGuestUser(user: unknown): user is GuestUser {
+  if (!isObject(user)) return false;
+  if (typeof user.id !== "string") return false;
+  if (typeof user.name !== "string") return false;
+  if (user.isGuest !== true) return false;
+  return true;
+}
+
 export function isSlackUser(user: unknown): user is SlackUser {
   if (!isObject(user)) return false;
 
@@ -44,25 +52,11 @@ export function isSlackUser(user: unknown): user is SlackUser {
   if (typeof user.user.id !== "string") return false;
   if (typeof user.user.name !== "string") return false;
   if (typeof user.user.image_24 !== "string") return false;
-  if (typeof user.user.image_32 !== "string") return false;
-  if (typeof user.user.image_48 !== "string") return false;
-  if (typeof user.user.image_72 !== "string") return false;
-  if (typeof user.user.image_192 !== "string") return false;
-  if (typeof user.user.image_512 !== "string") return false;
-  if (typeof user.user.image_1024 !== "string") return false;
 
   if (!isObject(user.team)) return false;
   if (typeof user.team.id !== "string") return false;
   if (typeof user.team.name !== "string") return false;
   if (typeof user.team.domain !== "string") return false;
-  if (typeof user.team.image_102 !== "string") return false;
-  if (typeof user.team.image_132 !== "string") return false;
-  if (typeof user.team.image_230 !== "string") return false;
-  if (typeof user.team.image_34 !== "string") return false;
-  if (typeof user.team.image_44 !== "string") return false;
-  if (typeof user.team.image_68 !== "string") return false;
-  if (typeof user.team.image_88 !== "string") return false;
-  if (typeof user.team.image_default !== "boolean") return false;
 
   if (typeof user.ok !== "boolean") return false;
   if (typeof user.provider !== "string") return false;
@@ -91,6 +85,7 @@ export function render(
   options: Record<string, unknown> = {}
 ): void {
   const userId = getUserId(req);
+  console.log(userId);
   res.render(view, {
     user:
       userId !== undefined

@@ -19,6 +19,40 @@ authRouter.get("/", function (req, res) {
   }
   render("auth/login", req, res);
 });
+authRouter
+  .route("/guest")
+  .get((req, res) => {
+    if (isAuthenticated(req)) {
+      res.redirect("/");
+      return;
+    }
+    render("auth/guest", req, res);
+  })
+  .post(passport.authenticate("local", { failWithError: true }), (req, res) => {
+    redirect(req, res);
+  });
+
+authRouter.use(
+  "/guest",
+  (
+    err: NodeJS.Dict<unknown>,
+    req: express.Request,
+    res: express.Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
+  ) => {
+    if (
+      typeof err.status === "number" &&
+      err.status === STATUS_CODE_UNAUTHORIZED
+    ) {
+      render("auth/guest", req, res, {
+        error: "ユーザーIDまたはパスワードが違います。",
+      });
+      return;
+    }
+    next(err);
+  }
+);
 authRouter.get("/slack", passport.authenticate("slack"));
 authRouter.get(
   "/redirect",
@@ -26,15 +60,7 @@ authRouter.get(
     failureRedirect: "/auth/error",
   }),
   afterSlackLogin,
-  wrap(async (req, _res, next) => {
-    const userDocument = await findOrCreateUser(req);
-    await userDocument.updateOne({
-      $set: {
-        lastLogIn: new Date(),
-      },
-    });
-    next();
-  }),
+  wrap(logLastLogin),
   (req, res) => {
     redirect(req, res);
   }
@@ -44,6 +70,20 @@ authRouter.all("/logout", (req, res) => {
   req.session = undefined;
   res.redirect("/auth");
 });
+
+async function logLastLogin(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+): Promise<void> {
+  const userDocument = await findOrCreateUser(req);
+  await userDocument.updateOne({
+    $set: {
+      lastLogIn: new Date(),
+    },
+  });
+  next();
+}
 
 function afterSlackLogin(
   req: express.Request,
