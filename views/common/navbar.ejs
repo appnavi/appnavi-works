@@ -10,7 +10,9 @@
       <ul id="nav-mobile" class="right">
         <li>
           <a class="navbar-dropdown-trigger valign-wrapper" href="#!" data-target="navbar-dropdown">
-            <img src="<%- user.image_24 %> " alt="User Avatar" class="circle responsive-img navbar-avatar">
+            <% if (typeof(user.avatar_url) !== "undefined") { %> 
+              <img src="<%- user.avatar_url %> " alt="User Avatar" class="circle responsive-img navbar-avatar">
+            <% } %> 
             <%-user.name %>
             <i class="material-icons right">arrow_drop_down</i>
           </a>

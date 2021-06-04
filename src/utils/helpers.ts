@@ -2,6 +2,7 @@ import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import createError from "http-errors";
+import { getAvatarUrl, getUserId, getUserName } from "../services/auth";
 import { DIRECTORY_NAME_VIEWS } from "./constants";
 
 type EnvKey =
@@ -32,6 +33,46 @@ export function getEnvNumber(key: "WORK_STORAGE_SIZE_BYTES" | "PORT"): number {
   return envNumber;
 }
 
+function isObject(x: unknown): x is Record<string, unknown> {
+  return typeof x === "object" && x != null;
+}
+
+export function isSlackUser(user: unknown): user is SlackUser {
+  if (!isObject(user)) return false;
+
+  if (!isObject(user.user)) return false;
+  if (typeof user.user.id !== "string") return false;
+  if (typeof user.user.name !== "string") return false;
+  if (typeof user.user.image_24 !== "string") return false;
+  if (typeof user.user.image_32 !== "string") return false;
+  if (typeof user.user.image_48 !== "string") return false;
+  if (typeof user.user.image_72 !== "string") return false;
+  if (typeof user.user.image_192 !== "string") return false;
+  if (typeof user.user.image_512 !== "string") return false;
+  if (typeof user.user.image_1024 !== "string") return false;
+
+  if (!isObject(user.team)) return false;
+  if (typeof user.team.id !== "string") return false;
+  if (typeof user.team.name !== "string") return false;
+  if (typeof user.team.domain !== "string") return false;
+  if (typeof user.team.image_102 !== "string") return false;
+  if (typeof user.team.image_132 !== "string") return false;
+  if (typeof user.team.image_230 !== "string") return false;
+  if (typeof user.team.image_34 !== "string") return false;
+  if (typeof user.team.image_44 !== "string") return false;
+  if (typeof user.team.image_68 !== "string") return false;
+  if (typeof user.team.image_88 !== "string") return false;
+  if (typeof user.team.image_default !== "boolean") return false;
+
+  if (typeof user.ok !== "boolean") return false;
+  if (typeof user.provider !== "string") return false;
+  if (typeof user.id !== "string") return false;
+  if (typeof user.displayName !== "string") return false;
+
+  if (user.id !== user.user.id) return false;
+  return true;
+}
+
 export const ignoreTypescriptFile = (
   req: express.Request,
   _res: express.Response,
@@ -49,8 +90,16 @@ export function render(
   res: express.Response,
   options: Record<string, unknown> = {}
 ): void {
+  const userId = getUserId(req);
   res.render(view, {
-    user: req.user?.user,
+    user:
+      userId !== undefined
+        ? {
+            id: userId,
+            avatar_url: getAvatarUrl(req),
+            name: getUserName(req),
+          }
+        : undefined,
     ...options,
   });
 }

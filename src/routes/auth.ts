@@ -4,7 +4,7 @@ import { passport } from "../app";
 import * as logger from "../modules/logger";
 import { findOrCreateUser, isAuthenticated, redirect } from "../services/auth";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
-import { getEnv, render, wrap } from "../utils/helpers";
+import { getEnv, render, wrap, isSlackUser } from "../utils/helpers";
 
 const authRouter = express.Router();
 
@@ -25,7 +25,7 @@ authRouter.get(
   passport.authenticate("slack", {
     failureRedirect: "/auth/error",
   }),
-  validateSlackUser,
+  afterSlackLogin,
   wrap(async (req, _res, next) => {
     const userDocument = await findOrCreateUser(req);
     await userDocument.updateOne({
@@ -45,26 +45,27 @@ authRouter.all("/logout", (req, res) => {
   res.redirect("/auth");
 });
 
-function validateSlackUser(
+function afterSlackLogin(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
-  const workspaceId = req.user?.team?.id;
+  const user = req.user;
+  if (!isSlackUser(user)) {
+    logger.system.error(`Slackによるログインではありません。`, req.user);
+    res.redirect("/auth/error");
+    return;
+  }
+  const workspaceId = user.team.id;
   if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
     logger.system.error(
-      `違うワークスペース${workspaceId ?? ""}の人がログインしようとしました。`
+      `違うワークスペース${workspaceId}の人がログインしようとしました。`,
+      req.user
     );
     res.redirect("/auth/error");
     return;
   }
-  const userId = req.user?.id;
-  if (userId === undefined) {
-    logger.system.error(`ユーザーIDが取得できませんでした`, req.user);
-    res.redirect("/auth/error");
-    return;
-  }
-  logger.system.info(`ユーザー${userId}がSlack認証でログインしました。`);
+  logger.system.info(`ユーザー${user.id}がSlack認証でログインしました。`);
   next();
 }
 

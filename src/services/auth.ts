@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { UserDocument, UserModel } from "../models/database";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
-import { getEnv } from "../utils/helpers";
+import { getEnv, isSlackUser } from "../utils/helpers";
 
 interface SessionData {
   redirect: { url: string };
@@ -21,7 +21,7 @@ function setRedirect(req: express.Request): void {
 export async function findOrCreateUser(
   req: express.Request
 ): Promise<UserDocument> {
-  const userId = getUserId(req);
+  const userId = getUserIdOrThrow(req);
   const users = await UserModel.find({
     userId,
   });
@@ -77,11 +77,31 @@ export function ensureAuthenticated(
 export function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
 }
-
-export function getUserId(req: express.Request): string {
-  const userId = req.user?.id;
-  if (userId === undefined) {
-    throw new Error("ユーザーIDを取得できませんでした。");
+export function getUserName(req: express.Request): string {
+  const user = req.user;
+  if (isSlackUser(user)) {
+    return user.user.name;
   }
-  return userId;
+  return "ゲスト";
+}
+export function getUserId(req: express.Request): string | undefined {
+  const user = req.user;
+  if (isSlackUser(user)) {
+    return user.id;
+  }
+}
+export function getUserIdOrThrow(req: express.Request): string {
+  const userId = getUserId(req);
+  if (userId !== undefined) {
+    return userId;
+  }
+  throw new Error("ユーザーIDを取得できませんでした。");
+}
+
+export function getAvatarUrl(req: express.Request): string | undefined {
+  const user = req.user;
+  if (isSlackUser(user)) {
+    return user.user.image_24;
+  }
+  return undefined;
 }

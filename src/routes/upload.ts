@@ -7,7 +7,7 @@ import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
   getDefaultCreatorId,
-  getUserId,
+  getUserIdOrThrow,
 } from "../services/auth";
 import {
   calculateWorkFileSize,
@@ -179,7 +179,7 @@ function getWorkDocument(
     locals.work = await findOrCreateWork(
       getCreatorIdFromHeader(req),
       getWorkIdFromHeader(req),
-      getUserId(req) ?? ""
+      getUserIdOrThrow(req)
     );
     next();
   })(req, res, next);
@@ -191,7 +191,7 @@ function preventEditByOtherPerson(
 ) {
   const locals = res.locals as Locals;
   const owner = locals.work.owner;
-  if (owner === getUserId(req)) {
+  if (owner === getUserIdOrThrow(req)) {
     next();
     return;
   }

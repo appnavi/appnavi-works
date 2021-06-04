@@ -5,7 +5,7 @@ import { UserModel, WorkModel } from "../models/database";
 import {
   ensureAuthenticated,
   getDefaultCreatorId,
-  getUserId,
+  getUserIdOrThrow,
 } from "../services/auth";
 import {
   creatorIdSchema,
@@ -38,7 +38,7 @@ accountRouter.get(
   wrap(async (req, res) => {
     const defaultCreatorId = await getDefaultCreatorId(req);
     const works = await WorkModel.find({
-      owner: getUserId(req),
+      owner: getUserIdOrThrow(req),
     });
     render("account", req, res, {
       defaultCreatorId,
@@ -65,7 +65,7 @@ accountRouter.post(
     }
     await UserModel.updateOne(
       {
-        userId: getUserId(req),
+        userId: getUserIdOrThrow(req),
       },
       {
         $set: {
@@ -105,7 +105,7 @@ accountRouter.post(
       return;
     }
     const { creatorId, workId, backupName } = params;
-    await restoreBackup(creatorId, workId, getUserId(req), backupName);
+    await restoreBackup(creatorId, workId, getUserIdOrThrow(req), backupName);
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );
@@ -128,7 +128,7 @@ accountRouter.post(
       return;
     }
     const { creatorId, workId, backupName } = params;
-    await deleteBackup(creatorId, workId, getUserId(req), backupName);
+    await deleteBackup(creatorId, workId, getUserIdOrThrow(req), backupName);
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );
@@ -160,7 +160,7 @@ accountRouter.post(
       await renameWork(
         creatorId,
         workId,
-        getUserId(req),
+        getUserIdOrThrow(req),
         renamedCreatorId,
         renamedWorkId
       );
@@ -193,7 +193,7 @@ accountRouter.post(
     }
     const { creatorId, workId } = params;
     try {
-      await deleteWork(creatorId, workId, getUserId(req));
+      await deleteWork(creatorId, workId, getUserIdOrThrow(req));
     } catch (err) {
       if (err instanceof BadRequestError) {
         throw new DeleteWorkError([err.message], params);
