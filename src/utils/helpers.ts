@@ -57,7 +57,6 @@ export function isSlackUser(user: unknown): user is SlackUser {
   if (typeof user.team.id !== "string") return false;
 
   if (typeof user.ok !== "boolean") return false;
-  if (typeof user.provider !== "string") return false;
   if (typeof user.id !== "string") return false;
   if (typeof user.displayName !== "string") return false;
 
