@@ -142,7 +142,6 @@ accountRouter.post(
   "/work/rename",
   multer().none(),
   wrap(async (req, res) => {
-    console.log(req.body);
     const params = req.body as {
       creatorId: string;
       workId: string;
@@ -180,7 +179,6 @@ accountRouter.post(
   "/work/delete",
   multer().none(),
   wrap(async (req, res) => {
-    console.log(req.body);
     const params = req.body as {
       creatorId: string;
       workId: string;

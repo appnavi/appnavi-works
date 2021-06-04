@@ -85,7 +85,6 @@ export function render(
   options: Record<string, unknown> = {}
 ): void {
   const userId = getUserId(req);
-  console.log(userId);
   res.render(view, {
     user:
       userId !== undefined

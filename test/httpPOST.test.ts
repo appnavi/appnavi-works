@@ -72,7 +72,6 @@ describe("POST（MulterのMockなし）", () => {
           .end((err) => {
             expect(err).toBeNull();
             UserModel.find().then((users) => {
-              console.log(users);
               expect(users.length).toBe(1);
               expect(users[0].defaultCreatorId).toBe(creatorId);
               done();

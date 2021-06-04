@@ -39,7 +39,6 @@ dbRouter.get(
         };
       })
     );
-    console.log(userWithWorks);
     render("db/users", req, res, {
       urlPrefix: URL_PREFIX_WORK,
       users: userWithWorks,
