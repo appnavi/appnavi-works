@@ -1,13 +1,15 @@
 import express from "express";
+import createError from "http-errors";
 import { passport } from "../app";
 import * as logger from "../modules/logger";
 import { findOrCreateUser, isAuthenticated, redirect } from "../services/auth";
+import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
 import { getEnv, render, wrap } from "../utils/helpers";
 
 const authRouter = express.Router();
 
-authRouter.get("/error", (req, res, next) => {
-  next(new Error("ログイン失敗"));
+authRouter.get("/error", (_req, _res, next) => {
+  next(createError(STATUS_CODE_UNAUTHORIZED));
 });
 
 authRouter.get("/", function (req, res) {
@@ -53,13 +55,13 @@ function validateSlackUser(
     logger.system.error(
       `違うワークスペース${workspaceId ?? ""}の人がログインしようとしました。`
     );
-    res.status(403).json("認証に失敗しました。").end();
+    res.redirect("/auth/error");
     return;
   }
   const userId = req.user?.id;
   if (userId === undefined) {
     logger.system.error(`ユーザーIDが取得できませんでした`, req.user);
-    res.status(403).json("認証に失敗しました。").end();
+    res.redirect("/auth/error");
     return;
   }
   logger.system.info(`ユーザー${userId}がSlack認証でログインしました。`);
