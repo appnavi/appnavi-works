@@ -16,12 +16,7 @@ const slackStrategy = new SlackStrategy(
     clientSecret: process.env["SLACK_CLIENT_SECRET"] ?? "",
     callbackURL: process.env["SLACK_REDIRECT_URI"] ?? "",
     skipUserProfile: false,
-    user_scope: [
-      "identity.basic",
-      "identity.email",
-      "identity.avatar",
-      "identity.team",
-    ], // default
+    user_scope: ["identity.basic", "identity.avatar", "identity.team"],
   },
   function (
     _accessToken: string,
@@ -30,6 +25,7 @@ const slackStrategy = new SlackStrategy(
     done: OAuth2Strategy.VerifyCallback
   ) {
     const user = profile;
+    console.log(profile);
     if (!isSlackUser(user)) {
       logger.system.error(`Slackユーザーとして認識できませんでした。`, profile);
       done(new Error("ログイン失敗"), undefined);
