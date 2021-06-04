@@ -23,23 +23,8 @@ authRouter.get(
   passport.authenticate("slack", {
     failureRedirect: "/auth/error",
   }),
-  wrap(async (req, res, next) => {
-    const workspaceId = req.user?.team?.id;
-    if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
-      logger.system.error(
-        `違うワークスペース${workspaceId ?? ""}の人がログインしようとしました。`
-      );
-      res.status(403).json("認証に失敗しました。").end();
-      return;
-    }
-    const userId = req.user?.id;
-    if (userId === undefined) {
-      logger.system.error(`ユーザーIDが取得できませんでした`, req.user);
-      res.status(403).json("認証に失敗しました。").end();
-      return;
-    }
-    logger.system.info(`ユーザー${userId}がSlack認証でログインしました。`);
-
+  validateSlackUser,
+  wrap(async (req, _res, next) => {
     const userDocument = await findOrCreateUser(req);
     await userDocument.updateOne({
       $set: {
@@ -57,5 +42,28 @@ authRouter.all("/logout", (req, res) => {
   req.session = undefined;
   res.redirect("/auth");
 });
+
+function validateSlackUser(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const workspaceId = req.user?.team?.id;
+  if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
+    logger.system.error(
+      `違うワークスペース${workspaceId ?? ""}の人がログインしようとしました。`
+    );
+    res.status(403).json("認証に失敗しました。").end();
+    return;
+  }
+  const userId = req.user?.id;
+  if (userId === undefined) {
+    logger.system.error(`ユーザーIDが取得できませんでした`, req.user);
+    res.status(403).json("認証に失敗しました。").end();
+    return;
+  }
+  logger.system.info(`ユーザー${userId}がSlack認証でログインしました。`);
+  next();
+}
 
 export { authRouter };
