@@ -4,7 +4,7 @@ import { passport } from "../app";
 import * as logger from "../modules/logger";
 import { findOrCreateUser, isAuthenticated, redirect } from "../services/auth";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
-import { getEnv, render, wrap, isSlackUser } from "../utils/helpers";
+import { render, wrap } from "../utils/helpers";
 
 const authRouter = express.Router();
 
@@ -28,9 +28,13 @@ authRouter
     }
     render("auth/guest", req, res);
   })
-  .post(passport.authenticate("local", { failWithError: true }), (req, res) => {
-    redirect(req, res);
-  });
+  .post(
+    passport.authenticate("local", { failWithError: true }),
+    afterGuestLogIn,
+    (req, res) => {
+      redirect(req, res);
+    }
+  );
 
 authRouter.use(
   "/guest",
@@ -85,23 +89,38 @@ async function logLastLogin(
   next();
 }
 
+function afterGuestLogIn(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const user = req.user;
+  if (user === undefined) {
+    logger.system.error(`ログインできていません。`, req.user);
+    res.redirect("/auth/error");
+    return;
+  }
+  if (user.type !== "Guest") {
+    logger.system.error(`ゲストログインではありません。`, req.user);
+    res.redirect("/auth/error");
+    return;
+  }
+  next();
+}
+
 function afterSlackLogin(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
   const user = req.user;
-  if (!isSlackUser(user)) {
-    logger.system.error(`Slackによるログインではありません。`, req.user);
+  if (user === undefined) {
+    logger.system.error(`ログインできていません。`, req.user);
     res.redirect("/auth/error");
     return;
   }
-  const workspaceId = user.team.id;
-  if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
-    logger.system.error(
-      `違うワークスペース${workspaceId}の人がログインしようとしました。`,
-      req.user
-    );
+  if (user.type !== "Slack") {
+    logger.system.error(`Slackによるログインではありません。`, req.user);
     res.redirect("/auth/error");
     return;
   }

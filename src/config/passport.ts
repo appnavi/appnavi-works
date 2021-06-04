@@ -9,6 +9,7 @@ import { Strategy as SlackStrategy } from "passport-slack";
 import * as yup from "yup";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
+import { getEnv, isSlackUser } from "../utils/helpers";
 const slackStrategy = new SlackStrategy(
   {
     clientID: process.env["SLACK_CLIENT_ID"] ?? "",
@@ -28,7 +29,27 @@ const slackStrategy = new SlackStrategy(
     profile: Express.User,
     done: OAuth2Strategy.VerifyCallback
   ) {
-    return done(null, profile);
+    const user = profile;
+    if (!isSlackUser(user)) {
+      logger.system.error(`Slackユーザーとして認識できませんでした。`, profile);
+      done(new Error("ログイン失敗"), undefined);
+      return;
+    }
+    const workspaceId = user.team.id;
+    if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
+      logger.system.error(
+        `違うワークスペース${workspaceId}の人がログインしようとしました。`,
+        user
+      );
+      done(new Error("ログイン失敗"), undefined);
+      return;
+    }
+    return done(null, {
+      id: user.id,
+      name: user.user.name,
+      avatar_url: user.user.image_24,
+      type: "Slack",
+    });
   }
 );
 const yupSchemaLocal = yup.object({
@@ -69,10 +90,10 @@ const localStrategy = new LocalStrategy(
         return bcrypt.compare(password, hashedPassword);
       })
       .then(() => {
-        const user: GuestUser = {
+        const user: Express.User = {
           id: userId,
-          name: "ゲスト",
-          isGuest: true,
+          name: "ゲストユーザー",
+          type: "Guest",
         };
         done(undefined, user, undefined);
       })

@@ -37,14 +37,6 @@ function isObject(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x != null;
 }
 
-export function isGuestUser(user: unknown): user is GuestUser {
-  if (!isObject(user)) return false;
-  if (typeof user.id !== "string") return false;
-  if (typeof user.name !== "string") return false;
-  if (user.isGuest !== true) return false;
-  return true;
-}
-
 export function isSlackUser(user: unknown): user is SlackUser {
   if (!isObject(user)) return false;
 

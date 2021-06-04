@@ -1,3 +1,12 @@
+declare namespace Express {
+  interface User {
+    id: string;
+    name: string;
+    avatar_url?: string;
+    type: "Slack" | "Guest";
+  }
+}
+
 type SlackUser = {
   ok: boolean;
   user: {
@@ -17,9 +26,4 @@ type SlackUser = {
   };
   id: string;
   displayName: string;
-};
-type GuestUser = {
-  id: string;
-  name: string;
-  isGuest: true;
 };

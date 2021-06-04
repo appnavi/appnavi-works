@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { UserDocument, UserModel } from "../models/database";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
-import { getEnv, isGuestUser, isSlackUser } from "../utils/helpers";
+import { getEnv } from "../utils/helpers";
 
 interface SessionData {
   redirect: { url: string };
@@ -78,23 +78,10 @@ export function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
 }
 export function getUserName(req: express.Request): string {
-  const user = req.user;
-  if (isSlackUser(user)) {
-    return user.user.name;
-  }
-  if (isGuestUser(user)) {
-    return "ゲストユーザー";
-  }
-  return "";
+  return req.user?.name ?? "";
 }
 export function getUserId(req: express.Request): string | undefined {
-  const user = req.user;
-  if (isSlackUser(user)) {
-    return user.id;
-  }
-  if (isGuestUser(user)) {
-    return user.id;
-  }
+  return req.user?.id;
 }
 export function getUserIdOrThrow(req: express.Request): string {
   const userId = getUserId(req);
@@ -105,9 +92,5 @@ export function getUserIdOrThrow(req: express.Request): string {
 }
 
 export function getAvatarUrl(req: express.Request): string | undefined {
-  const user = req.user;
-  if (isSlackUser(user)) {
-    return user.user.image_24;
-  }
-  return undefined;
+  return req.user?.avatar_url;
 }
