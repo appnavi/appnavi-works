@@ -2,10 +2,6 @@
 
 ## dependencies
 
-### `async-passport-slack`
-
-passportでSlack認証を使えるようにするパッケージ。最新のSign In With Slack V2に対応するため、`src/config/passport.js`で手を加えている。
-
 ### `compression`
 
 ファイルを圧縮し、動作を高速化するパッケージ。
@@ -34,6 +30,10 @@ Nodejs標準の`fs`パッケージの機能を拡充したパッケージ。
 
 セキュリティ対策のための複数のパッケージをまとめたパッケージ。
 
+### `http-errors`
+
+[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートに含まれるパッケージ
+
 ### `jsonwebtoken`
 
 オブジェクトの暗号化を提供するパッケージ。
@@ -54,6 +54,16 @@ Expressアプリケーションにファイルアップロード機能を提供�
 
 Expressアプリケーションに認証機能を提供するパッケージ
 
+### `passport-slack`
+
+passportでSlack認証を使えるようにするパッケージ。
+
+最新のSign In With Slack V2に対応するため、[mblackshaw/passport-slack](https://github.com/mblackshaw/passport-slack)をforkしたライブラリ
+
+### `request`
+
+[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートに含まれるパッケージ
+
 ### `sass`
 
 sassからcssへのコンパイラー
@@ -66,10 +76,6 @@ sassからcssへのコンパイラー
 
 値のバリデーションをやりやすくするパッケージ。
 
-### `http-errors`, `request`
-
-[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートに含まれるパッケージ
-
 ## devDependencies
 
 ### `@types/`で始まるパッケージ
@@ -79,11 +85,13 @@ Typescriptでコーディングするために必要な型情報を提供する�
 パッケージAを使用するとき、`@types/A`が存在すれば、それを導入するだけで良い。
 もしなかった場合は、自分で型情報を作成しなければならない。
 
-### `cross-env`
+### `@typescript-eslint/eslint-plugin`
 
-環境変数を設定するためのパッケージ。
+Typescript開発でeslintを使うためのパッケージ
 
-本来はproductionやdevelopmentごとに環境変数を切り替えるためのパッケージだが、productionやdevelopmentを設定するために使用。
+### `@typescript-eslint/parser`
+
+Typescript開発でeslintを使うためのパッケージ
 
 ### `eslint`
 
@@ -97,17 +105,47 @@ EslintとPrettierを連携するためのeslintプラグイン。
 
 importをアルファベット順にするeslintプラグイン。
 
-### `forever`
+### `husky`
 
-Nodejs製アプリケーションのバックグラウンド実行を管理するためのパッケージ。
+gitのコマンド実行時に指定した処理を自動実行できるパッケージ。
+
+### `jest`
+
+単体テストができるようになるパッケージ。
+
+### `lint-staged`
+
+gitでステージされたファイルのみにlinterを実行できるパッケージ。
+
+### `nodemon`
+
+ファイルに変更が加えられた際にNode.jsアプリケーションを自動で再スタートするパッケージ。
+
+`ts-node`の導入により、Typescriptファイルをコンパイルなしで実行できる。
 
 ### `npm-run-all`
 
 複数のnpm scriptを一度に実行できるようにするパッケージ。
 
+### `passport-stub`
+
+単体テストにおいて、ログイン状態をモックできるパッケージ・
+
 ### `prettier`
 
 コードフォーマッター
+
+### `supertest`
+
+expressアプリケーションに仮想的にHTTPリクエストを送ることで単体テストができるパッケージ。
+
+### `ts-jest`
+
+Typescriptファイルをコンパイルなしでjestによる単体テストができるようになるパッケージ。
+
+### `ts-node`
+
+Typescriptファイルをコンパイルなしで実行できるようになるパッケージ。
 
 ### `typescript`
 
