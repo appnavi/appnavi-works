@@ -9,6 +9,8 @@ interface SessionData {
   redirectToken: string;
 }
 function setRedirect(req: express.Request): void {
+  // TODO：htmlではない場合はなにもしないように。
+  // TODO：req.originalUrlが自サイトではない場合は何もしないように。
   const session = req.session as SessionData;
   session.redirect = {
     url: req.originalUrl,

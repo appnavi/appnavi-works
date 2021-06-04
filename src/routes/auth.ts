@@ -19,6 +19,7 @@ authRouter.get("/", function (req, res) {
   }
   render("auth", req, res);
 });
+// TODO：ゲストユーザーを作成するルート作成(ゲストユーザーがアクセスした際は404を返す)
 authRouter
   .route("/guest")
   .get((req, res) => {
