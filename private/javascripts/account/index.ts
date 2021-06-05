@@ -1,4 +1,4 @@
-/// <reference path="./common/dialogs.ts" />
+/// <reference path="../common/dialogs.ts" />
 document.addEventListener("DOMContentLoaded", () => {
   M.Collapsible.init(document.querySelectorAll(".collapsible"), {});
   M.Tooltip.init(document.querySelectorAll(".tooltipped"), {});
@@ -87,15 +87,12 @@ document
     btn.addEventListener("click", () => {
       const creatorId = btn.dataset["creatorId"]!;
       const workId = btn.dataset["workId"]!;
-      const dialog = document.querySelector<HTMLDivElement>(
-        ".renameWorkDialog"
-      )!;
-      const renamedCreatorIdInput = dialog.querySelector<HTMLInputElement>(
-        "#renamedCreatorId"
-      )!;
-      const renamedWorkIdInput = dialog.querySelector<HTMLInputElement>(
-        "#renamedWorkId"
-      )!;
+      const dialog =
+        document.querySelector<HTMLDivElement>(".renameWorkDialog")!;
+      const renamedCreatorIdInput =
+        dialog.querySelector<HTMLInputElement>("#renamedCreatorId")!;
+      const renamedWorkIdInput =
+        dialog.querySelector<HTMLInputElement>("#renamedWorkId")!;
       renamedCreatorIdInput.value = creatorId;
       renamedWorkIdInput.value = workId;
       const instance = M.Modal.getInstance(dialog);
