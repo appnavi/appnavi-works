@@ -94,20 +94,11 @@ export async function getDefaultCreatorId(
   const userDocument = await findOrCreateUser(req);
   return userDocument.defaultCreatorId;
 }
-export function getUserName(req: express.Request): string {
-  return req.user?.name ?? "";
-}
-export function getUserId(req: express.Request): string | undefined {
-  return req.user?.id;
-}
+
 export function getUserIdOrThrow(req: express.Request): string {
-  const userId = getUserId(req);
+  const userId = req.user?.id;
   if (userId !== undefined) {
     return userId;
   }
   throw new Error("ユーザーIDを取得できませんでした。");
-}
-
-export function getAvatarUrl(req: express.Request): string | undefined {
-  return req.user?.avatar_url;
 }

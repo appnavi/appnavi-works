@@ -41,7 +41,7 @@ authRouter
 authRouter.use(
   "/guest",
   (
-    err: NodeJS.Dict<unknown>,
+    err: Record<string, unknown>,
     req: express.Request,
     res: express.Response,
     next: express.NextFunction

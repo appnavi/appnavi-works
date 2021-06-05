@@ -113,7 +113,7 @@ app.use(function (_req, _res, next) {
 
 // error handler
 app.use(function (
-  err: NodeJS.Dict<unknown>,
+  err: Record<string, unknown>,
   req: express.Request,
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

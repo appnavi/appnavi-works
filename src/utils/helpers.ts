@@ -2,7 +2,6 @@ import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import createError from "http-errors";
-import { getAvatarUrl, getUserId, getUserName } from "../services/auth";
 import { DIRECTORY_NAME_VIEWS } from "./constants";
 
 type EnvKey =
@@ -73,16 +72,8 @@ export function render(
   res: express.Response,
   options: Record<string, unknown> = {}
 ): void {
-  const userId = getUserId(req);
   res.render(view, {
-    user:
-      userId !== undefined
-        ? {
-            id: userId,
-            avatar_url: getAvatarUrl(req),
-            name: getUserName(req),
-          }
-        : undefined,
+    user: req.user,
     ...options,
   });
 }
