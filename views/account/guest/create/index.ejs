@@ -10,8 +10,8 @@
     <main>
       <div class="container">
         <% if (typeof(guestUserId) !== "undefined" && typeof(password) !== "undefined") { %> 
-          <h3 class="header">ユーザーが作成されました</h3>          
           <div class="section">
+            <h3 class="header">ユーザーが作成されました</h3>          
             <p>
               <b class="red-text">作成されたゲストユーザーのユーザーIDおよびパスワードはこのページを離れると確認できなくなります。</b>
             </p>
@@ -31,19 +31,8 @@
             </div>
           </div>
         <% } else { %> 
-          <h3 class="header">ゲストユーザー追加</h3>
           <div class="section">
-            <p>
-              下のボタンを押すと、ゲストユーザーが作成されます。
-            </p>
-            <p>
-              <b class="red-text">作成されたゲストユーザーのユーザーIDおよびパスワードはこのページを離れると確認できなくなります。</b>
-            </p>
-            <form method="POST">
-              <div class="row center">
-                <button type="submit" class="btn-large">ゲストユーザーを追加</button>
-              </div>
-            </form>
+            <h3 class="header">ゲストユーザーが作成できませんでした。</h3>
           </div>  
         <% } %> 
       </main>

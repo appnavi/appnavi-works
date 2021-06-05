@@ -210,34 +210,33 @@ accountRouter.use("/guest", (req, _res, next) => {
   }
   next();
 });
-accountRouter
-  .get("/guest/create", (req, res) => {
-    render("account/guest/create", req, res);
-  })
-  .post(
-    "/guest/create",
-    wrap(async (req, res) => {
-      let guestUserId: string | undefined;
-      for (;;) {
-        guestUserId = `guest-${generateRandomString(6)}`;
-        const users = await UserModel.find({ userId: guestUserId });
-        if (users.length == 0) {
-          break;
-        }
+accountRouter.get("/guest", (req, res) => {
+  render("account/guest", req, res);
+});
+accountRouter.post(
+  "/guest/create",
+  wrap(async (req, res) => {
+    let guestUserId: string | undefined;
+    for (;;) {
+      guestUserId = `guest-${generateRandomString(6)}`;
+      const users = await UserModel.find({ userId: guestUserId });
+      if (users.length == 0) {
+        break;
       }
-      const password = generateRandomString(16);
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await UserModel.create({
-        userId: guestUserId,
-        guest: {
-          hashedPassword,
-          createdBy: req.user?.id,
-        },
-      });
-      render("account/guest/create", req, res, {
-        guestUserId,
-        password,
-      });
-    })
-  );
+    }
+    const password = generateRandomString(16);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await UserModel.create({
+      userId: guestUserId,
+      guest: {
+        hashedPassword,
+        createdBy: req.user?.id,
+      },
+    });
+    render("account/guest/create", req, res, {
+      guestUserId,
+      password,
+    });
+  })
+);
 export { accountRouter };

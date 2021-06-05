@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>ゲストユーザー</title>
+    <%- include('common/head') %>
+  </head>
+  <body>
+    <%- include('common/navbar') %>
+    <main>
+      <div class="container">
+        <div class="section">
+          <h3 class="header">ゲストユーザーの作成</h3>
+          <p>
+            部員以外の人でも作品をアップロードできるように、ユーザーIDとパスワードでログインできるゲストユーザーを作成できます。
+          </p>
+          <p>
+            ユーザーIDとパスワードは自動で生成されます。
+          </p>
+          <form method="POST" action="/account/guest/create">
+            <button type="submit" class="btn">ゲストユーザーを作成</button>
+          </form>
+        </div>
+      </main>
+      <%- include('common/footer') %>
+      <%- include('common/scripts') %>
+    </body>
+  </html>
