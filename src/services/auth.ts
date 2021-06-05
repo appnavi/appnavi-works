@@ -23,15 +23,15 @@ function setRedirect(req: express.Request): void {
 
 export function redirect(req: express.Request, res: express.Response): void {
   const session = req.session as SessionData;
-  const rediretUrl = session.redirect?.url;
+  const redirectUrl = session.redirect?.url;
   const token = session.redirectToken;
-  if (token && rediretUrl) {
+  if (token && redirectUrl) {
     const decoded = jwt.verify(token, getEnv("JWT_SECRET")) as {
       url: string;
     };
-    if (decoded.url === rediretUrl) {
-      if (rediretUrl.startsWith("/")) {
-        res.redirect(rediretUrl);
+    if (decoded.url === redirectUrl) {
+      if (redirectUrl.startsWith("/")) {
+        res.redirect(redirectUrl);
         return;
       }
     }
