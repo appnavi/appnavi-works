@@ -8,12 +8,24 @@ interface SessionData {
   redirect: { url: string };
   redirectToken: string;
 }
+function isValidRedirectUrl(redirectUrl: string): boolean {
+  if (!redirectUrl.startsWith("/")) {
+    return false;
+  }
+  if (redirectUrl.includes(".")) {
+    return false;
+  }
+  return true;
+}
+
 function setRedirect(req: express.Request): void {
-  // TODO：htmlではない場合はなにもしないように。
-  // TODO：req.originalUrlが自サイトではない場合は何もしないように。
+  const redirectUrl = req.originalUrl;
+  if (!isValidRedirectUrl(redirectUrl)) {
+    return;
+  }
   const session = req.session as SessionData;
   session.redirect = {
-    url: req.originalUrl,
+    url: redirectUrl,
   };
   session.redirectToken = jwt.sign(
     { url: req.originalUrl },
@@ -30,7 +42,7 @@ export function redirect(req: express.Request, res: express.Response): void {
       url: string;
     };
     if (decoded.url === redirectUrl) {
-      if (redirectUrl.startsWith("/")) {
+      if (isValidRedirectUrl(redirectUrl)) {
         res.redirect(redirectUrl);
         return;
       }
