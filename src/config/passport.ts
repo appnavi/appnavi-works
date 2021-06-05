@@ -25,7 +25,6 @@ const slackStrategy = new SlackStrategy(
     done: OAuth2Strategy.VerifyCallback
   ) {
     const user = profile;
-    console.log(profile);
     if (!isSlackUser(user)) {
       logger.system.error(`Slackユーザーとして認識できませんでした。`, profile);
       done(new Error("ログイン失敗"), undefined);
