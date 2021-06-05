@@ -20,28 +20,7 @@ function setRedirect(req: express.Request): void {
     getEnv("JWT_SECRET")
   );
 }
-export async function findOrCreateUser(
-  req: express.Request
-): Promise<UserDocument> {
-  const userId = getUserIdOrThrow(req);
-  const users = await UserModel.find({
-    userId,
-  });
-  switch (users.length) {
-    case 0:
-      return await UserModel.create({ userId });
-    case 1:
-      return users[0];
-    default:
-      throw new Error("同じユーザーが複数登録されています");
-  }
-}
-export async function getDefaultCreatorId(
-  req: express.Request
-): Promise<string | undefined> {
-  const userDocument = await findOrCreateUser(req);
-  return userDocument.defaultCreatorId;
-}
+
 export function redirect(req: express.Request, res: express.Response): void {
   const session = req.session as SessionData;
   const rediretUrl = session.redirect?.url;
@@ -78,6 +57,30 @@ export function ensureAuthenticated(
 
 export function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
+}
+
+export async function findOrCreateUser(
+  req: express.Request
+): Promise<UserDocument> {
+  const userId = getUserIdOrThrow(req);
+  const users = await UserModel.find({
+    userId,
+  });
+  switch (users.length) {
+    case 0:
+      return await UserModel.create({ userId });
+    case 1:
+      return users[0];
+    default:
+      throw new Error("同じユーザーが複数登録されています");
+  }
+}
+
+export async function getDefaultCreatorId(
+  req: express.Request
+): Promise<string | undefined> {
+  const userDocument = await findOrCreateUser(req);
+  return userDocument.defaultCreatorId;
 }
 export function getUserName(req: express.Request): string {
   return req.user?.name ?? "";
