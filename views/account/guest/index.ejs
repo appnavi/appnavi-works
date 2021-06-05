@@ -3,6 +3,8 @@
   <head>
     <title>ゲストユーザー</title>
     <%- include('common/head') %>
+    <script src="/private/javascripts/account/guest/index.js" defer></script>
+    <script src="/private/javascripts/common/dialogs.js" defer></script>
   </head>
   <body>
     <%- include('common/navbar') %>
@@ -20,8 +22,24 @@
             <button type="submit" class="btn">ゲストユーザーを作成</button>
           </form>
         </div>
+        <% if(typeof(guests) !== "undefined" && guests?.length > 0) { %> 
+          <div class="section">
+            <h3>作成したゲストユーザー一覧</h3>
+            <ul class="collection">
+              <% guests.forEach(guest=>{ %> 
+                <li class="collection-item">
+                  <div>
+                    <%- guest.userId %> 
+                    <a class="secondary-content red-text deleteGuestButton" data-guest-id="<%- guest.userId %>"><i class="material-icons">delete</i></a>
+                  </div>
+                </li>
+              <% }) %> 
+            </ul>
+          </div>
+        <% } %> 
       </main>
       <%- include('common/footer') %>
+      <%- include('common/dialogs') %>
       <%- include('common/scripts') %>
     </body>
   </html>

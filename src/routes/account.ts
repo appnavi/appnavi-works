@@ -210,9 +210,18 @@ accountRouter.use("/guest", (req, _res, next) => {
   }
   next();
 });
-accountRouter.get("/guest", (req, res) => {
-  render("account/guest", req, res);
-});
+accountRouter.get(
+  "/guest",
+  wrap(async (req, res) => {
+    const userId = getUserIdOrThrow(req);
+    const guests = await UserModel.find({
+      "guest.createdBy": {
+        $eq: userId,
+      },
+    });
+    render("account/guest", req, res, { guests });
+  })
+);
 accountRouter.post(
   "/guest/create",
   wrap(async (req, res) => {
@@ -237,6 +246,57 @@ accountRouter.post(
       guestUserId,
       password,
     });
+  })
+);
+const deleteGuestSchema = yup.object({
+  guestId: yup.string().required(),
+});
+accountRouter.post(
+  "/guest/delete",
+  multer().none(),
+  wrap(async (req, res) => {
+    const params = req.body as {
+      guestId: string;
+    };
+    try {
+      await deleteGuestSchema.validate(params);
+    } catch (e) {
+      const err = e as { name: string; errors: string[] };
+      throw new BadRequestError(
+        "ゲストユーザー削除に失敗しました。",
+        err.errors,
+        params
+      );
+    }
+
+    const guestUsers = await UserModel.find({ userId: params.guestId });
+    if (guestUsers.length !== 1) {
+      throw new BadRequestError(
+        "ゲストユーザー削除に失敗しました。",
+        ["ゲストユーザーの数が不適切です", guestUsers.length],
+        params
+      );
+    }
+    const guestUser = guestUsers[0];
+    if (guestUser.guest === undefined) {
+      throw new BadRequestError(
+        "ゲストユーザー削除に失敗しました。",
+        ["ゲストユーザーではありません。"],
+        params
+      );
+    }
+    const worksByGuest = await WorkModel.find({
+      owner: guestUser.userId,
+    });
+    if (worksByGuest.length !== 0) {
+      throw new BadRequestError(
+        "ゲストユーザー削除に失敗しました。",
+        ["このゲストユーザーが投稿した作品が存在します。"],
+        params
+      );
+    }
+    await guestUser.delete();
+    res.status(200).end();
   })
 );
 export { accountRouter };
