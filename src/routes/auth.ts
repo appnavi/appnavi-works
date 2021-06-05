@@ -1,8 +1,15 @@
+import bcrypt from "bcrypt";
 import express from "express";
 import createError from "http-errors";
 import { passport } from "../app";
+import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
-import { findOrCreateUser, isAuthenticated, redirect } from "../services/auth";
+import {
+  findOrCreateUser,
+  generateRandomString,
+  isAuthenticated,
+  redirect,
+} from "../services/auth";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
 import { render, wrap } from "../utils/helpers";
 
@@ -58,6 +65,42 @@ authRouter.use(
     next(err);
   }
 );
+
+authRouter
+  .use("/guest/create", (req, res, next) => {
+    const userType = req.user?.type;
+    if (userType !== "Slack") {
+      next(createError(404));
+    }
+    next();
+  })
+  .get("/guest/create", (req, res) => {
+    render("auth/guest/create", req, res);
+  })
+  .post(
+    "/guest/create",
+    wrap(async (req, res) => {
+      let guestUserId: string | undefined;
+      for (;;) {
+        guestUserId = `guest-${generateRandomString(6)}`;
+        const users = await UserModel.find({ userId: guestUserId });
+        if (users.length == 0) {
+          break;
+        }
+      }
+      const password = generateRandomString(16);
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await UserModel.create({
+        userId: guestUserId,
+        hashedPassword,
+      });
+      render("auth/guest/create", req, res, {
+        guestUserId,
+        password,
+      });
+    })
+  );
+
 authRouter.get("/slack", passport.authenticate("slack"));
 authRouter.get(
   "/redirect",
