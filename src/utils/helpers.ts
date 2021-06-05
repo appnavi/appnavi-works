@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
@@ -30,6 +31,19 @@ export function getEnvNumber(key: "WORK_STORAGE_SIZE_BYTES" | "PORT"): number {
     throw new Error(`環境変数${key}は数値に変換できません`);
   }
   return envNumber;
+}
+
+export function generateRandomString(
+  length: number,
+  characters: string | undefined = undefined
+): string {
+  // 引用：https://qiita.com/fukasawah/items/db7f0405564bdc37820e
+  const S =
+    characters ??
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return Array.from(crypto.randomFillSync(new Uint8Array(length)))
+    .map((n) => S[n % S.length])
+    .join("");
 }
 
 function isObject(x: unknown): x is Record<string, unknown> {

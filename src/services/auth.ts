@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import express from "express";
 import jwt from "jsonwebtoken";
 import { UserDocument, UserModel } from "../models/database";
@@ -102,17 +101,4 @@ export function getUserIdOrThrow(req: express.Request): string {
     return userId;
   }
   throw new Error("ユーザーIDを取得できませんでした。");
-}
-
-export function generateRandomString(
-  length: number,
-  characters: string | undefined = undefined
-): string {
-  // 引用：https://qiita.com/fukasawah/items/db7f0405564bdc37820e
-  const S =
-    characters ??
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  return Array.from(crypto.randomFillSync(new Uint8Array(length)))
-    .map((n) => S[n % S.length])
-    .join("");
 }

@@ -1,4 +1,6 @@
+import bcrypt from "bcrypt";
 import express from "express";
+import createError from "http-errors";
 import multer from "multer";
 import * as yup from "yup";
 import { UserModel, WorkModel } from "../models/database";
@@ -27,7 +29,7 @@ import {
   DeleteWorkError,
   RenameWorkError,
 } from "../utils/errors";
-import { render, wrap } from "../utils/helpers";
+import { generateRandomString, render, wrap } from "../utils/helpers";
 
 const accountRouter = express.Router();
 
@@ -200,4 +202,42 @@ accountRouter.post(
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );
+
+accountRouter.use("/guest", (req, _res, next) => {
+  const userType = req.user?.type;
+  if (userType !== "Slack") {
+    next(createError(404));
+  }
+  next();
+});
+accountRouter
+  .get("/guest/create", (req, res) => {
+    render("account/guest/create", req, res);
+  })
+  .post(
+    "/guest/create",
+    wrap(async (req, res) => {
+      let guestUserId: string | undefined;
+      for (;;) {
+        guestUserId = `guest-${generateRandomString(6)}`;
+        const users = await UserModel.find({ userId: guestUserId });
+        if (users.length == 0) {
+          break;
+        }
+      }
+      const password = generateRandomString(16);
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await UserModel.create({
+        userId: guestUserId,
+        guest: {
+          hashedPassword,
+          createdBy: req.user?.id,
+        },
+      });
+      render("account/guest/create", req, res, {
+        guestUserId,
+        password,
+      });
+    })
+  );
 export { accountRouter };
