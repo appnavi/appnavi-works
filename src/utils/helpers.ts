@@ -5,6 +5,8 @@ import express from "express";
 import createError from "http-errors";
 import { DIRECTORY_NAME_VIEWS } from "./constants";
 
+export const idRegex = /^[0-9a-z-]+$/;
+
 type EnvKey =
   | "SLACK_CLIENT_ID"
   | "SLACK_CLIENT_SECRET"

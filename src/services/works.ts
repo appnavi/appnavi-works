@@ -17,8 +17,8 @@ import {
   ERROR_MESSAGE_BACKUP_NOT_FOUND,
 } from "../utils/constants";
 import { BadRequestError, RestoreBackupError } from "../utils/errors";
+import { idRegex } from "../utils/helpers";
 
-const idRegex = /^[0-9a-z-]+$/;
 export const creatorIdSchema = yup
   .string()
   .matches(idRegex, ERROR_MESSAGE_CREATOR_ID_INVALID)
