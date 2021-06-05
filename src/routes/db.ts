@@ -26,7 +26,6 @@ dbRouter.get(
     });
   })
 );
-// TODO：ejsの"SlackのユーザーID"を"ユーザーID"に変更
 dbRouter.get(
   "/users",
   wrap(async (req, res) => {
