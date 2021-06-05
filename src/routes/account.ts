@@ -23,9 +23,14 @@ import {
   STATUS_CODE_SUCCESS,
   ERROR_MESSAGE_BACKUP_NAME_REQUIRED,
   ERROR_MESSAGE_BACKUP_NAME_INVALID,
+  ERROR_MESSAGE_GUEST_NOT_FOUND,
+  ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND,
+  ERROR_MESSAGE_NOT_GUEST_USER,
+  ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY,
 } from "../utils/constants";
 import {
   BadRequestError,
+  DeleteGuestUserError,
   DeleteWorkError,
   RenameWorkError,
 } from "../utils/errors";
@@ -262,36 +267,29 @@ accountRouter.post(
       await deleteGuestSchema.validate(params);
     } catch (e) {
       const err = e as { name: string; errors: string[] };
-      throw new BadRequestError(
-        "ゲストユーザー削除に失敗しました。",
-        err.errors,
-        params
-      );
+      throw new DeleteGuestUserError(err.errors, params);
     }
 
     const guestUsers = await UserModel.find({ userId: params.guestId });
-    if (guestUsers.length !== 1) {
-      throw new BadRequestError(
-        "ゲストユーザー削除に失敗しました。",
-        ["ゲストユーザーの数が不適切です", guestUsers.length],
+    if (guestUsers.length === 0) {
+      throw new DeleteGuestUserError(
+        [ERROR_MESSAGE_GUEST_NOT_FOUND, guestUsers.length],
         params
       );
     }
+    if (guestUsers.length > 0) {
+      throw new Error(ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND);
+    }
     const guestUser = guestUsers[0];
     if (guestUser.guest === undefined) {
-      throw new BadRequestError(
-        "ゲストユーザー削除に失敗しました。",
-        ["ゲストユーザーではありません。"],
-        params
-      );
+      throw new DeleteGuestUserError([ERROR_MESSAGE_NOT_GUEST_USER], params);
     }
     const worksByGuest = await WorkModel.find({
       owner: guestUser.userId,
     });
     if (worksByGuest.length !== 0) {
-      throw new BadRequestError(
-        "ゲストユーザー削除に失敗しました。",
-        ["このゲストユーザーが投稿した作品が存在します。"],
+      throw new DeleteGuestUserError(
+        [ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY],
         params
       );
     }

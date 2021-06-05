@@ -42,6 +42,17 @@ export const ERROR_MESSAGE_RENAME_TO_EXISTING =
   "既に存在する作品を上書きすることはできません。";
 export const ERROR_MESSAGE_BACKUP_NOT_FOUND =
   "バックアップが見つかりませんでした。";
+export const ERROR_MESSAGE_GUEST_ID_REQUIRED =
+  "ゲストユーザーのユーザーIDは必須です。";
+export const ERROR_MESSAGE_GUEST_ID_INVALID =
+  "ゲストユーザーのユーザーIDが不適切な文字列です。";
+export const ERROR_MESSAGE_GUEST_NOT_FOUND =
+  "ゲストユーザーが見つかりませんでした。";
+export const ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND =
+  "同じゲストユーザーが複数登録されています。";
+export const ERROR_MESSAGE_NOT_GUEST_USER = "ゲストユーザーではありません。";
+export const ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY =
+  "このゲストユーザーが投稿した作品が存在します。";
 
 export const UPLOAD_UNITY_FIELD_WEBGL = "webgl";
 export const UPLOAD_UNITY_FIELD_WINDOWS = "windows";
