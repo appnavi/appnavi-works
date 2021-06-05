@@ -208,6 +208,7 @@ accountRouter.post(
   })
 );
 
+// TODO:ゲストユーザー関連の単体テスト作成
 accountRouter.use("/guest", (req, _res, next) => {
   const userType = req.user?.type;
   if (userType !== "Slack") {
@@ -270,6 +271,7 @@ accountRouter.post(
       throw new DeleteGuestUserError(err.errors, params);
     }
 
+    // TODO:deleteGuestUser関数を作成し、処理を抽出。
     const guestUsers = await UserModel.find({ userId: params.guestId });
     if (guestUsers.length === 0) {
       throw new DeleteGuestUserError(
