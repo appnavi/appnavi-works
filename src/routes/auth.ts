@@ -92,7 +92,10 @@ authRouter
       const hashedPassword = await bcrypt.hash(password, 10);
       await UserModel.create({
         userId: guestUserId,
-        hashedPassword,
+        guest: {
+          hashedPassword,
+          createdBy: req.user?.id,
+        },
       });
       render("auth/guest/create", req, res, {
         guestUserId,

@@ -31,18 +31,24 @@ export const WorkModel = model<WorkDocument>("Work", workSchema);
 export interface UserDocument extends Document {
   userId: string;
   defaultCreatorId: string;
-  hashedPassword?: string;
   lastLogIn: Date;
+  guest?: {
+    hashedPassword: string;
+    createdBy: string;
+  };
 }
 const userSchema = new Schema(
   {
     userId: String,
     defaultCreatorId: String,
-    hashedPassword: {
-      type: String,
+    lastLogIn: Date,
+    guest: {
+      type: {
+        hashedPassword: String,
+        createdBy: String,
+      },
       required: false,
     },
-    lastLogIn: Date,
   },
   {
     timestamps: true,

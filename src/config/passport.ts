@@ -77,11 +77,11 @@ const localStrategy = new LocalStrategy(
         if (users.length > 1) {
           throw new Error("userIdが同じ複数のユーザーが存在します。");
         }
-        const user = users[0];
-        const hashedPassword = user.hashedPassword;
-        if (hashedPassword === undefined) {
+        const guest = users[0].guest;
+        if (guest === undefined) {
           throw new Error("パスワードではログインできません。");
         }
+        const hashedPassword = guest.hashedPassword;
         return bcrypt.compare(password, hashedPassword);
       })
       .then(() => {
