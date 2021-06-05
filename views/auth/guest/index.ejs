@@ -12,27 +12,25 @@
         <% if (typeof(error) !== "undefined") {%> 
           <p class="red-text"><%- error %> </p>
         <% } %> 
-        <form method="POST" enctype="application/x-www-form-urlencoded">
-          <div class="row">
-            <form class="col s12">
-              <div class="row">
-                <div class="input-field col s12">
-                  <input name="userId" type="text" class="validate" required>
-                  <label for="userId">ユーザーID</label>
-                </div>
+        <div class="row">
+          <form class="col s12"  method="POST" enctype="application/x-www-form-urlencoded">
+            <div class="row">
+              <div class="input-field col s12">
+                <input name="userId" type="text" class="validate" required>
+                <label for="userId">ユーザーID</label>
               </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input name="password" type="password" class="validate" required>
-                  <label for="password">パスワード</label>
-                </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input name="password" type="password" class="validate" required>
+                <label for="password">パスワード</label>
               </div>
-              <div class="row center">
-                <button type="submit" class="btn uploadButton">ログイン</button>
-              </div>
-            </form>
-          </div>
-        </form>
+            </div>
+            <div class="row center">
+              <button type="submit" class="btn">ログイン</button>
+            </div>
+          </form>
+        </div>
       </main>
       <%- include('common/footer') %>
       <%- include('common/scripts') %>
