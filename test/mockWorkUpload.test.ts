@@ -242,7 +242,7 @@ async function testSuccessfulUploadTwice(): Promise<void> {
       .then(resolve);
   });
 }
-describe("POST（MulterのMockあり）", () => {
+describe("作品のアップロードを伴うテスト（MulterをMock）", () => {
   beforeAll(async () => {
     await connectDatabase("2");
     await ensureUploadFoldersExist();

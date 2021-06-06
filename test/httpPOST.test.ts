@@ -21,7 +21,7 @@ import { UserModel } from "../src/models/database";
 const creatorId = "creator-3";
 const workId = "work-3";
 
-describe("POST（MulterのMockなし）", () => {
+describe("POST", () => {
   beforeAll(async () => {
     await connectDatabase("3");
     await ensureUploadFoldersExist();
