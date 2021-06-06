@@ -3,6 +3,7 @@
   <head>
     <title>ゲストユーザー</title>
     <%- include('common/head') %>
+    <link rel="stylesheet" href="/private/stylesheets/account/guest/index.css">
     <script src="/private/javascripts/account/guest/index.js" defer></script>
     <script src="/private/javascripts/common/dialogs.js" defer></script>
   </head>
@@ -26,11 +27,16 @@
           <div class="section">
             <h3>作成したゲストユーザー一覧</h3>
             <ul class="collection">
-              <% guests.forEach(guest=>{ %> 
+              <% guests.sort((a,b)=>b.createdAt - a.createdAt).forEach(guest=>{ %> 
                 <li class="collection-item">
-                  <div>
-                    <%- guest.userId %> 
-                    <a class="secondary-content red-text deleteGuestButton" data-guest-id="<%- guest.userId %>"><i class="material-icons">delete</i></a>
+                  <div class="guest-user-container">
+                    <div class="guest-user-data">
+                      <p><%- guest.userId %></p>
+                      <span> <%- include ("common/format-date", {date: guest.createdAt}) %>作成</span>
+                    </div>
+                    <div class="valign-wrapper">
+                      <a href="#!" class="red-text deleteGuestButton" data-guest-id="<%- guest.userId %>"><i class="material-icons">delete</i></a>
+                    </div>
                   </div>
                 </li>
               <% }) %> 

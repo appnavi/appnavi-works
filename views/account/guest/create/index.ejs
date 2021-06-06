@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <title>ゲストユーザー追加</title>
+    <title>ゲストユーザー作成</title>
     <%- include('common/head') %>
     <link rel="stylesheet" href="/private/stylesheets/account/guest/create/index.css">
   </head>
@@ -11,23 +11,19 @@
       <div class="container">
         <% if (typeof(guestUserId) !== "undefined" && typeof(password) !== "undefined") { %> 
           <div class="section">
-            <h3 class="header">ユーザーが作成されました</h3>          
+            <h3 class="header">ゲストユーザーが作成されました</h3>          
             <p>
               <b class="red-text">作成されたゲストユーザーのユーザーIDおよびパスワードはこのページを離れると確認できなくなります。</b>
             </p>
-            <div class="card-panel">
-              <p>
-                <span class="guest-user-label">ユーザーID</span>
-                <span class="flow-text">
-                  <%- guestUserId %> 
-                </span>
-              </p>
-              <p>
-                <span class="guest-user-label">パスワード</span>
-                <span class="flow-text">
-                  <%- password %>
-                </span>
-              </p>
+            <div class="row card-panel">
+              <div class="input-field col s12">
+                <input readonly value="<%- guestUserId %>" id="guestUserId" type="text" class="guest active">
+                <label for="guestUserId">ユーザーID</label>
+              </div>
+              <div class="input-field col s12">
+                <input readonly value="<%- password %>" id="password" type="text" class="guest active">
+                <label for="password">パスワード</label>
+              </div>
             </div>
           </div>
         <% } else { %> 
