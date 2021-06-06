@@ -8,19 +8,9 @@ const theirId = "userDEF";
 function login(app: Express, userId: string): void {
   passportStub.install(app);
   passportStub.login({
-    ok: true,
-    user: {
-      name: "test_user_name",
-      id: userId,
-      email: "test_user_email",
-      image_24: "test_user_image_24",
-    },
-    team: {
-      id: "test_team_id",
-    },
-    provider: "test_provider",
     id: userId,
-    displayName: "test_display_name",
+    name: "test_name",
+    type: "Slack",
   });
 }
 function logout(app: Express) {
