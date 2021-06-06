@@ -4,6 +4,9 @@ document
   .forEach((btn) => {
     btn.addEventListener("click", () => {
       const guestId = btn.dataset["guestId"];
+      if (guestId === undefined) {
+        return;
+      }
       const message = document.createElement("div");
       let para = document.createElement("p");
       para.textContent = `この操作は取り消せません。`;
