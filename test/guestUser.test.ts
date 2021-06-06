@@ -6,7 +6,6 @@ import {
   ERROR_MESSAGE_GUEST_ID_REQUIRED as GUEST_ID_REQUIRED,
   ERROR_MESSAGE_GUEST_ID_INVALID as GUEST_ID_INVALID,
   ERROR_MESSAGE_GUEST_NOT_FOUND as GUEST_NOT_FOUND,
-  ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND as MULTIPLE_GUESTS_FOUND,
   ERROR_MESSAGE_NOT_GUEST_USER as NOT_GUEST_USER,
   ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR as GUEST_DIFFERENT_CREATOR,
   ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY as GUEST_WORKS_NOT_EMPTY,
@@ -22,7 +21,7 @@ import {
   clearDatabase,
   INVALID_ID,
 } from "./common";
-import { UserModel } from "../src/models/database";
+import { UserModel, WorkModel } from "../src/models/database";
 import { randomStringCharacters } from "../src/utils/helpers";
 
 function getIdAndPassFromCreateGuestHtml(html: string): {
@@ -150,6 +149,21 @@ describe("ゲストユーザー", () => {
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [GUEST_DIFFERENT_CREATOR] }))
           .end(done);
+      });
+    });
+    it("ゲストユーザーではないユーザーを削除できない。", (done) => {
+      login(app, myId);
+      testSuccessfulGuestUserCreation().then(({ guestId }) => {
+        WorkModel.create({
+          owner: guestId,
+        }).then(() => {
+          request(app)
+            .post("/account/guest/delete")
+            .send({ guestId: guestId })
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [GUEST_WORKS_NOT_EMPTY] }))
+            .end(done);
+        });
       });
     });
     it("条件を満たしていればゲストユーザーの削除に成功する。", (done) => {
