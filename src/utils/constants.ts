@@ -33,7 +33,7 @@ export const ERROR_MESSAGE_BACKUP_NAME_INVALID =
   "バックアップ名には数字のみである必要があります。";
 export const ERROR_MESSAGE_WORK_NOT_FOUND = "作品が存在しません。";
 export const ERROR_MESSAGE_WORK_DIFFERENT_OWNER =
-  "こ作品の所有者ではありません。";
+  "この作品の所有者ではありません。";
 export const ERROR_MESSAGE_MULTIPLE_WORKS_FOUND =
   "同じ作品が複数登録されています。";
 export const ERROR_MESSAGE_RENAME_TO_SAME =
