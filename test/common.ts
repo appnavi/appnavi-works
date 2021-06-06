@@ -45,7 +45,7 @@ async function clearFolders(creatorId: string, workId: string) {
     { recursive: true, force: true }
   );
 }
-async function clearDatabase() {
+export async function clearDatabase() {
   const collections = mongoose.connection.collections;
   await Promise.all(
     Object.keys(collections).map((index) => collections[index].deleteMany({}))

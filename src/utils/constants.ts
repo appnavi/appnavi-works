@@ -51,6 +51,8 @@ export const ERROR_MESSAGE_GUEST_NOT_FOUND =
 export const ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND =
   "同じゲストユーザーが複数登録されています。";
 export const ERROR_MESSAGE_NOT_GUEST_USER = "ゲストユーザーではありません。";
+export const ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR =
+  "別のユーザーによって作成されたゲストユーザーを削除することはできません。";
 export const ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY =
   "このゲストユーザーが投稿した作品が存在します。";
 

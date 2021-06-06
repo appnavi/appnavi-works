@@ -27,6 +27,9 @@ import {
   ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND,
   ERROR_MESSAGE_NOT_GUEST_USER,
   ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY,
+  ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR,
+  ERROR_MESSAGE_GUEST_ID_INVALID,
+  ERROR_MESSAGE_GUEST_ID_REQUIRED,
 } from "../utils/constants";
 import {
   BadRequestError,
@@ -34,7 +37,12 @@ import {
   DeleteWorkError,
   RenameWorkError,
 } from "../utils/errors";
-import { generateRandomString, render, wrap } from "../utils/helpers";
+import {
+  generateRandomString,
+  randomStringCharacters,
+  render,
+  wrap,
+} from "../utils/helpers";
 
 const accountRouter = express.Router();
 
@@ -254,8 +262,12 @@ accountRouter.post(
     });
   })
 );
+const guestIdRegex = new RegExp(`^[-${randomStringCharacters as string}]+$`);
 const deleteGuestSchema = yup.object({
-  guestId: yup.string().required(),
+  guestId: yup
+    .string()
+    .matches(guestIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID)
+    .required(ERROR_MESSAGE_GUEST_ID_REQUIRED),
 });
 accountRouter.post(
   "/guest/delete",
@@ -271,24 +283,30 @@ accountRouter.post(
       throw new DeleteGuestUserError(err.errors, params);
     }
 
-    await deleteGuestUser(params.guestId);
+    await deleteGuestUser(getUserIdOrThrow(req), params.guestId);
     res.status(200).end();
   })
 );
-async function deleteGuestUser(guestId: string) {
+async function deleteGuestUser(userId: string, guestId: string) {
   const guestUsers = await UserModel.find({ userId: guestId });
   if (guestUsers.length === 0) {
     throw new DeleteGuestUserError(
-      [ERROR_MESSAGE_GUEST_NOT_FOUND, guestUsers.length],
-      { guestId }
+      [ERROR_MESSAGE_GUEST_NOT_FOUND],
+      [guestId, guestUsers.length]
     );
   }
   if (guestUsers.length > 1) {
     throw new Error(ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND);
   }
   const guestUser = guestUsers[0];
-  if (guestUser.guest === undefined) {
+  const guest = guestUser.guest;
+  if (guest === undefined) {
     throw new DeleteGuestUserError([ERROR_MESSAGE_NOT_GUEST_USER], { guestId });
+  }
+  if (guest.createdBy !== userId) {
+    throw new DeleteGuestUserError([ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR], {
+      guestId,
+    });
   }
   const worksByGuest = await WorkModel.find({
     owner: guestUser.userId,
