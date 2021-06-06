@@ -271,32 +271,33 @@ accountRouter.post(
       throw new DeleteGuestUserError(err.errors, params);
     }
 
-    // TODO:deleteGuestUser関数を作成し、処理を抽出。
-    const guestUsers = await UserModel.find({ userId: params.guestId });
-    if (guestUsers.length === 0) {
-      throw new DeleteGuestUserError(
-        [ERROR_MESSAGE_GUEST_NOT_FOUND, guestUsers.length],
-        params
-      );
-    }
-    if (guestUsers.length > 0) {
-      throw new Error(ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND);
-    }
-    const guestUser = guestUsers[0];
-    if (guestUser.guest === undefined) {
-      throw new DeleteGuestUserError([ERROR_MESSAGE_NOT_GUEST_USER], params);
-    }
-    const worksByGuest = await WorkModel.find({
-      owner: guestUser.userId,
-    });
-    if (worksByGuest.length !== 0) {
-      throw new DeleteGuestUserError(
-        [ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY],
-        params
-      );
-    }
-    await guestUser.delete();
+    await deleteGuestUser(params.guestId);
     res.status(200).end();
   })
 );
+async function deleteGuestUser(guestId: string) {
+  const guestUsers = await UserModel.find({ userId: guestId });
+  if (guestUsers.length === 0) {
+    throw new DeleteGuestUserError(
+      [ERROR_MESSAGE_GUEST_NOT_FOUND, guestUsers.length],
+      { guestId }
+    );
+  }
+  if (guestUsers.length > 1) {
+    throw new Error(ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND);
+  }
+  const guestUser = guestUsers[0];
+  if (guestUser.guest === undefined) {
+    throw new DeleteGuestUserError([ERROR_MESSAGE_NOT_GUEST_USER], { guestId });
+  }
+  const worksByGuest = await WorkModel.find({
+    owner: guestUser.userId,
+  });
+  if (worksByGuest.length !== 0) {
+    throw new DeleteGuestUserError([ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY], {
+      guestId,
+    });
+  }
+  await guestUser.delete();
+}
 export { accountRouter };
