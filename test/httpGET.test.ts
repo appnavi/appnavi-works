@@ -39,6 +39,9 @@ describe("GET", () => {
       it("/authをGETできる", (done) => {
         canAccessTo("/auth", done);
       });
+      it("/auth/guestをGETできる", (done) => {
+        canAccessTo("/auth/guest", done);
+      });
       it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
         request(app)
           .get("/auth/slack")
@@ -46,15 +49,20 @@ describe("GET", () => {
           .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
           .end(done);
       });
-      it("/accountはログイン必須", (done) => {
-        requireAuthenticated("/account", done);
-      });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
           .get("/auth/logout")
           .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", "/auth")
           .end(done);
+      });
+    });
+    describe("accountRouter", () => {
+      it("/accountはログイン必須", (done) => {
+        requireAuthenticated("/account", done);
+      });
+      it("/account/guestはログイン必須", (done) => {
+        requireAuthenticated("/account/guest", done);
       });
     });
     describe("worksRouter", () => {
@@ -107,6 +115,13 @@ describe("GET", () => {
           .expect("Location", "/")
           .end(done);
       });
+      it("/auth/guestをGETをGETすると/にリダイレクトされる", (done) => {
+        request(app)
+          .get("/auth/guest")
+          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+          .expect("Location", "/")
+          .end(done);
+      });
       it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
         request(app)
           .get("/auth/slack")
@@ -114,15 +129,20 @@ describe("GET", () => {
           .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
           .end(done);
       });
-      it("/accountをGETできる", (done) => {
-        canAccessTo("/account", done);
-      });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
           .get("/auth/logout")
           .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", "/auth")
           .end(done);
+      });
+    });
+    describe("accountRouter", () => {
+      it("/accountをGETできる", (done) => {
+        canAccessTo("/account", done);
+      });
+      it("/account/guestをGETできる", (done) => {
+        canAccessTo("/account/guest", done);
       });
     });
     describe("worksRouter", () => {
