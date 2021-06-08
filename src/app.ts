@@ -96,7 +96,6 @@ app.use(
 app.use(
   URL_PREFIX_PRIVATE,
   ensureAuthenticated,
-  ignoreTypescriptFile,
   express.static(path.resolve(DIRECTORY_NAME_PRIVATE))
 );
 
