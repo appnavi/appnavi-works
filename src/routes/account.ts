@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import express from "express";
-import createError from "http-errors";
 import multer from "multer";
 import * as yup from "yup";
 import { UserModel, WorkModel } from "../models/database";
@@ -30,7 +29,6 @@ import {
   ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR,
   ERROR_MESSAGE_GUEST_ID_INVALID,
   ERROR_MESSAGE_GUEST_ID_REQUIRED,
-  STATUS_CODE_UNAUTHORIZED,
 } from "../utils/constants";
 import {
   BadRequestError,
@@ -42,6 +40,7 @@ import {
   generateRandomString,
   randomStringCharacters,
   render,
+  slackUserOnly,
   wrap,
 } from "../utils/helpers";
 
@@ -218,13 +217,7 @@ accountRouter.post(
 );
 
 // TODO:ゲストユーザー関連の単体テスト作成
-accountRouter.use("/guest", (req, _res, next) => {
-  const userType = req.user?.type;
-  if (userType !== "Slack") {
-    next(createError(STATUS_CODE_UNAUTHORIZED));
-  }
-  next();
-});
+accountRouter.use("/guest", slackUserOnly);
 accountRouter.get(
   "/guest",
   wrap(async (req, res) => {

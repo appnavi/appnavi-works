@@ -3,7 +3,7 @@ import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import createError from "http-errors";
-import { DIRECTORY_NAME_VIEWS } from "./constants";
+import { DIRECTORY_NAME_VIEWS, STATUS_CODE_UNAUTHORIZED } from "./constants";
 
 export const idRegex = /^[0-9a-z-]+$/;
 
@@ -77,6 +77,18 @@ export const ignoreTypescriptFile = (
 ): void => {
   if (req.url.endsWith(".ts")) {
     next(createError(404));
+  }
+  next();
+};
+
+export const slackUserOnly = (
+  req: express.Request,
+  _res: express.Response,
+  next: express.NextFunction
+): void => {
+  const userType = req.user?.type;
+  if (userType !== "Slack") {
+    next(createError(STATUS_CODE_UNAUTHORIZED));
   }
   next();
 };
