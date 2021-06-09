@@ -30,6 +30,7 @@ import {
   ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR,
   ERROR_MESSAGE_GUEST_ID_INVALID,
   ERROR_MESSAGE_GUEST_ID_REQUIRED,
+  STATUS_CODE_UNAUTHORIZED,
 } from "../utils/constants";
 import {
   BadRequestError,
@@ -220,7 +221,7 @@ accountRouter.post(
 accountRouter.use("/guest", (req, _res, next) => {
   const userType = req.user?.type;
   if (userType !== "Slack") {
-    next(createError(404));
+    next(createError(STATUS_CODE_UNAUTHORIZED));
   }
   next();
 });

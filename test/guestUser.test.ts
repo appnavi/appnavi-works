@@ -197,15 +197,24 @@ describe("ゲストユーザー", () => {
   describe("ゲストユーザーの権限", () => {
     it("ゲストユーザーは作成したゲストユーザー一覧ページにアクセスできない。", (done) => {
       login(app, myId, "Guest");
-      request(app).get("/account/guest").expect(404).end(done);
+      request(app)
+        .get("/account/guest")
+        .expect(STATUS_CODE_UNAUTHORIZED)
+        .end(done);
     });
     it("ゲストユーザーはゲストユーザーを作成できない。", (done) => {
       login(app, myId, "Guest");
-      request(app).post("/account/guest/create").expect(404).end(done);
+      request(app)
+        .post("/account/guest/create")
+        .expect(STATUS_CODE_UNAUTHORIZED)
+        .end(done);
     });
     it("ゲストユーザーはゲストユーザーを削除できない。", (done) => {
       login(app, myId, "Guest");
-      request(app).post("/account/guest/delete").expect(404).end(done);
+      request(app)
+        .post("/account/guest/delete")
+        .expect(STATUS_CODE_UNAUTHORIZED)
+        .end(done);
     });
   });
 });
