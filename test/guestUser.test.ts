@@ -202,6 +202,28 @@ describe("ゲストユーザー", () => {
         .expect(STATUS_CODE_UNAUTHORIZED)
         .end(done);
     });
+    it("ゲストユーザーは作品一覧ページにアクセスできない。", (done) => {
+      login(app, myId, "Guest");
+      request(app).get("/db/works").expect(STATUS_CODE_UNAUTHORIZED).end(done);
+    });
+    it("ゲストユーザーはユーザー一覧ページにアクセスできない。", (done) => {
+      login(app, myId, "Guest");
+      request(app).get("/db/users").expect(STATUS_CODE_UNAUTHORIZED).end(done);
+    });
+    it("ゲストユーザーはデータベース内容の出力(WORKS)ページにアクセスできない。", (done) => {
+      login(app, myId, "Guest");
+      request(app)
+        .get("/db/works/raw")
+        .expect(STATUS_CODE_UNAUTHORIZED)
+        .end(done);
+    });
+    it("ゲストユーザーはデータベース内容の出力(USER)ページにアクセスできない。", (done) => {
+      login(app, myId, "Guest");
+      request(app)
+        .get("/db/users/raw")
+        .expect(STATUS_CODE_UNAUTHORIZED)
+        .end(done);
+    });
     it("ゲストユーザーはゲストユーザーを作成できない。", (done) => {
       login(app, myId, "Guest");
       request(app)

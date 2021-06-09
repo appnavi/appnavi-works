@@ -2,11 +2,11 @@ import express from "express";
 import { WorkModel, UserModel } from "../models/database";
 import { ensureAuthenticated } from "../services/auth";
 import { URL_PREFIX_WORK } from "../utils/constants";
-import { render, wrap } from "../utils/helpers";
+import { render, slackUserOnly, wrap } from "../utils/helpers";
 
 const dbRouter = express.Router();
 
-dbRouter.use(ensureAuthenticated);
+dbRouter.use(ensureAuthenticated, slackUserOnly);
 dbRouter.get(
   "/works",
   wrap(async (req, res) => {
