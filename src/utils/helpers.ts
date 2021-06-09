@@ -89,6 +89,7 @@ export const slackUserOnly = (
   const userType = req.user?.type;
   if (userType !== "Slack") {
     next(createError(STATUS_CODE_UNAUTHORIZED));
+    return;
   }
   next();
 };
