@@ -1,12 +1,14 @@
 FROM node:latest
 
+RUN mkdir /app && chown node:node /app
+
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY --chown=node:node package.json yarn.lock ./
 
 RUN yarn install
 
-COPY . .
+COPY --chown=node:node . .
 
 EXPOSE 3000
 
