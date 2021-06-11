@@ -1,3 +1,4 @@
+import { Strategy as SlackStrategy } from "@juris710/passport-slack";
 import bcrypt from "bcrypt";
 import { PassportStatic } from "passport";
 import {
@@ -5,7 +6,6 @@ import {
   IVerifyOptions as LocalIVerifyOptions,
 } from "passport-local";
 import OAuth2Strategy from "passport-oauth2";
-import { Strategy as SlackStrategy } from "passport-slack";
 import * as yup from "yup";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";

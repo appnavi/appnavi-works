@@ -25,6 +25,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@juris710/passport-slack": "^0.3.1",
     "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
@@ -40,7 +41,6 @@
     "multer": "^1.4.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "passport-slack": "juris710/passport-slack#v0.2.2",
     "request": "^2.88.2",
     "sass": "^1.32.13",
     "serve-index": "^1.9.1",
