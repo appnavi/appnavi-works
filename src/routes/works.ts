@@ -16,7 +16,7 @@ worksRouter.use(
   serveIndex(DIRECTORY_NAME_UPLOADS, {
     template: (
       locals: serveIndex.Locals,
-      callback: serveIndex.templateCallback
+      callback: serveIndex.TemplateCallback
     ) => {
       ejsToHtml(
         path.resolve(DIRECTORY_NAME_VIEWS, "works.ejs"),
