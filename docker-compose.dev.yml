@@ -11,3 +11,21 @@ services:
       - ./views:/app/views
     env_file:
       - docker-dev.env
+
+  mongo:
+    container_name: appnavi-works_mongo
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - '8081:8081'
+    environment: 
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_ROOT_PASSWORD}
+      - ME_CONFIG_MONGODB_SERVER=appnavi-works_mongo
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+    networks:
+      - db
+    depends_on: 
+      - mongo
+  
