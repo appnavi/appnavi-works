@@ -29,3 +29,19 @@ appnavi-worksの単体テスト
 ```sh
 bash test.sh
 ```
+
+## 停止方法
+
+### development以外
+
+```sh
+docker-compose down
+```
+
+### development
+
+developmentのみブラウザー上でデータベースを操作できる`mongo-express`を追加してあるため、`docker-compose down`では`mongo-express`がorphanコンテナになる。
+
+```sh
+bash stop-dev.sh
+```
