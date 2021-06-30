@@ -11,6 +11,7 @@ import {
   STATUS_CODE_UNAUTHORIZED,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
   ERROR_MESSAGE_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
+  ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER as CREATOR_ID_OTHER_USER,
   ERROR_MESSAGE_WORK_ID_REQUIRED as WORK_ID_REQUIRED,
   ERROR_MESSAGE_WORK_ID_INVALID as WORK_ID_INVALID,
   ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
@@ -296,6 +297,22 @@ describe("作品のアップロードを伴うテスト（MulterをMock）", () 
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
           .end(done);
+      });
+      it("作者IDが既に別人に使用されているとアップロードできない", (done) => {
+        WorkModel.create({
+          creatorId: creatorId,
+          workId: "their-work",
+          owner: theirId,
+          fileSize: 100,
+        }).then(() => {
+          request(app)
+            .post("/upload/unity")
+            .set(HEADER_CREATOR_ID, creatorId)
+            .set(HEADER_WORK_ID, workId)
+            .expect(STATUS_CODE_BAD_REQUEST)
+            .expect(JSON.stringify({ errors: [CREATOR_ID_OTHER_USER] }))
+            .end(done);
+        });
       });
       it("作品IDが設定されていないとアップロードできない", (done) => {
         request(app)

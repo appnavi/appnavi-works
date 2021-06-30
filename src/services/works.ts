@@ -15,6 +15,7 @@ import {
   ERROR_MESSAGE_RENAME_TO_SAME,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
   ERROR_MESSAGE_BACKUP_NOT_FOUND,
+  ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
 } from "../utils/constants";
 import { BadRequestError, RestoreBackupError } from "../utils/errors";
 import { idRegex } from "../utils/helpers";
@@ -78,6 +79,24 @@ export async function findOrCreateWork(
     default:
       throw new Error(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
   }
+}
+
+export async function isCreatorIdUsedByOtherUser(
+  creatorId: string,
+  userId: string
+): Promise<boolean> {
+  const works = await WorkModel.find({
+    creatorId,
+  });
+  if (works.length == 0) {
+    return false;
+  }
+  for (const work of works) {
+    if (work.owner !== userId) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export async function listBackupFolderNames(
@@ -205,6 +224,13 @@ export async function renameWork(
   });
   if (renamedWorks.length > 0) {
     throw new BadRequestError(ERROR_MESSAGE_RENAME_TO_EXISTING);
+  }
+  const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
+    renamedCreatorId,
+    userId
+  );
+  if (isUsedByOtherUser) {
+    throw new BadRequestError(ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER);
   }
   const renamedDir = path.join(
     DIRECTORY_NAME_UPLOADS,

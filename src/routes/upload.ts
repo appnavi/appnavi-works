@@ -6,6 +6,7 @@ import { WorkDocument } from "../models/database";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
+  findOrCreateUser,
   getDefaultCreatorId,
   getUserIdOrThrow,
 } from "../services/auth";
@@ -15,6 +16,7 @@ import {
   calculateCurrentStorageSizeBytes,
   backupWork,
   findOrCreateWork,
+  isCreatorIdUsedByOtherUser,
 } from "../services/works";
 import {
   URL_PREFIX_WORK,
@@ -27,6 +29,7 @@ import {
   UPLOAD_UNITY_FIELD_WINDOWS,
   UPLOAD_UNITY_FIELD_WEBGL,
   UPLOAD_UNITY_FIELDS,
+  ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER as CREATOR_ID_USED_BY_OTHER_USER,
 } from "../utils/constants";
 import { UploadError } from "../utils/errors";
 import { getEnv, getEnvNumber, render, wrap } from "../utils/helpers";
@@ -119,6 +122,7 @@ uploadRouter
     ensureStorageSpaceAvailable,
     getWorkDocument,
     preventEditByOtherPerson,
+    preventCreatorIdUsedByMultipleUsers,
     validateDestination,
     beforeUpload,
     unityUpload.fields(UPLOAD_UNITY_FIELDS),
@@ -184,6 +188,26 @@ function getWorkDocument(
     next();
   })(req, res, next);
 }
+function preventCreatorIdUsedByMultipleUsers(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  return wrap(async (req, _res, next) => {
+    const userId = getUserIdOrThrow(req);
+    const creatorId = getCreatorIdFromHeader(req);
+    const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
+      creatorId,
+      userId
+    );
+    if (isUsedByOtherUser) {
+      next(new UploadError([CREATOR_ID_USED_BY_OTHER_USER]));
+      return;
+    }
+    next();
+  })(req, res, next);
+}
+
 function preventEditByOtherPerson(
   req: express.Request,
   res: express.Response,
@@ -281,6 +305,13 @@ function saveToDatabase(
     work.fileSize = calculateWorkFileSize(files, UPLOAD_UNITY_FIELDS);
     work.uploadedAt = locals.uploadEndedAt;
     await work.save();
+
+    const user = await findOrCreateUser(req);
+    const creatorId = getCreatorIdFromHeader(req);
+    if (!user.creatorIds.includes(creatorId)) {
+      user.creatorIds.push(creatorId);
+      await user.save();
+    }
     next();
   })(req, res, next);
 }

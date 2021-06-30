@@ -32,6 +32,7 @@ export interface UserDocument extends Document {
   userId: string;
   defaultCreatorId: string;
   lastLogIn: Date;
+  creatorIds: Types.Array<string>;
   guest?: {
     hashedPassword: string;
     createdBy: string;
@@ -42,6 +43,7 @@ const userSchema = new Schema(
     userId: String,
     defaultCreatorId: String,
     lastLogIn: Date,
+    creatorIds: [String],
     guest: {
       type: {
         hashedPassword: String,
