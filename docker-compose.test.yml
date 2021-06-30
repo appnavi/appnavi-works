@@ -7,4 +7,5 @@ services:
       - ./src:/app/src
     env_file:
       - docker-test.env
+      - .env
 

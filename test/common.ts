@@ -27,6 +27,9 @@ export async function connectDatabase(databaseId: string) {
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      authSource: "admin",
+      user: process.env["MONGO_ROOT_USERNAME"],
+      pass: process.env["MONGO_ROOT_PASSWORD"],
     }
   );
 }
