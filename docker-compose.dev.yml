@@ -9,6 +9,7 @@ services:
       - ./public:/app/public
       - ./src:/app/src
       - ./views:/app/views
+      - ./migrate-mongo:/app/migrate-mongo
     env_file:
       - docker-dev.env
 
