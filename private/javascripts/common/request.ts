@@ -28,6 +28,19 @@ async function postRequest(
       message,
       success.onDialogClosed
     );
+  } else if (res.status === 401) {
+    const content = document.createElement("p");
+    content.appendChild(
+      document.createTextNode("ログインしなおす必要があります。")
+    );
+    content.appendChild(
+      document.createTextNode(
+        "このダイアログを閉じるとログイン画面に遷移します。"
+      )
+    );
+    showMessageDialog(fail?.dialogTitle ?? "エラー", content, () => {
+      location.reload();
+    });
   } else if (status === 400) {
     const body = (await res.json()) as ResponseBody;
     const errors = body.errors ?? [];
