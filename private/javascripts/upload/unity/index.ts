@@ -156,7 +156,7 @@ workIdInput.addEventListener("change", (_) => {
 });
 
 //ファイルアップロード
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", async function (event) {
   event.preventDefault();
   if (
     webglFilesInput.files?.length === 0 &&
@@ -170,54 +170,55 @@ form.addEventListener("submit", function (event) {
   }
   setUploading(true);
   const data = new FormData(form);
-  const request = new XMLHttpRequest();
-
-  request.open("POST", "", true);
-  request.setRequestHeader("x-creator-id", creatorIdInput.value);
-  request.setRequestHeader("x-work-id", workIdInput.value);
-  request.addEventListener("load", (ev) => {
-    setUploading(false);
-    const title =
-      request.status === 200
-        ? "アップロードに成功しました"
-        : "アップロードに失敗しました";
-    const content = document.createElement("div");
-    if (request.status === 200) {
-      const paths = (JSON.parse(request.response).paths as string[]) ?? [];
-      paths
-        .map((p) => p.replace(/\\/g, "/"))
-        .forEach((p) => {
-          const url = `${location.origin}${p}`;
-          const workUrlHolder = document.createElement("p");
-          const workUrl = document.createElement("a");
-          workUrl.href = url;
-          workUrl.textContent = url;
-          workUrlHolder.appendChild(workUrl);
-          workUrlHolder.appendChild(
-            document.createTextNode("にアップロードしました。")
-          );
-          content.appendChild(workUrlHolder);
-        });
-    } else if (request.status === 401) {
-      content.appendChild(
-        document.createTextNode("ログインしなおす必要があります。")
-      );
-      content.appendChild(
-        document.createTextNode("ページを再読み込みしてください。")
-      );
-    } else if (request.status === 400) {
-      const errors = (JSON.parse(request.response).errors as string[]) ?? [];
-      errors.forEach((err) => {
-        const errorText = document.createElement("p");
-        errorText.innerText = err;
-        content.append(errorText);
-      });
-    } else {
-      content.appendChild(document.createTextNode(request.response));
-    }
-    showMessageDialog(title, content);
+  const res = await fetch("", {
+    method: "POST",
+    body: data,
+    headers: {
+      "x-creator-id": creatorIdInput.value,
+      "x-work-id": workIdInput.value,
+    },
   });
-  request.send(data);
+  setUploading(false);
+  const title =
+    res.status === 200
+      ? "アップロードに成功しました"
+      : "アップロードに失敗しました";
+  const content = document.createElement("div");
+  const body = (await res.json()) as { paths?: string[]; errors?: string[] };
+  if (res.status === 200) {
+    const paths = body.paths ?? [];
+    paths
+      .map((p) => p.replace(/\\/g, "/"))
+      .forEach((p) => {
+        const url = `${location.origin}${p}`;
+        const workUrlHolder = document.createElement("p");
+        const workUrl = document.createElement("a");
+        workUrl.href = url;
+        workUrl.textContent = url;
+        workUrlHolder.appendChild(workUrl);
+        workUrlHolder.appendChild(
+          document.createTextNode("にアップロードしました。")
+        );
+        content.appendChild(workUrlHolder);
+      });
+  } else if (res.status === 401) {
+    content.appendChild(
+      document.createTextNode("ログインしなおす必要があります。")
+    );
+    content.appendChild(
+      document.createTextNode("ページを再読み込みしてください。")
+    );
+  } else if (res.status === 400) {
+    const errors = body.errors ?? [];
+    errors.forEach((err) => {
+      const errorText = document.createElement("p");
+      errorText.innerText = err;
+      content.append(errorText);
+    });
+  } else {
+    content.appendChild(document.createTextNode(await res.text()));
+  }
+  showMessageDialog(title, content);
 });
 function alertBeforeLeave(event: BeforeUnloadEvent) {
   event.preventDefault();

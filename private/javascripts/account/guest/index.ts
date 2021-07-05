@@ -32,28 +32,28 @@ document
     });
   });
 
-function deleteGuest(guestId: string) {
-  const request = new XMLHttpRequest();
-  request.open("POST", "/account/guest/delete", true);
+async function deleteGuest(guestId: string) {
   const data = new FormData();
   data.append("guestId", guestId);
-  request.addEventListener("load", function () {
-    if (request.status === 200) {
-      var message = document.createElement("p");
-      message.textContent = `ゲストユーザー${guestId}を削除しました。`;
-      showMessageDialog("完了", message, () => {
-        location.reload();
-      });
-    } else {
-      const errors = JSON.parse(request.response).errors as string[];
-      const message = document.createElement("div");
-      errors.forEach((error) => {
-        const errorMessage = document.createElement("p");
-        errorMessage.textContent = error;
-        message.appendChild(errorMessage);
-      });
-      showMessageDialog("エラー", message);
-    }
+  const res = await fetch("/account/guest/delete", {
+    method: "POST",
+    body: data,
   });
-  request.send(data);
+  if (res.status === 200) {
+    var message = document.createElement("p");
+    message.textContent = `ゲストユーザー${guestId}を削除しました。`;
+    showMessageDialog("完了", message, () => {
+      location.reload();
+    });
+  } else {
+    const body = (await res.json()) as { errors?: string[] };
+    const errors = body.errors ?? [];
+    const message = document.createElement("div");
+    errors.forEach((error) => {
+      const errorMessage = document.createElement("p");
+      errorMessage.textContent = error;
+      message.appendChild(errorMessage);
+    });
+    showMessageDialog("エラー", message);
+  }
 }

@@ -5,32 +5,32 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 document
   .querySelector<HTMLFormElement>(".default_creator_id-form")!
-  .addEventListener("submit", (event) => {
+  .addEventListener("submit", async (event) => {
     event.preventDefault();
     const defaultCreatorId = document.querySelector<HTMLInputElement>(
       'input[name="default_creator_id"]'
     )!.value;
     const data = new FormData();
     data.append("default_creator_id", defaultCreatorId);
-    const request = new XMLHttpRequest();
-    request.open("POST", "/account/default-creator-id", true);
-    request.addEventListener("load", () => {
-      if (request.status === 200) {
-        const message = document.createElement("p");
-        message.textContent = "デフォルトの作者IDを設定しました。";
-        showMessageDialog("完了", message);
-      } else {
-        const errors = JSON.parse(request.response).errors as string[];
-        const message = document.createElement("div");
-        errors.forEach((error) => {
-          const errorMessage = document.createElement("p");
-          errorMessage.textContent = error;
-          message.appendChild(errorMessage);
-        });
-        showMessageDialog("エラー", message);
-      }
+    const res = await fetch("/account/default-creator-id", {
+      method: "POST",
+      body: data,
     });
-    request.send(data);
+    if (res.status === 200) {
+      const message = document.createElement("p");
+      message.textContent = "デフォルトの作者IDを設定しました。";
+      showMessageDialog("完了", message);
+    } else {
+      const body = (await res.json()) as { errors?: string[] };
+      const errors = body.errors ?? [];
+      const message = document.createElement("div");
+      errors.forEach((error) => {
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = error;
+        message.appendChild(errorMessage);
+      });
+      showMessageDialog("エラー", message);
+    }
   });
 
 document
@@ -147,61 +147,69 @@ document
     });
   });
 
-function restoreBackup(creatorId: string, workId: string, backupName: string) {
-  const request = new XMLHttpRequest();
-  request.open("POST", "/account/backup/restore", true);
+async function restoreBackup(
+  creatorId: string,
+  workId: string,
+  backupName: string
+) {
   const data = new FormData();
   data.append("creatorId", creatorId);
   data.append("workId", workId);
   data.append("backupName", backupName);
-  request.addEventListener("load", function () {
-    if (request.status === 200) {
-      var message = document.createElement("p");
-      message.textContent = `バックアップ${backupName}を復元しました。`;
-      showMessageDialog("完了", message, () => {
-        location.reload();
-      });
-    } else {
-      const errors = JSON.parse(request.response).errors as string[];
-      const message = document.createElement("div");
-      errors.forEach((error) => {
-        const errorMessage = document.createElement("p");
-        errorMessage.textContent = error;
-        message.appendChild(errorMessage);
-      });
-      showMessageDialog("エラー", message);
-    }
+  const res = await fetch("/account/backup/restore", {
+    method: "POST",
+    body: data,
   });
-  request.send(data);
+  if (res.status === 200) {
+    var message = document.createElement("p");
+    message.textContent = `バックアップ${backupName}を復元しました。`;
+    showMessageDialog("完了", message, () => {
+      location.reload();
+    });
+  } else {
+    const body = (await res.json()) as { errors?: string[] };
+    const errors = body.errors ?? [];
+    const message = document.createElement("div");
+    errors.forEach((error) => {
+      const errorMessage = document.createElement("p");
+      errorMessage.textContent = error;
+      message.appendChild(errorMessage);
+    });
+    showMessageDialog("エラー", message);
+  }
 }
-function deleteBackup(creatorId: string, workId: string, backupName: string) {
-  const request = new XMLHttpRequest();
-  request.open("POST", "/account/backup/delete", true);
+async function deleteBackup(
+  creatorId: string,
+  workId: string,
+  backupName: string
+) {
   const data = new FormData();
   data.append("creatorId", creatorId);
   data.append("workId", workId);
   data.append("backupName", backupName);
-  request.addEventListener("load", function () {
-    if (request.status === 200) {
-      var message = document.createElement("p");
-      message.textContent = `バックアップ${backupName}を削除しました。`;
-      showMessageDialog("完了", message, () => {
-        location.reload();
-      });
-    } else {
-      const errors = JSON.parse(request.response).errors as string[];
-      const message = document.createElement("div");
-      errors.forEach((error) => {
-        const errorMessage = document.createElement("p");
-        errorMessage.textContent = error;
-        message.appendChild(errorMessage);
-      });
-      showMessageDialog("エラー", message);
-    }
+  const res = await fetch("/account/backup/delete", {
+    method: "POST",
+    body: data,
   });
-  request.send(data);
+  if (res.status === 200) {
+    var message = document.createElement("p");
+    message.textContent = `バックアップ${backupName}を削除しました。`;
+    showMessageDialog("完了", message, () => {
+      location.reload();
+    });
+  } else {
+    const body = (await res.json()) as { errors?: string[] };
+    const errors = body.errors ?? [];
+    const message = document.createElement("div");
+    errors.forEach((error) => {
+      const errorMessage = document.createElement("p");
+      errorMessage.textContent = error;
+      message.appendChild(errorMessage);
+    });
+    showMessageDialog("エラー", message);
+  }
 }
-function renameWork(
+async function renameWork(
   creatorId: string,
   workId: string,
   renamedCreatorId: string,
@@ -212,55 +220,54 @@ function renameWork(
   data.append("workId", workId);
   data.append("renamedCreatorId", renamedCreatorId);
   data.append("renamedWorkId", renamedWorkId);
-  const request = new XMLHttpRequest();
-  request.open("POST", "/account/work/rename", true);
-  request.addEventListener("load", function () {
-    const title =
-      request.status === 200 ? "編集に成功しました" : "編集に失敗しました";
-    const content = document.createElement("div");
-    if (request.status === 400) {
-      const errors = (JSON.parse(request.response).errors as string[]) ?? [];
-      errors.forEach((err) => {
-        const errorText = document.createElement("p");
-        errorText.innerText = err;
-        content.append(errorText);
-      });
-    } else if (request.status !== 200) {
-      content.appendChild(document.createTextNode(request.response));
-    }
-    showMessageDialog(title, content, () => {
-      if (request.status === 200) {
-        location.reload();
-      }
-    });
+  const res = await fetch("/account/work/rename", {
+    method: "POST",
+    body: data,
   });
-  request.send(data);
+  const title =
+    res.status === 200 ? "編集に成功しました" : "編集に失敗しました";
+  const content = document.createElement("div");
+  if (res.status === 400) {
+    const body = (await res.json()) as { errors?: string[] };
+    const errors = body.errors ?? [];
+    errors.forEach((err) => {
+      const errorText = document.createElement("p");
+      errorText.innerText = err;
+      content.append(errorText);
+    });
+  } else if (res.status !== 200) {
+    content.appendChild(document.createTextNode(await res.text()));
+  }
+  showMessageDialog(title, content, () => {
+    if (res.status === 200) {
+      location.reload();
+    }
+  });
 }
-function deleteWork(creatorId: string, workId: string) {
+async function deleteWork(creatorId: string, workId: string) {
   const data = new FormData();
   data.append("creatorId", creatorId);
   data.append("workId", workId);
-  const request = new XMLHttpRequest();
-  request.open("POST", "/account/work/delete", true);
-  request.addEventListener("load", function () {
-    const title =
-      request.status === 200 ? "削除しました" : "削除に失敗しました";
-    const content = document.createElement("div");
-    if (request.status === 400) {
-      const errors = (JSON.parse(request.response).errors as string[]) ?? [];
-      errors.forEach((err) => {
-        const errorText = document.createElement("p");
-        errorText.innerText = err;
-        content.append(errorText);
-      });
-    } else if (request.status !== 200) {
-      content.appendChild(document.createTextNode(request.response));
-    }
-    showMessageDialog(title, content, () => {
-      if (request.status === 200) {
-        location.reload();
-      }
-    });
+  const res = await fetch("/account/work/delete", {
+    method: "POST",
+    body: data,
   });
-  request.send(data);
+  const title = res.status === 200 ? "削除しました" : "削除に失敗しました";
+  const content = document.createElement("div");
+  if (res.status === 400) {
+    const body = (await res.json()) as { errors?: string[] };
+    const errors = body.errors ?? [];
+    errors.forEach((err) => {
+      const errorText = document.createElement("p");
+      errorText.innerText = err;
+      content.append(errorText);
+    });
+  } else if (res.status !== 200) {
+    content.appendChild(document.createTextNode(await res.text()));
+  }
+  showMessageDialog(title, content, () => {
+    if (res.status === 200) {
+      location.reload();
+    }
+  });
 }
