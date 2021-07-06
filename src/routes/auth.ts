@@ -2,7 +2,12 @@ import express from "express";
 import createError from "http-errors";
 import { passport } from "../app";
 import * as logger from "../modules/logger";
-import { findOrCreateUser, isAuthenticated, redirect } from "../services/auth";
+import {
+  findOrCreateUser,
+  getUserIdOrThrow,
+  isAuthenticated,
+  redirect,
+} from "../services/auth";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
 import { render, wrap } from "../utils/helpers";
 
@@ -81,7 +86,7 @@ async function logLastLogin(
   res: express.Response,
   next: express.NextFunction
 ): Promise<void> {
-  const userDocument = await findOrCreateUser(req);
+  const userDocument = await findOrCreateUser(getUserIdOrThrow(req));
   await userDocument.updateOne({
     $set: {
       lastLogIn: new Date(),

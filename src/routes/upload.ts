@@ -311,7 +311,7 @@ function saveToDatabase(
     work.uploadedAt = locals.uploadEndedAt;
     await work.save();
 
-    const user = await findOrCreateUser(req);
+    const user = await findOrCreateUser(getUserIdOrThrow(req));
     const creatorId = getCreatorIdFromHeader(req);
     if (!user.creatorIds.includes(creatorId)) {
       user.creatorIds.push(creatorId);

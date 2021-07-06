@@ -71,10 +71,7 @@ export function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
 }
 
-export async function findOrCreateUser(
-  req: express.Request
-): Promise<UserDocument> {
-  const userId = getUserIdOrThrow(req);
+export async function findOrCreateUser(userId: string): Promise<UserDocument> {
   const users = await UserModel.find({
     userId,
   });
@@ -91,7 +88,7 @@ export async function findOrCreateUser(
 export async function getDefaultCreatorId(
   req: express.Request
 ): Promise<string | undefined> {
-  const userDocument = await findOrCreateUser(req);
+  const userDocument = await findOrCreateUser(getUserIdOrThrow(req));
   return userDocument.defaultCreatorId;
 }
 
