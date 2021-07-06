@@ -19,6 +19,7 @@ import {
 } from "../utils/constants";
 import { BadRequestError, RestoreBackupError } from "../utils/errors";
 import { idRegex } from "../utils/helpers";
+import { findOrCreateUser } from "./auth";
 
 export const creatorIdSchema = yup
   .string()
@@ -244,6 +245,13 @@ export async function renameWork(
     const renamedBackupPath = path.resolve(DIRECTORY_NAME_BACKUPS, renamedDir);
     await fsExtra.ensureDir(path.resolve(renamedBackupPath, ".."));
     await fsExtra.move(backupPath, renamedBackupPath);
+  }
+  if (work.creatorId !== renamedCreatorId) {
+    const user = await findOrCreateUser(userId);
+    if (!user.creatorIds.includes(renamedCreatorId)) {
+      user.creatorIds.push(renamedCreatorId);
+    }
+    await user.save();
   }
   work.creatorId = renamedCreatorId;
   work.workId = renamedWorkId;
