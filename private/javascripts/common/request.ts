@@ -1,3 +1,4 @@
+/// <reference path="./dialogs.ts" />
 interface ResponseBody {
   errors?: string[];
 }
