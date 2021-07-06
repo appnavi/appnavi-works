@@ -7,9 +7,9 @@ import { WorkDocument } from "../models/database";
 import * as logger from "../modules/logger";
 import {
   ensureAuthenticated,
-  findOrCreateUser,
   getDefaultCreatorId,
   getUserIdOrThrow,
+  updateCreatorIds,
 } from "../services/auth";
 import {
   calculateWorkFileSize,
@@ -311,12 +311,7 @@ function saveToDatabase(
     work.uploadedAt = locals.uploadEndedAt;
     await work.save();
 
-    const user = await findOrCreateUser(getUserIdOrThrow(req));
-    const creatorId = getCreatorIdFromHeader(req);
-    if (!user.creatorIds.includes(creatorId)) {
-      user.creatorIds.push(creatorId);
-      await user.save();
-    }
+    await updateCreatorIds(getUserIdOrThrow(req), getCreatorIdFromHeader(req));
     next();
   })(req, res, next);
 }

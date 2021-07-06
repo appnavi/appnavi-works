@@ -99,3 +99,14 @@ export function getUserIdOrThrow(req: express.Request): string {
   }
   throw new Error("ユーザーIDを取得できませんでした。");
 }
+
+export async function updateCreatorIds(
+  userId: string,
+  creatorId: string
+): Promise<void> {
+  const user = await findOrCreateUser(userId);
+  if (!user.creatorIds.includes(creatorId)) {
+    user.creatorIds.push(creatorId);
+  }
+  await user.save();
+}
