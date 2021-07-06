@@ -47,7 +47,11 @@ import {
 
 const accountRouter = express.Router();
 
-accountRouter.use(ensureAuthenticated, csurf({ cookie: true }));
+accountRouter.use(ensureAuthenticated);
+
+if (process.env.NODE_ENV !== "test") {
+  accountRouter.use(csurf({ cookie: true }));
+}
 
 accountRouter.get(
   "/",

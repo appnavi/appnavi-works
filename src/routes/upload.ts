@@ -106,7 +106,11 @@ export const unityUpload = multer({
 });
 
 const uploadRouter = express.Router();
-uploadRouter.use(ensureAuthenticated, csurf({ cookie: true }));
+uploadRouter.use(ensureAuthenticated);
+
+if (process.env.NODE_ENV !== "test") {
+  uploadRouter.use(csurf({ cookie: true }));
+}
 
 uploadRouter
   .route("/unity")
