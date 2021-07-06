@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import csurf from "csurf";
 import express from "express";
 import multer from "multer";
 import * as yup from "yup";
@@ -46,7 +47,7 @@ import {
 
 const accountRouter = express.Router();
 
-accountRouter.use(ensureAuthenticated);
+accountRouter.use(ensureAuthenticated, csurf({ cookie: true }));
 
 accountRouter.get(
   "/",

@@ -2,7 +2,15 @@
 interface ResponseBody {
   errors?: string[];
 }
-
+function getCsrfTokenFromPage(): string {
+  const token = document
+    .querySelector('meta[name="csrf-token"]')
+    ?.getAttribute("content");
+  if (typeof token !== "string") {
+    throw new Error("エラーが発生しました。");
+  }
+  return token;
+}
 async function postRequest(
   url: string,
   data: FormData,
@@ -16,7 +24,12 @@ async function postRequest(
     dialogMessage?: string;
   }
 ) {
+  const token = getCsrfTokenFromPage();
   const res = await fetch(url, {
+    credentials: "same-origin",
+    headers: {
+      "CSRF-Token": token,
+    },
     method: "POST",
     body: data,
   });

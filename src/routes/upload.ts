@@ -1,4 +1,5 @@
 import path from "path";
+import csurf from "csurf";
 import express from "express";
 import fsExtra from "fs-extra";
 import multer from "multer";
@@ -105,7 +106,7 @@ export const unityUpload = multer({
 });
 
 const uploadRouter = express.Router();
-uploadRouter.use(ensureAuthenticated);
+uploadRouter.use(ensureAuthenticated, csurf({ cookie: true }));
 
 uploadRouter
   .route("/unity")

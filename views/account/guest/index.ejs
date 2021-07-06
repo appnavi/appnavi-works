@@ -19,9 +19,14 @@
           <p>
             ユーザーIDとパスワードは自動で生成されます。
           </p>
-          <form method="POST" action="/account/guest/create">
-            <button type="submit" class="btn">ゲストユーザーを作成</button>
-          </form>
+          <% if (typeof csrfToken !== "undefined") { %> 
+            <form method="POST" action="/account/guest/create">
+              <input type="hidden" name="_csrf" value="<%- csrfToken %>">
+              <button type="submit" class="btn">ゲストユーザーを作成</button>
+            </form>
+          <% } else { %> 
+            <p class="flow-text">ゲストユーザーを作成することはできません。</p>
+          <% } %> 
         </div>
         <% if(typeof(guests) !== "undefined" && guests?.length > 0) { %> 
           <div class="section">
