@@ -552,10 +552,10 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@juris710/passport-slack@^0.3.1":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@juris710/passport-slack/-/passport-slack-0.3.2.tgz#729fd5712a655518364f3270ab8ad3f77ad370d2"
-  integrity sha512-wB/W1LYeif7tLyWTzi4Ptd21e0Cfwwi9DPFEcVs4ORw+7BCPipM1vGs97iypPN0Plq6pdvxbEaP1n3datcQh+g==
+"@juris710/passport-slack@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@juris710/passport-slack/-/passport-slack-0.3.3.tgz#242b4df6d61e3d675597a18fd8448efee9dca735"
+  integrity sha512-bHza0IuTY70/cMsJHS8dn1Nfd0aBBbGRpIuHfRhlguKF/LbzNmPcfYYcvuBmjQPP+DZtYNG3R6X48tXlNE4Kdw==
   dependencies:
     "@types/passport-oauth2" "^1.4.10"
     passport-oauth2 "^1.5.0"
