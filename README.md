@@ -32,7 +32,7 @@ bash test.sh
 
 ## 停止方法
 
-### development以外
+### production
 
 ```sh
 docker-compose down
@@ -40,8 +40,12 @@ docker-compose down
 
 ### development
 
-developmentのみブラウザー上でデータベースを操作できる`mongo-express`を追加してあるため、`docker-compose down`では`mongo-express`がorphanコンテナになる。
-
 ```sh
 bash stop-dev.sh
+```
+
+### test
+
+```sh
+bash stop-test.sh
 ```
