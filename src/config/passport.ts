@@ -12,9 +12,9 @@ import * as logger from "../modules/logger";
 import { getEnv, isSlackUser } from "../utils/helpers";
 const slackStrategy = new SlackStrategy(
   {
-    clientID: process.env["SLACK_CLIENT_ID"] ?? "",
-    clientSecret: process.env["SLACK_CLIENT_SECRET"] ?? "",
-    callbackURL: process.env["SLACK_REDIRECT_URI"] ?? "",
+    clientID: getEnv("SLACK_CLIENT_ID"),
+    clientSecret: getEnv("SLACK_CLIENT_SECRET"),
+    callbackURL: getEnv("SLACK_REDIRECT_URI"),
     skipUserProfile: false,
     user_scope: ["identity.basic", "identity.avatar", "identity.team"],
   },
