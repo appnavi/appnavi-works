@@ -11,7 +11,7 @@ services:
       - docker-production.env
     environment:
       - "VIRTUAL_HOST=resources.opuappnavi.com"
-      - "CERT_NAME=shared"
+      - "LETSENCRYPT_HOST=resources.opuappnavi.com"
     networks:
       - nginx-proxy
   mongo:
