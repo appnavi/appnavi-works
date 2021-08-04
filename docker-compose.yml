@@ -8,6 +8,15 @@ services:
       - mongo
     networks:
       - db
+    secrets:
+      - DATABASE_URL
+      - SLACK_CLIENT_ID
+      - SLACK_CLIENT_SECRET
+      - SLACK_WORKSPACE_ID
+      - COOKIE_NAME
+      - COOKIE_KEYS
+      - JWT_SECRET
+
   mongo:
     image: "mongo"
     expose: 
@@ -28,3 +37,19 @@ volumes:
 networks:
   db:
     driver: bridge
+
+secrets:
+  DATABASE_URL:
+    file: ./secrets/database_url.txt    
+  SLACK_CLIENT_ID:
+    file: ./secrets/slack_client_id.txt
+  SLACK_CLIENT_SECRET:
+    file: ./secrets/slack_client_secret.txt
+  SLACK_WORKSPACE_ID:
+    file: ./secrets/slack_workspace_id.txt
+  COOKIE_NAME:
+    file: ./secrets/cookie_name.txt
+  COOKIE_KEYS:
+    file: ./secrets/cookie_keys.txt
+  JWT_SECRET:
+    file: ./secrets/jwt_secret.txt

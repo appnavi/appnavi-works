@@ -69,3 +69,4 @@ typings/
 /public/javascripts/**/*.js
 /public/stylesheets/**/*.css
 /public/stylesheets/**/*.css.map
+/secrets/

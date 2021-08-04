@@ -1,25 +1,49 @@
 import crypto from "crypto";
+import fs from "fs";
 import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import createError from "http-errors";
 import { DIRECTORY_NAME_VIEWS, STATUS_CODE_UNAUTHORIZED } from "./constants";
-
 export const idRegex = /^[0-9a-z-]+$/;
 
+const secretKeys = [
+  "DATABASE_URL",
+  "SLACK_CLIENT_ID",
+  "SLACK_CLIENT_SECRET",
+  "SLACK_WORKSPACE_ID",
+  "COOKIE_NAME",
+  "COOKIE_KEYS",
+  "JWT_SECRET",
+] as const;
+
+type SecretKey = typeof secretKeys[number];
+
 type EnvKey =
-  | "SLACK_CLIENT_ID"
-  | "SLACK_CLIENT_SECRET"
+  | SecretKey
   | "SLACK_REDIRECT_URI"
-  | "SLACK_WORKSPACE_ID"
-  | "COOKIE_NAME"
-  | "COOKIE_KEYS"
-  | "JWT_SECRET"
-  | "DATABASE_URL"
   | "SITE_URL"
   | "WORK_STORAGE_SIZE_BYTES"
   | "PORT";
+
+function isSecretKey(arg: unknown): arg is SecretKey {
+  return (
+    typeof arg === "string" && secretKeys.find((s) => s === arg) !== undefined
+  );
+}
+
+function getSecret(key: SecretKey): string {
+  try {
+    return fs.readFileSync(`/run/secrets/${key}`, "utf-8");
+  } catch {
+    throw new Error(`"${key}"がありません。`);
+  }
+}
+
 export function getEnv(key: EnvKey): string {
+  if (isSecretKey(key)) {
+    return getSecret(key);
+  }
   const val = process.env[key];
   if (typeof val !== "string") {
     throw new Error(`環境変数${key}は存在しません。`);
