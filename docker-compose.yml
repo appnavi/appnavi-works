@@ -2,8 +2,9 @@ version: '3'
 services:
   appnavi-works:
     build: .
-    env_file:
-      - node.env
+    environment: 
+      - WORK_STORAGE_SIZE_BYTES=53687091200  # 50 * 1024^3 bytes = 50GB
+      - PORT=3000
     depends_on:
       - mongo
     networks:

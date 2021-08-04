@@ -6,8 +6,11 @@ services:
       - ./test:/app/test
       - ./src:/app/src
     env_file:
-      - docker-test.env
       - .env
+    environment: 
+      - NODE_ENV=test
+      - SITE_URL=http://localhost:3000
+      - SLACK_REDIRECT_URI="http://localhost:3000/auth/redirect
   mongo:
     environment: 
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}

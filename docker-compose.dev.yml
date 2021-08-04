@@ -10,8 +10,10 @@ services:
       - ./src:/app/src
       - ./views:/app/views
       - ./migrate-mongo:/app/migrate-mongo
-    env_file:
-      - docker-dev.env
+    environment: 
+      - NODE_ENV=development
+      - SITE_URL=http://localhost:3000
+      - SLACK_REDIRECT_URI=http://localhost:3000/auth/redirect
 
   mongo:
     container_name: appnavi-works_mongo
