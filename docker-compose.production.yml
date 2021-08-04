@@ -1,6 +1,7 @@
 version: '3'
 services:
   appnavi-works:
+    restart: always
     command: "yarn run start"
     volumes: 
       - ./uploads:/app/uploads
@@ -13,6 +14,8 @@ services:
       - "CERT_NAME=shared"
     networks:
       - nginx-proxy
+  mongo:
+    restart: always
 
 networks: 
   nginx-proxy:
