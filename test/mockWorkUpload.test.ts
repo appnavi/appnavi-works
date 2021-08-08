@@ -163,11 +163,19 @@ import {
   INVALID_ID,
 } from "./common";
 import path from "path";
-import { WorkModel } from "../src/models/database";
+import { UserDocument, UserModel, WorkModel } from "../src/models/database";
 import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 
 const creatorId = "creator-2";
 const workId = "work-2";
+
+async function getMyUserDocument(): Promise<UserDocument> {
+  const user = await UserModel.findOne({ userId: myId });
+  if (user === null) {
+    throw new Error("ユーザー情報が存在しません。");
+  }
+  return user;
+}
 
 async function expectUploadedFilesExists(
   exists: boolean = true
@@ -880,6 +888,48 @@ describe("作品のアップロードを伴うテスト（MulterをMock）", () 
             .then(() => expectUploadedFilesExists())
             .then(() => expectBackupFilesExists("1", false))
             .then(done);
+        });
+      });
+    });
+    describe("使用していない作者IDの削除", () => {
+      it("一つも作品を投稿していない状態では、何も起こらない", (done) => {
+        request(app)
+          .post("/account/cleanup-creator-ids")
+          .expect(STATUS_CODE_SUCCESS)
+          .end(async (err) => {
+            expect(err).toBeNull();
+            const user = await getMyUserDocument();
+            expect(user.creatorIds.length).toBe(0);
+            done();
+          });
+      });
+      it("使用中の作者IDは削除されない", (done) => {
+        testSuccessfulUploadTwice().then(() => {
+          request(app)
+            .post("/account/cleanup-creator-ids")
+            .expect(STATUS_CODE_SUCCESS)
+            .end(async (err) => {
+              expect(err).toBeNull();
+              const user = await getMyUserDocument();
+              expect(user.creatorIds.length).toBe(1);
+              done();
+            });
+        });
+      });
+      it("使用されていない作者IDが削除される", (done) => {
+        UserModel.create({
+          userId: myId,
+          creatorIds: [creatorId],
+        }).then(() => {
+          request(app)
+            .post("/account/cleanup-creator-ids")
+            .expect(STATUS_CODE_SUCCESS)
+            .end(async (err) => {
+              expect(err).toBeNull();
+              const user = await getMyUserDocument();
+              expect(user.creatorIds.length).toBe(0);
+              done();
+            });
         });
       });
     });
