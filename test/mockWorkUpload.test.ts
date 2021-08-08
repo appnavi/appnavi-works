@@ -132,7 +132,15 @@ async function uploadAllMockFiles(
   };
 }
 
-// TODO：multerではなくFormDataをモックする(supertestのattachを使うなど)
+/*
+TODO：モックをやめる
+  request(app)
+    .post("/upload/unity")
+    .attach("windows", path.join(__dirname, "mock-files/unity-zip.zip"))
+    .set(HEADER_CREATOR_ID, creatorId)
+    .set(HEADER_WORK_ID, workId)
+    .expect(STATUS_CODE_SUCCESS);
+*/
 // @ts-ignore
 multer.mockImplementation((options) => {
   const actual = jest.requireActual("multer")(options);
