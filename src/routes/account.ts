@@ -224,8 +224,6 @@ accountRouter.post(
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );
-
-// TODO:ゲストユーザー関連の単体テスト作成
 accountRouter.use("/guest", slackUserOnly);
 accountRouter.get(
   "/guest",
