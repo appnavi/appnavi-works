@@ -6,6 +6,7 @@ import * as yup from "yup";
 import { UserModel, WorkModel } from "../models/database";
 import {
   ensureAuthenticated,
+  findOrCreateUser,
   getDefaultCreatorId,
   getUserIdOrThrow,
 } from "../services/auth";
@@ -56,14 +57,17 @@ if (process.env.NODE_ENV !== "test") {
 accountRouter.get(
   "/",
   wrap(async (req, res) => {
+    const userId = getUserIdOrThrow(req);
     const defaultCreatorId = await getDefaultCreatorId(req);
     const works = await WorkModel.find({
-      owner: getUserIdOrThrow(req),
+      owner: userId,
     });
+    const user = await findOrCreateUser(userId);
     render("account", req, res, {
       defaultCreatorId,
       works,
       urlPrefix: URL_PREFIX_WORK,
+      user,
     });
   })
 );
@@ -283,6 +287,22 @@ accountRouter.post(
     }
 
     await deleteGuestUser(getUserIdOrThrow(req), params.guestId);
+    res.status(200).end();
+  })
+);
+accountRouter.post(
+  "/cleanup-creator-ids",
+  wrap(async (req, res) => {
+    const user = await findOrCreateUser(getUserIdOrThrow(req));
+    const works = await WorkModel.find();
+    user.creatorIds.forEach((creatorId) => {
+      const isUsed =
+        works.find((work) => work.creatorId === creatorId) !== undefined;
+      if (!isUsed) {
+        user.creatorIds.remove(creatorId);
+      }
+    });
+    await user.save();
     res.status(200).end();
   })
 );

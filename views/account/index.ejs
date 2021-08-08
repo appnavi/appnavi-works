@@ -87,6 +87,28 @@
           <% }) %>
         </div>
         <div class="divider"></div>
+        <div class="section">
+          <h3 class="header">保有している作者ID一覧</h3>
+          <% const creatorIds = user.creatorIds ?? []; %> 
+          <% if (creatorIds.length > 0) { %> 
+            <p>
+              ここで表示されている作者IDはあなたが保有しており、他のユーザーが利用することはできません。
+            </p>
+            <ul class="collection">
+              <% creatorIds.forEach((creatorId)=>{ %>
+                <li class="collection-item"><%- creatorId %> </li>
+              <% }); %>
+            </ul>
+            <a class="waves-effect waves-light btn red cleanupCreatorIdsButton">
+              <i class="material-icons left">delete_sweep</i>使用していない作者IDを削除
+            </a>
+          <% } else{ %> 
+            <p>
+              保有している作者IDはありません。作品を投稿すると、その作品の作者IDが保有している作者IDとして登録されます。
+            </p>
+          <% } %> 
+        </div>
+        <div class="divider"></div>
       </div>
     </main>
     <div class="renameWorkDialog modal">

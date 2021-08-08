@@ -131,6 +131,39 @@ document
       );
     });
   });
+document
+  .querySelectorAll<HTMLButtonElement>(".cleanupCreatorIdsButton")
+  .forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const content = document.createElement("div");
+      let subContent = document.createElement("h5");
+      subContent.innerText = `使用していない作者IDを一覧から削除してもよろしいですか？`;
+      content.append(subContent);
+      subContent = document.createElement("p");
+      subContent.innerText =
+        "これにより、他のユーザーがその作者IDを利用できるようになります。";
+      content.append(subContent);
+      subContent = document.createElement("p");
+      subContent.innerText =
+        "少なくとも一つの作品で用いられている作者IDは削除できません。";
+      content.append(subContent);
+      showConfirmDialog(
+        "確認",
+        content,
+        {
+          label: "削除",
+          classes: ["waves-effect", "waves-light", "btn", "red"],
+          onPresed: () => {
+            cleanupCreatorIds();
+          },
+        },
+        {
+          label: "キャンセル",
+          classes: ["waves-effect", "waves-light", "btn-flat"],
+        }
+      );
+    });
+  });
 
 async function restoreBackup(
   creatorId: string,
@@ -204,6 +237,22 @@ async function deleteWork(creatorId: string, workId: string) {
     },
     {
       dialogTitle: "削除に失敗しました",
+    }
+  );
+}
+
+async function cleanupCreatorIds() {
+  postRequest(
+    "/account/cleanup-creator-ids",
+    new FormData(),
+    {
+      dialogTitle: "使用していない作者IDの削除に成功しました。",
+      onDialogClosed: () => {
+        location.reload();
+      },
+    },
+    {
+      dialogTitle: "使用していない作者IDの削除に成功しました。",
     }
   );
 }
