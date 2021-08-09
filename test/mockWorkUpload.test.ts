@@ -1,6 +1,5 @@
 import express from "express";
 import * as multer from "multer";
-jest.mock("multer");
 import { Readable } from "stream";
 import fsExtra from "fs-extra";
 import {
@@ -30,136 +29,7 @@ import {
   ERROR_MESSAGE_RENAME_TO_EXISTING,
 } from "../src/utils/constants";
 
-type MockFile = {
-  fieldname: string;
-  foldername: string;
-  subfoldername: string;
-  filename: string;
-  mimetype: string;
-  file: Buffer;
-};
-function mockFileDestination(
-  mockFile: MockFile,
-  creatorId: string,
-  workId: string
-): string {
-  return path.join(
-    DIRECTORY_NAME_UPLOADS,
-    creatorId,
-    workId,
-    mockFile.fieldname
-  );
-}
-function mockFileUploadPath(
-  mockFile: MockFile,
-  creatorId: string,
-  workId: string
-): string {
-  return path.join(
-    mockFileDestination(mockFile, creatorId, workId),
-    mockFile.subfoldername,
-    mockFile.filename
-  );
-}
-const mockFiles: MockFile[] = [
-  {
-    fieldname: UPLOAD_UNITY_FIELD_WEBGL,
-    foldername: "unity-webgl",
-    subfoldername: "",
-    filename: "index.html",
-    mimetype: "text/html",
-    file: fsExtra.readFileSync("test/mock-files/index.html"),
-  },
-  {
-    fieldname: UPLOAD_UNITY_FIELD_WEBGL,
-    foldername: "unity-webgl",
-    subfoldername: "subfolder",
-    filename: "script.js",
-    mimetype: "text/javascript",
-    file: fsExtra.readFileSync("test/mock-files/script.js"),
-  },
-  {
-    fieldname: UPLOAD_UNITY_FIELD_WINDOWS,
-    foldername: "",
-    subfoldername: "",
-    filename: "unity-zip.zip",
-    mimetype: "application/zip",
-    file: fsExtra.readFileSync("test/mock-files/unity-zip.zip"),
-  },
-];
-async function uploadMockFile(
-  mockFile: MockFile,
-  creatorId: string,
-  workId: string
-): Promise<Express.Multer.File> {
-  const uploadPath = mockFileUploadPath(mockFile, creatorId, workId);
-  await fsExtra.ensureDir(path.dirname(uploadPath));
-  await fsExtra.writeFile(uploadPath, mockFile.file);
-  return {
-    fieldname: mockFile.fieldname,
-    filename: mockFile.filename,
-    mimetype: mockFile.mimetype,
-    destination: mockFileDestination(mockFile, creatorId, workId),
-    originalname: path.join(
-      mockFile.foldername,
-      mockFile.subfoldername,
-      mockFile.filename
-    ),
-    encoding: "7bit",
-    path: uploadPath,
-    buffer: Buffer.from([]),
-    stream: Readable.from([]),
-    size: mockFile.file.length,
-  };
-}
-async function uploadAllMockFiles(
-  creatorId: string,
-  workId: string
-): Promise<{
-  [fieldname: string]: Express.Multer.File[];
-}> {
-  return {
-    [UPLOAD_UNITY_FIELD_WEBGL]: await Promise.all(
-      mockFiles
-        .filter((it) => it.fieldname === UPLOAD_UNITY_FIELD_WEBGL)
-        .map((it) => uploadMockFile(it, creatorId, workId))
-    ),
-    [UPLOAD_UNITY_FIELD_WINDOWS]: await Promise.all(
-      mockFiles
-        .filter((it) => it.fieldname === UPLOAD_UNITY_FIELD_WINDOWS)
-        .map((it) => uploadMockFile(it, creatorId, workId))
-    ),
-  };
-}
-
-/*
-TODO：モックをやめる
-  request(app)
-    .post("/upload/unity")
-    .attach("windows", path.join(__dirname, "mock-files/unity-zip.zip"))
-    .set(HEADER_CREATOR_ID, creatorId)
-    .set(HEADER_WORK_ID, workId)
-    .expect(STATUS_CODE_SUCCESS);
-*/
-// @ts-ignore
-multer.mockImplementation((options) => {
-  const actual = jest.requireActual("multer")(options);
-  actual.fields = function fields(_fields: string) {
-    return (
-      req: express.Request,
-      _res: express.Response,
-      next: express.NextFunction
-    ) => {
-      uploadAllMockFiles(creatorId, workId).then((files) => {
-        req.files = files;
-        next();
-      });
-    };
-  };
-  return actual;
-});
-
-import request from "supertest";
+import request, { Test } from "supertest";
 import { app } from "../src/app";
 
 import { getEnvNumber } from "../src/utils/helpers";
@@ -176,6 +46,38 @@ import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 
 const creatorId = "creator-2";
 const workId = "work-2";
+type UploadFileInfo = {
+  fieldname: string;
+  foldername: string;
+  subfoldername: string;
+  filename: string;
+};
+type UploadFile = UploadFileInfo & {
+  sourcePath: string;
+  file: Buffer;
+};
+const uploadFileInfos: UploadFileInfo[] = [
+  {
+    fieldname: UPLOAD_UNITY_FIELD_WINDOWS,
+    foldername: "",
+    subfoldername: "",
+    filename: "unity-zip.zip",
+  },
+];
+const uploadFiles: UploadFile[] = uploadFileInfos.map((info) => {
+  const sourcePath = path.join(
+    __dirname,
+    "mock-files",
+    info.foldername,
+    info.subfoldername,
+    info.filename
+  );
+  return {
+    ...info,
+    sourcePath,
+    file: fsExtra.readFileSync(sourcePath),
+  };
+});
 
 async function getMyUserDocument(): Promise<UserDocument> {
   const user = await UserModel.findOne({ userId: myId });
@@ -186,21 +88,30 @@ async function getMyUserDocument(): Promise<UserDocument> {
 }
 
 async function expectUploadedFilesExists(
-  exists: boolean = true
+  expectExistsToBe: boolean = true
 ): Promise<void> {
-  mockFiles.forEach(async (mockFile) => {
-    const actualExists = await fsExtra.pathExists(
-      mockFileUploadPath(mockFile, creatorId, workId)
+  uploadFiles.forEach(async (uploadFile) => {
+    const exists = await fsExtra.pathExists(
+      path.join(
+        DIRECTORY_NAME_UPLOADS,
+        creatorId,
+        workId,
+        uploadFile.fieldname,
+        uploadFile.foldername,
+        uploadFile.subfoldername,
+        uploadFile.filename
+      )
     );
-    expect(actualExists).toBe(exists);
+    expect(exists).toBe(expectExistsToBe);
   });
 }
 async function expectUploadSucceeded(res: request.Response): Promise<void> {
+  const fields = Array.from(new Set(uploadFiles.map((f) => f.fieldname)));
   expect(res.status).toBe(STATUS_CODE_SUCCESS);
   expect(res.text).toBe(
     JSON.stringify({
-      paths: UPLOAD_UNITY_FIELDS.map((field) =>
-        path.join(URL_PREFIX_WORK, creatorId, workId, field.name)
+      paths: fields.map((field) =>
+        path.join(URL_PREFIX_WORK, creatorId, workId, field)
       ),
     })
   );
@@ -210,7 +121,7 @@ async function expectBackupFilesExists(
   backupName: string,
   exists: boolean = true
 ): Promise<void> {
-  mockFiles.forEach(async (mockFile) => {
+  uploadFiles.forEach(async (uploadFile) => {
     const actualExists = await fsExtra.pathExists(
       path.join(
         DIRECTORY_NAME_BACKUPS,
@@ -218,9 +129,9 @@ async function expectBackupFilesExists(
         creatorId,
         workId,
         backupName,
-        mockFile.fieldname,
-        mockFile.subfoldername,
-        mockFile.filename
+        uploadFile.fieldname,
+        uploadFile.subfoldername,
+        uploadFile.filename
       )
     );
     expect(actualExists).toBe(exists);
@@ -230,23 +141,30 @@ async function expectStorageSizeSameToActualSize(
   backupCount: number
 ): Promise<void> {
   const size = await calculateCurrentStorageSizeBytes();
-  const mockFileSize = mockFiles.reduce(
+  const mockFileSize = uploadFiles.reduce(
     (accumlator, current) => accumlator + current.file.length,
     0
   );
   expect(size).toBe(mockFileSize * (backupCount + 1));
 }
 
+function attachUploadFiles(req: Test) {
+  uploadFiles.forEach((f) => {
+    req.attach(f.fieldname, f.sourcePath);
+  });
+}
+
 async function testSuccessfulUpload(): Promise<void> {
   return new Promise((resolve) => {
-    request(app)
+    const req = request(app)
       .post("/upload/unity")
       .set(HEADER_CREATOR_ID, creatorId)
-      .set(HEADER_WORK_ID, workId)
-      .end((err, res) => {
-        expect(err).toBeNull();
-        expectUploadSucceeded(res).then(resolve);
-      });
+      .set(HEADER_WORK_ID, workId);
+    attachUploadFiles(req);
+    req.end((err, res) => {
+      expect(err).toBeNull();
+      expectUploadSucceeded(res).then(resolve);
+    });
   });
 }
 async function testSuccessfulUploadTwice(): Promise<void> {
