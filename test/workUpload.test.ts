@@ -67,7 +67,7 @@ const uploadFileInfos: UploadFileInfo[] = [
 const uploadFiles: UploadFile[] = uploadFileInfos.map((info) => {
   const sourcePath = path.join(
     __dirname,
-    "mock-files",
+    "work-files",
     info.foldername,
     info.subfoldername,
     info.filename
