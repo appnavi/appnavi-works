@@ -1,7 +1,16 @@
-import express from "express";
-import * as multer from "multer";
-import { Readable } from "stream";
+import path from "path";
 import fsExtra from "fs-extra";
+import request, { Test } from "supertest";
+import { login, logout, myId, theirId } from "./auth";
+import {
+  clearData,
+  connectDatabase,
+  ensureUploadFoldersExist,
+  INVALID_ID,
+} from "./common";
+import { app } from "../src/app";
+import { UserDocument, UserModel, WorkModel } from "../src/models/database";
+import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 import {
   URL_PREFIX_WORK,
   DIRECTORY_NAME_UPLOADS,
@@ -21,28 +30,12 @@ import {
   ERROR_MESSAGE_BACKUP_NAME_INVALID as BACKUP_NAME_INVALID,
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
-  UPLOAD_UNITY_FIELD_WEBGL,
   UPLOAD_UNITY_FIELD_WINDOWS,
-  UPLOAD_UNITY_FIELDS,
   DIRECTORY_NAME_BACKUPS,
   ERROR_MESSAGE_RENAME_TO_SAME,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
 } from "../src/utils/constants";
-
-import request, { Test } from "supertest";
-import { app } from "../src/app";
-
 import { getEnvNumber } from "../src/utils/helpers";
-import { login, logout, myId, theirId } from "./auth";
-import {
-  clearData,
-  connectDatabase,
-  ensureUploadFoldersExist,
-  INVALID_ID,
-} from "./common";
-import path from "path";
-import { UserDocument, UserModel, WorkModel } from "../src/models/database";
-import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 
 const creatorId = "creator-2";
 const workId = "work-2";
