@@ -5,6 +5,7 @@ services:
     environment: 
       - WORK_STORAGE_SIZE_BYTES=53687091200  # 50 * 1024^3 bytes = 50GB
       - PORT=3000
+      - HUSKY=0
     depends_on:
       - mongo
     networks:
