@@ -8,4 +8,5 @@ then
   . $gitHookPath
 fi
 
-yarn lint
+# 次のURLを参考に修正：https://github.com/yarnpkg/yarn/issues/2998#issuecomment-351424672
+yarn --non-interactive lint </dev/tty
