@@ -22,7 +22,7 @@
     "format": "prettier --write src/**/*.{js,ts,json}",
     "lint:fix": "run-s check-types format eslint:server:fix ",
     "test": "nodemon -L --config nodemon.test.json",
-    "prepare": "if [ \"$HUSKY\" != \"0\" ]; then husky install;  fi",
+    "prepare": "if [ ${HUSKY:-1} -eq 0 ]; then husky install;  fi",
     "migrate:create": "ts-node node_modules/.bin/migrate-mongo create -f migrate-mongo/migrate-mongo-config.ts --",
     "migrate:status": "ts-node node_modules/.bin/migrate-mongo status -f migrate-mongo/migrate-mongo-config.ts",
     "migrate:down": "ts-node node_modules/.bin/migrate-mongo down -f migrate-mongo/migrate-mongo-config.ts",
