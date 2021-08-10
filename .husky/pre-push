@@ -1,0 +1,11 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+scriptName=`basename $0`
+gitHookPath=`pwd`"/.git/hooks/$scriptName"
+if [ -e $gitHookPath ];
+then
+  . $gitHookPath
+fi
+
+yarn lint
