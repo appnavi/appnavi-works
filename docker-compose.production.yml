@@ -12,7 +12,7 @@ services:
       - SITE_URL=https://resources.opuappnavi.com
       - SLACK_REDIRECT_URI=https://resources.opuappnavi.com/auth/redirect
       - "VIRTUAL_HOST=resources.opuappnavi.com"
-      - "LETSENCRYPT_HOST=resources.opuappnavi.com"
+      - "CERT_NAME=shared"
     networks:
       - nginx-proxy
   mongo:
