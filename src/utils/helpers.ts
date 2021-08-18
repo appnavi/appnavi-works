@@ -77,20 +77,10 @@ function isObject(x: unknown): x is Record<string, unknown> {
 
 export function isSlackUser(user: unknown): user is SlackUser {
   if (!isObject(user)) return false;
-
-  if (!isObject(user.user)) return false;
-  if (typeof user.user.id !== "string") return false;
-  if (typeof user.user.name !== "string") return false;
-  if (typeof user.user.image_24 !== "string") return false;
-
-  if (!isObject(user.team)) return false;
-  if (typeof user.team.id !== "string") return false;
-
-  if (typeof user.ok !== "boolean") return false;
-  if (typeof user.id !== "string") return false;
-  if (typeof user.displayName !== "string") return false;
-
-  if (user.id !== user.user.id) return false;
+  if (typeof user["https://slack.com/user_id"] !== "string") return false;
+  if (typeof user["https://slack.com/team_id"] !== "string") return false;
+  if (typeof user.name !== "string") return false;
+  if (typeof user["https://slack.com/user_image_24"] !== "string") return false;
   return true;
 }
 

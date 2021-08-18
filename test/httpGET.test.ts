@@ -32,7 +32,7 @@ function canAccessTo(path: string, done: jest.DoneCallback) {
 
 describe("GET", () => {
   beforeAll(async () => {
-    preparePassport();
+    await preparePassport();
     await connectDatabase("1");
     await ensureUploadFoldersExist();
   });
@@ -48,7 +48,10 @@ describe("GET", () => {
         request(app)
           .get("/auth/slack")
           .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
+          .expect(
+            "Location",
+            /^https:\/\/slack.com\/openid\/connect\/authorize/
+          )
           .end(done);
       });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
@@ -128,7 +131,10 @@ describe("GET", () => {
         request(app)
           .get("/auth/slack")
           .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect("Location", /^https:\/\/slack.com\/oauth\/v2\/authorize/)
+          .expect(
+            "Location",
+            /^https:\/\/slack.com\/openid\/connect\/authorize/
+          )
           .end(done);
       });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {

@@ -173,7 +173,7 @@ async function testSuccessfulUploadTwice(): Promise<void> {
 }
 describe("作品のアップロードを伴うテスト", () => {
   beforeAll(async () => {
-    preparePassport();
+    await preparePassport();
     await connectDatabase("2");
     await ensureUploadFoldersExist();
   });

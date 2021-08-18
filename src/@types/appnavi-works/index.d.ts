@@ -9,21 +9,8 @@ declare namespace Express {
 
 type SlackUser = {
   ok: boolean;
-  user: {
-    name: string;
-    id: string;
-    email: string;
-    image_24: string;
-    image_32: string;
-    image_48: string;
-    image_72: string;
-    image_192: string;
-    image_512: string;
-  };
-  team: {
-    id: string;
-    name: string;
-  };
-  id: string;
-  displayName: string;
+  "https://slack.com/user_id": string;
+  "https://slack.com/team_id": string;
+  name: string;
+  "https://slack.com/user_image_24": string;
 };

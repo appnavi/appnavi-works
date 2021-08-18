@@ -63,10 +63,10 @@ authRouter.use(
   }
 );
 
-authRouter.get("/slack", passport.authenticate("slack"));
+authRouter.get("/slack", passport.authenticate("slack.com"));
 authRouter.get(
   "/redirect",
-  passport.authenticate("slack", {
+  passport.authenticate("slack.com", {
     failureRedirect: "/auth/error",
   }),
   afterSlackLogin,

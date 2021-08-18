@@ -1,52 +1,20 @@
-import { Strategy as SlackStrategy } from "@juris710/passport-slack";
 import bcrypt from "bcrypt";
-import passport from "passport";
+import {
+  Issuer,
+  Strategy as OpenIdStrategy,
+  TokenSet,
+  UserinfoResponse,
+} from "openid-client";
+import passport, { Strategy } from "passport";
 import {
   Strategy as LocalStrategy,
   IVerifyOptions as LocalIVerifyOptions,
 } from "passport-local";
-import OAuth2Strategy from "passport-oauth2";
 import * as yup from "yup";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
 import { getEnv, isSlackUser } from "../utils/helpers";
-const slackStrategy = new SlackStrategy(
-  {
-    clientID: getEnv("SLACK_CLIENT_ID"),
-    clientSecret: getEnv("SLACK_CLIENT_SECRET"),
-    callbackURL: getEnv("SLACK_REDIRECT_URI"),
-    skipUserProfile: false,
-    user_scope: ["identity.basic", "identity.avatar", "identity.team"],
-  },
-  function (
-    _accessToken: string,
-    _refreshToken: string,
-    profile: Express.User,
-    done: OAuth2Strategy.VerifyCallback
-  ) {
-    const user = profile;
-    if (!isSlackUser(user)) {
-      logger.system.error(`Slackユーザーとして認識できませんでした。`, profile);
-      done(new Error("ログイン失敗"), undefined);
-      return;
-    }
-    const workspaceId = user.team.id;
-    if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
-      logger.system.error(
-        `違うワークスペース${workspaceId}の人がログインしようとしました。`,
-        user
-      );
-      done(new Error("ログイン失敗"), undefined);
-      return;
-    }
-    return done(null, {
-      id: user.id,
-      name: user.user.name,
-      avatar_url: user.user.image_24,
-      type: "Slack",
-    });
-  }
-);
+
 const yupSchemaLocal = yup.object({
   userId: yup.string().required(),
   password: yup.string().required(),
@@ -98,7 +66,50 @@ const localStrategy = new LocalStrategy(
       });
   }
 );
-function preparePassport(): void {
+async function createSlackStrategy(): Promise<Strategy> {
+  const issuer = await Issuer.discover("https://slack.com");
+  const client = new issuer.Client({
+    client_id: getEnv("SLACK_CLIENT_ID"),
+    client_secret: getEnv("SLACK_CLIENT_SECRET"),
+    redirect_uris: [getEnv("SLACK_REDIRECT_URI")],
+    response_types: ["code"],
+  });
+  return new OpenIdStrategy(
+    {
+      client,
+      params: {
+        scope: "openid profile",
+      },
+    },
+    (
+      _tokenSet: TokenSet,
+      user: UserinfoResponse<Record<string, unknown>, Record<string, unknown>>,
+      done: (err: unknown, user?: Record<string, unknown>) => void
+    ) => {
+      if (!isSlackUser(user)) {
+        logger.system.error(`Slackユーザーとして認識できませんでした。`, user);
+        done(new Error("ログイン失敗"), undefined);
+        return;
+      }
+      const workspaceId = user["https://slack.com/team_id"];
+      if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
+        logger.system.error(
+          `違うワークスペース${workspaceId}の人がログインしようとしました。`,
+          user
+        );
+        done(new Error("ログイン失敗"), undefined);
+        return;
+      }
+      return done(null, {
+        id: user["https://slack.com/user_id"],
+        name: user.name,
+        avatar_url: user["https://slack.com/user_image_24"],
+        type: "Slack",
+      });
+    }
+  );
+}
+async function preparePassport(): Promise<void> {
   passport.serializeUser(function (user, done) {
     done(null, user);
   });
@@ -106,7 +117,7 @@ function preparePassport(): void {
   passport.deserializeUser(function (user, done) {
     done(null, user as Express.User);
   });
-
+  const slackStrategy = await createSlackStrategy();
   passport.use(slackStrategy);
   passport.use(localStrategy);
 }

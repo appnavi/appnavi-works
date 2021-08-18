@@ -75,7 +75,7 @@ async function testSuccessfulGuestUserCreation(): Promise<{
 const otherGuestId = "test-guest-id";
 describe("ゲストユーザー", () => {
   beforeAll(async () => {
-    preparePassport();
+    await preparePassport();
     await connectDatabase("4");
   });
   afterEach(async () => {
