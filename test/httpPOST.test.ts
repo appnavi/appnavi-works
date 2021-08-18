@@ -1,5 +1,6 @@
 import request from "supertest";
 import { app } from "../src/app";
+import { preparePassport } from "../src/config/passport";
 import {
   STATUS_CODE_BAD_REQUEST,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
@@ -23,6 +24,7 @@ const workId = "work-3";
 
 describe("POST", () => {
   beforeAll(async () => {
+    preparePassport();
     await connectDatabase("3");
     await ensureUploadFoldersExist();
     login(app, myId);

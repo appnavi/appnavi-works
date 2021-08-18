@@ -9,6 +9,7 @@ import {
   INVALID_ID,
 } from "./common";
 import { app } from "../src/app";
+import { preparePassport } from "../src/config/passport";
 import { UserDocument, UserModel, WorkModel } from "../src/models/database";
 import { calculateCurrentStorageSizeBytes } from "../src/services/works";
 import {
@@ -172,6 +173,7 @@ async function testSuccessfulUploadTwice(): Promise<void> {
 }
 describe("作品のアップロードを伴うテスト", () => {
   beforeAll(async () => {
+    preparePassport();
     await connectDatabase("2");
     await ensureUploadFoldersExist();
   });

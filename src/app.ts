@@ -6,7 +6,6 @@ import express from "express";
 import helmet from "helmet";
 import createError from "http-errors";
 import passport from "passport";
-import { preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
 import { accountRouter } from "./routes/account";
 import { authRouter } from "./routes/auth";
@@ -30,8 +29,6 @@ import {
   ignoreTypescriptFile,
   render,
 } from "./utils/helpers";
-
-preparePassport();
 
 const app = express();
 app.use(

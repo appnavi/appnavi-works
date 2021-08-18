@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import request from "supertest";
 import { app } from "../src/app";
+import { preparePassport } from "../src/config/passport";
 import {
   STATUS_CODE_BAD_REQUEST,
   ERROR_MESSAGE_GUEST_ID_REQUIRED as GUEST_ID_REQUIRED,
@@ -74,6 +75,7 @@ async function testSuccessfulGuestUserCreation(): Promise<{
 const otherGuestId = "test-guest-id";
 describe("ゲストユーザー", () => {
   beforeAll(async () => {
+    preparePassport();
     await connectDatabase("4");
   });
   afterEach(async () => {

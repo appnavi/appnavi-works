@@ -1,5 +1,6 @@
 import request from "supertest";
 import { app } from "../src/app";
+import { preparePassport } from "../src/config/passport";
 import { login, logout, myId } from "./auth";
 import { connectDatabase, ensureUploadFoldersExist } from "./common";
 import {
@@ -31,6 +32,7 @@ function canAccessTo(path: string, done: jest.DoneCallback) {
 
 describe("GET", () => {
   beforeAll(async () => {
+    preparePassport();
     await connectDatabase("1");
     await ensureUploadFoldersExist();
   });

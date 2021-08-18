@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { app } from "./app";
+import { preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
 import { getEnv, getEnvNumber } from "./utils/helpers";
 
@@ -18,6 +19,7 @@ async function prepareDatabase(): Promise<void> {
 }
 
 prepareDatabase()
+  .then(() => preparePassport())
   .then(() => {
     const port = getEnvNumber("PORT");
     app.listen(port, () => {
