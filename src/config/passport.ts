@@ -1,6 +1,6 @@
 import { Strategy as SlackStrategy } from "@juris710/passport-slack";
 import bcrypt from "bcrypt";
-import { PassportStatic } from "passport";
+import passport from "passport";
 import {
   Strategy as LocalStrategy,
   IVerifyOptions as LocalIVerifyOptions,
@@ -98,7 +98,7 @@ const localStrategy = new LocalStrategy(
       });
   }
 );
-function preparePassport(passport: PassportStatic): void {
+function preparePassport(): void {
   passport.serializeUser(function (user, done) {
     done(null, user);
   });

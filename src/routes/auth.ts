@@ -1,6 +1,6 @@
 import express from "express";
 import createError from "http-errors";
-import { passport } from "../app";
+import passport from "passport";
 import * as logger from "../modules/logger";
 import {
   findOrCreateUser,

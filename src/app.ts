@@ -31,7 +31,7 @@ import {
   render,
 } from "./utils/helpers";
 
-preparePassport(passport);
+preparePassport();
 
 const app = express();
 app.use(
@@ -139,4 +139,4 @@ app.use(function (
   }
 });
 
-export { passport, app };
+export { app };
