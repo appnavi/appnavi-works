@@ -227,19 +227,16 @@ ejsはhtmlに条件分岐、変数の内容表示など、機能を拡張した�
 
 dockerでdevelopment実行する際の環境変数を格納するファイル。バージョン管理対象外である。
 
-- `SLACK_REDIRECT_URI`：Slack AppのRedirect URI。
 - `DATABASE_URL`：MongoDBを使用するためのURL。
 
 ## docker-production.env
 
 dockerでproduction実行する際の環境変数を格納するファイル。バージョン管理対象外である。
 
-- `SLACK_REDIRECT_URI`：Slack AppのRedirect URI。
 - `DATABASE_URL`：MongoDBを使用するためのURL。
 
 ## docker-test.env
 
 dockerでtest実行する際の環境変数を格納するファイル。バージョン管理対象外である。
 
-- `SLACK_REDIRECT_URI`：Slack AppのRedirect URI。
 - `DATABASE_URL`：MongoDBを使用するためのURL。

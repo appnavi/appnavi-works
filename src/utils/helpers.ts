@@ -19,12 +19,7 @@ const secretKeys = [
 
 type SecretKey = typeof secretKeys[number];
 
-type EnvKey =
-  | SecretKey
-  | "SLACK_REDIRECT_URI"
-  | "SITE_URL"
-  | "WORK_STORAGE_SIZE_BYTES"
-  | "PORT";
+type EnvKey = SecretKey | "SITE_URL" | "WORK_STORAGE_SIZE_BYTES" | "PORT";
 
 function isSecretKey(arg: unknown): arg is SecretKey {
   return (
