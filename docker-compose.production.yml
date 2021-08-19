@@ -1,6 +1,7 @@
 version: '3'
 services:
   appnavi-works:
+    container_name: appnavi-works
     restart: always
     command: "yarn run start"
     volumes: 
@@ -10,10 +11,8 @@ services:
     environment:
       - NODE_ENV=production
       - SITE_URL=https://resources.opuappnavi.com
-      - "VIRTUAL_HOST=resources.opuappnavi.com"
-      - "CERT_NAME=shared"
     networks:
-      - nginx-proxy
+      - https-portal
   mongo:
     restart: always
     environment: 
@@ -24,6 +23,6 @@ services:
       - MONGO_ROOT_PASSWORD
 
 networks: 
-  nginx-proxy:
+  https-portal:
     external: 
-      name: nginx-proxy
+      name: https-portal
