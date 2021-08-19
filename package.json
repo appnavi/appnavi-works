@@ -30,7 +30,6 @@
     "migrate": "ts-node node_modules/.bin/migrate-mongo up -f migrate-mongo/migrate-mongo-config.ts"
   },
   "dependencies": {
-    "@juris710/passport-slack": "^0.3.3",
     "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
