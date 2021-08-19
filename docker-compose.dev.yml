@@ -12,7 +12,7 @@ services:
       - ./migrate-mongo:/app/migrate-mongo
     environment: 
       - NODE_ENV=development
-      - SITE_URL=http://localhost:3000
+      - SITE_URL=${APPNAVI_WORKS_DEV_URI}
 
   mongo:
     container_name: appnavi-works_mongo
