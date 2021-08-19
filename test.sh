@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker-compose -f docker-compose.yml -f docker-compose.test.yml -p appnavi-works-test up -d $@
+docker-compose -f docker-compose.yml -f docker-compose.test.yml -p appnavi-works-test $@

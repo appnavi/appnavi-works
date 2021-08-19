@@ -11,7 +11,7 @@
 実際にさくらのVPSで稼働させるとき
 
 ```sh
-bash production.sh
+bash production.sh up -d
 ```
 
 ### development
@@ -19,7 +19,7 @@ bash production.sh
 ローカル環境で開発するとき(ファイルに変更が加えて保存すると自動的に変更が反映される)
 
 ```sh
-bash dev.sh
+bash dev.sh up -d
 ```
 
 ### test
@@ -27,7 +27,7 @@ bash dev.sh
 appnavi-worksの単体テスト
 
 ```sh
-bash test.sh
+bash test.sh up -d
 ```
 
 ## 停止方法
@@ -35,17 +35,17 @@ bash test.sh
 ### production
 
 ```sh
-docker-compose down
+bash production.sh down
 ```
 
 ### development
 
 ```sh
-bash stop-dev.sh
+bash dev.sh down
 ```
 
 ### test
 
 ```sh
-bash stop-test.sh
+bash test.sh down
 ```
