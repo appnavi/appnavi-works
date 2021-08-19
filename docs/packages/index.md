@@ -2,6 +2,10 @@
 
 ## dependencies
 
+### `bcrypt`
+
+パスワードを生成・比較するためのパッケージ。
+
 ### `compression`
 
 ファイルを圧縮し、動作を高速化するパッケージ。
@@ -13,6 +17,10 @@ expressを使用するために必要なパッケージの一つ。
 ### `cookie-session`
 
 認証情報などをCookieに保存できるようにするパッケージ。
+
+### `csurf`
+
+CSRF（クロスサイト・リクエスト・フォージェリ）という脆弱性を対策するためのパッケージ。
 
 ### `ejs`
 
@@ -50,19 +58,19 @@ MongoDBを操作するためのパッケージ。
 
 Expressアプリケーションにファイルアップロード機能を提供するパッケージ。
 
+### `openid-client`
+
+[OpenID Connect](https://openid.net/connect/)というプロトコルによる認証機能を提供するためのパッケージ。
+
+このパッケージを用いることでSlack認証を実現している。
+
 ### `passport`
 
 Expressアプリケーションに認証機能を提供するパッケージ
 
-### `passport-slack`
+### `passport-local`
 
-passportでSlack認証を使えるようにするパッケージ。
-
-最新のSign In With Slack V2に対応するため、[mblackshaw/passport-slack](https://github.com/mblackshaw/passport-slack)をforkしたライブラリ
-
-### `request`
-
-[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートに含まれるパッケージ
+passportでユーザー名とパスワードによる認証を使えるようにするパッケージ。
 
 ### `sass`
 
@@ -116,6 +124,10 @@ gitのコマンド実行時に指定した処理を自動実行できるパッ�
 ### `lint-staged`
 
 gitでステージされたファイルのみにlinterを実行できるパッケージ。
+
+### `migrate-mongo`
+
+MongoDBでデータベースマイグレーションを実現するパッケージ。
 
 ### `nodemon`
 
