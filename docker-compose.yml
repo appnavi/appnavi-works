@@ -44,20 +44,11 @@ networks:
 
 secrets:
   DATABASE_URL:
-    file: ./secrets/database_url.txt    
   SLACK_CLIENT_ID:
-    file: ./secrets/slack_client_id.txt
   SLACK_CLIENT_SECRET:
-    file: ./secrets/slack_client_secret.txt
   SLACK_WORKSPACE_ID:
-    file: ./secrets/slack_workspace_id.txt
   COOKIE_NAME:
-    file: ./secrets/cookie_name.txt
   COOKIE_KEYS:
-    file: ./secrets/cookie_keys.txt
   JWT_SECRET:
-    file: ./secrets/jwt_secret.txt
   MONGO_ROOT_USERNAME:
-    file: ./secrets/mongo_root_username.txt
   MONGO_ROOT_PASSWORD:
-    file: ./secrets/mongo_root_password.txt

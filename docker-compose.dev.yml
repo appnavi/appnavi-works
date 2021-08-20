@@ -13,3 +13,23 @@ services:
     environment: 
       - NODE_ENV=development
       - SITE_URL=${APPNAVI_WORKS_DEV_URI}
+
+secrets:
+  DATABASE_URL:
+    file: ./secrets/development/database_url.txt
+  SLACK_CLIENT_ID:
+    file: ./secrets/development/slack_client_id.txt
+  SLACK_CLIENT_SECRET:
+    file: ./secrets/development/slack_client_secret.txt
+  SLACK_WORKSPACE_ID:
+    file: ./secrets/development/slack_workspace_id.txt
+  COOKIE_NAME:
+    file: ./secrets/development/cookie_name.txt
+  COOKIE_KEYS:
+    file: ./secrets/development/cookie_keys.txt
+  JWT_SECRET:
+    file: ./secrets/development/jwt_secret.txt
+  MONGO_ROOT_USERNAME:
+    file: ./secrets/development/mongo_root_username.txt
+  MONGO_ROOT_PASSWORD:
+    file: ./secrets/development/mongo_root_password.txt

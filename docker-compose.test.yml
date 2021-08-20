@@ -11,3 +11,23 @@ services:
     secrets:
       - MONGO_ROOT_USERNAME
       - MONGO_ROOT_PASSWORD
+
+secrets:
+  DATABASE_URL:
+    file: ./secrets/test/database_url.txt    
+  SLACK_CLIENT_ID:
+    file: ./secrets/test/slack_client_id.txt
+  SLACK_CLIENT_SECRET:
+    file: ./secrets/test/slack_client_secret.txt
+  SLACK_WORKSPACE_ID:
+    file: ./secrets/test/slack_workspace_id.txt
+  COOKIE_NAME:
+    file: ./secrets/test/cookie_name.txt
+  COOKIE_KEYS:
+    file: ./secrets/test/cookie_keys.txt
+  JWT_SECRET:
+    file: ./secrets/test/jwt_secret.txt
+  MONGO_ROOT_USERNAME:
+    file: ./secrets/test/mongo_root_username.txt
+  MONGO_ROOT_PASSWORD:
+    file: ./secrets/test/mongo_root_password.txt

@@ -20,3 +20,23 @@ networks:
   https-portal:
     external: 
       name: https-portal
+
+secrets:
+  DATABASE_URL:
+    file: ./secrets/production/database_url.txt    
+  SLACK_CLIENT_ID:
+    file: ./secrets/production/slack_client_id.txt
+  SLACK_CLIENT_SECRET:
+    file: ./secrets/production/slack_client_secret.txt
+  SLACK_WORKSPACE_ID:
+    file: ./secrets/production/slack_workspace_id.txt
+  COOKIE_NAME:
+    file: ./secrets/production/cookie_name.txt
+  COOKIE_KEYS:
+    file: ./secrets/production/cookie_keys.txt
+  JWT_SECRET:
+    file: ./secrets/production/jwt_secret.txt
+  MONGO_ROOT_USERNAME:
+    file: ./secrets/production/mongo_root_username.txt
+  MONGO_ROOT_PASSWORD:
+    file: ./secrets/production/mongo_root_password.txt
