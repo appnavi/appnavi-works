@@ -3,6 +3,8 @@ services:
   appnavi-works:
     container_name: appnavi-works_development
     tty: true
+    expose: 
+      - 3001
     volumes: 
       - ./private:/app/private
       - ./public:/app/public
@@ -12,6 +14,7 @@ services:
     environment: 
       - NODE_ENV=development
       - SITE_URL=https://mxthfqfgp51dgotu.opuappnavi.com
+      - PORT=3001
     networks:
       - https-portal
 
