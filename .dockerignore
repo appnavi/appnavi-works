@@ -4,3 +4,4 @@ dist
 docs
 .git/
 .husky/
+secrets/
