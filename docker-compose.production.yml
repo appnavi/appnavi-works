@@ -15,12 +15,6 @@ services:
       - https-portal
   mongo:
     restart: always
-    environment: 
-      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/MONGO_ROOT_USERNAME
-      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/MONGO_ROOT_PASSWORD
-    secrets:
-      - MONGO_ROOT_USERNAME
-      - MONGO_ROOT_PASSWORD
 
 networks: 
   https-portal:

@@ -27,6 +27,12 @@ services:
       - db-config-volume-appnavi-works:/data/configdb
     networks:
       - db
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/MONGO_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/MONGO_ROOT_PASSWORD
+    secrets:
+      - MONGO_ROOT_USERNAME
+      - MONGO_ROOT_PASSWORD
 
 volumes:
   db-volume-appnavi-works:

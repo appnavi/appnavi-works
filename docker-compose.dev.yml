@@ -13,9 +13,3 @@ services:
     environment: 
       - NODE_ENV=development
       - SITE_URL=${APPNAVI_WORKS_DEV_URI}
-
-  mongo:
-    container_name: appnavi-works_mongo
-    environment: 
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
