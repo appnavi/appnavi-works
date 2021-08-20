@@ -27,7 +27,7 @@ function isSecretKey(arg: unknown): arg is SecretKey {
   );
 }
 
-function getSecret(key: SecretKey): string {
+export function getSecret(key: string): string {
   try {
     return fs.readFileSync(`/run/secrets/${key}`, "utf-8");
   } catch {

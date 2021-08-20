@@ -5,12 +5,16 @@ services:
     volumes: 
       - ./test:/app/test
       - ./src:/app/src
-    env_file:
-      - .env
     environment: 
       - NODE_ENV=test
       - SITE_URL=http://localhost:3000
+    secrets:
+      - MONGO_ROOT_USERNAME
+      - MONGO_ROOT_PASSWORD
   mongo:
     environment: 
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/MONGO_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/MONGO_ROOT_PASSWORD
+    secrets:
+      - MONGO_ROOT_USERNAME
+      - MONGO_ROOT_PASSWORD

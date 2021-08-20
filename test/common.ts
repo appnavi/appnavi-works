@@ -3,6 +3,7 @@ import {
   DIRECTORY_NAME_BACKUPS,
   DIRECTORY_NAME_UPLOADS,
 } from "../src/utils/constants";
+import { getSecret } from "../src/utils/helpers";
 import fs from "fs-extra";
 import path from "path";
 
@@ -20,7 +21,6 @@ export async function ensureUploadFoldersExist() {
   });
   await fs.mkdir(path.resolve(DIRECTORY_NAME_BACKUPS), { recursive: true });
 }
-
 export async function connectDatabase(databaseId: string) {
   await mongoose.connect(
     `mongodb://mongo:27017/game-upload-test-${databaseId}`,
@@ -28,8 +28,8 @@ export async function connectDatabase(databaseId: string) {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       authSource: "admin",
-      user: process.env["MONGO_ROOT_USERNAME"],
-      pass: process.env["MONGO_ROOT_PASSWORD"],
+      user: getSecret("MONGO_ROOT_USERNAME"),
+      pass: getSecret("MONGO_ROOT_PASSWORD"),
     }
   );
 }
