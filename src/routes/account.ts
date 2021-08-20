@@ -67,7 +67,6 @@ accountRouter.get(
       defaultCreatorId,
       works,
       urlPrefix: URL_PREFIX_WORK,
-      user,
     });
   })
 );
