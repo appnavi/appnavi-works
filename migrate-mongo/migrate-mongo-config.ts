@@ -1,9 +1,7 @@
 import { config as Config } from "migrate-mongo";
+import { getSecret } from "../src/utils/helpers";
 
-const url = process.env["DATABASE_URL"];
-if (typeof url !== "string") {
-  throw new Error("環境変数DATABASE_URLが不正です。");
-}
+const url = getSecret("DATABASE_URL");
 const urlSegments = url.split("/");
 const databaseName = urlSegments[urlSegments.length - 1];
 
