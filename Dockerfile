@@ -10,6 +10,4 @@ RUN yarn install
 
 COPY --chown=node:node . .
 
-EXPOSE 3000
-
 USER node
