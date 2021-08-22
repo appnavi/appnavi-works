@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ ! -d "./secrets/test/" ]; then
-  echo -e "\e[31mproduction用のsecretsが見つかりません。\e[m"
+  echo -e "\e[31mtest用のsecretsが見つかりません。\e[m"
   exit 1
 fi
 
