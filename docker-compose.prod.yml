@@ -1,9 +1,6 @@
 version: '3'
 services:
   appnavi-works:
-    container_name: appnavi-works
-    expose: 
-      - 3000
     restart: always
     command: "yarn run start"
     volumes: 
