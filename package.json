@@ -71,7 +71,6 @@
     "@types/node": "^16.4.13",
     "@types/passport": "^1.0.7",
     "@types/passport-local": "^1.0.34",
-    "@types/passport-oauth2": "^1.4.11",
     "@types/sass": "^1.16.0",
     "@types/serve-index": "^1.9.0",
     "@types/supertest": "^2.0.10",
