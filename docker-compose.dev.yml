@@ -1,6 +1,7 @@
 version: '3'
 services:
   appnavi-works:
+    container_name: appnavi-works_development
     tty: true
     volumes: 
       - ./private:/app/private

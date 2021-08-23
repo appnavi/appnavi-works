@@ -1,6 +1,7 @@
 version: '3'
 services:
   appnavi-works:
+    container_name: appnavi-works_production
     restart: always
     command: "yarn run start"
     volumes: 
