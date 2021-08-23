@@ -83,7 +83,7 @@ async function createSlackStrategy(): Promise<Strategy> {
     },
     (
       _tokenSet: TokenSet,
-      user: UserinfoResponse<Record<string, unknown>, Record<string, unknown>>,
+      user: UserinfoResponse,
       done: (err: unknown, user?: Record<string, unknown>) => void
     ) => {
       if (!isSlackUser(user)) {
