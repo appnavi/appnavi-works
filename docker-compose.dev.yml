@@ -2,7 +2,9 @@ version: '3'
 services:
   appnavi-works:
     container_name: appnavi-works_development
-    tty: true
+    command: "yarn run dev"
+    ports:
+      - "3000:3000"
     volumes: 
       - ./private:/app/private
       - ./public:/app/public
@@ -11,7 +13,7 @@ services:
       - ./migrate-mongo:/app/migrate-mongo
     environment: 
       - NODE_ENV=development
-      - SITE_URL=https://mxthfqfgp51dgotu.opuappnavi.com
+      - SITE_URL=${SITE_URL_DEVELOPMENT}
     networks:
       - https-portal
 
