@@ -15,6 +15,7 @@
   - 📁[javascripts](#publicjavascripts)  
   - 📁[stylesheets](#publicstylesheets)  
   - 📁[fontawesome-free-5.15.1-web](#publicfontawesome-free-5151-web)  
+- 📁[secrets](#secrets)  
 - 📁[src](#src)  
   - 📁[@types](#srctypes)
   - 📁[config](#srcconfig)  
@@ -40,10 +41,7 @@
 - 📁[test](#test)  
 - 📁[uploads](#uploads)  
 - 📁[views](#views)  
-- [node.env](#nodeenv)
-- [docker-dev.env](#docker-devenv)
-- [docker-production.env](#docker-productionenv)
-- [docker-test.env](#docker-testenv)
+- [.env](#env)
 
 ---
 
@@ -110,6 +108,12 @@ scssファイルを編集すれば、同名のcssファイルにアクセスし�
 #### 📁public/fontawesome-free-5.15.1-web
 
 [Font Awesome](https://fontawesome.com/)のアイコン
+
+## 📁secrets
+
+Docker ComposeのSecrets機能によって管理する機密情報を保存するためのディレクトリ。
+
+バージョン管理対象外であるため、自分で作成する必要がある。作成方法については[ここ](../how-to-execute.md)を参照
 
 ## 📁src
 
@@ -216,27 +220,4 @@ ejsはhtmlに条件分岐、変数の内容表示など、機能を拡張した�
 
 環境変数を格納するファイル。バージョン管理対象外である。
 
-- `SLACK_CLIENT_ID`：Slack AppのClient ID。
-- `SLACK_CLIENT_SECRET`：Slack AppのClient Secret。
-- `SLACK_WORKSPACE_ID`：ログインを認めるWorkspaceのID。Slackにブラウザでアクセスした際のURL`https://app.slack.com/client/(A)/(B)`の`(A)`。Sign In With Slackは、作成したWorkspaceしかログインできないと思われるが、フェイルセーフとして導入。
-- `COOKIE_NAME`：Cookieを利用するための設定。
-- `COOKIE_KEYS`：Cookieを利用するための設定。
-- `JWT_SECRET`：JsonWebTokenによる暗号化に必要なsecretも文字列。
-
-## docker-dev.env
-
-dockerでdevelopment実行する際の環境変数を格納するファイル。バージョン管理対象外である。
-
-- `DATABASE_URL`：MongoDBを使用するためのURL。
-
-## docker-production.env
-
-dockerでproduction実行する際の環境変数を格納するファイル。バージョン管理対象外である。
-
-- `DATABASE_URL`：MongoDBを使用するためのURL。
-
-## docker-test.env
-
-dockerでtest実行する際の環境変数を格納するファイル。バージョン管理対象外である。
-
-- `DATABASE_URL`：MongoDBを使用するためのURL。
+- `SITE_URL_DEVELOPMENT`：developmentで実行する時にアクセスするURL。詳しくは[ここ](../how-to-execute.md#development)を参照
