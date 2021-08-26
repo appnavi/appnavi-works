@@ -23,14 +23,9 @@ export async function ensureUploadFoldersExist() {
 }
 export async function connectDatabase(databaseId: string) {
   await mongoose.connect(
-    `mongodb://mongo:27017/game-upload-test-${databaseId}`,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      authSource: "admin",
-      user: getSecret("MONGO_ROOT_USERNAME"),
-      pass: getSecret("MONGO_ROOT_PASSWORD"),
-    }
+    `mongodb://${getSecret("MONGO_ROOT_USERNAME")}:${getSecret(
+      "MONGO_ROOT_PASSWORD"
+    )}@mongo:27017/game-upload-test-${databaseId}?authSource=admin`
   );
 }
 async function clearFolders(creatorId: string, workId: string) {

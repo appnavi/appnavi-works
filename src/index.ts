@@ -5,10 +5,7 @@ import * as logger from "./modules/logger";
 import { getEnv, getEnvNumber } from "./utils/helpers";
 
 async function prepareDatabase(): Promise<void> {
-  await mongoose.connect(getEnv("DATABASE_URL"), {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  await mongoose.connect(getEnv("DATABASE_URL"));
   const db = mongoose.connection;
   db.once("open", () => {
     logger.system.info("データベースに接続しました。");
