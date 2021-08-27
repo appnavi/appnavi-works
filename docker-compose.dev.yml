@@ -14,13 +14,6 @@ services:
     environment: 
       - NODE_ENV=development
       - SITE_URL=${SITE_URL_DEVELOPMENT}
-    networks:
-      - https-portal
-
-networks: 
-  https-portal:
-    external: 
-      name: https-portal
 
 secrets:
   DATABASE_URL:
