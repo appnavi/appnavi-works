@@ -13,11 +13,12 @@ import {
 import * as yup from "yup";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
-import { getEnv, isSlackUser } from "../utils/helpers";
-
-const yupSchemaLocal = yup.object({
-  userId: yup.string().required(),
-  password: yup.string().required(),
+import { getEnv, isSlackUser, randomStringCharacters } from "../utils/helpers";
+const guestUserIdRegex = new RegExp(`^guest-[${randomStringCharacters}]+$`);
+const guestUserPasswordRegex = new RegExp(`^[${randomStringCharacters}]+$`);
+export const yupSchemaLocal = yup.object({
+  userId: yup.string().required().matches(guestUserIdRegex),
+  password: yup.string().required().matches(guestUserPasswordRegex),
 });
 const localStrategy = new LocalStrategy(
   {
