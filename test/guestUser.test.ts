@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import request from "supertest";
 import { app } from "../src/app";
-import { preparePassport } from "../src/config/passport";
+import { preparePassport, yupSchemaLocal } from "../src/config/passport";
 import {
   STATUS_CODE_BAD_REQUEST,
   ERROR_MESSAGE_GUEST_ID_REQUIRED as GUEST_ID_REQUIRED,
@@ -53,14 +53,13 @@ async function testSuccessfulGuestUserCreation(): Promise<{
       .expect(STATUS_CODE_SUCCESS)
       .end((err, res) => {
         expect(err).toBeNull();
-        const { guestId, password } = getIdAndPassFromCreateGuestHtml(res.text);
-        expect(guestId.startsWith("guest-")).toBe(true);
-        expect(
-          password.match(`^[${randomStringCharacters}]+$`)
-        ).not.toBeUndefined();
-        resolve({ guestId, password });
+        resolve(getIdAndPassFromCreateGuestHtml(res.text));
       });
   }).then(async ({ guestId, password }) => {
+    await yupSchemaLocal.validate({
+      userId: guestId,
+      password,
+    });
     const guests = await UserModel.find({
       userId: guestId,
       "guest.createdBy": {
