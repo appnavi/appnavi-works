@@ -64,10 +64,10 @@ async function testSuccessfulGuestUserCreation(): Promise<{
       userId: guestId,
       "guest.createdBy": {
         $eq: myId,
-        // hashedPasswordは毎回変化するので無視
       },
     });
     expect(guests.length).toBe(1);
+    await bcrypt.compare(password, guests[0].guest?.hashedPassword ?? "");
     return { guestId, password };
   });
 }
