@@ -293,14 +293,12 @@ accountRouter.post(
   wrap(async (req, res) => {
     const user = await findOrCreateUser(getUserIdOrThrow(req));
     const works = await WorkModel.find();
-    user.creatorIds.forEach((creatorId) => {
-      const isUsed =
-        works.find((work) => work.creatorId === creatorId) !== undefined;
-      if (!isUsed) {
-        user.creatorIds.remove(creatorId);
-      }
+    const usedCreatorIds = user.creatorIds.filter((id) => {
+      return works.find((w) => w.creatorId === id) !== undefined;
     });
-    await user.save();
+    await user.update({
+      creatorIds: usedCreatorIds,
+    });
     res.status(200).end();
   })
 );
