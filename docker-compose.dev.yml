@@ -30,6 +30,8 @@ secrets:
     file: ./secrets/development/cookie_keys.txt
   JWT_SECRET:
     file: ./secrets/development/jwt_secret.txt
+  COOKIE_SECRET:
+    file: ./secrets/development/cookie_secret.txt
   MONGO_ROOT_USERNAME:
     file: ./secrets/development/mongo_root_username.txt
   MONGO_ROOT_PASSWORD:

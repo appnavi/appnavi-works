@@ -15,6 +15,7 @@ const secretKeys = [
   "COOKIE_NAME",
   "COOKIE_KEYS",
   "JWT_SECRET",
+  "COOKIE_SECRET",
 ] as const;
 
 type SecretKey = typeof secretKeys[number];

@@ -63,7 +63,7 @@ if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser(getEnv("COOKIE_SECRET")));
 app.use(
   logger.connectLogger(logger.access, {
     level: "info",

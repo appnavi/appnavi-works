@@ -36,6 +36,8 @@ secrets:
     file: ./secrets/production/cookie_keys.txt
   JWT_SECRET:
     file: ./secrets/production/jwt_secret.txt
+  COOKIE_SECRET:
+    file: ./secrets/production/cookie_secret.txt
   MONGO_ROOT_USERNAME:
     file: ./secrets/production/mongo_root_username.txt
   MONGO_ROOT_PASSWORD:

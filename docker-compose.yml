@@ -17,6 +17,7 @@ services:
       - COOKIE_NAME
       - COOKIE_KEYS
       - JWT_SECRET
+      - COOKIE_SECRET
 
   mongo:
     image: "mongo"
@@ -50,5 +51,6 @@ secrets:
   COOKIE_NAME:
   COOKIE_KEYS:
   JWT_SECRET:
+  COOKIE_SECRET:
   MONGO_ROOT_USERNAME:
   MONGO_ROOT_PASSWORD:

@@ -27,6 +27,8 @@ secrets:
     file: ./secrets/test/cookie_keys.txt
   JWT_SECRET:
     file: ./secrets/test/jwt_secret.txt
+  COOKIE_SECRET:
+    file: ./secrets/test/cookie_secret.txt
   MONGO_ROOT_USERNAME:
     file: ./secrets/test/mongo_root_username.txt
   MONGO_ROOT_PASSWORD:
