@@ -853,6 +853,28 @@ describe("作品のアップロードを伴うテスト", () => {
             });
         });
       });
+      it("使用されていない作者IDが複数ある場合、全て削除される", (done) => {
+        UserModel.create({
+          userId: myId,
+          creatorIds: [
+            `${creatorId}-1`,
+            `${creatorId}-2`,
+            `${creatorId}-3`,
+            `${creatorId}-4`,
+            `${creatorId}-5`,
+          ],
+        }).then(() => {
+          request(app)
+            .post("/account/cleanup-creator-ids")
+            .expect(STATUS_CODE_SUCCESS)
+            .end(async (err) => {
+              expect(err).toBeNull();
+              const user = await getMyUserDocument();
+              expect(user.creatorIds.length).toBe(0);
+              done();
+            });
+        });
+      });
     });
   });
 });
