@@ -3,10 +3,11 @@ import jwt from "jsonwebtoken";
 import { UserDocument, UserModel } from "../models/database";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
 import { getEnv } from "../utils/helpers";
-
-interface SessionData {
-  redirect: { url: string };
-  redirectToken: string;
+declare module "express-session" {
+  interface SessionData {
+    redirect: { url: string };
+    redirectToken: string;
+  }
 }
 function isValidRedirectUrl(redirectUrl: string): boolean {
   if (!redirectUrl.startsWith("/")) {
@@ -23,7 +24,7 @@ function setRedirect(req: express.Request): void {
   if (!isValidRedirectUrl(redirectUrl)) {
     return;
   }
-  const session = req.session as SessionData;
+  const session = req.session;
   session.redirect = {
     url: redirectUrl,
   };
@@ -34,7 +35,7 @@ function setRedirect(req: express.Request): void {
 }
 
 export function redirect(req: express.Request, res: express.Response): void {
-  const session = req.session as SessionData;
+  const session = req.session;
   const redirectUrl = session.redirect?.url;
   const token = session.redirectToken;
   if (token && redirectUrl) {

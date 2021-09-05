@@ -1,8 +1,8 @@
 import path from "path";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import cookieSession from "cookie-session";
 import express from "express";
+import session from "express-session";
 import helmet from "helmet";
 import createError from "http-errors";
 import passport from "passport";
@@ -49,12 +49,15 @@ app.set("view engine", "ejs");
 
 app.use(express.json());
 app.use(
-  cookieSession({
-    name: getEnv("COOKIE_NAME"),
-    keys: getEnv("COOKIE_KEYS").split(","),
-    maxAge: 1000 * 60 * 30,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+  session({
+    secret: getEnv("COOKIE_SECRET"),
+    cookie: {
+      maxAge: 1000 * 60 * 30,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    },
+    resave: false,
+    saveUninitialized: true,
   }),
   passport.initialize(),
   passport.session()

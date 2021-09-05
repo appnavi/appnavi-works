@@ -110,8 +110,8 @@ describe("GET", () => {
   });
 
   describe("ログイン時", () => {
-    beforeAll(() => login(app, myId));
-    afterAll(() => logout(app));
+    beforeEach(() => login(app, myId));
+    afterEach(() => logout(app));
     describe("authRouter", () => {
       it("/authをGETをGETすると/にリダイレクトされる", (done) => {
         request(app)
