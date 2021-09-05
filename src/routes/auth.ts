@@ -77,7 +77,7 @@ authRouter.get(
 );
 
 authRouter.all("/logout", (req, res) => {
-  req.session = undefined;
+  req.logout();
   res.redirect("/auth");
 });
 
