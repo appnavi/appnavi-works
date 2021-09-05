@@ -137,13 +137,6 @@ describe("GET", () => {
           )
           .end(done);
       });
-      it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
-        request(app)
-          .get("/auth/logout")
-          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect("Location", "/auth")
-          .end(done);
-      });
     });
     describe("accountRouter", () => {
       it("/accountをGETできる", (done) => {
