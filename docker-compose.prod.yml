@@ -24,6 +24,8 @@ networks:
 secrets:
   DATABASE_URL:
     file: ./secrets/production/database_url.txt    
+  SESSION_DATABASE_URL:
+    file: ./secrets/production/session_database_url.txt
   SLACK_CLIENT_ID:
     file: ./secrets/production/slack_client_id.txt
   SLACK_CLIENT_SECRET:

@@ -1,5 +1,6 @@
 import path from "path";
 import compression from "compression";
+import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import express from "express";
 import session from "express-session";
@@ -51,6 +52,9 @@ app.use(express.json());
 app.use(
   session({
     secret: getEnv("COOKIE_SECRET"),
+    store: MongoStore.create({
+      mongoUrl: getEnv("SESSION_DATABASE_URL"),
+    }),
     cookie: {
       maxAge: 1000 * 60 * 30,
       httpOnly: true,

@@ -18,6 +18,8 @@ services:
 secrets:
   DATABASE_URL:
     file: ./secrets/development/database_url.txt
+  SESSION_DATABASE_URL:
+    file: ./secrets/development/session_database_url.txt
   SLACK_CLIENT_ID:
     file: ./secrets/development/slack_client_id.txt
   SLACK_CLIENT_SECRET:

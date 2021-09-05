@@ -9,6 +9,7 @@ export const idRegex = /^[0-9a-z-]+$/;
 
 const secretKeys = [
   "DATABASE_URL",
+  "SESSION_DATABASE_URL",
   "SLACK_CLIENT_ID",
   "SLACK_CLIENT_SECRET",
   "SLACK_WORKSPACE_ID",
