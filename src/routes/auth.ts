@@ -78,7 +78,9 @@ authRouter.get(
 
 authRouter.all("/logout", (req, res) => {
   req.logout();
-  res.redirect("/auth");
+  req.session.destroy(() => {
+    res.redirect("/auth");
+  });
 });
 
 async function logLastLogin(
