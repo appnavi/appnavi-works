@@ -22,7 +22,6 @@ import {
 import {
   URL_PREFIX_WORK,
   DIRECTORY_NAME_UPLOADS,
-  ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
   ERROR_MESSAGE_NO_FILES as NO_FILES,
   HEADER_CREATOR_ID,
@@ -125,9 +124,8 @@ uploadRouter
   .post(
     validateParams,
     ensureStorageSpaceAvailable,
-    getWorkDocument,
-    preventEditByOtherPerson,
     preventCreatorIdUsedByMultipleUsers,
+    getWorkDocument,
     validateDestination,
     beforeUpload,
     unityUpload.fields(UPLOAD_UNITY_FIELDS),
@@ -213,24 +211,6 @@ function preventCreatorIdUsedByMultipleUsers(
   })(req, res, next);
 }
 
-function preventEditByOtherPerson(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const locals = res.locals as Locals;
-  const owner = locals.work.owner;
-  if (owner === getUserIdOrThrow(req)) {
-    next();
-    return;
-  }
-  next(
-    new UploadError(
-      [DIFFERENT_USER],
-      [path.join(getCreatorIdFromHeader(req), getWorkIdFromHeader(req))]
-    )
-  );
-}
 function validateDestination(
   req: express.Request,
   res: express.Response,

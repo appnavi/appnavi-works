@@ -23,7 +23,6 @@ import {
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER as CREATOR_ID_OTHER_USER,
   ERROR_MESSAGE_WORK_ID_REQUIRED as WORK_ID_REQUIRED,
   ERROR_MESSAGE_WORK_ID_INVALID as WORK_ID_INVALID,
-  ERROR_MESSAGE_DIFFERENT_USER as DIFFERENT_USER,
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
   ERROR_MESSAGE_WORK_NOT_FOUND as WORK_NOT_FOUND,
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER as WORK_DIFFERENT_OWNER,
@@ -240,7 +239,11 @@ describe("作品のアップロードを伴うテスト", () => {
             .set(HEADER_WORK_ID, workId)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [CREATOR_ID_OTHER_USER] }))
-            .end(done);
+            .end(async () => {
+              const works = await WorkModel.find({});
+              expect(works.length).toBe(1);
+              done();
+            });
         });
       });
       it("作品IDが設定されていないとアップロードできない", (done) => {
@@ -259,22 +262,6 @@ describe("作品のアップロードを伴うテスト", () => {
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
           .end(done);
-      });
-      it("別人の投稿した作品は上書きアップロードできない", (done) => {
-        WorkModel.create({
-          creatorId: creatorId,
-          workId: workId,
-          owner: theirId,
-          fileSize: 100,
-        }).then(() => {
-          request(app)
-            .post("/upload/unity")
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_WORK_ID, workId)
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [DIFFERENT_USER] }))
-            .end(done);
-        });
       });
       it("ストレージ容量の上限を上回っている場合はアップロードできない", (done) => {
         WorkModel.create({

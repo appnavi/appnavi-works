@@ -26,8 +26,6 @@ export const ERROR_MESSAGE_WORK_ID_INVALID =
   "作品IDには数字・アルファベット小文字・ハイフンのみ使用できます。";
 export const ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER =
   "指定した作者IDは別のユーザーによって既に使われています。";
-export const ERROR_MESSAGE_DIFFERENT_USER =
-  "別の人が既に投稿した作品があります。上書きすることはできません。";
 export const ERROR_MESSAGE_STORAGE_FULL = "スペースが十分ではありません。";
 export const ERROR_MESSAGE_NO_FILES = "アップロードするファイルがありません。";
 export const ERROR_MESSAGE_BACKUP_NAME_REQUIRED = "バックアップ名は必須です。";
