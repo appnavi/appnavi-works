@@ -3,6 +3,7 @@ import csurf from "csurf";
 import express from "express";
 import multer from "multer";
 import * as yup from "yup";
+import { guestUserIdRegex } from "../config/passport";
 import { UserModel, WorkModel } from "../models/database";
 import {
   ensureAuthenticated,
@@ -40,7 +41,6 @@ import {
 } from "../utils/errors";
 import {
   generateRandomString,
-  randomStringCharacters,
   render,
   slackUserOnly,
   wrap,
@@ -263,11 +263,10 @@ accountRouter.post(
     });
   })
 );
-const guestIdRegex = new RegExp(`^[-${randomStringCharacters as string}]+$`);
 const deleteGuestSchema = yup.object({
   guestId: yup
     .string()
-    .matches(guestIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID)
+    .matches(guestUserIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID)
     .required(ERROR_MESSAGE_GUEST_ID_REQUIRED),
 });
 accountRouter.post(
