@@ -71,7 +71,7 @@ async function testSuccessfulGuestUserCreation(): Promise<{
     return { guestId, password };
   });
 }
-const otherGuestId = "test-guest-id";
+const otherGuestId = "guest-other";
 describe("ゲストユーザー", () => {
   beforeAll(async () => {
     await preparePassport();
