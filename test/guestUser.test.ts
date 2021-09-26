@@ -200,6 +200,34 @@ describe("ゲストユーザー", () => {
     });
   });
   describe("ゲストユーザーのログイン", () => {
+    it("存在しないゲストユーザーとしてログインすることはできない。", (done) => {
+      login(app, myId);
+      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
+        logout(app);
+        request(app)
+          .post("/auth/guest")
+          .send({
+            userId: `${guestId}-1`,
+            password,
+          })
+          .expect(STATUS_CODE_UNAUTHORIZED)
+          .end(done);
+      });
+    });
+    it("パスワードが異なる場合はログインできない。", (done) => {
+      login(app, myId);
+      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
+        logout(app);
+        request(app)
+          .post("/auth/guest")
+          .send({
+            userId: guestId,
+            password: `${password}-1`,
+          })
+          .expect(STATUS_CODE_UNAUTHORIZED)
+          .end(done);
+      });
+    });
     it("作成されたゲストユーザーでログインできる。", (done) => {
       login(app, myId);
       testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
