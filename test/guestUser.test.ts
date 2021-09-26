@@ -42,6 +42,11 @@ function getIdAndPassFromCreateGuestHtml(html: string): {
     password,
   };
 }
+async function resetRateLimit(): Promise<void> {
+  return new Promise((resolve) => {
+    redisClient.flushall(() => resolve());
+  });
+}
 
 async function testSuccessfulGuestUserCreation(): Promise<{
   guestId: string;
@@ -200,6 +205,7 @@ describe("ゲストユーザー", () => {
     });
   });
   describe("ゲストユーザーのログイン", () => {
+    beforeEach(resetRateLimit);
     it("存在しないゲストユーザーとしてログインすることはできない。", (done) => {
       login(app, myId);
       testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
@@ -290,12 +296,7 @@ describe("ゲストユーザー", () => {
     });
   });
   describe("ゲストログインの総当たり攻撃対策", () => {
-    beforeEach(
-      () =>
-        new Promise((resolve) => {
-          redisClient.flushall(resolve);
-        })
-    );
+    beforeEach(resetRateLimit);
     it("3回ログインに失敗すると4回目以降はログインできないメッセージを表示", (done) => {
       testInvalidGuestLogin(GUEST_LOGIN_FAIL)
         .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
