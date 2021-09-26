@@ -17,15 +17,8 @@ import {
   ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT as GUEST_LOGIN_EXCEED_RATE_LIMIT,
 } from "../src/utils/constants";
 import { login, logout, myId, theirId } from "./auth";
-import {
-  clearData,
-  connectDatabase,
-  ensureUploadFoldersExist,
-  clearDatabase,
-  INVALID_ID,
-} from "./common";
+import { connectDatabase, clearDatabase, INVALID_ID } from "./common";
 import { UserModel, WorkModel } from "../src/models/database";
-import { randomStringCharacters } from "../src/utils/helpers";
 import { redisClient } from "../src/routes/auth";
 
 function getIdAndPassFromCreateGuestHtml(html: string): {
