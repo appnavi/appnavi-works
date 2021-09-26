@@ -13,6 +13,8 @@ import {
   STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
   STATUS_CODE_REDIRECT_TEMPORARY,
+  ERROR_MESSAGE_GUEST_LOGIN_FAIL as GUEST_LOGIN_FAIL,
+  ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT as GUEST_LOGIN_EXCEED_RATE_LIMIT,
 } from "../src/utils/constants";
 import { login, logout, myId, theirId } from "./auth";
 import {
@@ -24,6 +26,7 @@ import {
 } from "./common";
 import { UserModel, WorkModel } from "../src/models/database";
 import { randomStringCharacters } from "../src/utils/helpers";
+import { redisClient } from "../src/routes/auth";
 
 function getIdAndPassFromCreateGuestHtml(html: string): {
   guestId: string;
@@ -69,6 +72,24 @@ async function testSuccessfulGuestUserCreation(): Promise<{
     expect(guests.length).toBe(1);
     await bcrypt.compare(password, guests[0].guest?.hashedPassword ?? "");
     return { guestId, password };
+  });
+}
+async function testInvalidGuestLogin(
+  textShouldContainInRes: string
+): Promise<void> {
+  return new Promise((resolve) => {
+    request(app)
+      .post("/auth/guest")
+      .send({
+        userId: "invalid-guest-id",
+        password: "password",
+      })
+      .expect(401)
+      .end((err, res) => {
+        expect(err).toBeNull();
+        expect(res.text.includes(textShouldContainInRes)).toBe(true);
+        resolve();
+      });
   });
 }
 const otherGuestId = "guest-other";
@@ -238,6 +259,48 @@ describe("ゲストユーザー", () => {
         .post("/account/guest/delete")
         .expect(STATUS_CODE_UNAUTHORIZED)
         .end(done);
+    });
+  });
+  describe("ゲストログインの総当たり攻撃対策", () => {
+    beforeEach(
+      () =>
+        new Promise((resolve) => {
+          redisClient.flushall(resolve);
+        })
+    );
+    it("3回ログインに失敗すると4回目以降はログインできないメッセージを表示", (done) => {
+      testInvalidGuestLogin(GUEST_LOGIN_FAIL)
+        .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
+        .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
+        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
+        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
+        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
+        .then(done);
+    });
+    it("3回ログインに失敗すると4回目以降は必ずログインに失敗する。", (done) => {
+      login(app, myId);
+      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
+        logout(app);
+        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
+          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
+          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
+          .then(() => {
+            request(app)
+              .post("/auth/guest")
+              .send({
+                userId: guestId,
+                password,
+              })
+              .expect(STATUS_CODE_UNAUTHORIZED)
+              .end((err, res) => {
+                expect(err).toBeNull();
+                expect(res.text.includes(GUEST_LOGIN_EXCEED_RATE_LIMIT)).toBe(
+                  true
+                );
+                done();
+              });
+          });
+      });
     });
   });
 });

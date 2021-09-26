@@ -55,6 +55,10 @@ export const ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR =
   "別のユーザーによって作成されたゲストユーザーを削除することはできません。";
 export const ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY =
   "このゲストユーザーが投稿した作品が存在します。";
+export const ERROR_MESSAGE_GUEST_LOGIN_FAIL =
+  "ユーザーIDまたはパスワードが違います。";
+export const ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT =
+  "ログイン失敗回数が多すぎます。一時間後に再度お試しください。";
 
 export const UPLOAD_UNITY_FIELD_WEBGL = "webgl";
 export const UPLOAD_UNITY_FIELD_WINDOWS = "windows";

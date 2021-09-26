@@ -15,6 +15,8 @@ services:
       - https-portal
   mongo:
     restart: always
+  redis:
+    restart: always
 
 networks: 
   https-portal:

@@ -1,6 +1,9 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import createError from "http-errors";
 import passport from "passport";
+import RedisStore from "rate-limit-redis";
+import redis from "redis";
 import * as logger from "../modules/logger";
 import {
   findOrCreateUser,
@@ -8,10 +11,35 @@ import {
   isAuthenticated,
   redirect,
 } from "../services/auth";
-import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
+import {
+  ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
+  ERROR_MESSAGE_GUEST_LOGIN_FAIL,
+  STATUS_CODE_UNAUTHORIZED,
+} from "../utils/constants";
 import { render, wrap } from "../utils/helpers";
 
 const authRouter = express.Router();
+export const redisClient = redis.createClient({
+  url: "redis://redis:6379",
+});
+const rateLimitStore = new RedisStore({
+  client: redisClient,
+});
+
+// ゲストログインの失敗は1時間に3回まで
+const guestLoginRateLimiter = rateLimit({
+  store: rateLimitStore,
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  skipSuccessfulRequests: true,
+  handler: (req, res) => {
+    logger.system.error(`ログイン失敗回数が制限を超えました。`, req.ip);
+    res.status(STATUS_CODE_UNAUTHORIZED);
+    render("auth/guest", req, res, {
+      error: ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
+    });
+  },
+});
 
 authRouter.get("/error", (_req, _res, next) => {
   next(createError(STATUS_CODE_UNAUTHORIZED));
@@ -34,6 +62,7 @@ authRouter
     render("auth/guest", req, res);
   })
   .post(
+    guestLoginRateLimiter,
     passport.authenticate("local", { failWithError: true }),
     afterGuestLogIn,
     logLastLogin,
@@ -50,12 +79,13 @@ authRouter.use(
     res: express.Response,
     next: express.NextFunction
   ) => {
+    // ログイン試行回数を超過した場合にはここは呼ばれない。
     if (
       typeof err.status === "number" &&
       err.status === STATUS_CODE_UNAUTHORIZED
     ) {
       render("auth/guest", req, res, {
-        error: "ユーザーIDまたはパスワードが違います。",
+        error: ERROR_MESSAGE_GUEST_LOGIN_FAIL,
       });
       return;
     }

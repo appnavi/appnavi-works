@@ -1,14 +1,16 @@
-version: '3'
+version: "3"
 services:
   appnavi-works:
     build: .
-    environment: 
-      - WORK_STORAGE_SIZE_BYTES=53687091200  # 50 * 1024^3 bytes = 50GB
+    environment:
+      - WORK_STORAGE_SIZE_BYTES=53687091200 # 50 * 1024^3 bytes = 50GB
       - PORT=3000
     depends_on:
       - mongo
+      - redis
     networks:
       - db
+      - redis
     secrets:
       - DATABASE_URL
       - SESSION_DATABASE_URL
@@ -22,19 +24,26 @@ services:
 
   mongo:
     image: "mongo"
-    expose: 
+    expose:
       - "27017"
     volumes:
       - db-volume-appnavi-works:/data/db
       - db-config-volume-appnavi-works:/data/configdb
     networks:
       - db
-    environment: 
+    environment:
       - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/MONGO_ROOT_USERNAME
       - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/MONGO_ROOT_PASSWORD
     secrets:
       - MONGO_ROOT_USERNAME
       - MONGO_ROOT_PASSWORD
+
+  redis:
+    image: redis:alpine
+    expose:
+      - "6379"
+    networks:
+      - redis
 
 volumes:
   db-volume-appnavi-works:
@@ -42,6 +51,8 @@ volumes:
 
 networks:
   db:
+    driver: bridge
+  redis:
     driver: bridge
 
 secrets:
