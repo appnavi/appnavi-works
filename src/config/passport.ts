@@ -41,7 +41,7 @@ const localStrategy = new LocalStrategy(
         password,
       })
       .then(() => UserModel.find({ userId }))
-      .then((users) => {
+      .then(async (users) => {
         if (users.length == 0) {
           throw new Error("存在しないユーザーです。");
         }
@@ -53,7 +53,13 @@ const localStrategy = new LocalStrategy(
           throw new Error("パスワードではログインできません。");
         }
         const hashedPassword = guest.hashedPassword;
-        return bcrypt.compare(password, hashedPassword);
+        const isPasswordCorrect = await bcrypt.compare(
+          password,
+          hashedPassword
+        );
+        if (!isPasswordCorrect) {
+          throw new Error("パスワードが異なります。");
+        }
       })
       .then(() => {
         const user: Express.User = {
