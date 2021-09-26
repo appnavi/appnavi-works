@@ -1,19 +1,19 @@
 # 実行方法
 
-このアプリには3種類の実行方法があります。
+このアプリには 3 種類の実行方法があります。
 
 ## production
 
-実際にさくらのVPSで稼働させる時の実行方法です。
+実際にさくらの VPS で稼働させる時の実行方法です。
 
-### productionの導入方法
+### production の導入方法
 
-1. さくらのVPSへリポジトリをclone
+1. さくらの VPS へリポジトリを clone
 2. ディレクトリ作成
 
-    ```sh
-    mkdir -p secrets/production
-    ```
+   ```sh
+   mkdir -p secrets/production
+   ```
 
 3. 以下のテキストファイルを作成し、中にパスワードなどの流出してはならない情報を保存
    - cookie_keys.txt
@@ -26,13 +26,13 @@
    - slack_client_secret.txt
    - slack_workspace_id.txt
 
-### productionの起動方法
+### production の起動方法
 
 ```sh
 bash production.sh up -d
 ```
 
-### productionの停止方法
+### production の停止方法
 
 ```sh
 bash production.sh down
@@ -42,14 +42,14 @@ bash production.sh down
 
 アプリの各機能が想定通り動くことを確認する単体テストを実行します。
 
-### testの導入方法
+### test の導入方法
 
-1. さくらのVPSへリポジトリをclone
+1. さくらの VPS へリポジトリを clone
 2. ディレクトリ作成
 
-    ```sh
-    mkdir -p secrets/test
-    ```
+   ```sh
+   mkdir -p secrets/test
+   ```
 
 3. 以下のテキストファイルを作成し、中にパスワードなどを保存
    - cookie_keys.txt
@@ -62,13 +62,13 @@ bash production.sh down
    - slack_client_secret.txt
    - slack_workspace_id.txt
 
-### testの起動方法
+### test の起動方法
 
 ```sh
 bash test.sh up -d
 ```
 
-### testの停止方法
+### test の停止方法
 
 ```sh
 bash test.sh down
@@ -76,19 +76,19 @@ bash test.sh down
 
 ## development
 
-自分のPCで動作させるための実行方法です。新機能の追加やバグ修正など、アプリに変更を加える際にはこのproductionではなくdevelopmentで実行してください。
+自分の PC で動作させるための実行方法です。新機能の追加やバグ修正など、アプリに変更を加える際にはこの production ではなく development で実行してください。
 
-### developmentの導入方法
+### development の導入方法
 
-1. さくらのVPSへリポジトリをclone
+1. さくらの VPS へリポジトリを clone
 
-    testでcloneしたものをそのまま使っても良い
+   test で clone したものをそのまま使っても良い
 
 2. ディレクトリ作成
 
-    ```sh
-    mkdir -p secrets/development
-    ```
+   ```sh
+   mkdir -p secrets/development
+   ```
 
 3. 以下のテキストファイルを作成し、中にパスワードなどを保存
    - cookie_keys.txt
@@ -103,40 +103,49 @@ bash test.sh down
 4. [ngrok](https://ngrok.com/)を導入
 5. Slack App "AppNavi Works"にアクセスするための権限を、既に権限を持っている他の部員からもらう
 
-### developmentの起動方法
+### development の起動方法
 
-1. ターミナル(コマンドプロンプト、Powershellなど)を起動し、以下のコマンドを実行
+1. ターミナル(コマンドプロンプト、Powershell など)を起動し、以下のコマンドを実行
 
-    ```sh
-    ngrok http 3000
-    ```
+   ```sh
+   ngrok http 3000
+   ```
 
-    以下のようなメッセージが表示されるので、"https"から始まり".ngrok.io"で終わるURL(下のメッセージでは"https://xxxxxxx.ngrok.io")をコピーする。
+   以下のようなメッセージが表示されるので、"https"から始まり".ngrok.io"で終わる URL(下のメッセージでは"https://xxxxxxx.ngrok.io")をコピーする。
 
-    ```sh
-    ngrok by @inconshreveable
-    
-    Session Status                online
-    Account                       xxxxxxx (Plan: Free)
-    Version                       2.3.40
-    Region                        United States (us)
-    Web Interface                 http://127.0.0.1:4040
-    Forwarding                    http://xxxxxxx.ngrok.io -> http://localhost:3000
-    Forwarding                    https://xxxxxxx.ngrok.io -> http://localhost:3000
+   ```sh
+   ngrok by @inconshreveable
 
-    Connections                   ttl     opn     rt1     rt5     p50     p90     
-                                  0       0       0.00    0.00    0.00    0.00    
-    ```
+   Session Status                online
+   Account                       xxxxxxx (Plan: Free)
+   Version                       2.3.40
+   Region                        United States (us)
+   Web Interface                 http://127.0.0.1:4040
+   Forwarding                    http://xxxxxxx.ngrok.io -> http://localhost:3000
+   Forwarding                    https://xxxxxxx.ngrok.io -> http://localhost:3000
 
-    このコマンドは動き続けるが、アプリを終了する時まで停止させないこと。
+   Connections                   ttl     opn     rt1     rt5     p50     p90
+                                 0       0       0.00    0.00    0.00    0.00
+   ```
 
-2. `.env`ファイルを作成し、以下の内容で保存("https://xxxxxxx.ngrok.io"は先ほどコピーしたURLに置き換える)
+   このコマンドは動き続けるが、アプリを終了する時まで停止させないこと。
 
-    ```.env
-    SITE_URL_DEVELOPMENT="https://xxxxxxx.ngrok.io"
-    ```
+   以降`https://xxxxxxx.ngrok.io`は先ほどコピーした URL に置き換えること。
+
+   ここでhttps://xxxxxxx.ngrok.io にアクセスすると、画像のような画面が表示される。
+
+   ![https://xxxxxxx.ngrok.io にアクセスした画面(一部)](./ngrok.png)
+
+   もし「偽のサイトにアクセスしようとしています」というような警告が表示されることがあるが、無視しても問題ない。気になる場合は、<kbd>Ctrl</kbd>+<kbd>C</kbd>を押して先ほどのコマンドを停止し、この手順をもう一度行う。
+
+2. `.env`ファイルを作成し、以下の内容で保存
+
+   ```.env
+   SITE_URL_DEVELOPMENT="https://xxxxxxx.ngrok.io"
+   ```
 
 3. Slack App "AppNavi Works"の設定
+
    1. 設定ページにアクセスする
    2. `Features`の`OAuth & Permissions`をクリック
    3. `Redirect URLs`の`Add New Redirect URL`ボタンをクリック
@@ -147,25 +156,26 @@ bash test.sh down
       ```
 
    5. `Save URLs`ボタンをクリック
+
 4. 新しいターミナルを起動し、コマンドを実行
 
-    ```sh
-    bash development.sh up -d
-    ```
+   ```sh
+   bash development.sh up -d
+   ```
 
 5. https://xxxxxxx.ngrok.io にアクセス("https://xxxxxxx.ngrok.io"は先ほどコピーしたURLに置き換える)
 
-### developmentの停止方法
+### development の停止方法
 
 1. コマンド実行
 
-    ```sh
-    bash development.sh down
-    ```
+   ```sh
+   bash development.sh down
+   ```
 
-2. ngrokコマンドを実行しているターミナルを開き、<kbd>Ctrl</kbd>+<kbd>Ctrl</kbd>を押してコマンドを停止
+2. ngrok コマンドを実行しているターミナルを開き、<kbd>Ctrl</kbd>+<kbd>C</kbd>を押してコマンドを停止
 3. Slack App "AppNavi Works"の設定
    1. 設定ページにアクセスする
    2. `Features`の`OAuth & Permissions`をクリック
-   3. 起動時に追加したURLに右にあるゴミ箱アイコンをクリック
+   3. 起動時に追加した URL に右にあるゴミ箱アイコンをクリック
    4. `Save URLs`ボタンをクリック
