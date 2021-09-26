@@ -10,13 +10,13 @@
 
 ファイルを圧縮し、動作を高速化するパッケージ。
 
+### `connect-mongo`
+
+MongoDB にセッション情報を保存するためのパッケージ。
+
 ### `cookie-parser`
 
-expressを使用するために必要なパッケージの一つ。
-
-### `cookie-session`
-
-認証情報などをCookieに保存できるようにするパッケージ。
+express を使用するために必要なパッケージの一つ。
 
 ### `csurf`
 
@@ -24,15 +24,25 @@ CSRF（クロスサイト・リクエスト・フォージェリ）という脆�
 
 ### `ejs`
 
-htmlに似た記法のテンプレートエンジン
+html に似た記法のテンプレートエンジン
 
 ### `express`
 
-Nodejsでサーバーアプリケーションを作成できるようになるパッケージ。
+Nodejs でサーバーアプリケーションを作成できるようになるパッケージ。
+
+### `express-rate-limit`
+
+各ユーザーが一定時間内にアクセスできる回数を制限するためのパッケージ。
+
+現状はこのパッケージを用いることで、ゲストログインを 1 時間に 3 回までしか失敗できないようにし、総当たり攻撃を対策している。
+
+### `express-session`
+
+認証情報を保存するための仕組みであるセッションを利用するためのパッケージ。
 
 ### `fs-extra`
 
-Nodejs標準の`fs`パッケージの機能を拡充したパッケージ。
+Nodejs 標準の`fs`パッケージの機能を拡充したパッケージ。
 
 ### `helmet`
 
@@ -52,29 +62,37 @@ Nodejs標準の`fs`パッケージの機能を拡充したパッケージ。
 
 ### `mongoose`
 
-MongoDBを操作するためのパッケージ。
+MongoDB を操作するためのパッケージ。
 
 ### `multer`
 
-Expressアプリケーションにファイルアップロード機能を提供するパッケージ。
+Express アプリケーションにファイルアップロード機能を提供するパッケージ。
 
 ### `openid-client`
 
 [OpenID Connect](https://openid.net/connect/)というプロトコルによる認証機能を提供するためのパッケージ。
 
-このパッケージを用いることでSlack認証を実現している。
+このパッケージを用いることで Slack 認証を実現している。
 
 ### `passport`
 
-Expressアプリケーションに認証機能を提供するパッケージ
+Express アプリケーションに認証機能を提供するパッケージ
 
 ### `passport-local`
 
-passportでユーザー名とパスワードによる認証を使えるようにするパッケージ。
+passport でユーザー名とパスワードによる認証を使えるようにするパッケージ。
+
+### `rate-limit-redis`
+
+`express-rate-limit`の情報を Redis に保存するためのパッケージ。
+
+### `redis`
+
+Redis を操作するためのパッケージ。
 
 ### `sass`
 
-sassからcssへのコンパイラー
+sass から css へのコンパイラー。
 
 ### `serve-index`
 
@@ -88,34 +106,27 @@ sassからcssへのコンパイラー
 
 ### `@types/`で始まるパッケージ
 
-Typescriptでコーディングするために必要な型情報を提供するパッケージ。
-
-パッケージAを使用するとき、`@types/A`が存在すれば、それを導入するだけで良い。
-もしなかった場合は、自分で型情報を作成しなければならない。
+Typescript でコーディングするために必要な型情報を提供するパッケージ。
 
 ### `@typescript-eslint/eslint-plugin`
 
-Typescript開発でeslintを使うためのパッケージ
+Typescript 開発で eslint を使うためのパッケージ
 
 ### `@typescript-eslint/parser`
 
-Typescript開発でeslintを使うためのパッケージ
+Typescript 開発で eslint を使うためのパッケージ
 
 ### `eslint`
 
-Javascriptの静的検証ツール。
+Javascript の静的検証ツール。
 
 ### `eslint-config-prettier`
 
-EslintとPrettierを連携するためのeslintプラグイン。
+Eslint と Prettier を連携するための eslint プラグイン。
 
 ### `eslint-plugin-import`
 
-importをアルファベット順にするeslintプラグイン。
-
-### `husky`
-
-gitのコマンド実行時に指定した処理を自動実行できるパッケージ。
+import をアルファベット順にする eslint プラグイン。
 
 ### `jest`
 
@@ -123,21 +134,21 @@ gitのコマンド実行時に指定した処理を自動実行できるパッ�
 
 ### `lint-staged`
 
-gitでステージされたファイルのみにlinterを実行できるパッケージ。
+git でステージされたファイルのみに linter を実行できるパッケージ。
 
 ### `migrate-mongo`
 
-MongoDBでデータベースマイグレーションを実現するパッケージ。
+MongoDB でデータベースマイグレーションを実現するパッケージ。
 
 ### `nodemon`
 
-ファイルに変更が加えられた際にNode.jsアプリケーションを自動で再スタートするパッケージ。
+ファイルに変更が加えられた際に Node.js アプリケーションを自動で再スタートするパッケージ。
 
-`ts-node`の導入により、Typescriptファイルをコンパイルなしで実行できる。
+`ts-node`の導入により、Typescript ファイルをコンパイルなしで実行できる。
 
 ### `npm-run-all`
 
-複数のnpm scriptを一度に実行できるようにするパッケージ。
+複数の npm script を一度に実行できるようにするパッケージ。
 
 ### `passport-stub`
 
@@ -149,16 +160,16 @@ MongoDBでデータベースマイグレーションを実現するパッケー�
 
 ### `supertest`
 
-expressアプリケーションに仮想的にHTTPリクエストを送ることで単体テストができるパッケージ。
+express アプリケーションに仮想的に HTTP リクエストを送ることで単体テストができるパッケージ。
 
 ### `ts-jest`
 
-Typescriptファイルをコンパイルなしでjestによる単体テストができるようになるパッケージ。
+Typescript ファイルをコンパイルなしで jest による単体テストができるようになるパッケージ。
 
 ### `ts-node`
 
-Typescriptファイルをコンパイルなしで実行できるようになるパッケージ。
+Typescript ファイルをコンパイルなしで実行できるようになるパッケージ。
 
 ### `typescript`
 
-Typescriptで開発するためのパッケージ
+Typescript で開発するためのパッケージ
