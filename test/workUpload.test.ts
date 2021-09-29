@@ -226,12 +226,38 @@ describe("作品のアップロードを伴うテスト", () => {
           .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
           .end(done);
       });
-      it("作者IDが既に別人に使用されているとアップロードできない", (done) => {
-        WorkModel.create({
-          creatorId: creatorId,
-          workId: "their-work",
-          owner: theirId,
-          fileSize: 100,
+      it("別人が保有している作者IDを使ってアップロードできない", (done) => {
+        testSuccessfulUpload()
+          .then(() => {
+            logout(app);
+            login(app, theirId);
+          })
+          .then(
+            () =>
+              new Promise<void>((resolve) => {
+                request(app)
+                  .post("/upload/unity")
+                  .set(HEADER_CREATOR_ID, creatorId)
+                  .set(HEADER_WORK_ID, "their-work")
+                  .expect(STATUS_CODE_BAD_REQUEST)
+                  .expect(JSON.stringify({ errors: [CREATOR_ID_OTHER_USER] }))
+                  .end(async () => {
+                    const works = await WorkModel.find({});
+                    expect(works.length).toBe(1);
+                    resolve();
+                  });
+              })
+          )
+          .then(() => {
+            logout(app);
+            login(app, myId);
+            done();
+          });
+      });
+      it("その作者IDの作品がなかったとしても、別人が保有している作者IDを使ってアップロードできない", (done) => {
+        UserModel.create({
+          userId: theirId,
+          creatorIds: [creatorId],
         }).then(() => {
           request(app)
             .post("/upload/unity")
@@ -241,7 +267,7 @@ describe("作品のアップロードを伴うテスト", () => {
             .expect(JSON.stringify({ errors: [CREATOR_ID_OTHER_USER] }))
             .end(async () => {
               const works = await WorkModel.find({});
-              expect(works.length).toBe(1);
+              expect(works.length).toBe(0);
               done();
             });
         });

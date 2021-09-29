@@ -1,7 +1,7 @@
 import path from "path";
 import fsExtra from "fs-extra";
 import * as yup from "yup";
-import { WorkDocument, WorkModel } from "../models/database";
+import { UserModel, WorkDocument, WorkModel } from "../models/database";
 import {
   DIRECTORY_NAME_UPLOADS,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
@@ -86,16 +86,10 @@ export async function isCreatorIdUsedByOtherUser(
   creatorId: string,
   userId: string
 ): Promise<boolean> {
-  const works = await WorkModel.find({
-    creatorId,
-  });
-  if (works.length == 0) {
-    return false;
-  }
-  for (const work of works) {
-    if (work.owner !== userId) {
-      return true;
-    }
+  const users = await UserModel.find();
+  for (const user of users) {
+    if (user.userId === userId) continue;
+    if (user.creatorIds.includes(creatorId)) return true;
   }
   return false;
 }
