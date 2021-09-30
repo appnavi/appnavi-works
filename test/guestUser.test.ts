@@ -324,5 +324,24 @@ describe("ゲストユーザー", () => {
           });
       });
     });
+    it("2回ログインに失敗しても3回目に成功すればログインできる。", (done) => {
+      login(app, myId);
+      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
+        logout(app);
+        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
+          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
+          .then(() => {
+            request(app)
+              .post("/auth/guest")
+              .send({
+                userId: guestId,
+                password,
+              })
+              .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+              .expect("Location", "/")
+              .end(done);
+          });
+      });
+    });
   });
 });
