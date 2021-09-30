@@ -45,20 +45,27 @@ authRouter.get("/error", (_req, _res, next) => {
   next(createError(STATUS_CODE_UNAUTHORIZED));
 });
 
-authRouter.get("/", function (req, res) {
+authRouter.get("/logout", (req, res) => {
+  req.logout();
+  req.session.destroy(() => {
+    res.redirect("/auth");
+  });
+});
+
+authRouter.use("/", (req, res, next) => {
   if (isAuthenticated(req)) {
     res.redirect("/");
     return;
   }
+  next();
+});
+
+authRouter.get("/", function (req, res) {
   render("auth", req, res);
 });
 authRouter
   .route("/guest")
   .get((req, res) => {
-    if (isAuthenticated(req)) {
-      res.redirect("/");
-      return;
-    }
     render("auth/guest", req, res);
   })
   .post(
@@ -106,16 +113,9 @@ authRouter.get(
   }
 );
 
-authRouter.get("/logout", (req, res) => {
-  req.logout();
-  req.session.destroy(() => {
-    res.redirect("/auth");
-  });
-});
-
 async function logLastLogin(
   req: express.Request,
-  res: express.Response,
+  _res: express.Response,
   next: express.NextFunction
 ): Promise<void> {
   const userDocument = await findOrCreateUser(getUserIdOrThrow(req));
