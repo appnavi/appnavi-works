@@ -106,7 +106,7 @@ authRouter.get(
   }
 );
 
-authRouter.all("/logout", (req, res) => {
+authRouter.get("/logout", (req, res) => {
   req.logout();
   req.session.destroy(() => {
     res.redirect("/auth");
