@@ -41,7 +41,7 @@ async function resetRateLimit(): Promise<void> {
   });
 }
 
-async function testSuccessfulGuestUserCreation(): Promise<{
+async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
   guestId: string;
   password: string;
 }> {
@@ -49,6 +49,7 @@ async function testSuccessfulGuestUserCreation(): Promise<{
     guestId: string;
     password: string;
   }>((resolve) => {
+    login(app, myId);
     request(app)
       .post("/account/guest/create")
       .expect(STATUS_CODE_SUCCESS)
@@ -69,6 +70,9 @@ async function testSuccessfulGuestUserCreation(): Promise<{
     });
     expect(guests.length).toBe(1);
     await bcrypt.compare(password, guests[0].guest?.hashedPassword ?? "");
+    if (logoutOnEnd) {
+      logout(app);
+    }
     return { guestId, password };
   });
 }
@@ -133,8 +137,7 @@ describe("ゲストユーザー", () => {
         .end(done);
     });
     it("条件を満たしていればゲストユーザーの作成に成功する。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(() => done());
+      testSuccessfulGuestUserCreation(false).then(() => done());
     });
   });
   describe("ゲストユーザーの削除", () => {
@@ -184,9 +187,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("別のユーザーが作成したゲストユーザーを削除できない。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId }) => {
-        logout(app);
+      testSuccessfulGuestUserCreation(true).then(({ guestId }) => {
         login(app, theirId);
         request(app)
           .post("/account/guest/delete")
@@ -197,8 +198,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("ゲストユーザーではないユーザーを削除できない。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId }) => {
+      testSuccessfulGuestUserCreation(false).then(({ guestId }) => {
         WorkModel.create({
           owner: guestId,
         }).then(() => {
@@ -212,8 +212,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("条件を満たしていればゲストユーザーの削除に成功する。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId }) => {
+      testSuccessfulGuestUserCreation(false).then(({ guestId }) => {
         request(app)
           .post("/account/guest/delete")
           .send({ guestId })
@@ -225,9 +224,7 @@ describe("ゲストユーザー", () => {
   describe("ゲストユーザーのログイン", () => {
     beforeEach(resetRateLimit);
     it("存在しないゲストユーザーとしてログインすることはできない。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        logout(app);
+      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
         request(app)
           .post("/auth/guest")
           .send({
@@ -239,9 +236,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("パスワードが異なる場合はログインできない。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        logout(app);
+      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
         request(app)
           .post("/auth/guest")
           .send({
@@ -253,9 +248,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("作成されたゲストユーザーでログインできる。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        logout(app);
+      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
         request(app)
           .post("/auth/guest")
           .send({
@@ -325,9 +318,7 @@ describe("ゲストユーザー", () => {
         .then(done);
     });
     it("3回ログインに失敗すると4回目以降は必ずログインに失敗する。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        logout(app);
+      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
         testInvalidGuestLogin(GUEST_LOGIN_FAIL)
           .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
           .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
@@ -350,9 +341,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("2回ログインに失敗しても3回目に成功すればログインできる。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        logout(app);
+      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
         testInvalidGuestLogin(GUEST_LOGIN_FAIL)
           .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
           .then(() => testSuccessfulGuestLogin(guestId, password))
@@ -360,9 +349,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("ログインに成功すればログイン失敗回数の制限がリセットされる。", (done) => {
-      login(app, myId);
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        logout(app);
+      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
         testInvalidGuestLogin(GUEST_LOGIN_FAIL)
           .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
           .then(() => testSuccessfulGuestLogin(guestId, password))
