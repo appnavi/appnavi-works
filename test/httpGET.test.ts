@@ -113,28 +113,25 @@ describe("GET", () => {
     beforeEach(() => login(app, myId));
     afterEach(() => logout(app));
     describe("authRouter", () => {
-      it("/authをGETをGETすると/にリダイレクトされる", (done) => {
+      it("/authをGETすると/にリダイレクトされる", (done) => {
         request(app)
           .get("/auth")
           .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", "/")
           .end(done);
       });
-      it("/auth/guestをGETをGETすると/にリダイレクトされる", (done) => {
+      it("/auth/guestをGETすると/にリダイレクトされる", (done) => {
         request(app)
           .get("/auth/guest")
           .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", "/")
           .end(done);
       });
-      it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
+      it("/auth/slackをGETすると/にリダイレクトされる", (done) => {
         request(app)
           .get("/auth/slack")
           .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect(
-            "Location",
-            /^https:\/\/slack.com\/openid\/connect\/authorize/
-          )
+          .expect("Location", "/")
           .end(done);
       });
     });
