@@ -21,11 +21,15 @@ log4js.configure({
   categories: {
     default: { appenders: ["console"], level: "all" },
     system: {
-      appenders: ["console", "file"],
+      appenders:
+        process.env.NODE_ENV === "test" ? ["file"] : ["console", "file"],
       level: "all",
     },
     access: {
-      appenders: ["console", "accessFile"],
+      appenders:
+        process.env.NODE_ENV === "test"
+          ? ["accessFile"]
+          : ["console", "accessFile"],
       level: "all",
     },
   },
