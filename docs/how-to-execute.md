@@ -152,7 +152,7 @@ bash test.sh down
    4. `Add New Redirect URL`ボタンの上にテキストボックスが表示されるので、以下の内容を入力して右の`Add`ボタンを押す("https://xxxxxxx.ngrok.io"は先ほどコピーしたURLに置き換える)
 
       ```txt
-      https://xxxxxxx.ngrok.io/auth/redirect
+      https://xxxxxxx.ngrok.io/auth/slack/redirect
       ```
 
    5. `Save URLs`ボタンをクリック
