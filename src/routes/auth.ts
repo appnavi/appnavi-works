@@ -74,6 +74,7 @@ authRouter
     afterGuestLogIn,
     logLastLogin,
     (req, res) => {
+      guestLoginRateLimiter.resetIp(req.ip);
       redirect(req, res);
     }
   );

@@ -90,6 +90,31 @@ async function testInvalidGuestLogin(
       });
   });
 }
+async function testSuccessfulGuestLogin(
+  userId: string,
+  password: string
+): Promise<void> {
+  return new Promise<void>((resolve) => {
+    request(app)
+      .post("/auth/guest")
+      .send({
+        userId,
+        password,
+      })
+      .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+      .expect("Location", "/")
+      .end(resolve);
+  });
+}
+async function testSuccessfulLogout(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    request(app)
+      .get("/auth/logout")
+      .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+      .expect("Location", "/auth")
+      .end(resolve);
+  });
+}
 const otherGuestId = "guest-other";
 describe("ゲストユーザー", () => {
   beforeAll(async () => {
@@ -330,17 +355,22 @@ describe("ゲストユーザー", () => {
         logout(app);
         testInvalidGuestLogin(GUEST_LOGIN_FAIL)
           .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => {
-            request(app)
-              .post("/auth/guest")
-              .send({
-                userId: guestId,
-                password,
-              })
-              .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-              .expect("Location", "/")
-              .end(done);
-          });
+          .then(() => testSuccessfulGuestLogin(guestId, password))
+          .then(done);
+      });
+    });
+    it("ログインに成功すればログイン失敗回数の制限がリセットされる。", (done) => {
+      login(app, myId);
+      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
+        logout(app);
+        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
+          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
+          .then(() => testSuccessfulGuestLogin(guestId, password))
+          .then(testSuccessfulLogout)
+          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
+          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
+          .then(() => testSuccessfulGuestLogin(guestId, password))
+          .then(done);
       });
     });
   });
