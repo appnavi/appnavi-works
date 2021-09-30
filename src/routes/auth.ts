@@ -100,6 +100,7 @@ authRouter.use(
   }
 );
 
+//TODO：ストラテジー名"slack.com"をsrc\config\passport.tsのslackStrategy（createSlackStrategy()の戻り値）から動的に取得（TypescriptのTop-level awaitを使う必要あり）
 authRouter.get("/slack", passport.authenticate("slack.com"));
 authRouter.get(
   "/slack/redirect",
