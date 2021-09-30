@@ -55,6 +55,13 @@ export function getEnvNumber(key: "WORK_STORAGE_SIZE_BYTES" | "PORT"): number {
   }
   return envNumber;
 }
+export function getSiteURLWithoutTrailingSlash(): string {
+  let url = getEnv("SITE_URL");
+  if (url.endsWith("/")) {
+    url = url.slice(0, -1);
+  }
+  return url;
+}
 export const randomStringCharacters =
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 export function generateRandomString(

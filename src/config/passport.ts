@@ -13,7 +13,12 @@ import {
 import * as yup from "yup";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
-import { getEnv, isSlackUser, randomStringCharacters } from "../utils/helpers";
+import {
+  getEnv,
+  getSiteURLWithoutTrailingSlash,
+  isSlackUser,
+  randomStringCharacters,
+} from "../utils/helpers";
 export const guestUserIdRegex = new RegExp(
   `^guest-[${randomStringCharacters}]+$`
 );
@@ -80,7 +85,7 @@ async function createSlackStrategy(): Promise<Strategy> {
   const client = new issuer.Client({
     client_id: getEnv("SLACK_CLIENT_ID"),
     client_secret: getEnv("SLACK_CLIENT_SECRET"),
-    redirect_uris: [`${getEnv("SITE_URL")}/auth/slack/redirect`],
+    redirect_uris: [`${getSiteURLWithoutTrailingSlash()}/auth/slack/redirect`],
     response_types: ["code"],
   });
   return new OpenIdStrategy(

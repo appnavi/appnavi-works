@@ -32,7 +32,12 @@ import {
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER as CREATOR_ID_USED_BY_OTHER_USER,
 } from "../utils/constants";
 import { UploadError } from "../utils/errors";
-import { getEnv, getEnvNumber, render, wrap } from "../utils/helpers";
+import {
+  getEnvNumber,
+  getSiteURLWithoutTrailingSlash,
+  render,
+  wrap,
+} from "../utils/helpers";
 
 interface Locals {
   paths: string[];
@@ -117,7 +122,7 @@ uploadRouter
     wrap(async function (req, res) {
       render("upload/unity", req, res, {
         defaultCreatorId: await getDefaultCreatorId(req),
-        url: getEnv("SITE_URL"),
+        url: getSiteURLWithoutTrailingSlash(),
       });
     })
   )
