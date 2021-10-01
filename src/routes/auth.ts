@@ -101,7 +101,14 @@ authRouter.use(
   }
 );
 
-//TODO：ストラテジー名"slack.com"をsrc\config\passport.tsのslackStrategy（createSlackStrategy()の戻り値）から動的に取得（TypescriptのTop-level awaitを使う必要あり）
+/*
+TODO ストラテジー名"slack.com"をsrc\config\passport.tsのslackStrategy（createSlackStrategy()の戻り値）から動的に取得（Top-level awaitを使う必要あり）
+
+問題点：現状tsconfigのmoduleが"ESNext"の時、ts-nodeが上手く動かない（moduleを"ESNext"にしないとTop-level awaitが使えない）
+  対策1：ts-nodeの対応を待つ
+  対策2：ts-nodeの試験的機能を有効にする（https://github.com/TypeStrong/ts-node/issues/1007）
+  対策3：ts-node以外のライブラリを使う（tsc-watchなど）
+*/
 authRouter.get("/slack", passport.authenticate("slack.com"));
 authRouter.get(
   "/slack/redirect",
