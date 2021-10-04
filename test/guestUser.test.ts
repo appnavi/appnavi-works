@@ -19,7 +19,7 @@ import {
 import { login, logout, myId, theirId } from "./auth";
 import { connectDatabase, clearDatabase, INVALID_ID } from "./common";
 import { UserModel, WorkModel } from "../src/models/database";
-import { redisClient } from "../src/routes/auth";
+import { guestLoginRateLimiter } from "../src/routes/auth";
 
 function getIdAndPassFromCreateGuestHtml(html: string): {
   guestId: string;
@@ -35,10 +35,8 @@ function getIdAndPassFromCreateGuestHtml(html: string): {
     password,
   };
 }
-async function resetRateLimit(): Promise<void> {
-  return new Promise((resolve) => {
-    redisClient.flushall(() => resolve());
-  });
+function resetRateLimit(): void {
+  guestLoginRateLimiter.resetIp("::ffff:127.0.0.1");
 }
 
 async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
