@@ -206,7 +206,7 @@ describe("作品のアップロードを伴うテスト", () => {
   });
   describe("ログイン時", () => {
     beforeAll(() => login(app, myId));
-    afterAll(() => logout(app));
+    afterAll(logout);
 
     describe("Unity作品のアップロード（ファイルあり）", () => {
       it("作者IDが設定されていないとアップロードできない", (done) => {
@@ -229,7 +229,7 @@ describe("作品のアップロードを伴うテスト", () => {
       it("別人が保有している作者IDを使ってアップロードできない", (done) => {
         testSuccessfulUpload()
           .then(() => {
-            logout(app);
+            logout();
             login(app, theirId);
           })
           .then(
@@ -249,7 +249,7 @@ describe("作品のアップロードを伴うテスト", () => {
               })
           )
           .then(() => {
-            logout(app);
+            logout();
             login(app, myId);
             done();
           });

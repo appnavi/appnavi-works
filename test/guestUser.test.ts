@@ -71,7 +71,7 @@ async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
     expect(guests.length).toBe(1);
     await bcrypt.compare(password, guests[0].guest?.hashedPassword ?? "");
     if (logoutOnEnd) {
-      logout(app);
+      logout();
     }
     return { guestId, password };
   });
@@ -126,7 +126,7 @@ describe("ゲストユーザー", () => {
     await connectDatabase("4");
   });
   afterEach(async () => {
-    logout(app);
+    logout();
     await clearDatabase();
   });
   describe("ゲストユーザーの作成", () => {

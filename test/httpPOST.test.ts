@@ -32,7 +32,7 @@ describe("POST", () => {
   afterEach(async () => {
     await clearData(creatorId, workId);
   });
-  afterAll(() => logout(app));
+  afterAll(logout);
   describe("uploadRouter", () => {
     describe("Unity作品のアップロード", () => {
       it("作品がなければアップロードできない", (done) => {

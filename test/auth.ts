@@ -13,9 +13,9 @@ function login(app: Express, userId: string, type: string = "Slack"): void {
     type,
   });
 }
-function logout(app: Express) {
+function logout() {
   passportStub.logout();
-  passportStub.uninstall(app);
+  passportStub.uninstall();
 }
 
 export { myId, theirId, login, logout };
