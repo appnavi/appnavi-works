@@ -2,8 +2,6 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import createError from "http-errors";
 import passport from "passport";
-import RedisStore from "rate-limit-redis";
-import redis from "redis";
 import * as logger from "../modules/logger";
 import {
   findOrCreateUser,
@@ -22,11 +20,6 @@ const authRouter = express.Router();
 
 // ゲストログインの失敗は1時間に3回まで
 export const guestLoginRateLimiter = rateLimit({
-  store: new RedisStore({
-    client: redis.createClient({
-      url: "redis://redis:6379",
-    }),
-  }),
   windowMs: 60 * 60 * 1000,
   max: 3,
   skipSuccessfulRequests: true,

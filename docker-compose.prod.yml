@@ -1,10 +1,10 @@
-version: '3'
+version: "3"
 services:
   appnavi-works:
     container_name: appnavi-works_production
     restart: always
     command: "yarn run start"
-    volumes: 
+    volumes:
       - ./uploads:/app/uploads
       - ./backups:/app/backups
       - ./logs:/app/logs
@@ -15,17 +15,15 @@ services:
       - https-portal
   mongo:
     restart: always
-  redis:
-    restart: always
 
-networks: 
+networks:
   https-portal:
-    external: 
+    external:
       name: https-portal
 
 secrets:
   DATABASE_URL:
-    file: ./secrets/production/database_url.txt    
+    file: ./secrets/production/database_url.txt
   SESSION_DATABASE_URL:
     file: ./secrets/production/session_database_url.txt
   SLACK_CLIENT_ID:

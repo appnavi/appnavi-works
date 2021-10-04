@@ -82,14 +82,6 @@ Express アプリケーションに認証機能を提供するパッケージ
 
 passport でユーザー名とパスワードによる認証を使えるようにするパッケージ。
 
-### `rate-limit-redis`
-
-`express-rate-limit`の情報を Redis に保存するためのパッケージ。
-
-### `redis`
-
-Redis を操作するためのパッケージ。
-
 ### `sass`
 
 sass から css へのコンパイラー。
