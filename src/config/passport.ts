@@ -75,10 +75,11 @@ const localStrategy = new LocalStrategy(
         done(undefined, user, undefined);
       })
       .catch((e) => {
-        const err = e as { errors: string[]; value: { userId: string } };
+        const err = e as { message: string; errors?: string[] };
+        const errors = err.errors ?? [err.message];
         logger.system.error("ログインに失敗しました。", {
-          errors: err.errors,
-          userId: err.value.userId,
+          errors,
+          userId,
         });
         done(undefined, false, { message: "ログインに失敗しました。" });
       });

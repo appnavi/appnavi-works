@@ -226,7 +226,19 @@ describe("ゲストユーザー", () => {
         request(app)
           .post("/auth/guest")
           .send({
-            userId: `${guestId}-1`,
+            userId: "admin",
+            password,
+          })
+          .expect(STATUS_CODE_UNAUTHORIZED)
+          .end(done);
+      });
+    });
+    it("存在しないゲストユーザーとしてログインすることはできない。その2", (done) => {
+      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
+        request(app)
+          .post("/auth/guest")
+          .send({
+            userId: `${guestId}1`,
             password,
           })
           .expect(STATUS_CODE_UNAUTHORIZED)
