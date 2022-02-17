@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:17.5.0-alpine3.15
 
 RUN mkdir /app && chown node:node /app
 
