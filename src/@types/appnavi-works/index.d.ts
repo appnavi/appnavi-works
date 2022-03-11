@@ -6,9 +6,3 @@ declare namespace Express {
     type: "Slack" | "Guest";
   }
 }
-
-type SlackUser = {
-  ok: boolean;
-  "https://slack.com/user_id": string;
-  "https://slack.com/team_id": string | undefined;
-} & Record<string, string | undefined>;

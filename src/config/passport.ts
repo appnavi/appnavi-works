@@ -16,7 +16,6 @@ import * as logger from "../modules/logger";
 import {
   getEnv,
   getSiteURLWithoutTrailingSlash,
-  isSlackUser,
   randomStringCharacters,
 } from "../utils/helpers";
 export const guestUserIdRegex = new RegExp(
@@ -105,13 +104,10 @@ async function createSlackStrategy(): Promise<Strategy> {
       user: UserinfoResponse,
       done: (err: unknown, user?: Record<string, unknown>) => void
     ) => {
-      if (!isSlackUser(user)) {
-        logger.system.error(`Slackユーザーとして認識できませんでした。`, user);
-        done(new Error("ログイン失敗"), undefined);
-        return;
-      }
+      // Workspace IDのチェック
+      // アプリNaviのSlackワークスペース以外からのログインを防止（おそらく起こり得ないが一応）
       const workspaceId = user["https://slack.com/team_id"];
-      if (workspaceId == undefined) {
+      if (typeof workspaceId !== "string") {
         logger.system.error(
           "ログインしようとした人のワークスペースが不明です。",
           user
@@ -127,13 +123,34 @@ async function createSlackStrategy(): Promise<Strategy> {
         done(new Error("ログイン失敗"), undefined);
         return;
       }
+      // Workspace IDのチェック 終わり
+
+      // アバターURLの取得
+      // ページ右上に表示するアイコンのURLを取得
       const avater_url_key = Object.keys(user).find((x) =>
         x.startsWith("https://slack.com/user_image_")
       );
       const avatar_url =
         avater_url_key != undefined ? user[avater_url_key] : undefined;
+      // アバターURLの取得 終わり
+
+      // IDのチェック
+      // 2022/03/11に行ったユーザーID取得方法の修正により、それ以前にログインした人のIDが変わる可能性があるため、その対策。（おそらく起こりえないが一応）
+      // TODO:2022/03/11以前にログインしたことがあり今後もログインする可能性のあるユーザー全員が一度ログインして、警告（「user.sub(...」）がログに記録されてなければ、このコードを`const id = user.sub;`に置き換え。
+      let id = user.sub;
+      const slack_user_id = user["https://slack.com/user_id"];
+      if (typeof slack_user_id === "string" && id !== slack_user_id) {
+        id = slack_user_id;
+        logger.system.warn(
+          `user.sub(${user.sub})とuser["https://slack.com/user_id"](${slack_user_id})が異なっています。
+          互換性のため、user.subの代わりにuser["https://slack.com/user_id"]をユーザーIDとしました。`,
+          user
+        );
+      }
+      // IDのチェック 終わり
+
       return done(null, {
-        id: user["https://slack.com/user_id"],
+        id,
         name: user.name,
         avatar_url,
         type: "Slack",

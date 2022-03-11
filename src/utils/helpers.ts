@@ -75,17 +75,6 @@ export function generateRandomString(
     .join("");
 }
 
-function isObject(x: unknown): x is Record<string, unknown> {
-  return typeof x === "object" && x != null;
-}
-
-export function isSlackUser(user: unknown): user is SlackUser {
-  if (!isObject(user)) return false;
-  if (typeof user["ok"] !== "boolean") return false;
-  if (typeof user["https://slack.com/user_id"] !== "string") return false;
-  return true;
-}
-
 export const ignoreTypescriptFile = (
   req: express.Request,
   _res: express.Response,
