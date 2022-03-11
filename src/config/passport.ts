@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { Request } from "express";
 import {
   Issuer,
   Strategy as OpenIdStrategy,
@@ -13,9 +14,11 @@ import {
 import * as yup from "yup";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
+import { findUserOrThrow } from "../services/auth";
 import {
   getEnv,
   getSiteURLWithoutTrailingSlash,
+  isUser,
   randomStringCharacters,
 } from "../utils/helpers";
 export const guestUserIdRegex = new RegExp(
@@ -158,13 +161,41 @@ async function createSlackStrategy(): Promise<Strategy> {
     }
   );
 }
+async function validateUserForDeserialize(
+  user: unknown
+): Promise<Express.User> {
+  if (!isUser(user)) throw new Error("User型として認識できませんでした。");
+  const userDocument = await findUserOrThrow(user.id);
+  if (user.type == "Slack" && userDocument.guest !== undefined)
+    throw new Error("Slackユーザーとしては不適切なユーザーです。");
+  if (user.type == "Guest" && userDocument.guest === undefined)
+    throw new Error("Guestユーザーとしては不適切なユーザーです。");
+  return user;
+}
+
 async function preparePassport(): Promise<void> {
   passport.serializeUser(function (user, done) {
     done(null, user);
   });
 
-  passport.deserializeUser(function (user, done) {
-    done(null, user as Express.User);
+  passport.deserializeUser(function (
+    req: Request,
+    user: unknown,
+    done: (err: unknown, user?: Express.User | false | null) => void
+  ) {
+    validateUserForDeserialize(user)
+      .then((validatedUser) => {
+        done(null, validatedUser);
+      })
+      .catch((err) => {
+        logger.system.error("deserializeUserに失敗しました。", user, err);
+        req.session.destroy(() => {
+          done(
+            new Error("認証に問題が発生しました。再度ログインしてください。"),
+            null
+          );
+        });
+      });
   });
   const slackStrategy = await createSlackStrategy();
   passport.use(slackStrategy);

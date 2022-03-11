@@ -72,6 +72,20 @@ export function isAuthenticated(req: express.Request): boolean {
   return req.user !== undefined;
 }
 
+export async function findUserOrThrow(userId: string): Promise<UserDocument> {
+  const users = await UserModel.find({
+    userId,
+  });
+  switch (users.length) {
+    case 0:
+      throw new Error("存在しないユーザーです");
+    case 1:
+      return users[0];
+    default:
+      throw new Error("同じユーザーが複数登録されています");
+  }
+}
+
 export async function findOrCreateUser(userId: string): Promise<UserDocument> {
   const users = await UserModel.find({
     userId,
