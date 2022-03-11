@@ -111,6 +111,14 @@ async function createSlackStrategy(): Promise<Strategy> {
         return;
       }
       const workspaceId = user["https://slack.com/team_id"];
+      if (workspaceId == undefined) {
+        logger.system.error(
+          "ログインしようとした人のワークスペースが不明です。",
+          user
+        );
+        done(new Error("ログイン失敗"), undefined);
+        return;
+      }
       if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
         logger.system.error(
           `違うワークスペース${workspaceId}の人がログインしようとしました。`,
@@ -119,10 +127,15 @@ async function createSlackStrategy(): Promise<Strategy> {
         done(new Error("ログイン失敗"), undefined);
         return;
       }
+      const avater_url_key = Object.keys(user).find((x) =>
+        x.startsWith("https://slack.com/user_image_")
+      );
+      const avatar_url =
+        avater_url_key != undefined ? user[avater_url_key] : undefined;
       return done(null, {
         id: user["https://slack.com/user_id"],
         name: user.name,
-        avatar_url: user["https://slack.com/user_image_24"],
+        avatar_url,
         type: "Slack",
       });
     }

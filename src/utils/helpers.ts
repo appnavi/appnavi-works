@@ -83,31 +83,6 @@ export function isSlackUser(user: unknown): user is SlackUser {
   if (!isObject(user)) return false;
   if (typeof user["ok"] !== "boolean") return false;
   if (typeof user["https://slack.com/user_id"] !== "string") return false;
-  if (typeof user["https://slack.com/team_id"] !== "string") return false;
-  if (typeof user["https://slack.com/team_name"] !== "string") return false;
-  if (typeof user["https://slack.com/team_domain"] !== "string") return false;
-  if (typeof user["https://slack.com/user_image_24"] !== "string") return false;
-  if (typeof user["https://slack.com/user_image_32"] !== "string") return false;
-  if (typeof user["https://slack.com/user_image_48"] !== "string") return false;
-  if (typeof user["https://slack.com/user_image_72"] !== "string") return false;
-  if (typeof user["https://slack.com/user_image_192"] !== "string")
-    return false;
-  if (typeof user["https://slack.com/user_image_512"] !== "string")
-    return false;
-  if (typeof user["https://slack.com/user_image_1024"] !== "string")
-    return false;
-  if (typeof user["https://slack.com/team_image_34"] !== "string") return false;
-  if (typeof user["https://slack.com/team_image_44"] !== "string") return false;
-  if (typeof user["https://slack.com/team_image_68"] !== "string") return false;
-  if (typeof user["https://slack.com/team_image_88"] !== "string") return false;
-  if (typeof user["https://slack.com/team_image_102"] !== "string")
-    return false;
-  if (typeof user["https://slack.com/team_image_132"] !== "string")
-    return false;
-  if (typeof user["https://slack.com/team_image_230"] !== "string")
-    return false;
-  if (typeof user["https://slack.com/team_image_default"] !== "boolean")
-    return false;
   return true;
 }
 
