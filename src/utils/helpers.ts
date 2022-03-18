@@ -98,8 +98,16 @@ export const slackUserOnly = (
   }
   next();
 };
-function isObject(x: unknown): x is Record<string, unknown> {
+export function isObject(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x != null;
+}
+
+export function isError(x: unknown): x is { name: string; message: string } {
+  return (
+    isObject(x) &&
+    typeof x["name"] === "string" &&
+    typeof x["message"] === "string"
+  );
 }
 
 export function isUser(x: unknown): x is Express.User {

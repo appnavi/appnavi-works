@@ -1,8 +1,10 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { UserDocument, UserModel } from "../models/database";
+import { system } from "../modules/logger";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
-import { getEnv } from "../utils/helpers";
+import { getEnv, isError } from "../utils/helpers";
+
 declare module "express-session" {
   interface SessionData {
     redirect: { url: string };
@@ -38,19 +40,29 @@ export function redirect(req: express.Request, res: express.Response): void {
   const session = req.session;
   const redirectUrl = session.redirect?.url;
   const token = session.redirectToken;
-  if (token && redirectUrl) {
-    const decoded = jwt.verify(token, getEnv("JWT_SECRET")) as {
-      url: string;
-    };
-    if (decoded.url === redirectUrl) {
-      if (isValidRedirectUrl(redirectUrl)) {
-        res.redirect(redirectUrl);
-        return;
-      }
-    }
+  if (typeof token !== "string" || typeof redirectUrl !== "string") {
+    res.redirect("/");
+    return;
   }
-  res.redirect("/");
+  try {
+    const decoded = jwt.verify(token, getEnv("JWT_SECRET")) as { url: string };
+    if (decoded.url === redirectUrl && isValidRedirectUrl(redirectUrl)) {
+      res.redirect(redirectUrl);
+    }
+  } catch (e) {
+    let message = "JWT処理で不明なエラーが発生しました。";
+    if (
+      isError(e) &&
+      e.name === "JsonWebTokenError" &&
+      e.message === "invalid signature"
+    ) {
+      message = "JWTが改変されています";
+    }
+    system.error(message, token, e);
+    res.redirect("/");
+  }
 }
+
 export function ensureAuthenticated(
   req: express.Request,
   res: express.Response,
