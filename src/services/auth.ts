@@ -3,11 +3,18 @@ import jwt from "jsonwebtoken";
 import { UserDocument, UserModel } from "../models/database";
 import { system } from "../modules/logger";
 import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
-import { getEnv, isError } from "../utils/helpers";
-
+import { getEnv, isObject, isError } from "../utils/helpers";
+interface RedirectData {
+  url: string;
+}
+function isRedirectData(x: unknown): x is RedirectData {
+  if (!isObject(x)) return false;
+  if (typeof x["url"] !== "string") return false;
+  return true;
+}
 declare module "express-session" {
   interface SessionData {
-    redirect: { url: string };
+    redirect: RedirectData;
     redirectToken: string;
   }
 }
@@ -45,9 +52,20 @@ export function redirect(req: express.Request, res: express.Response): void {
     return;
   }
   try {
-    const decoded = jwt.verify(token, getEnv("JWT_SECRET")) as { url: string };
-    if (decoded.url === redirectUrl && isValidRedirectUrl(redirectUrl)) {
+    const decoded = jwt.verify(token, getEnv("JWT_SECRET"));
+    if (
+      isRedirectData(decoded) &&
+      decoded.url === redirectUrl &&
+      isValidRedirectUrl(redirectUrl)
+    ) {
       res.redirect(redirectUrl);
+    } else {
+      system.error(
+        "リダイレクトのデータが不正です。",
+        decoded,
+        session.redirect,
+        session.redirectToken
+      );
     }
   } catch (e) {
     let message = "JWT処理で不明なエラーが発生しました。";
@@ -59,8 +77,8 @@ export function redirect(req: express.Request, res: express.Response): void {
       message = "JWTが改変されています";
     }
     system.error(message, token, e);
-    res.redirect("/");
   }
+  res.redirect("/");
 }
 
 export function ensureAuthenticated(
