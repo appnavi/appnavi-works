@@ -59,6 +59,7 @@ export function redirect(req: express.Request, res: express.Response): void {
       isValidRedirectUrl(redirectUrl)
     ) {
       res.redirect(redirectUrl);
+      return;
     } else {
       system.error(
         "リダイレクトのデータが不正です。",
