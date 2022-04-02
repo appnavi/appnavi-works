@@ -30,6 +30,7 @@ export const guestLoginRateLimiter = rateLimit({
       error: ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
     });
   },
+  keyGenerator: (req) => req.ip,
 });
 
 authRouter.get("/error", (_req, _res, next) => {
@@ -65,7 +66,7 @@ authRouter
     afterGuestLogIn,
     logLastLogin,
     (req, res) => {
-      guestLoginRateLimiter.resetIp(req.ip);
+      guestLoginRateLimiter.resetKey(req.ip);
       redirect(req, res);
     }
   );

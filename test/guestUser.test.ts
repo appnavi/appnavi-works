@@ -36,7 +36,7 @@ function getIdAndPassFromCreateGuestHtml(html: string): {
   };
 }
 function resetRateLimit(): void {
-  guestLoginRateLimiter.resetIp("::ffff:127.0.0.1");
+  guestLoginRateLimiter.resetKey("::ffff:127.0.0.1");
 }
 
 async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
