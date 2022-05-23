@@ -12,7 +12,26 @@ worksRouter.use(
     res.removeHeader("x-frame-options");
     next();
   },
-  express.static(path.resolve(DIRECTORY_NAME_UPLOADS)),
+  express.static(path.resolve(DIRECTORY_NAME_UPLOADS), {
+    setHeaders: (res, path) => {
+      // Brotli
+      if (path.endsWith(".br")) {
+        res.set("Content-Encoding", "br");
+        if (path.endsWith(".js.br")) res.type("application/javascript");
+        else if (path.endsWith(".wasm.br")) res.type("application/wasm");
+        else res.type("application/octet-stream");
+        return;
+      }
+
+      // Gzip
+      if (path.endsWith(".gz")) {
+        res.set("Content-Encoding", "gzip");
+        if (path.endsWith(".js.gz")) res.type("application/javascript");
+        else if (path.endsWith(".wasm.gz")) res.type("application/wasm");
+        else res.type("application/octet-stream");
+      }
+    },
+  }),
   serveIndex(DIRECTORY_NAME_UPLOADS, {
     template: (
       locals: serveIndex.Locals,
