@@ -94,7 +94,7 @@ authRouter.use(
 );
 
 /*
-TODO ストラテジー名"slack.com"をsrc\config\passport.tsのslackStrategy（createSlackStrategy()の戻り値）から動的に取得（Top-level awaitを使う必要あり）
+TODO ストラテジー名"slack.com"をsrc\config\passport.tsのslackStrategy（createSlackStrategy()の戻り値）から動的に取得(slackStrategy.nameで取得できる)（Top-level awaitを使う必要あり）
 
 問題点：現状tsconfigのmoduleが"ESNext"の時、ts-nodeが上手く動かない（moduleを"ESNext"にしないとTop-level awaitが使えない）
   対策1：ts-nodeの対応を待つ
