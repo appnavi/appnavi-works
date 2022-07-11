@@ -34,7 +34,11 @@ import {
 const app = express();
 app.use(
   helmet({
+    // contentSecurityPolicy は 別の場所で設定
     contentSecurityPolicy: false,
+
+    // crossOriginEmbedderPolicy はアバター画像が表示されなくなるので無効化
+    // (有効にしつつアバター画像を表示するには Slack 側の対応が必要)
     crossOriginEmbedderPolicy: false
   })
 );
