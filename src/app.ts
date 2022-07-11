@@ -35,6 +35,7 @@ const app = express();
 app.use(
   helmet({
     contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false
   })
 );
 
