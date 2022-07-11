@@ -38,9 +38,10 @@ authRouter.get("/error", (_req, _res, next) => {
 });
 
 authRouter.get("/logout", (req, res) => {
-  req.logout();
-  req.session.destroy(() => {
-    res.redirect("/auth");
+  req.logout(() => {
+    req.session.destroy(() => {
+      res.redirect("/auth");
+    });
   });
 });
 
