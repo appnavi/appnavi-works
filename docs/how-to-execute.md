@@ -29,13 +29,13 @@
 ### production の起動方法
 
 ```sh
-bash production.sh up -d
+docker-compose up -d
 ```
 
 ### production の停止方法
 
 ```sh
-bash production.sh down
+docker-compose down
 ```
 
 ## test

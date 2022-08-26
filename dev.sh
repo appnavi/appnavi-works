@@ -5,4 +5,4 @@ if [ ! -d "./secrets/development/" ]; then
   exit 1
 fi
 
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml -p appnavi-works-dev $@
+docker-compose -f docker-compose.dev.yml -p appnavi-works-dev $@

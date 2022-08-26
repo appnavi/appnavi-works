@@ -1,6 +1,7 @@
 version: "3"
 services:
   appnavi-works:
+    build: .
     container_name: appnavi-works_production
     restart: always
     command: "yarn run start"
@@ -9,14 +10,49 @@ services:
       - ./backups:/app/backups
       - ./logs:/app/logs
     environment:
+      - WORK_STORAGE_SIZE_BYTES=53687091200 # 50 * 1024^3 bytes = 50GB
+      - PORT=3000
       - NODE_ENV=production
       - SITE_URL=https://resources.opuappnavi.com
+    depends_on:
+      - mongo
     networks:
+      - db
       - https-portal
+    secrets:
+      - DATABASE_URL
+      - SESSION_DATABASE_URL
+      - SLACK_CLIENT_ID
+      - SLACK_CLIENT_SECRET
+      - SLACK_WORKSPACE_ID
+      - COOKIE_NAME
+      - COOKIE_KEYS
+      - JWT_SECRET
+      - COOKIE_SECRET
+
   mongo:
+    image: "mongo:5.0.6"
     restart: always
+    expose:
+      - "27017"
+    volumes:
+      - db-volume-appnavi-works:/data/db
+      - db-config-volume-appnavi-works:/data/configdb
+    networks:
+      - db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/MONGO_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/MONGO_ROOT_PASSWORD
+    secrets:
+      - MONGO_ROOT_USERNAME
+      - MONGO_ROOT_PASSWORD
+volumes:
+  db-volume-appnavi-works:
+  db-config-volume-appnavi-works:
 
 networks:
+  db:
+    driver: bridge
   https-portal:
     external:
       name: https-portal

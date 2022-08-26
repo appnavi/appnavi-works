@@ -1,16 +1,56 @@
 version: '3'
 services:
   appnavi-works:
+    build: .
+    environment:
+      - WORK_STORAGE_SIZE_BYTES=53687091200 # 50 * 1024^3 bytes = 50GB
+      - PORT=3000
+      - NODE_ENV=test
+      - SITE_URL=http://localhost:3000
+    depends_on:
+      - mongo
+    networks:
+      - db
+    secrets:
+      - DATABASE_URL
+      - SESSION_DATABASE_URL
+      - SLACK_CLIENT_ID
+      - SLACK_CLIENT_SECRET
+      - SLACK_WORKSPACE_ID
+      - COOKIE_NAME
+      - COOKIE_KEYS
+      - JWT_SECRET
+      - COOKIE_SECRET
+      - MONGO_ROOT_USERNAME
+      - MONGO_ROOT_PASSWORD
     command: "yarn run test"
     volumes: 
       - ./test:/app/test
       - ./src:/app/src
-    environment: 
-      - NODE_ENV=test
-      - SITE_URL=http://localhost:3000
+  mongo:
+    image: "mongo:5.0.6"
+    expose:
+      - "27017"
+    volumes:
+      - db-volume-appnavi-works:/data/db
+      - db-config-volume-appnavi-works:/data/configdb
+    networks:
+      - db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/MONGO_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/MONGO_ROOT_PASSWORD
     secrets:
       - MONGO_ROOT_USERNAME
       - MONGO_ROOT_PASSWORD
+
+volumes:
+  db-volume-appnavi-works:
+  db-config-volume-appnavi-works:
+
+networks:
+  db:
+    driver: bridge
+
 
 secrets:
   DATABASE_URL:
