@@ -2,11 +2,7 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import passport from "passport";
 import * as logger from "../../modules/logger";
-import {
-  afterGuestLogIn,
-  logLastLogin,
-  redirect,
-} from "../../services/auth";
+import { afterGuestLogIn, logLastLogin, redirect } from "../../services/auth";
 import {
   ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
   ERROR_MESSAGE_GUEST_LOGIN_FAIL,
