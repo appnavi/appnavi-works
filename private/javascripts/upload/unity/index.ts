@@ -98,7 +98,7 @@ function onMultipleFilesDropped(type: string, input: HTMLInputElement) {
 function onFilesDropped(type: string, input: HTMLInputElement) {
   const preview = fileList.querySelector(`.${type}`) as HTMLElement;
   preview.innerHTML = `${type}`;
-  const filePaths = [];
+  const filePaths: string[] = [];
   if ((input as any).webkitdirectory) {
     onMultipleFilesDropped(type, input);
     const files = input.files ?? new FileList();
