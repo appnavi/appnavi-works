@@ -19,7 +19,7 @@ import {
 import { login, logout, myId, theirId } from "./auth";
 import { connectDatabase, clearDatabase, INVALID_ID } from "./common";
 import { UserModel, WorkModel } from "../src/models/database";
-import { guestLoginRateLimiter } from "../src/routes/auth";
+import { guestLoginRateLimiter } from "../src/routes/auth/guest";
 
 function getIdAndPassFromCreateGuestHtml(html: string): {
   guestId: string;
