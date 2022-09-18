@@ -39,7 +39,7 @@ app.use(
 
     // crossOriginEmbedderPolicy はアバター画像が表示されなくなるので無効化
     // (有効にしつつアバター画像を表示するには Slack 側の対応が必要)
-    crossOriginEmbedderPolicy: false
+    crossOriginEmbedderPolicy: false,
   })
 );
 

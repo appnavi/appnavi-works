@@ -241,7 +241,7 @@ accountRouter.post(
   "/guest/create",
   wrap(async (req, res) => {
     let guestUserId: string | undefined;
-    for (; ;) {
+    for (;;) {
       guestUserId = `guest-${generateRandomString(6)}`;
       const users = await UserModel.find({ userId: guestUserId });
       if (users.length == 0) {
