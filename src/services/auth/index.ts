@@ -1,9 +1,9 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { UserDocument, UserModel } from "../models/database";
-import { system } from "../modules/logger";
-import { STATUS_CODE_UNAUTHORIZED } from "../utils/constants";
-import { getEnv, isObject, isError } from "../utils/helpers";
+import { UserDocument, UserModel } from "../../models/database";
+import { system } from "../../modules/logger";
+import { STATUS_CODE_UNAUTHORIZED } from "../../utils/constants";
+import { getEnv, isObject, isError } from "../../utils/helpers";
 interface RedirectData {
   url: string;
 }

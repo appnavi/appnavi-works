@@ -1,7 +1,7 @@
 import path from "path";
 import fsExtra from "fs-extra";
 import * as yup from "yup";
-import { UserModel, WorkDocument, WorkModel } from "../models/database";
+import { UserModel, WorkDocument, WorkModel } from "../../models/database";
 import {
   DIRECTORY_NAME_UPLOADS,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
@@ -16,10 +16,10 @@ import {
   ERROR_MESSAGE_RENAME_TO_EXISTING,
   ERROR_MESSAGE_BACKUP_NOT_FOUND,
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
-} from "../utils/constants";
-import { BadRequestError, RestoreBackupError } from "../utils/errors";
-import { idRegex } from "../utils/helpers";
-import { updateCreatorIds } from "./auth";
+} from "../../utils/constants";
+import { BadRequestError, RestoreBackupError } from "../../utils/errors";
+import { idRegex } from "../../utils/helpers";
+import { updateCreatorIds } from "../auth";
 
 export const creatorIdSchema = yup
   .string()
