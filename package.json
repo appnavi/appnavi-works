@@ -29,7 +29,6 @@
     "migrate": "ts-node node_modules/.bin/migrate-mongo up -f migrate-mongo/migrate-mongo-config.ts"
   },
   "dependencies": {
-    "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "connect-mongo": "^4.5.0",
     "cookie-parser": "^1.4.5",
@@ -54,7 +53,6 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.0",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.2",
     "@types/cookie-session": "^2.0.42",

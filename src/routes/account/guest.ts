@@ -1,10 +1,10 @@
-import bcrypt from "bcrypt";
 import express from "express";
 import multer from "multer";
 import * as yup from "yup";
 import { guestUserIdRegex } from "../../config/passport";
 import { UserModel, WorkModel } from "../../models/database";
 import { getUserIdOrThrow } from "../../services/auth";
+import { hashPassword } from "../../services/auth/password";
 import {
   ERROR_MESSAGE_GUEST_NOT_FOUND,
   ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND,
@@ -48,7 +48,7 @@ guestRouter.post(
       }
     }
     const password = generateRandomString(16);
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
     await UserModel.create({
       userId: guestUserId,
       guest: {

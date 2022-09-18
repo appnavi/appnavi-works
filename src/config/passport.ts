@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import { Request } from "express";
 import {
   Issuer,
@@ -15,6 +14,7 @@ import * as yup from "yup";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
 import { findUserOrThrow } from "../services/auth";
+import { verifyPassword } from "../services/auth/password";
 import {
   getEnv,
   getSiteURLWithoutTrailingSlash,
@@ -60,7 +60,7 @@ const localStrategy = new LocalStrategy(
           throw new Error("パスワードではログインできません。");
         }
         const hashedPassword = guest.hashedPassword;
-        const isPasswordCorrect = await bcrypt.compare(
+        const isPasswordCorrect = await verifyPassword(
           password,
           hashedPassword
         );

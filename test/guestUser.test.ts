@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import request from "supertest";
 import { app } from "../src/app";
 import { preparePassport, yupSchemaLocal } from "../src/config/passport";
@@ -20,6 +19,7 @@ import { login, logout, myId, theirId } from "./auth";
 import { connectDatabase, clearDatabase, INVALID_ID } from "./common";
 import { UserModel, WorkModel } from "../src/models/database";
 import { guestLoginRateLimiter } from "../src/routes/auth/guest";
+import { verifyPassword } from "../src/services/auth/password";
 
 function getIdAndPassFromCreateGuestHtml(html: string): {
   guestId: string;
@@ -67,7 +67,7 @@ async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
       },
     });
     expect(guests.length).toBe(1);
-    await bcrypt.compare(password, guests[0].guest?.hashedPassword ?? "");
+    await verifyPassword(password, guests[0].guest?.hashedPassword ?? "");
     if (logoutOnEnd) {
       logout();
     }
