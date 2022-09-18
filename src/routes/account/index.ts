@@ -3,14 +3,14 @@ import csurf from "csurf";
 import express from "express";
 import multer from "multer";
 import * as yup from "yup";
-import { guestUserIdRegex } from "../config/passport";
-import { UserModel, WorkModel } from "../models/database";
+import { guestUserIdRegex } from "../../config/passport";
+import { UserModel, WorkModel } from "../../models/database";
 import {
   ensureAuthenticated,
   findOrCreateUser,
   getDefaultCreatorId,
   getUserIdOrThrow,
-} from "../services/auth";
+} from "../../services/auth";
 import {
   creatorIdSchema,
   deleteBackup,
@@ -18,7 +18,7 @@ import {
   renameWork,
   restoreBackup,
   workIdSchema,
-} from "../services/works";
+} from "../../services/works";
 import {
   URL_PREFIX_WORK,
   STATUS_CODE_BAD_REQUEST,
@@ -32,19 +32,19 @@ import {
   ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR,
   ERROR_MESSAGE_GUEST_ID_INVALID,
   ERROR_MESSAGE_GUEST_ID_REQUIRED,
-} from "../utils/constants";
+} from "../../utils/constants";
 import {
   BadRequestError,
   DeleteGuestUserError,
   DeleteWorkError,
   RenameWorkError,
-} from "../utils/errors";
+} from "../../utils/errors";
 import {
   generateRandomString,
   render,
   slackUserOnly,
   wrap,
-} from "../utils/helpers";
+} from "../../utils/helpers";
 
 const accountRouter = express.Router();
 
@@ -241,7 +241,7 @@ accountRouter.post(
   "/guest/create",
   wrap(async (req, res) => {
     let guestUserId: string | undefined;
-    for (;;) {
+    for (; ;) {
       guestUserId = `guest-${generateRandomString(6)}`;
       const users = await UserModel.find({ userId: guestUserId });
       if (users.length == 0) {

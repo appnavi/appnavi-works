@@ -2,19 +2,19 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import createError from "http-errors";
 import passport from "passport";
-import * as logger from "../modules/logger";
+import * as logger from "../../modules/logger";
 import {
   findOrCreateUser,
   getUserIdOrThrow,
   isAuthenticated,
   redirect,
-} from "../services/auth";
+} from "../../services/auth";
 import {
   ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
   ERROR_MESSAGE_GUEST_LOGIN_FAIL,
   STATUS_CODE_UNAUTHORIZED,
-} from "../utils/constants";
-import { render, wrap } from "../utils/helpers";
+} from "../../utils/constants";
+import { render, wrap } from "../../utils/helpers";
 
 const authRouter = express.Router();
 
