@@ -9,7 +9,7 @@
     <main class="container">
       <h3 class="header">データベースの内容（ユーザー一覧）</h3>
       <div class="card">
-        <div class="card-content">
+        <div class="card-content" style="overflow: auto;">
           <pre><%- (typeof users !== "undefined") ? JSON.stringify(users, null, 2) : "" %></pre>
         </div>
       </div>
