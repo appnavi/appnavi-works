@@ -156,3 +156,56 @@ export async function updateCreatorIds(
   }
   await user.save();
 }
+
+export async function logLastLogin(
+  req: express.Request,
+  _res: express.Response,
+  next: express.NextFunction
+): Promise<void> {
+  const userDocument = await findOrCreateUser(getUserIdOrThrow(req));
+  await userDocument.updateOne({
+    $set: {
+      lastLogIn: new Date(),
+    },
+  });
+  next();
+}
+
+export function afterGuestLogIn(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const user = req.user;
+  if (user === undefined) {
+    system.error(`ログインできていません。`, req.user);
+    res.redirect("/auth/error");
+    return;
+  }
+  if (user.type !== "Guest") {
+    system.error(`ゲストログインではありません。`, req.user);
+    res.redirect("/auth/error");
+    return;
+  }
+  next();
+}
+
+export function afterSlackLogin(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const user = req.user;
+  if (user === undefined) {
+    system.error(`ログインできていません。`, req.user);
+    res.redirect("/auth/error");
+    return;
+  }
+  if (user.type !== "Slack") {
+    system.error(`Slackによるログインではありません。`, req.user);
+    res.redirect("/auth/error");
+    return;
+  }
+  system.info(`ユーザー${user.id}がSlack認証でログインしました。`);
+  next();
+}
