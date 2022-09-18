@@ -171,13 +171,11 @@ form.addEventListener("submit", async function (event) {
   }
   setUploading(true);
   const data = new FormData(form);
-  const token = getCsrfTokenFromPage();
   const res = await fetch("", {
     credentials: "same-origin",
     method: "POST",
     body: data,
     headers: {
-      "CSRF-Token": token,
       "x-creator-id": creatorIdInput.value,
       "x-work-id": workIdInput.value,
     },

@@ -127,11 +127,8 @@ export function render(
   res: express.Response,
   options: Record<string, unknown> = {}
 ): void {
-  const csrfToken =
-    typeof req.csrfToken !== "undefined" ? req.csrfToken() : undefined;
   res.render(view, {
     user: req.user,
-    csrfToken,
     ...options,
   });
 }

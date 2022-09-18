@@ -1,4 +1,3 @@
-import csurf from "csurf";
 import express from "express";
 import multer from "multer";
 import { UserModel, WorkModel } from "../../models/database";
@@ -22,10 +21,6 @@ import { workRouter } from "./work";
 const accountRouter = express.Router();
 
 accountRouter.use(ensureAuthenticated);
-
-if (process.env.NODE_ENV !== "test") {
-  accountRouter.use(csurf({ cookie: true }));
-}
 
 accountRouter.get(
   "/",
