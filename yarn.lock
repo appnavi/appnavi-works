@@ -4122,7 +4122,7 @@ mongodb@4.1.1, mongodb@^4.0.1:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongodb@4.9.1:
+mongodb@4.9.1, mongodb@^4.9.1:
   version "4.9.1"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-4.9.1.tgz#0c769448228bcf9a6aa7d16daa3625b48312479e"
   integrity sha512-ZhgI/qBf84fD7sI4waZBoLBNJYPQN5IOC++SBCiPiyhzpNKOxN/fi0tBHvH2dEC42HXtNEbFB0zmNz4+oVtorQ==
