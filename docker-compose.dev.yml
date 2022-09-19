@@ -32,7 +32,7 @@ services:
       - JWT_SECRET
       - COOKIE_SECRET
   mongo:
-    image: "mongo:5.0.6"
+    image: "mongo:5.0.12"
     expose:
       - "27017"
     volumes:
