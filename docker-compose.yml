@@ -31,7 +31,7 @@ services:
       - COOKIE_SECRET
 
   mongo:
-    image: "mongo:5.0.12"
+    image: "mongo:6.0.2"
     restart: always
     expose:
       - "27017"

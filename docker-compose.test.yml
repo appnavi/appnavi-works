@@ -28,7 +28,7 @@ services:
       - ./test:/app/test
       - ./src:/app/src
   mongo:
-    image: "mongo:5.0.12"
+    image: "mongo:6.0.2"
     expose:
       - "27017"
     volumes:
