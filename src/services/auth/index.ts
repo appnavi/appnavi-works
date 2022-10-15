@@ -4,21 +4,8 @@ import { UserDocument, UserModel } from "../../models/database";
 import { system } from "../../modules/logger";
 import { STATUS_CODE_UNAUTHORIZED } from "../../utils/constants";
 import { getEnv } from "../../utils/helpers";
-import { isObject, isError } from "../../utils/types";
-interface RedirectData {
-  url: string;
-}
-function isRedirectData(x: unknown): x is RedirectData {
-  if (!isObject(x)) return false;
-  if (typeof x["url"] !== "string") return false;
-  return true;
-}
-declare module "express-session" {
-  interface SessionData {
-    redirect: RedirectData;
-    redirectToken: string;
-  }
-}
+import { isError, isRedirectData } from "../../utils/types";
+
 function isValidRedirectUrl(redirectUrl: string): boolean {
   if (!redirectUrl.startsWith("/")) {
     return false;

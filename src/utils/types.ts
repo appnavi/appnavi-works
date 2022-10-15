@@ -20,3 +20,17 @@ export function isUser(x: unknown): x is Express.User {
     return false;
   return true;
 }
+export interface RedirectData {
+  url: string;
+}
+export function isRedirectData(x: unknown): x is RedirectData {
+  if (!isObject(x)) return false;
+  if (typeof x["url"] !== "string") return false;
+  return true;
+}
+declare module "express-session" {
+  interface SessionData {
+    redirect: RedirectData;
+    redirectToken: string;
+  }
+}
