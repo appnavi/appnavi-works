@@ -4,6 +4,7 @@ import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import createError from "http-errors";
+import { getCsrfTokenFromSession } from "../services/csrf";
 import { DIRECTORY_NAME_VIEWS, STATUS_CODE_UNAUTHORIZED } from "./constants";
 export const idRegex = /^[0-9a-z-]+$/;
 
@@ -105,8 +106,10 @@ export function render(
   res: express.Response,
   options: Record<string, unknown> = {}
 ): void {
+  const csrfToken = getCsrfTokenFromSession(req);
   res.render(view, {
     user: req.user,
+    csrfToken,
     ...options,
   });
 }

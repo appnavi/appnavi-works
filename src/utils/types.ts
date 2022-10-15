@@ -32,5 +32,6 @@ declare module "express-session" {
   interface SessionData {
     redirect: RedirectData;
     redirectToken: string;
+    csrfTokens: string | undefined;
   }
 }

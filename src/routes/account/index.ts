@@ -7,6 +7,7 @@ import {
   getDefaultCreatorId,
   getUserIdOrThrow,
 } from "../../services/auth";
+import { csrf } from "../../services/csrf";
 import { creatorIdSchema } from "../../services/works";
 import {
   URL_PREFIX_WORK,
@@ -21,6 +22,10 @@ import { workRouter } from "./work";
 const accountRouter = express.Router();
 
 accountRouter.use(ensureAuthenticated);
+
+if (process.env.NODE_ENV !== "test") {
+  accountRouter.use(csrf);
+}
 
 accountRouter.get(
   "/",
