@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import { UserDocument, UserModel } from "../../models/database";
 import { system } from "../../modules/logger";
 import { STATUS_CODE_UNAUTHORIZED } from "../../utils/constants";
-import { getEnv, isObject, isError } from "../../utils/helpers";
+import { getEnv } from "../../utils/helpers";
+import { isObject, isError } from "../../utils/types";
 interface RedirectData {
   url: string;
 }

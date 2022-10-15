@@ -18,9 +18,9 @@ import { verifyPassword } from "../services/auth/password";
 import {
   getEnv,
   getSiteURLWithoutTrailingSlash,
-  isUser,
   randomStringCharacters,
 } from "../utils/helpers";
+import { isUser } from "../utils/types";
 export const guestUserIdRegex = new RegExp(
   `^guest-[${randomStringCharacters}]+$`
 );
