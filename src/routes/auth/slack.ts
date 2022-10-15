@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import { afterSlackLogin, logLastLogin, redirect } from "../../services/auth";
+import { afterSlackLogin, logLastLogin } from "../../services/auth";
 import { wrap } from "../../utils/helpers";
 
 /*
@@ -20,8 +20,8 @@ slackRouter.get(
   }),
   afterSlackLogin,
   wrap(logLastLogin),
-  (req, res) => {
-    redirect(req, res);
+  (_req, res) => {
+    res.redirect("/");
   }
 );
 export { slackRouter };
