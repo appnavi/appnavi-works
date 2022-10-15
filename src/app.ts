@@ -67,7 +67,7 @@ app.use(
       sameSite: "lax",
     },
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
   }),
   passport.initialize(),
   passport.session()
