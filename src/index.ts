@@ -19,7 +19,7 @@ prepareDatabase()
   .then(() => preparePassport())
   .then(() => {
     const port = getEnvNumber("PORT");
-    app.listen(port, () => {
+    app.listen(port, '::0', () => {
       logger.system.info(`Listening on port ${port}`);
     });
   })
