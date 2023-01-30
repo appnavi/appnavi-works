@@ -51,8 +51,8 @@ networks:
   db:
     driver: bridge
   https-portal:
-    external:
-      name: https-portal
+    name: https-portal
+    external: true
 
 secrets:
   DATABASE_URL:
