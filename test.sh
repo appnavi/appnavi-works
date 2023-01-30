@@ -5,4 +5,4 @@ if [ ! -d "./secrets/test/" ]; then
   exit 1
 fi
 
-docker-compose -f docker-compose.test.yml -p appnavi-works-test $@
+docker compose -f docker-compose.test.yml -p appnavi-works-test $@
