@@ -14,9 +14,6 @@ const secretKeys = [
   "SLACK_CLIENT_ID",
   "SLACK_CLIENT_SECRET",
   "SLACK_WORKSPACE_ID",
-  "COOKIE_NAME",
-  "COOKIE_KEYS",
-  "JWT_SECRET",
   "COOKIE_SECRET",
 ] as const;
 

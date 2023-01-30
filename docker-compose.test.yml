@@ -17,9 +17,6 @@ services:
       - SLACK_CLIENT_ID
       - SLACK_CLIENT_SECRET
       - SLACK_WORKSPACE_ID
-      - COOKIE_NAME
-      - COOKIE_KEYS
-      - JWT_SECRET
       - COOKIE_SECRET
       - MONGO_ROOT_USERNAME
       - MONGO_ROOT_PASSWORD
@@ -63,12 +60,6 @@ secrets:
     file: ./secrets/test/slack_client_secret.txt
   SLACK_WORKSPACE_ID:
     file: ./secrets/test/slack_workspace_id.txt
-  COOKIE_NAME:
-    file: ./secrets/test/cookie_name.txt
-  COOKIE_KEYS:
-    file: ./secrets/test/cookie_keys.txt
-  JWT_SECRET:
-    file: ./secrets/test/jwt_secret.txt
   COOKIE_SECRET:
     file: ./secrets/test/cookie_secret.txt
   MONGO_ROOT_USERNAME:
