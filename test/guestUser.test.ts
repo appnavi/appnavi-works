@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../src/app";
-import { preparePassport, yupSchemaLocal } from "../src/config/passport";
+import { preparePassport, localLoginInputSchema } from "../src/config/passport";
 import {
   STATUS_CODE_BAD_REQUEST,
   ERROR_MESSAGE_GUEST_ID_REQUIRED as GUEST_ID_REQUIRED,
@@ -56,7 +56,7 @@ async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
         resolve(getIdAndPassFromCreateGuestHtml(res.text));
       });
   }).then(async ({ guestId, password }) => {
-    await yupSchemaLocal.validate({
+    await localLoginInputSchema.validate({
       userId: guestId,
       password,
     });

@@ -25,7 +25,7 @@ export const guestUserIdRegex = new RegExp(
   `^guest-[${randomStringCharacters}]+$`
 );
 const guestUserPasswordRegex = new RegExp(`^[${randomStringCharacters}]+$`);
-export const yupSchemaLocal = yup.object({
+export const localLoginInputSchema = yup.object({
   userId: yup.string().required().matches(guestUserIdRegex),
   password: yup.string().required().matches(guestUserPasswordRegex),
 });
@@ -42,7 +42,7 @@ const localStrategy = new LocalStrategy(
       options: LocalIVerifyOptions | undefined
     ) => void
   ) => {
-    yupSchemaLocal
+    localLoginInputSchema
       .validate({
         userId,
         password,
