@@ -1,4 +1,4 @@
-import crpyto from "crypto";
+import crypto from "crypto";
 import type { Request, Response, NextFunction } from "express";
 import * as logger from "../../modules/logger";
 import { CsrfError } from "../../utils/errors";
@@ -12,7 +12,7 @@ export function getCsrfTokenFromSession(req: Request): string | undefined {
 }
 export async function generateCsrfToken(): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    crpyto.randomBytes(48, (err, buffer) => {
+    crypto.randomBytes(48, (err, buffer) => {
       if (err !== null) {
         reject(err);
       } else {
