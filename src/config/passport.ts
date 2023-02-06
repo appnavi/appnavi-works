@@ -34,13 +34,9 @@ const localStrategy = new LocalStrategy(
     usernameField: "userId",
   },
   (
-    userId: string,
-    password: string,
-    done: (
-      error: unknown,
-      user: unknown | undefined,
-      options: LocalIVerifyOptions | undefined
-    ) => void
+    userId,
+    password,
+    done
   ) => {
     localLoginInputSchema
       .validate({
