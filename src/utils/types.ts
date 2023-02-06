@@ -23,6 +23,7 @@ export function isUser(x: unknown): x is Express.User {
 
 declare module "express-session" {
   interface SessionData {
-    csrfTokens: string | undefined;
+    csrfToken: string | undefined;
+    csrfTokenWithHash: string | undefined;
   }
 }

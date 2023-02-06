@@ -15,6 +15,7 @@ const secretKeys = [
   "SLACK_CLIENT_SECRET",
   "SLACK_WORKSPACE_ID",
   "COOKIE_SECRET",
+  "CSRF_TOKEN_SECRET"
 ] as const;
 
 type SecretKey = typeof secretKeys[number];
@@ -103,10 +104,9 @@ export function render(
   res: express.Response,
   options: Record<string, unknown> = {}
 ): void {
-  const csrfToken = getCsrfTokenFromSession(req);
   res.render(view, {
     user: req.user,
-    csrfToken,
+    csrfToken: req.session.csrfToken,
     ...options,
   });
 }

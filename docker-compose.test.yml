@@ -18,6 +18,7 @@ services:
       - SLACK_CLIENT_SECRET
       - SLACK_WORKSPACE_ID
       - COOKIE_SECRET
+      - CSRF_TOKEN_SECRET
       - MONGO_ROOT_USERNAME
       - MONGO_ROOT_PASSWORD
     command: "yarn run test"
@@ -62,6 +63,8 @@ secrets:
     file: ./secrets/test/slack_workspace_id.txt
   COOKIE_SECRET:
     file: ./secrets/test/cookie_secret.txt
+  CSRF_TOKEN_SECRET:
+    file: ./secrets/test/csrf_token_secret.txt
   MONGO_ROOT_USERNAME:
     file: ./secrets/test/mongo_root_username.txt
   MONGO_ROOT_PASSWORD:

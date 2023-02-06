@@ -26,7 +26,7 @@ services:
       - SLACK_CLIENT_SECRET
       - SLACK_WORKSPACE_ID
       - COOKIE_SECRET
-
+      - CSRF_TOKEN_SECRET
   mongo:
     image: "mongo:6.0.2"
     restart: always
@@ -67,6 +67,8 @@ secrets:
     file: ./secrets/production/slack_workspace_id.txt
   COOKIE_SECRET:
     file: ./secrets/production/cookie_secret.txt
+  CSRF_TOKEN_SECRET:
+    file: ./secrets/production/csrf_token_secret.txt
   MONGO_ROOT_USERNAME:
     file: ./secrets/production/mongo_root_username.txt
   MONGO_ROOT_PASSWORD:
