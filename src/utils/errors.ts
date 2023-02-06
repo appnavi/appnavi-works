@@ -2,9 +2,7 @@ import { STATUS_CODE_BAD_REQUEST } from "./constants";
 
 export class CsrfError extends Error {
   status: number;
-  constructor(
-    logMessage: string
-  ) {
+  constructor(logMessage: string) {
     super(logMessage);
     this.status = 403;
     this.name = new.target.name;

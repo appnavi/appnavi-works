@@ -4,7 +4,6 @@ import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import createError from "http-errors";
-import { getCsrfTokenFromSession } from "../services/csrf";
 import { DIRECTORY_NAME_VIEWS, STATUS_CODE_UNAUTHORIZED } from "./constants";
 export const idRegex = /^[0-9a-z-]+$/;
 
@@ -15,7 +14,7 @@ const secretKeys = [
   "SLACK_CLIENT_SECRET",
   "SLACK_WORKSPACE_ID",
   "COOKIE_SECRET",
-  "CSRF_TOKEN_SECRET"
+  "CSRF_TOKEN_SECRET",
 ] as const;
 
 type SecretKey = typeof secretKeys[number];

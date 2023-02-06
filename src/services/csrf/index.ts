@@ -25,23 +25,22 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 /** Web compatible method to create a hash, using SHA256 */
 export async function createHash(message: string) {
-  const data = new TextEncoder().encode(message)
-  const hash = await crypto.subtle.digest("SHA-256", data)
+  const data = new TextEncoder().encode(message);
+  const hash = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hash))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("")
-    .toString()
+    .toString();
 }
 
 /** Web compatible method to create a random string of a given length */
 export function randomString(size: number) {
-  const i2hex = (i: number) => ("0" + i.toString(16)).slice(-2)
-  const r = (a: string, i: number): string => a + i2hex(i)
-  const bytes = crypto.getRandomValues(new Uint8Array(size))
-  return Array.from(bytes).reduce(r, "")
+  const i2hex = (i: number) => ("0" + i.toString(16)).slice(-2);
+  const r = (a: string, i: number): string => a + i2hex(i);
+  const bytes = crypto.getRandomValues(new Uint8Array(size));
+  return Array.from(bytes).reduce(r, "");
 }
 // ---------------------------------------------------------------------
-
 
 function getCsrfTokenFromRequest(req: Request): string | undefined {
   return req.body?.["_csrf"] ?? req.headers["csrf-token"];
@@ -50,44 +49,53 @@ export function getCsrfTokenFromSession(req: Request): string | undefined {
   return req.session.csrfTokenWithHash;
 }
 
-export function csrf(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export function csrf(req: Request, res: Response, next: NextFunction) {
   return wrap(async (req, _res, next) => {
     logger.system.info("csrf", req.originalUrl);
     if (req.method === "GET") {
-      if (req.session.csrfToken === undefined || req.session.csrfTokenWithHash === undefined) {
+      if (
+        req.session.csrfToken === undefined ||
+        req.session.csrfTokenWithHash === undefined
+      ) {
         const csrfToken = randomString(32);
-        const csrfTokenHash = await createHash(`${csrfToken}${getEnv("CSRF_TOKEN_SECRET")}`)
+        const csrfTokenHash = await createHash(
+          `${csrfToken}${getEnv("CSRF_TOKEN_SECRET")}`
+        );
         req.session.csrfToken = csrfToken;
         req.session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
       }
     } else if (req.method === "POST") {
       const csrfTokenFromSession = getCsrfTokenFromSession(req);
       if (csrfTokenFromSession === undefined) {
-        next(new CsrfError("セッションからcsrfトークンを取得できませんでした。"))
+        next(
+          new CsrfError("セッションからcsrfトークンを取得できませんでした。")
+        );
         return;
       }
       const [csrfToken, csrfTokenHash] = csrfTokenFromSession.split("|");
-      const expectedCsrfTokenHash = await createHash(`${csrfToken}${getEnv("CSRF_TOKEN_SECRET")}`);
+      const expectedCsrfTokenHash = await createHash(
+        `${csrfToken}${getEnv("CSRF_TOKEN_SECRET")}`
+      );
       if (csrfTokenHash !== expectedCsrfTokenHash) {
-        next(new CsrfError("csrfトークンが改ざんされた可能性があります。"))
+        next(new CsrfError("csrfトークンが改ざんされた可能性があります。"));
         return;
       }
       const incomingCsrfToken = getCsrfTokenFromRequest(req);
       if (incomingCsrfToken === undefined) {
-        next(new CsrfError("リクエストからcsrfトークンを取得できませんでした。"))
+        next(
+          new CsrfError("リクエストからcsrfトークンを取得できませんでした。")
+        );
         return;
       }
       if (csrfToken !== incomingCsrfToken) {
-        next(new CsrfError("csrfトークンが異なります。"))
-        console.log(csrfToken, incomingCsrfToken)
+        next(new CsrfError("csrfトークンが異なります。"));
+        console.log(csrfToken, incomingCsrfToken);
         return;
       }
     } else {
-      next(new CsrfError(`csrfはメソッド ${req.method} をサポートしていません。`));
+      next(
+        new CsrfError(`csrfはメソッド ${req.method} をサポートしていません。`)
+      );
       return;
     }
     next();
