@@ -17,7 +17,7 @@ const secretKeys = [
   "CSRF_TOKEN_SECRET",
 ] as const;
 
-type SecretKey = typeof secretKeys[number];
+type SecretKey = (typeof secretKeys)[number];
 
 type EnvKey = SecretKey | "SITE_URL" | "WORK_STORAGE_SIZE_BYTES" | "PORT";
 
