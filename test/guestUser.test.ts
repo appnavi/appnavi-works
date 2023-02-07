@@ -195,7 +195,7 @@ describe("ゲストユーザー", () => {
           .end(done);
       });
     });
-    it("ゲストユーザーではないユーザーを削除できない。", (done) => {
+    it("作品が存在するゲストユーザーを削除できない。", (done) => {
       testSuccessfulGuestUserCreation(false).then(({ guestId }) => {
         WorkModel.create({
           owner: guestId,
