@@ -35,7 +35,7 @@ import {
   ERROR_MESSAGE_RENAME_TO_SAME,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
 } from "../src/utils/constants";
-import { getEnvNumber } from "../src/utils/helpers";
+import { env } from "../src/utils/env";
 
 const creatorId = "creator-2";
 const workId = "work-2";
@@ -294,7 +294,7 @@ describe("作品のアップロードを伴うテスト", () => {
           creatorId: "large-work-creator",
           workId: "large-work",
           owner: theirId,
-          fileSize: getEnvNumber("WORK_STORAGE_SIZE_BYTES"),
+          fileSize: env.WORK_STORAGE_SIZE_BYTES,
         }).then(() => {
           request(app)
             .post("/upload/unity")

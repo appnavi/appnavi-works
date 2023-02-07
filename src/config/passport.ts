@@ -14,11 +14,8 @@ import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
 import { findUserOrThrow } from "../services/auth";
 import { verifyPassword } from "../services/auth/password";
-import {
-  getEnv,
-  getSiteURLWithoutTrailingSlash,
-  randomStringCharacters,
-} from "../utils/helpers";
+import { env, getSiteURLWithoutTrailingSlash, } from "../utils/env"
+import { randomStringCharacters, } from "../utils/helpers";
 import { isUser } from "../utils/types";
 export const guestUserIdRegex = new RegExp(
   `^guest-[${randomStringCharacters}]+$`
@@ -83,8 +80,8 @@ const localStrategy = new LocalStrategy(
 async function createSlackStrategy(): Promise<Strategy> {
   const issuer = await Issuer.discover("https://slack.com");
   const client = new issuer.Client({
-    client_id: getEnv("SLACK_CLIENT_ID"),
-    client_secret: getEnv("SLACK_CLIENT_SECRET"),
+    client_id: env.SLACK_CLIENT_ID,
+    client_secret: env.SLACK_CLIENT_SECRET,
     redirect_uris: [`${getSiteURLWithoutTrailingSlash()}/auth/slack/redirect`],
     response_types: ["code"],
   });
@@ -111,7 +108,7 @@ async function createSlackStrategy(): Promise<Strategy> {
         done(new Error("ログイン失敗"), undefined);
         return;
       }
-      if (workspaceId !== getEnv("SLACK_WORKSPACE_ID")) {
+      if (workspaceId !== env.SLACK_WORKSPACE_ID) {
         logger.system.error(
           `違うワークスペース${workspaceId}の人がログインしようとしました。`,
           user

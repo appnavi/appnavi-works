@@ -23,10 +23,10 @@ import {
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_SERVER_ERROR,
 } from "./utils/constants";
+import { env } from "./utils/env";
 import { BadRequestError } from "./utils/errors";
 import {
   ejsToHtml,
-  getEnv,
   ignoreTypescriptFile,
   render,
 } from "./utils/helpers";
@@ -56,9 +56,9 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(
   session({
-    secret: getEnv("COOKIE_SECRET"),
+    secret: env.COOKIE_SECRET,
     store: MongoStore.create({
-      mongoUrl: getEnv("SESSION_DATABASE_URL"),
+      mongoUrl: env.SESSION_DATABASE_URL,
     }),
     cookie: {
       maxAge: 1000 * 60 * 30,
@@ -76,7 +76,7 @@ if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser(getEnv("COOKIE_SECRET")));
+app.use(cookieParser(env.COOKIE_SECRET));
 app.use(
   logger.connectLogger(logger.access, {
     level: "info",

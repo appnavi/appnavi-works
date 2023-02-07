@@ -31,10 +31,10 @@ import {
   UPLOAD_UNITY_FIELDS,
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER as CREATOR_ID_USED_BY_OTHER_USER,
 } from "../utils/constants";
+import { env, getSiteURLWithoutTrailingSlash, } from "../utils/env";
 import { UploadError } from "../utils/errors";
 import {
-  getEnvNumber,
-  getSiteURLWithoutTrailingSlash,
+
   render,
   wrap,
 } from "../utils/helpers";
@@ -170,7 +170,7 @@ function ensureStorageSpaceAvailable(
   next: express.NextFunction
 ) {
   return wrap(async (_req, _res, next) => {
-    const workStorageSizeBytes = getEnvNumber("WORK_STORAGE_SIZE_BYTES");
+    const workStorageSizeBytes = env.WORK_STORAGE_SIZE_BYTES;
     const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
     if (workStorageSizeBytes <= currentStorageSizeBytes) {
       next(new UploadError([STORAGE_FULL]));

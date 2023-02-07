@@ -3,7 +3,7 @@ import {
   DIRECTORY_NAME_BACKUPS,
   DIRECTORY_NAME_UPLOADS,
 } from "../src/utils/constants";
-import { getSecret } from "../src/utils/helpers";
+import { getSecret } from "../src/utils/env";
 import fs from "fs-extra";
 import path from "path";
 

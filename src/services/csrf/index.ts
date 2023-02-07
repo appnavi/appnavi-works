@@ -1,8 +1,9 @@
 import crypto from "crypto";
 import type { Request, Response, NextFunction } from "express";
 import * as logger from "../../modules/logger";
+import { env } from "../../utils/env";
 import { CsrfError } from "../../utils/errors";
-import { getEnv, wrap } from "../../utils/helpers";
+import { wrap } from "../../utils/helpers";
 
 // ---------------------------------------------------------------------
 // Ported from https://github.com/nextauthjs/next-auth/blob/1db27fcd07ca6d512682afe70233d2cb2d80f360/packages/core/src/lib/csrf-token.ts
@@ -59,7 +60,7 @@ export function csrf(req: Request, res: Response, next: NextFunction) {
       ) {
         const csrfToken = randomString(32);
         const csrfTokenHash = await createHash(
-          `${csrfToken}${getEnv("CSRF_TOKEN_SECRET")}`
+          `${csrfToken}${env.CSRF_TOKEN_SECRET}`
         );
         req.session.csrfToken = csrfToken;
         req.session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
@@ -74,7 +75,7 @@ export function csrf(req: Request, res: Response, next: NextFunction) {
       }
       const [csrfToken, csrfTokenHash] = csrfTokenFromSession.split("|");
       const expectedCsrfTokenHash = await createHash(
-        `${csrfToken}${getEnv("CSRF_TOKEN_SECRET")}`
+        `${csrfToken}${env.CSRF_TOKEN_SECRET}`
       );
       if (csrfTokenHash !== expectedCsrfTokenHash) {
         next(new CsrfError("csrfトークンが改ざんされた可能性があります。"));

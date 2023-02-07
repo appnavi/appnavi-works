@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { app } from "./app";
 import { preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
-import { getEnv, getEnvNumber } from "./utils/helpers";
+import { env } from "./utils/env";
 
 async function prepareDatabase(): Promise<void> {
-  await mongoose.connect(getEnv("DATABASE_URL"));
+  await mongoose.connect(env.DATABASE_URL);
   const db = mongoose.connection;
   db.once("open", () => {
     logger.system.info("データベースに接続しました。");
@@ -18,7 +18,7 @@ async function prepareDatabase(): Promise<void> {
 prepareDatabase()
   .then(() => preparePassport())
   .then(() => {
-    const port = getEnvNumber("PORT");
+    const port = env.PORT;
     app.listen(port, "::0", () => {
       logger.system.info(`Listening on port ${port}`);
     });
