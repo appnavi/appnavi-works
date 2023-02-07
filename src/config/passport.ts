@@ -6,16 +6,14 @@ import {
   UserinfoResponse,
 } from "openid-client";
 import passport, { Strategy } from "passport";
-import {
-  Strategy as LocalStrategy,
-} from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local";
 import { z } from "zod";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
 import { findUserOrThrow } from "../services/auth";
 import { verifyPassword } from "../services/auth/password";
-import { env, getSiteURLWithoutTrailingSlash, } from "../utils/env"
-import { randomStringCharacters, } from "../utils/helpers";
+import { env, getSiteURLWithoutTrailingSlash } from "../utils/env";
+import { randomStringCharacters } from "../utils/helpers";
 import { isUser } from "../utils/types";
 export const guestUserIdRegex = new RegExp(
   `^guest-[${randomStringCharacters}]+$`
@@ -25,11 +23,9 @@ export const localLoginInputSchema = z.object({
   userId: z.string().regex(guestUserIdRegex),
   password: z.string().regex(guestUserPasswordRegex),
 });
-async function loginLocal(
-  input: { userId: string; password: string }
-) {
-  const { userId, password } = await localLoginInputSchema.parseAsync(input)
-  const users = await UserModel.find({ userId })
+async function loginLocal(input: { userId: string; password: string }) {
+  const { userId, password } = await localLoginInputSchema.parseAsync(input);
+  const users = await UserModel.find({ userId });
   if (users.length == 0) {
     throw new Error("存在しないユーザーです。");
   }
@@ -41,10 +37,7 @@ async function loginLocal(
     throw new Error("パスワードではログインできません。");
   }
   const hashedPassword = guest.hashedPassword;
-  const isPasswordCorrect = await verifyPassword(
-    password,
-    hashedPassword
-  );
+  const isPasswordCorrect = await verifyPassword(password, hashedPassword);
   if (!isPasswordCorrect) {
     throw new Error("パスワードが異なります。");
   }
@@ -52,29 +45,27 @@ async function loginLocal(
     id: userId,
     name: "ゲストユーザー",
     type: "Guest",
-  }
-  return resultUser
+  };
+  return resultUser;
 }
 const localStrategy = new LocalStrategy(
   {
     usernameField: "userId",
   },
-  (
-    userId,
-    password,
-    done
-  ) => {
-    loginLocal({ userId, password }).then(user => {
-      done(undefined, user, undefined);
-    }).catch((e) => {
-      const err = e as { message: string; errors?: string[] };
-      const errors = err.errors ?? [err.message];
-      logger.system.error("ログインに失敗しました。", {
-        errors,
-        userId,
+  (userId, password, done) => {
+    loginLocal({ userId, password })
+      .then((user) => {
+        done(undefined, user, undefined);
+      })
+      .catch((e) => {
+        const err = e as { message: string; errors?: string[] };
+        const errors = err.errors ?? [err.message];
+        logger.system.error("ログインに失敗しました。", {
+          errors,
+          userId,
+        });
+        done(undefined, false, { message: "ログインに失敗しました。" });
       });
-      done(undefined, false, { message: "ログインに失敗しました。" });
-    });
   }
 );
 async function createSlackStrategy(): Promise<Strategy> {

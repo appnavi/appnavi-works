@@ -20,7 +20,7 @@ const backupRouter = express.Router();
 
 const backupNameSchema = z
   .string({ required_error: ERROR_MESSAGE_BACKUP_NAME_REQUIRED })
-  .regex(/^\d+$/, ERROR_MESSAGE_BACKUP_NAME_INVALID)
+  .regex(/^\d+$/, ERROR_MESSAGE_BACKUP_NAME_INVALID);
 
 const backupSchema = z.object({
   creatorId: creatorIdSchema,
@@ -34,7 +34,7 @@ backupRouter.post(
     const parsed = backupSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(STATUS_CODE_BAD_REQUEST).send({
-        errors: parsed.error.errors.map(x => x.message),
+        errors: parsed.error.errors.map((x) => x.message),
       });
       return;
     }
@@ -50,7 +50,7 @@ backupRouter.post(
     const parsed = backupSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(STATUS_CODE_BAD_REQUEST).send({
-        errors: parsed.error.errors.map(x => x.message),
+        errors: parsed.error.errors.map((x) => x.message),
       });
       return;
     }

@@ -25,11 +25,7 @@ import {
 } from "./utils/constants";
 import { env } from "./utils/env";
 import { BadRequestError } from "./utils/errors";
-import {
-  ejsToHtml,
-  ignoreTypescriptFile,
-  render,
-} from "./utils/helpers";
+import { ejsToHtml, ignoreTypescriptFile, render } from "./utils/helpers";
 
 const app = express();
 app.use(

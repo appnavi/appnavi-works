@@ -29,7 +29,10 @@ workRouter.post(
     const body = req.body;
     const parsed = renameWorkSchema.safeParse(body);
     if (!parsed.success) {
-      throw new RenameWorkError(parsed.error.errors.map(x => x.message), body);
+      throw new RenameWorkError(
+        parsed.error.errors.map((x) => x.message),
+        body
+      );
     }
     const { creatorId, workId, renamedCreatorId, renamedWorkId } = parsed.data;
     try {
@@ -56,10 +59,13 @@ workRouter.post(
   "/delete",
   multer().none(),
   wrap(async (req, res) => {
-    const body = req.body
+    const body = req.body;
     const parsed = deleteWorkSchema.safeParse(body);
     if (!parsed.success) {
-      throw new DeleteWorkError(parsed.error.errors.map(x => x.message), body);
+      throw new DeleteWorkError(
+        parsed.error.errors.map((x) => x.message),
+        body
+      );
     }
     const { creatorId, workId } = parsed.data;
     try {

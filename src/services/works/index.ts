@@ -23,10 +23,10 @@ import { updateCreatorIds } from "../auth";
 
 export const creatorIdSchema = z
   .string({ required_error: ERROR_MESSAGE_CREATOR_ID_REQUIRED })
-  .regex(idRegex, ERROR_MESSAGE_CREATOR_ID_INVALID)
+  .regex(idRegex, ERROR_MESSAGE_CREATOR_ID_INVALID);
 export const workIdSchema = z
   .string({ required_error: ERROR_MESSAGE_WORK_ID_REQUIRED })
-  .regex(idRegex, ERROR_MESSAGE_WORK_ID_INVALID)
+  .regex(idRegex, ERROR_MESSAGE_WORK_ID_INVALID);
 export const uploadSchema = z.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,

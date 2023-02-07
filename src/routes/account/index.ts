@@ -45,7 +45,9 @@ accountRouter.get(
     });
   })
 );
-const defaultCreatorIdSchema = z.object({ default_creator_id: creatorIdSchema })
+const defaultCreatorIdSchema = z.object({
+  default_creator_id: creatorIdSchema,
+});
 accountRouter.post(
   "/default-creator-id",
   multer().none(),
@@ -53,7 +55,7 @@ accountRouter.post(
     const parsed = defaultCreatorIdSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(STATUS_CODE_BAD_REQUEST).send({
-        errors: parsed.error.errors.map(x => x.message),
+        errors: parsed.error.errors.map((x) => x.message),
       });
       return;
     }

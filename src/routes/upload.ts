@@ -31,13 +31,9 @@ import {
   UPLOAD_UNITY_FIELDS,
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER as CREATOR_ID_USED_BY_OTHER_USER,
 } from "../utils/constants";
-import { env, getSiteURLWithoutTrailingSlash, } from "../utils/env";
+import { env, getSiteURLWithoutTrailingSlash } from "../utils/env";
 import { UploadError } from "../utils/errors";
-import {
-
-  render,
-  wrap,
-} from "../utils/helpers";
+import { render, wrap } from "../utils/helpers";
 
 interface Locals {
   paths: string[];
@@ -157,11 +153,16 @@ function validateParams(
   const parsed = uploadSchema.safeParse({
     creatorId: creatorId,
     workId: workId,
-  })
+  });
   if (parsed.success) {
     next();
   } else {
-    next(new UploadError(parsed.error.errors.map(x => x.message), [creatorId, workId]));
+    next(
+      new UploadError(
+        parsed.error.errors.map((x) => x.message),
+        [creatorId, workId]
+      )
+    );
   }
 }
 function ensureStorageSpaceAvailable(

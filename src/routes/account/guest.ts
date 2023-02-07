@@ -40,7 +40,7 @@ guestRouter.post(
   "/create",
   wrap(async (req, res) => {
     let guestUserId: string | undefined;
-    for (; ;) {
+    for (;;) {
       guestUserId = `guest-${generateRandomString(6)}`;
       const users = await UserModel.find({ userId: guestUserId });
       if (users.length == 0) {
@@ -65,7 +65,7 @@ guestRouter.post(
 const deleteGuestSchema = z.object({
   guestId: z
     .string({ required_error: ERROR_MESSAGE_GUEST_ID_REQUIRED })
-    .regex(guestUserIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID)
+    .regex(guestUserIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID),
 });
 guestRouter.post(
   "/delete",
@@ -76,7 +76,10 @@ guestRouter.post(
     };
     const parsed = deleteGuestSchema.safeParse(params);
     if (!parsed.success) {
-      throw new DeleteGuestUserError(parsed.error.errors.map(x => x.message), params);
+      throw new DeleteGuestUserError(
+        parsed.error.errors.map((x) => x.message),
+        params
+      );
     }
     await deleteGuestUser(getUserIdOrThrow(req), params.guestId);
     res.status(200).end();
