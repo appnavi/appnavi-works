@@ -68,7 +68,7 @@ const localStrategy = new LocalStrategy(
       });
   }
 );
-async function createSlackStrategy(): Promise<Strategy> {
+async function createSlackStrategy() {
   const issuer = await Issuer.discover("https://slack.com");
   const client = new issuer.Client({
     client_id: env.SLACK_CLIENT_ID,
@@ -142,9 +142,7 @@ async function createSlackStrategy(): Promise<Strategy> {
     }
   );
 }
-async function validateUserForDeserialize(
-  user: unknown
-): Promise<Express.User> {
+async function validateUserForDeserialize(user: unknown) {
   if (!isUser(user)) throw new Error("User型として認識できませんでした。");
   const userDocument = await findUserOrThrow(user.id);
   if (user.type == "Slack" && userDocument.guest !== undefined)
@@ -154,7 +152,7 @@ async function validateUserForDeserialize(
   return user;
 }
 
-async function preparePassport(): Promise<void> {
+async function preparePassport() {
   passport.serializeUser(function (user, done) {
     done(null, user);
   });
