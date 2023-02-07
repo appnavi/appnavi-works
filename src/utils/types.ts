@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export function isObject(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x != null;
 }
@@ -9,16 +11,15 @@ export function isError(x: unknown): x is { name: string; message: string } {
     typeof x["message"] === "string"
   );
 }
+const expressUserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  type: z.enum(["Slack", "Guest"]),
+  avatar_url: z.string().optional(),
+});
 
 export function isUser(x: unknown): x is Express.User {
-  if (!isObject(x)) return false;
-  if (typeof x["id"] !== "string") return false;
-  if (typeof x["name"] !== "string") return false;
-  if (typeof x["type"] !== "string") return false;
-  const avatar_url_type = typeof x["avatar_url"];
-  if (avatar_url_type != "string" && avatar_url_type != "undefined")
-    return false;
-  return true;
+  return expressUserSchema.safeParse(x).success;
 }
 
 declare module "express-session" {
