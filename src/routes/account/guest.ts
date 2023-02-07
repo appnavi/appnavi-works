@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import * as yup from "yup";
+import { z } from "zod";
 import { guestUserIdRegex } from "../../config/passport";
 import { UserModel, WorkModel } from "../../models/database";
 import { getUserIdOrThrow } from "../../services/auth";
@@ -40,7 +40,7 @@ guestRouter.post(
   "/create",
   wrap(async (req, res) => {
     let guestUserId: string | undefined;
-    for (;;) {
+    for (; ;) {
       guestUserId = `guest-${generateRandomString(6)}`;
       const users = await UserModel.find({ userId: guestUserId });
       if (users.length == 0) {
@@ -62,11 +62,10 @@ guestRouter.post(
     });
   })
 );
-const deleteGuestSchema = yup.object({
-  guestId: yup
-    .string()
-    .matches(guestUserIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID)
-    .required(ERROR_MESSAGE_GUEST_ID_REQUIRED),
+const deleteGuestSchema = z.object({
+  guestId: z
+    .string({ required_error: ERROR_MESSAGE_GUEST_ID_REQUIRED })
+    .regex(guestUserIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID)
 });
 guestRouter.post(
   "/delete",
@@ -75,13 +74,10 @@ guestRouter.post(
     const params = req.body as {
       guestId: string;
     };
-    try {
-      await deleteGuestSchema.validate(params);
-    } catch (e) {
-      const err = e as { name: string; errors: string[] };
-      throw new DeleteGuestUserError(err.errors, params);
+    const parsed = deleteGuestSchema.safeParse(params);
+    if (!parsed.success) {
+      throw new DeleteGuestUserError(parsed.error.errors.map(x => x.message), params);
     }
-
     await deleteGuestUser(getUserIdOrThrow(req), params.guestId);
     res.status(200).end();
   })

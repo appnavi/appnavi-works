@@ -154,17 +154,15 @@ function validateParams(
   const creatorId = getCreatorIdFromHeader(req);
   const workId = getWorkIdFromHeader(req);
 
-  uploadSchema
-    .validate({
-      creatorId: creatorId,
-      workId: workId,
-    })
-    .then(() => {
-      next();
-    })
-    .catch((err: { name: string; errors: string[] }) => {
-      next(new UploadError(err.errors, [creatorId, workId]));
-    });
+  const parsed = uploadSchema.safeParse({
+    creatorId: creatorId,
+    workId: workId,
+  })
+  if (parsed.success) {
+    next();
+  } else {
+    next(new UploadError(parsed.error.errors.map(x => x.message), [creatorId, workId]));
+  }
 }
 function ensureStorageSpaceAvailable(
   req: express.Request,

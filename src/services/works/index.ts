@@ -1,6 +1,6 @@
 import path from "path";
 import fsExtra from "fs-extra";
-import * as yup from "yup";
+import { z } from "zod";
 import { UserModel, WorkDocument, WorkModel } from "../../models/database";
 import {
   DIRECTORY_NAME_UPLOADS,
@@ -21,15 +21,13 @@ import { BadRequestError, RestoreBackupError } from "../../utils/errors";
 import { idRegex } from "../../utils/helpers";
 import { updateCreatorIds } from "../auth";
 
-export const creatorIdSchema = yup
-  .string()
-  .matches(idRegex, ERROR_MESSAGE_CREATOR_ID_INVALID)
-  .required(ERROR_MESSAGE_CREATOR_ID_REQUIRED);
-export const workIdSchema = yup
-  .string()
-  .matches(idRegex, ERROR_MESSAGE_WORK_ID_INVALID)
-  .required(ERROR_MESSAGE_WORK_ID_REQUIRED);
-export const uploadSchema = yup.object({
+export const creatorIdSchema = z
+  .string({ required_error: ERROR_MESSAGE_CREATOR_ID_REQUIRED })
+  .regex(idRegex, ERROR_MESSAGE_CREATOR_ID_INVALID)
+export const workIdSchema = z
+  .string({ required_error: ERROR_MESSAGE_WORK_ID_REQUIRED })
+  .regex(idRegex, ERROR_MESSAGE_WORK_ID_INVALID)
+export const uploadSchema = z.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
 });

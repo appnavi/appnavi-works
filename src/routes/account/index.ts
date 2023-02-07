@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import { z } from "zod";
 import { UserModel, WorkModel } from "../../models/database";
 import {
   ensureAuthenticated,
@@ -44,19 +45,15 @@ accountRouter.get(
     });
   })
 );
+const defaultCreatorIdSchema = z.object({ default_creator_id: creatorIdSchema })
 accountRouter.post(
   "/default-creator-id",
   multer().none(),
   wrap(async (req, res) => {
-    const defaultCreatorId = (req.body as Record<string, unknown>)[
-      "default_creator_id"
-    ] as string;
-    try {
-      await creatorIdSchema.validate(defaultCreatorId);
-    } catch (e) {
-      const err = e as { name: string; errors: string[] };
+    const parsed = defaultCreatorIdSchema.safeParse(req.body);
+    if (!parsed.success) {
       res.status(STATUS_CODE_BAD_REQUEST).send({
-        errors: err.errors,
+        errors: parsed.error.errors.map(x => x.message),
       });
       return;
     }
@@ -66,7 +63,7 @@ accountRouter.post(
       },
       {
         $set: {
-          defaultCreatorId: defaultCreatorId,
+          defaultCreatorId: parsed.data.default_creator_id,
         },
       },
       { upsert: true }

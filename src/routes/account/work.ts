@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import * as yup from "yup";
+import { z } from "zod";
 import { getUserIdOrThrow } from "../../services/auth";
 import {
   creatorIdSchema,
@@ -16,7 +16,7 @@ import {
 } from "../../utils/errors";
 import { wrap } from "../../utils/helpers";
 const workRouter = express.Router();
-const renameWorkSchema = yup.object({
+const renameWorkSchema = z.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
   renamedCreatorId: creatorIdSchema,
@@ -26,19 +26,12 @@ workRouter.post(
   "/rename",
   multer().none(),
   wrap(async (req, res) => {
-    const params = req.body as {
-      creatorId: string;
-      workId: string;
-      renamedCreatorId: string;
-      renamedWorkId: string;
-    };
-    try {
-      await renameWorkSchema.validate(params);
-    } catch (e) {
-      const err = e as { name: string; errors: string[] };
-      throw new RenameWorkError(err.errors, params);
+    const body = req.body;
+    const parsed = renameWorkSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new RenameWorkError(parsed.error.errors.map(x => x.message), body);
     }
-    const { creatorId, workId, renamedCreatorId, renamedWorkId } = params;
+    const { creatorId, workId, renamedCreatorId, renamedWorkId } = parsed.data;
     try {
       await renameWork(
         creatorId,
@@ -49,13 +42,13 @@ workRouter.post(
       );
     } catch (err) {
       if (err instanceof BadRequestError) {
-        throw new RenameWorkError([err.message], params);
+        throw new RenameWorkError([err.message], body);
       }
     }
     res.status(STATUS_CODE_SUCCESS).end();
   })
 );
-const deleteWorkSchema = yup.object({
+const deleteWorkSchema = z.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
 });
@@ -63,22 +56,17 @@ workRouter.post(
   "/delete",
   multer().none(),
   wrap(async (req, res) => {
-    const params = req.body as {
-      creatorId: string;
-      workId: string;
-    };
-    try {
-      await deleteWorkSchema.validate(params);
-    } catch (e) {
-      const err = e as { name: string; errors: string[] };
-      throw new DeleteWorkError(err.errors, params);
+    const body = req.body
+    const parsed = deleteWorkSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new DeleteWorkError(parsed.error.errors.map(x => x.message), body);
     }
-    const { creatorId, workId } = params;
+    const { creatorId, workId } = parsed.data;
     try {
       await deleteWork(creatorId, workId, getUserIdOrThrow(req));
     } catch (err) {
       if (err instanceof BadRequestError) {
-        throw new DeleteWorkError([err.message], params);
+        throw new DeleteWorkError([err.message], body);
       }
     }
     res.status(STATUS_CODE_SUCCESS).end();
