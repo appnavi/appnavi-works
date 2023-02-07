@@ -4,7 +4,7 @@ import { preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
 import { env } from "./utils/env";
 
-async function prepareDatabase(): Promise<void> {
+async function prepareDatabase() {
   await mongoose.connect(env.DATABASE_URL);
   const db = mongoose.connection;
   db.once("open", () => {

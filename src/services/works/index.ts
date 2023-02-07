@@ -35,7 +35,7 @@ async function findOwnWorkOrThrow(
   creatorId: string,
   workId: string,
   userId: string
-): Promise<WorkDocument> {
+) {
   const works = await WorkModel.find({
     creatorId,
     workId,
@@ -59,7 +59,7 @@ export async function findOrCreateWork(
   creatorId: string,
   workId: string,
   userId: string
-): Promise<WorkDocument> {
+) {
   const works = await WorkModel.find({
     creatorId,
     workId,
@@ -83,7 +83,7 @@ export async function findOrCreateWork(
 export async function isCreatorIdUsedByOtherUser(
   creatorId: string,
   userId: string
-): Promise<boolean> {
+) {
   const users = await UserModel.find();
   for (const user of users) {
     if (user.userId === userId) continue;
@@ -92,10 +92,7 @@ export async function isCreatorIdUsedByOtherUser(
   return false;
 }
 
-export async function listBackupFolderNames(
-  creatorId: string,
-  workId: string
-): Promise<string[]> {
+export async function listBackupFolderNames(creatorId: string, workId: string) {
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
   const backupExists = await fsExtra.pathExists(backupFolderPath);
@@ -110,10 +107,7 @@ export async function listBackupFolderNames(
     .map((it) => it.name);
 }
 
-export async function getLatestBackupIndex(
-  creatorId: string,
-  workId: string
-): Promise<number> {
+export async function getLatestBackupIndex(creatorId: string, workId: string) {
   const backupFolderNames = await listBackupFolderNames(creatorId, workId);
   if (backupFolderNames.length == 0) {
     return 0;
@@ -128,7 +122,7 @@ export async function backupWork(
   creatorId: string,
   workId: string,
   work: WorkDocument
-): Promise<void> {
+) {
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const workPath = path.resolve(workDir);
   const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
@@ -148,7 +142,7 @@ export async function restoreBackup(
   workId: string,
   userId: string,
   backupName: string
-): Promise<void> {
+) {
   const work = await findOwnWorkOrThrow(creatorId, workId, userId);
   await backupWork(creatorId, workId, work);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
@@ -178,7 +172,7 @@ export async function deleteBackup(
   workId: string,
   userId: string,
   backupName: string
-): Promise<void> {
+) {
   const work = await findOwnWorkOrThrow(creatorId, workId, userId);
   const backupToDeletePath = path.resolve(
     DIRECTORY_NAME_BACKUPS,
@@ -204,7 +198,7 @@ export async function renameWork(
   userId: string,
   renamedCreatorId: string,
   renamedWorkId: string
-): Promise<void> {
+) {
   if (creatorId === renamedCreatorId && workId === renamedWorkId) {
     throw new BadRequestError(ERROR_MESSAGE_RENAME_TO_SAME);
   }
@@ -249,7 +243,7 @@ export async function deleteWork(
   creatorId: string,
   workId: string,
   userId: string
-): Promise<void> {
+) {
   const work = await findOwnWorkOrThrow(creatorId, workId, userId);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
   const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
@@ -258,7 +252,7 @@ export async function deleteWork(
   await work.delete();
 }
 
-export async function calculateCurrentStorageSizeBytes(): Promise<number> {
+export async function calculateCurrentStorageSizeBytes() {
   const works = await WorkModel.find();
   return works.reduce((accumulator, currentValue) => {
     const totalBackupFileSizes = currentValue.backups.reduce(
@@ -274,7 +268,7 @@ export function calculateWorkFileSize(
     [fieldname: string]: Express.Multer.File[];
   },
   fields: { name: string }[]
-): number {
+) {
   let fileSize = 0;
   fields.forEach(({ name }) =>
     (files[name] ?? []).forEach((file) => {

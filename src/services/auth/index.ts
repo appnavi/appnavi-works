@@ -51,9 +51,7 @@ export async function findOrCreateUser(userId: string) {
   }
 }
 
-export async function getDefaultCreatorId(
-  req: express.Request
-): Promise<string | undefined> {
+export async function getDefaultCreatorId(req: express.Request) {
   const userDocument = await findOrCreateUser(getUserIdOrThrow(req));
   return userDocument.defaultCreatorId;
 }

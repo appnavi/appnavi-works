@@ -43,10 +43,14 @@ export function randomString(size: number) {
 }
 // ---------------------------------------------------------------------
 
-function getCsrfTokenFromRequest(req: Request): string | undefined {
-  return req.body?.["_csrf"] ?? req.headers["csrf-token"];
+function getCsrfTokenFromRequest(req: Request) {
+  const val = req.body?.["_csrf"] ?? req.headers["csrf-token"];
+  if (typeof val !== "string") {
+    return undefined;
+  }
+  return val;
 }
-export function getCsrfTokenFromSession(req: Request): string | undefined {
+export function getCsrfTokenFromSession(req: Request) {
   return req.session.csrfTokenWithHash;
 }
 
