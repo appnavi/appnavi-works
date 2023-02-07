@@ -42,19 +42,27 @@ interface Locals {
   elapsedMillis: number;
   work: WorkDocument;
 }
-function getCreatorIdFromHeader(req: express.Request): string {
-  return req.headers[HEADER_CREATOR_ID] as string;
+function getCreatorIdFromHeaderOrThrow(req: express.Request) {
+  const x = req.headers[HEADER_CREATOR_ID];
+  if (typeof x !== "string") {
+    throw new Error("リクエストヘッダからの creatorId 取得に失敗しました。");
+  }
+  return x;
 }
-function getWorkIdFromHeader(req: express.Request): string {
-  return req.headers[HEADER_WORK_ID] as string;
+function getWorkIdFromHeaderOrThrow(req: express.Request) {
+  const x = req.headers[HEADER_WORK_ID];
+  if (typeof x !== "string") {
+    throw new Error("リクエストヘッダからの workId 取得に失敗しました。");
+  }
+  return x;
 }
 const unityStorage = multer.diskStorage({
   destination: (req, file, next) => {
     (async () => {
       const parentDir = path.resolve(
         DIRECTORY_NAME_UPLOADS,
-        getCreatorIdFromHeader(req),
-        getWorkIdFromHeader(req),
+        getCreatorIdFromHeaderOrThrow(req),
+        getWorkIdFromHeaderOrThrow(req),
         file.fieldname
       );
       let dir: string;
@@ -147,8 +155,8 @@ function validateParams(
   _res: express.Response,
   next: express.NextFunction
 ) {
-  const creatorId = getCreatorIdFromHeader(req);
-  const workId = getWorkIdFromHeader(req);
+  const creatorId = req.headers[HEADER_CREATOR_ID];
+  const workId = req.headers[HEADER_WORK_ID];
 
   const parsed = uploadSchema.safeParse({
     creatorId: creatorId,
@@ -188,8 +196,8 @@ function getWorkDocument(
   return wrap(async (req, res, next) => {
     const locals = res.locals as Locals;
     locals.work = await findOrCreateWork(
-      getCreatorIdFromHeader(req),
-      getWorkIdFromHeader(req),
+      getCreatorIdFromHeaderOrThrow(req),
+      getWorkIdFromHeaderOrThrow(req),
       getUserIdOrThrow(req)
     );
     next();
@@ -202,7 +210,7 @@ function preventCreatorIdUsedByMultipleUsers(
 ) {
   return wrap(async (req, _res, next) => {
     const userId = getUserIdOrThrow(req);
-    const creatorId = getCreatorIdFromHeader(req);
+    const creatorId = getCreatorIdFromHeaderOrThrow(req);
     const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
       creatorId,
       userId
@@ -221,8 +229,8 @@ function validateDestination(
   next: express.NextFunction
 ) {
   return wrap(async (req, res, next) => {
-    const creatorId = getCreatorIdFromHeader(req);
-    const workId = getWorkIdFromHeader(req);
+    const creatorId = getCreatorIdFromHeaderOrThrow(req);
+    const workId = getWorkIdFromHeaderOrThrow(req);
     const workPath = path.resolve(DIRECTORY_NAME_UPLOADS, creatorId, workId);
     const exists = await fsExtra.pathExists(workPath);
     if (!exists) {
@@ -273,8 +281,8 @@ function setLocals(
   ).map(({ name }) =>
     path.join(
       URL_PREFIX_WORK,
-      getCreatorIdFromHeader(req),
-      getWorkIdFromHeader(req),
+      getCreatorIdFromHeaderOrThrow(req),
+      getWorkIdFromHeaderOrThrow(req),
       name
     )
   );
@@ -295,7 +303,10 @@ function saveToDatabase(
     work.uploadedAt = locals.uploadEndedAt;
     await work.save();
 
-    await updateCreatorIds(getUserIdOrThrow(req), getCreatorIdFromHeader(req));
+    await updateCreatorIds(
+      getUserIdOrThrow(req),
+      getCreatorIdFromHeaderOrThrow(req)
+    );
     next();
   })(req, res, next);
 }
@@ -306,8 +317,8 @@ function logUploadSuccess(
 ) {
   const locals = res.locals as Locals;
   logger.system.info("アップロード成功", {
-    creatorId: getCreatorIdFromHeader(req),
-    workId: getWorkIdFromHeader(req),
+    creatorId: getCreatorIdFromHeaderOrThrow(req),
+    workId: getWorkIdFromHeaderOrThrow(req),
     uploadStartedAt: locals.uploadStartedAt,
     uploadEndedAt: locals.uploadEndedAt,
     elapsedMillis: locals.elapsedMillis,
