@@ -4,15 +4,27 @@ export interface WorkDocument extends Document {
   workId: string;
   owner: string;
   fileSize: number;
-  uploadedAt: Date;
+  uploadedAt?: Date;
   backups: Types.Array<{ name: string; fileSize: number; uploadedAt: Date }>;
 }
 const workSchema = new Schema(
   {
-    creatorId: String,
-    workId: String,
-    owner: String,
-    fileSize: Number,
+    creatorId: {
+      type: String,
+      required: true,
+    },
+    workId: {
+      type: String,
+      required: true,
+    },
+    owner: {
+      type: String,
+      required: true,
+    },
+    fileSize: {
+      type: Number,
+      required: true,
+    },
     uploadedAt: Date,
     backups: [
       {
@@ -30,8 +42,8 @@ export const WorkModel = model<WorkDocument>("Work", workSchema);
 
 export interface UserDocument extends Document {
   userId: string;
-  defaultCreatorId: string;
-  lastLogIn: Date;
+  defaultCreatorId?: string;
+  lastLogIn?: Date;
   creatorIds: Types.Array<string>;
   guest?: {
     hashedPassword: string;
@@ -40,10 +52,22 @@ export interface UserDocument extends Document {
 }
 const userSchema = new Schema(
   {
-    userId: String,
-    defaultCreatorId: String,
-    lastLogIn: Date,
-    creatorIds: [String],
+    userId: {
+      type: String,
+      required: true,
+    },
+    defaultCreatorId: {
+      type: String,
+      required: false,
+    },
+    lastLogIn: {
+      type: Date,
+      required: false,
+    },
+    creatorIds: {
+      type: [String],
+      default: [],
+    },
     guest: {
       type: {
         hashedPassword: String,

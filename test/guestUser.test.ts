@@ -198,7 +198,10 @@ describe("ゲストユーザー", () => {
     it("作品が存在するゲストユーザーを削除できない。", (done) => {
       testSuccessfulGuestUserCreation(false).then(({ guestId }) => {
         WorkModel.create({
+          creatorId: "test",
+          workId: "test",
           owner: guestId,
+          fileSize: 1,
         }).then(() => {
           request(app)
             .post("/account/guest/delete")
