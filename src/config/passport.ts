@@ -8,7 +8,6 @@ import {
 import passport, { Strategy } from "passport";
 import {
   Strategy as LocalStrategy,
-  IVerifyOptions as LocalIVerifyOptions,
 } from "passport-local";
 import * as yup from "yup";
 import { UserModel } from "../models/database";
@@ -29,6 +28,40 @@ export const localLoginInputSchema = yup.object({
   userId: yup.string().required().matches(guestUserIdRegex),
   password: yup.string().required().matches(guestUserPasswordRegex),
 });
+async function loginLocal(
+  requestUserId: string,
+  requestPassword: string
+) {
+  await localLoginInputSchema.validate({
+    userId: requestUserId,
+    password: requestPassword
+  })
+  const users = await UserModel.find({ userId: requestUserId })
+  if (users.length == 0) {
+    throw new Error("存在しないユーザーです。");
+  }
+  if (users.length > 1) {
+    throw new Error("userIdが同じ複数のユーザーが存在します。");
+  }
+  const guest = users[0].guest;
+  if (guest === undefined) {
+    throw new Error("パスワードではログインできません。");
+  }
+  const hashedPassword = guest.hashedPassword;
+  const isPasswordCorrect = await verifyPassword(
+    requestPassword,
+    hashedPassword
+  );
+  if (!isPasswordCorrect) {
+    throw new Error("パスワードが異なります。");
+  }
+  const resultUser: Express.User = {
+    id: requestUserId,
+    name: "ゲストユーザー",
+    type: "Guest",
+  }
+  return resultUser
+}
 const localStrategy = new LocalStrategy(
   {
     usernameField: "userId",
@@ -38,49 +71,17 @@ const localStrategy = new LocalStrategy(
     password,
     done
   ) => {
-    localLoginInputSchema
-      .validate({
+    loginLocal(userId, password).then(user => {
+      done(undefined, user, undefined);
+    }).catch((e) => {
+      const err = e as { message: string; errors?: string[] };
+      const errors = err.errors ?? [err.message];
+      logger.system.error("ログインに失敗しました。", {
+        errors,
         userId,
-        password,
-      })
-      .then(() => UserModel.find({ userId }))
-      .then(async (users) => {
-        if (users.length == 0) {
-          throw new Error("存在しないユーザーです。");
-        }
-        if (users.length > 1) {
-          throw new Error("userIdが同じ複数のユーザーが存在します。");
-        }
-        const guest = users[0].guest;
-        if (guest === undefined) {
-          throw new Error("パスワードではログインできません。");
-        }
-        const hashedPassword = guest.hashedPassword;
-        const isPasswordCorrect = await verifyPassword(
-          password,
-          hashedPassword
-        );
-        if (!isPasswordCorrect) {
-          throw new Error("パスワードが異なります。");
-        }
-      })
-      .then(() => {
-        const user: Express.User = {
-          id: userId,
-          name: "ゲストユーザー",
-          type: "Guest",
-        };
-        done(undefined, user, undefined);
-      })
-      .catch((e) => {
-        const err = e as { message: string; errors?: string[] };
-        const errors = err.errors ?? [err.message];
-        logger.system.error("ログインに失敗しました。", {
-          errors,
-          userId,
-        });
-        done(undefined, false, { message: "ログインに失敗しました。" });
       });
+      done(undefined, false, { message: "ログインに失敗しました。" });
+    });
   }
 );
 async function createSlackStrategy(): Promise<Strategy> {
