@@ -9,7 +9,7 @@ import passport, { Strategy } from "passport";
 import {
   Strategy as LocalStrategy,
 } from "passport-local";
-import * as yup from "yup";
+import { z } from "zod";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
 import { findUserOrThrow } from "../services/auth";
@@ -24,19 +24,15 @@ export const guestUserIdRegex = new RegExp(
   `^guest-[${randomStringCharacters}]+$`
 );
 const guestUserPasswordRegex = new RegExp(`^[${randomStringCharacters}]+$`);
-export const localLoginInputSchema = yup.object({
-  userId: yup.string().required().matches(guestUserIdRegex),
-  password: yup.string().required().matches(guestUserPasswordRegex),
+export const localLoginInputSchema = z.object({
+  userId: z.string().regex(guestUserIdRegex),
+  password: z.string().regex(guestUserPasswordRegex),
 });
 async function loginLocal(
-  requestUserId: string,
-  requestPassword: string
+  input: { userId: string; password: string }
 ) {
-  await localLoginInputSchema.validate({
-    userId: requestUserId,
-    password: requestPassword
-  })
-  const users = await UserModel.find({ userId: requestUserId })
+  const { userId, password } = await localLoginInputSchema.parseAsync(input)
+  const users = await UserModel.find({ userId })
   if (users.length == 0) {
     throw new Error("存在しないユーザーです。");
   }
@@ -49,14 +45,14 @@ async function loginLocal(
   }
   const hashedPassword = guest.hashedPassword;
   const isPasswordCorrect = await verifyPassword(
-    requestPassword,
+    password,
     hashedPassword
   );
   if (!isPasswordCorrect) {
     throw new Error("パスワードが異なります。");
   }
   const resultUser: Express.User = {
-    id: requestUserId,
+    id: userId,
     name: "ゲストユーザー",
     type: "Guest",
   }
@@ -71,7 +67,7 @@ const localStrategy = new LocalStrategy(
     password,
     done
   ) => {
-    loginLocal(userId, password).then(user => {
+    loginLocal({ userId, password }).then(user => {
       done(undefined, user, undefined);
     }).catch((e) => {
       const err = e as { message: string; errors?: string[] };

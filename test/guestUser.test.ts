@@ -55,13 +55,13 @@ async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
         expect(err).toBeNull();
         resolve(getIdAndPassFromCreateGuestHtml(res.text));
       });
-  }).then(async ({ guestId, password }) => {
-    await localLoginInputSchema.validate({
-      userId: guestId,
-      password,
+  }).then(async (result) => {
+    const { userId, password } = await localLoginInputSchema.parse({
+      userId: result.guestId,
+      password: result.password,
     });
     const guests = await UserModel.find({
-      userId: guestId,
+      userId,
       "guest.createdBy": {
         $eq: myId,
       },
@@ -71,7 +71,7 @@ async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
     if (logoutOnEnd) {
       logout();
     }
-    return { guestId, password };
+    return { guestId: userId, password };
   });
 }
 async function testInvalidGuestLogin(
