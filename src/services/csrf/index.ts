@@ -98,6 +98,9 @@ async function csrfOnPOST(req: Request, res: Response, next: NextFunction) {
 export function csrf(req: Request, res: Response, next: NextFunction) {
   return wrap(async (req, _res, next) => {
     logger.system.info("csrf", req.originalUrl);
+    if (req.session === undefined) {
+      next(new CsrfError("セッションを取得できませんでした。"));
+    }
     if (req.method === "GET") {
       await csrfOnGET(req, res, next);
       return;
