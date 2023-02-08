@@ -116,7 +116,7 @@ export const unityUpload = multer({
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
 
-if (process.env.NODE_ENV !== "test") {
+if (env.NODE_ENV !== "test") {
   uploadRouter.use(csrf);
 }
 

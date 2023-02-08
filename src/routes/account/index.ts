@@ -15,6 +15,7 @@ import {
   STATUS_CODE_BAD_REQUEST,
   STATUS_CODE_SUCCESS,
 } from "../../utils/constants";
+import { env } from "../../utils/env";
 import { render, wrap } from "../../utils/helpers";
 import { backupRouter } from "./backup";
 import { guestRouter } from "./guest";
@@ -24,7 +25,7 @@ const accountRouter = express.Router();
 
 accountRouter.use(ensureAuthenticated);
 
-if (process.env.NODE_ENV !== "test") {
+if (env.NODE_ENV !== "test") {
   accountRouter.use(csrf);
 }
 

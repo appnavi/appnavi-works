@@ -8,6 +8,7 @@ const nonSecretEnvKeys = [
   "SITE_URL",
   "WORK_STORAGE_SIZE_BYTES",
   "PORT",
+  "NODE_ENV",
 ] as const;
 const secretEnvKeys = [
   "DATABASE_URL",
@@ -23,6 +24,7 @@ const nonSecretEnvsSchema = z.object({
   SITE_URL: z.string().url(),
   WORK_STORAGE_SIZE_BYTES: z.coerce.number().nonnegative(),
   PORT: z.coerce.number().nonnegative(),
+  NODE_ENV: z.enum(["development", "production", "test"]),
 });
 
 const secretEnvsSchema = z.object({

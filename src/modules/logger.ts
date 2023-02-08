@@ -1,4 +1,5 @@
 import log4js from "log4js";
+import { env } from "../utils/env";
 const maxFileSize = 5 * 1024 * 1024; //5MB
 log4js.configure({
   appenders: {
@@ -21,15 +22,12 @@ log4js.configure({
   categories: {
     default: { appenders: ["console"], level: "all" },
     system: {
-      appenders:
-        process.env.NODE_ENV === "test" ? ["file"] : ["console", "file"],
+      appenders: env.NODE_ENV === "test" ? ["file"] : ["console", "file"],
       level: "all",
     },
     access: {
       appenders:
-        process.env.NODE_ENV === "test"
-          ? ["accessFile"]
-          : ["console", "accessFile"],
+        env.NODE_ENV === "test" ? ["accessFile"] : ["console", "accessFile"],
       level: "all",
     },
   },

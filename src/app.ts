@@ -60,7 +60,7 @@ export function createApp() {
       cookie: {
         maxAge: 1000 * 60 * 30,
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: env.NODE_ENV === "production",
         sameSite: "lax",
       },
       resave: false,
@@ -69,7 +69,7 @@ export function createApp() {
     passport.initialize(),
     passport.session()
   );
-  if (process.env.NODE_ENV === "production") {
+  if (env.NODE_ENV === "production") {
     app.set("trust proxy", 1);
   }
   app.use(express.urlencoded({ extended: false }));
