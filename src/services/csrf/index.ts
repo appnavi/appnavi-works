@@ -54,55 +54,60 @@ export function getCsrfTokenFromSession(req: Request) {
   return req.session.csrfTokenWithHash;
 }
 
+async function csrfOnGET(req: Request, res: Response, next: NextFunction) {
+  if (
+    req.session.csrfToken === undefined ||
+    req.session.csrfTokenWithHash === undefined
+  ) {
+    const csrfToken = randomString(32);
+    const csrfTokenHash = await createHash(
+      `${csrfToken}${env.CSRF_TOKEN_SECRET}`
+    );
+    req.session.csrfToken = csrfToken;
+    req.session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
+  }
+  next();
+}
+async function csrfOnPOST(req: Request, res: Response, next: NextFunction) {
+  const csrfTokenFromSession = getCsrfTokenFromSession(req);
+  if (csrfTokenFromSession === undefined) {
+    next(new CsrfError("セッションからcsrfトークンを取得できませんでした。"));
+    return;
+  }
+  const [csrfToken, csrfTokenHash] = csrfTokenFromSession.split("|");
+  const expectedCsrfTokenHash = await createHash(
+    `${csrfToken}${env.CSRF_TOKEN_SECRET}`
+  );
+  if (csrfTokenHash !== expectedCsrfTokenHash) {
+    next(new CsrfError("csrfトークンが改ざんされた可能性があります。"));
+    return;
+  }
+  const incomingCsrfToken = getCsrfTokenFromRequest(req);
+  if (incomingCsrfToken === undefined) {
+    next(new CsrfError("リクエストからcsrfトークンを取得できませんでした。"));
+    return;
+  }
+  if (csrfToken !== incomingCsrfToken) {
+    next(new CsrfError("csrfトークンが異なります。"));
+    console.log(csrfToken, incomingCsrfToken);
+    return;
+  }
+  next();
+}
+
 export function csrf(req: Request, res: Response, next: NextFunction) {
   return wrap(async (req, _res, next) => {
     logger.system.info("csrf", req.originalUrl);
     if (req.method === "GET") {
-      if (
-        req.session.csrfToken === undefined ||
-        req.session.csrfTokenWithHash === undefined
-      ) {
-        const csrfToken = randomString(32);
-        const csrfTokenHash = await createHash(
-          `${csrfToken}${env.CSRF_TOKEN_SECRET}`
-        );
-        req.session.csrfToken = csrfToken;
-        req.session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
-      }
-    } else if (req.method === "POST") {
-      const csrfTokenFromSession = getCsrfTokenFromSession(req);
-      if (csrfTokenFromSession === undefined) {
-        next(
-          new CsrfError("セッションからcsrfトークンを取得できませんでした。")
-        );
-        return;
-      }
-      const [csrfToken, csrfTokenHash] = csrfTokenFromSession.split("|");
-      const expectedCsrfTokenHash = await createHash(
-        `${csrfToken}${env.CSRF_TOKEN_SECRET}`
-      );
-      if (csrfTokenHash !== expectedCsrfTokenHash) {
-        next(new CsrfError("csrfトークンが改ざんされた可能性があります。"));
-        return;
-      }
-      const incomingCsrfToken = getCsrfTokenFromRequest(req);
-      if (incomingCsrfToken === undefined) {
-        next(
-          new CsrfError("リクエストからcsrfトークンを取得できませんでした。")
-        );
-        return;
-      }
-      if (csrfToken !== incomingCsrfToken) {
-        next(new CsrfError("csrfトークンが異なります。"));
-        console.log(csrfToken, incomingCsrfToken);
-        return;
-      }
-    } else {
-      next(
-        new CsrfError(`csrfはメソッド ${req.method} をサポートしていません。`)
-      );
+      await csrfOnGET(req, res, next);
       return;
     }
-    next();
+    if (req.method === "POST") {
+      await csrfOnPOST(req, res, next);
+      return;
+    }
+    next(
+      new CsrfError(`csrfはメソッド ${req.method} をサポートしていません。`)
+    );
   })(req, res, next);
 }
