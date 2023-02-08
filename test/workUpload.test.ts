@@ -8,7 +8,7 @@ import {
   ensureUploadFoldersExist,
   INVALID_ID,
 } from "./common";
-import { app } from "../src/app";
+import { createApp } from "../src/app";
 import { preparePassport } from "../src/config/passport";
 import { UserDocument, UserModel, WorkModel } from "../src/models/database";
 import { calculateCurrentStorageSizeBytes } from "../src/services/works";
@@ -36,6 +36,7 @@ import {
   ERROR_MESSAGE_RENAME_TO_EXISTING,
 } from "../src/utils/constants";
 import { env } from "../src/utils/env";
+import { Express } from "express";
 
 const creatorId = "creator-2";
 const workId = "work-2";
@@ -147,7 +148,7 @@ function attachUploadFiles(req: Test) {
   });
 }
 
-async function testSuccessfulUpload(): Promise<void> {
+async function testSuccessfulUpload(app: Express): Promise<void> {
   return new Promise((resolve) => {
     const req = request(app)
       .post("/upload/unity")
@@ -160,18 +161,20 @@ async function testSuccessfulUpload(): Promise<void> {
     });
   });
 }
-async function testSuccessfulUploadTwice(): Promise<void> {
+async function testSuccessfulUploadTwice(app: Express): Promise<void> {
   return new Promise<void>((resolve) => {
-    testSuccessfulUpload()
+    testSuccessfulUpload(app)
       .then(() => expectStorageSizeSameToActualSize(0))
-      .then(testSuccessfulUpload)
+      .then(() => testSuccessfulUpload(app))
       .then(() => expectStorageSizeSameToActualSize(1))
       .then(() => expectBackupFilesExists("1"))
       .then(resolve);
   });
 }
 describe("作品のアップロードを伴うテスト", () => {
+  let app: Express;
   beforeAll(async () => {
+    app = await createApp();
     await preparePassport();
     await connectDatabase("2");
     await ensureUploadFoldersExist();
@@ -227,7 +230,7 @@ describe("作品のアップロードを伴うテスト", () => {
           .end(done);
       });
       it("別人が保有している作者IDを使ってアップロードできない", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => {
             logout();
             login(app, theirId);
@@ -306,12 +309,12 @@ describe("作品のアップロードを伴うテスト", () => {
         });
       });
       it("条件を満たしていればアップロードできる", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(done);
       });
       it("条件を満たしたアップロードを2回すると、2回ともアップロードにも成功しバックアップが作成される。", (done) => {
-        testSuccessfulUploadTwice().then(done);
+        testSuccessfulUploadTwice(app).then(done);
       });
     });
     describe("Unity作品のリネーム", () => {
@@ -432,7 +435,7 @@ describe("作品のアップロードを伴うテスト", () => {
           .end(done);
       });
       it("別人の投稿した作品はリネームできない", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(async () => {
             const works = await WorkModel.find({
@@ -458,7 +461,7 @@ describe("作品のアップロードを伴うテスト", () => {
           });
       });
       it("既に存在する作品を上書きするようなリネームはできない", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(() =>
             WorkModel.create({
@@ -484,7 +487,7 @@ describe("作品のアップロードを伴うテスト", () => {
           });
       });
       it("条件を満たしていれば作者IDのリネームに成功する", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(() => {
             request(app)
@@ -499,7 +502,7 @@ describe("作品のアップロードを伴うテスト", () => {
           });
       });
       it("条件を満たしていれば作品IDのリネームに成功する", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(() => {
             request(app)
@@ -514,7 +517,7 @@ describe("作品のアップロードを伴うテスト", () => {
           });
       });
       it("条件を満たしていれば作者IDと作品ID両方のリネームに成功する", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(() => {
             request(app)
@@ -579,7 +582,7 @@ describe("作品のアップロードを伴うテスト", () => {
           .end(done);
       });
       it("別人の投稿した作品は削除できない", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(async () => {
             const works = await WorkModel.find({
@@ -603,7 +606,7 @@ describe("作品のアップロードを伴うテスト", () => {
           });
       });
       it("条件を満たしていれば作品の削除に成功する", (done) => {
-        testSuccessfulUpload()
+        testSuccessfulUpload(app)
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(
             () =>
@@ -625,7 +628,7 @@ describe("作品のアップロードを伴うテスト", () => {
           .then(done);
       });
       it("条件を満たしていれば作品の削除に成功する（バックアップも削除される）", (done) => {
-        testSuccessfulUploadTwice()
+        testSuccessfulUploadTwice(app)
           .then(
             () =>
               new Promise<void>((resolve) => {
@@ -713,7 +716,7 @@ describe("作品のアップロードを伴うテスト", () => {
             .end(done);
         });
         it("条件を満たしているとバックアップを復元できる", (done) => {
-          testSuccessfulUploadTwice()
+          testSuccessfulUploadTwice(app)
             .then(
               () =>
                 new Promise<void>((resolve) => {
@@ -801,7 +804,7 @@ describe("作品のアップロードを伴うテスト", () => {
             .end(done);
         });
         it("条件を満たしているとバックアップを削除できる", (done) => {
-          testSuccessfulUploadTwice()
+          testSuccessfulUploadTwice(app)
             .then(
               () =>
                 new Promise<void>((resolve) => {
@@ -838,7 +841,7 @@ describe("作品のアップロードを伴うテスト", () => {
           });
       });
       it("使用中の作者IDは削除されない", (done) => {
-        testSuccessfulUploadTwice().then(() => {
+        testSuccessfulUploadTwice(app).then(() => {
           request(app)
             .post("/account/cleanup-creator-ids")
             .expect(STATUS_CODE_SUCCESS)

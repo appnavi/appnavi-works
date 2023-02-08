@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "../src/app";
+import { createApp } from "../src/app";
 import { preparePassport } from "../src/config/passport";
 import {
   STATUS_CODE_BAD_REQUEST,
@@ -18,12 +18,15 @@ import {
   INVALID_ID,
 } from "./common";
 import { UserModel } from "../src/models/database";
+import { Express } from "express";
 
 const creatorId = "creator-3";
 const workId = "work-3";
 
 describe("POST", () => {
+  let app: Express;
   beforeAll(async () => {
+    app = await createApp();
     await preparePassport();
     await connectDatabase("3");
     await ensureUploadFoldersExist();

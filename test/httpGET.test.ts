@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "../src/app";
+import { createApp } from "../src/app";
 import { preparePassport } from "../src/config/passport";
 import { login, logout, myId } from "./auth";
 import { connectDatabase, ensureUploadFoldersExist } from "./common";
@@ -8,15 +8,20 @@ import {
   STATUS_CODE_REDIRECT_PERMANENT,
   STATUS_CODE_REDIRECT_TEMPORARY,
 } from "../src/utils/constants";
+import { Express } from "express";
 
-function requireAuthenticated(path: string, done: jest.DoneCallback) {
+function requireAuthenticated(
+  app: Express,
+  path: string,
+  done: jest.DoneCallback
+) {
   return request(app)
     .get(path)
     .expect(STATUS_CODE_REDIRECT_TEMPORARY)
     .expect("Location", "/auth")
     .end(done);
 }
-function canAccessTo(path: string, done: jest.DoneCallback) {
+function canAccessTo(app: Express, path: string, done: jest.DoneCallback) {
   return request(app)
     .get(path)
     .expect(STATUS_CODE_SUCCESS)
@@ -31,7 +36,9 @@ function canAccessTo(path: string, done: jest.DoneCallback) {
 }
 
 describe("GET", () => {
+  let app: Express;
   beforeAll(async () => {
+    app = await createApp();
     await preparePassport();
     await connectDatabase("1");
     await ensureUploadFoldersExist();
@@ -39,10 +46,10 @@ describe("GET", () => {
   describe("非ログイン時", () => {
     describe("authRouter", () => {
       it("/authをGETできる", (done) => {
-        canAccessTo("/auth", done);
+        canAccessTo(app, "/auth", done);
       });
       it("/auth/guestをGETできる", (done) => {
-        canAccessTo("/auth/guest", done);
+        canAccessTo(app, "/auth/guest", done);
       });
       it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
         request(app)
@@ -64,10 +71,10 @@ describe("GET", () => {
     });
     describe("accountRouter", () => {
       it("/accountはログイン必須", (done) => {
-        requireAuthenticated("/account", done);
+        requireAuthenticated(app, "/account", done);
       });
       it("/account/guestはログイン必須", (done) => {
-        requireAuthenticated("/account/guest", done);
+        requireAuthenticated(app, "/account/guest", done);
       });
     });
     describe("worksRouter", () => {
@@ -80,31 +87,31 @@ describe("GET", () => {
           .end(done);
       });
       it("/works/ページをGETできる", (done) => {
-        canAccessTo("/works/", done);
+        canAccessTo(app, "/works/", done);
       });
     });
     describe("indexRouter", () => {
       it("/はログイン必須", (done) => {
-        requireAuthenticated("/", done);
+        requireAuthenticated(app, "/", done);
       });
     });
     describe("uploadRouter", () => {
       it("/upload/unityはログイン必須", (done) => {
-        requireAuthenticated("/upload/unity", done);
+        requireAuthenticated(app, "/upload/unity", done);
       });
     });
     describe("dbRouter", () => {
       it("/db/worksはログイン必須", (done) => {
-        requireAuthenticated("/db/works", done);
+        requireAuthenticated(app, "/db/works", done);
       });
       it("/db/works/rawはログイン必須", (done) => {
-        requireAuthenticated("/db/works/raw", done);
+        requireAuthenticated(app, "/db/works/raw", done);
       });
       it("/db/usersはログイン必須", (done) => {
-        requireAuthenticated("/db/users", done);
+        requireAuthenticated(app, "/db/users", done);
       });
       it("/db/users/rawはログイン必須", (done) => {
-        requireAuthenticated("/db/users/raw", done);
+        requireAuthenticated(app, "/db/users/raw", done);
       });
     });
   });
@@ -137,10 +144,10 @@ describe("GET", () => {
     });
     describe("accountRouter", () => {
       it("/accountをGETできる", (done) => {
-        canAccessTo("/account", done);
+        canAccessTo(app, "/account", done);
       });
       it("/account/guestをGETできる", (done) => {
-        canAccessTo("/account/guest", done);
+        canAccessTo(app, "/account/guest", done);
       });
     });
     describe("worksRouter", () => {
@@ -162,26 +169,26 @@ describe("GET", () => {
     });
     describe("indexRouter", () => {
       it("/をGETできる", (done) => {
-        canAccessTo("/", done);
+        canAccessTo(app, "/", done);
       });
     });
     describe("uploadRouter", () => {
       it("/upload/unityをGETできる", (done) => {
-        canAccessTo("/upload/unity", done);
+        canAccessTo(app, "/upload/unity", done);
       });
     });
     describe("dbRouter", () => {
       it("/db/worksをGETできる", (done) => {
-        canAccessTo("/db/works", done);
+        canAccessTo(app, "/db/works", done);
       });
       it("/db/works/rawをGETできる", (done) => {
-        canAccessTo("/db/works/raw", done);
+        canAccessTo(app, "/db/works/raw", done);
       });
       it("/db/usersをGETできる", (done) => {
-        canAccessTo("/db/users", done);
+        canAccessTo(app, "/db/users", done);
       });
       it("/db/users/rawをGETできる", (done) => {
-        canAccessTo("/db/users/raw", done);
+        canAccessTo(app, "/db/users/raw", done);
       });
     });
   });

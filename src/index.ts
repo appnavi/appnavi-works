@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { app } from "./app";
+import { createApp } from "./app";
 import { preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
 import { env } from "./utils/env";
@@ -17,7 +17,8 @@ async function prepareDatabase() {
 
 prepareDatabase()
   .then(() => preparePassport())
-  .then(() => {
+  .then(() => createApp())
+  .then((app) => {
     const port = env.PORT;
     app.listen(port, "::0", () => {
       logger.system.info(`Listening on port ${port}`);

@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "../src/app";
+import { createApp } from "../src/app";
 import { preparePassport, localLoginInputSchema } from "../src/config/passport";
 import {
   STATUS_CODE_BAD_REQUEST,
@@ -20,6 +20,7 @@ import { connectDatabase, clearDatabase, INVALID_ID } from "./common";
 import { UserModel, WorkModel } from "../src/models/database";
 import { guestLoginRateLimiter } from "../src/routes/auth/guest";
 import { verifyPassword } from "../src/services/auth/password";
+import { Express } from "express";
 
 function getIdAndPassFromCreateGuestHtml(html: string): {
   guestId: string;
@@ -39,7 +40,10 @@ function resetRateLimit(): void {
   guestLoginRateLimiter.resetKey("::ffff:127.0.0.1");
 }
 
-async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
+async function testSuccessfulGuestUserCreation(
+  app: Express,
+  logoutOnEnd: boolean
+): Promise<{
   guestId: string;
   password: string;
 }> {
@@ -75,6 +79,7 @@ async function testSuccessfulGuestUserCreation(logoutOnEnd: boolean): Promise<{
   });
 }
 async function testInvalidGuestLogin(
+  app: Express,
   textShouldContainInRes: string
 ): Promise<void> {
   return new Promise((resolve) => {
@@ -93,6 +98,7 @@ async function testInvalidGuestLogin(
   });
 }
 async function testSuccessfulGuestLogin(
+  app: Express,
   userId: string,
   password: string
 ): Promise<void> {
@@ -108,7 +114,7 @@ async function testSuccessfulGuestLogin(
       .end(resolve);
   });
 }
-async function testSuccessfulLogout(): Promise<void> {
+async function testSuccessfulLogout(app: Express): Promise<void> {
   return new Promise<void>((resolve) => {
     request(app)
       .get("/auth/logout")
@@ -119,7 +125,9 @@ async function testSuccessfulLogout(): Promise<void> {
 }
 const otherGuestId = "guest-other";
 describe("ゲストユーザー", () => {
+  let app: Express;
   beforeAll(async () => {
+    app = await createApp();
     await preparePassport();
     await connectDatabase("4");
   });
@@ -135,7 +143,7 @@ describe("ゲストユーザー", () => {
         .end(done);
     });
     it("条件を満たしていればゲストユーザーの作成に成功する。", (done) => {
-      testSuccessfulGuestUserCreation(false).then(() => done());
+      testSuccessfulGuestUserCreation(app, false).then(() => done());
     });
   });
   describe("ゲストユーザーの削除", () => {
@@ -185,7 +193,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("別のユーザーが作成したゲストユーザーを削除できない。", (done) => {
-      testSuccessfulGuestUserCreation(true).then(({ guestId }) => {
+      testSuccessfulGuestUserCreation(app, true).then(({ guestId }) => {
         login(app, theirId);
         request(app)
           .post("/account/guest/delete")
@@ -196,7 +204,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("作品が存在するゲストユーザーを削除できない。", (done) => {
-      testSuccessfulGuestUserCreation(false).then(({ guestId }) => {
+      testSuccessfulGuestUserCreation(app, false).then(({ guestId }) => {
         WorkModel.create({
           creatorId: "test",
           workId: "test",
@@ -213,7 +221,7 @@ describe("ゲストユーザー", () => {
       });
     });
     it("条件を満たしていればゲストユーザーの削除に成功する。", (done) => {
-      testSuccessfulGuestUserCreation(false).then(({ guestId }) => {
+      testSuccessfulGuestUserCreation(app, false).then(({ guestId }) => {
         request(app)
           .post("/account/guest/delete")
           .send({ guestId })
@@ -225,53 +233,61 @@ describe("ゲストユーザー", () => {
   describe("ゲストユーザーのログイン", () => {
     beforeEach(resetRateLimit);
     it("存在しないゲストユーザーとしてログインすることはできない。", (done) => {
-      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
-        request(app)
-          .post("/auth/guest")
-          .send({
-            userId: "admin",
-            password,
-          })
-          .expect(STATUS_CODE_UNAUTHORIZED)
-          .end(done);
-      });
+      testSuccessfulGuestUserCreation(app, true).then(
+        ({ guestId, password }) => {
+          request(app)
+            .post("/auth/guest")
+            .send({
+              userId: "admin",
+              password,
+            })
+            .expect(STATUS_CODE_UNAUTHORIZED)
+            .end(done);
+        }
+      );
     });
     it("存在しないゲストユーザーとしてログインすることはできない。その2", (done) => {
-      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
-        request(app)
-          .post("/auth/guest")
-          .send({
-            userId: `${guestId}1`,
-            password,
-          })
-          .expect(STATUS_CODE_UNAUTHORIZED)
-          .end(done);
-      });
+      testSuccessfulGuestUserCreation(app, true).then(
+        ({ guestId, password }) => {
+          request(app)
+            .post("/auth/guest")
+            .send({
+              userId: `${guestId}1`,
+              password,
+            })
+            .expect(STATUS_CODE_UNAUTHORIZED)
+            .end(done);
+        }
+      );
     });
     it("パスワードが異なる場合はログインできない。", (done) => {
-      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
-        request(app)
-          .post("/auth/guest")
-          .send({
-            userId: guestId,
-            password: `${password}-1`,
-          })
-          .expect(STATUS_CODE_UNAUTHORIZED)
-          .end(done);
-      });
+      testSuccessfulGuestUserCreation(app, true).then(
+        ({ guestId, password }) => {
+          request(app)
+            .post("/auth/guest")
+            .send({
+              userId: guestId,
+              password: `${password}-1`,
+            })
+            .expect(STATUS_CODE_UNAUTHORIZED)
+            .end(done);
+        }
+      );
     });
     it("作成されたゲストユーザーでログインできる。", (done) => {
-      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
-        request(app)
-          .post("/auth/guest")
-          .send({
-            userId: guestId,
-            password,
-          })
-          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect("Location", "/")
-          .end(done);
-      });
+      testSuccessfulGuestUserCreation(app, true).then(
+        ({ guestId, password }) => {
+          request(app)
+            .post("/auth/guest")
+            .send({
+              userId: guestId,
+              password,
+            })
+            .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+            .expect("Location", "/")
+            .end(done);
+        }
+      );
     });
   });
   describe("ゲストユーザーの権限", () => {
@@ -322,56 +338,62 @@ describe("ゲストユーザー", () => {
   describe("ゲストログインの総当たり攻撃対策", () => {
     beforeEach(resetRateLimit);
     it("3回ログインに失敗すると4回目以降はログインできないメッセージを表示", (done) => {
-      testInvalidGuestLogin(GUEST_LOGIN_FAIL)
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
+      testInvalidGuestLogin(app, GUEST_LOGIN_FAIL)
+        .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_FAIL))
+        .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_FAIL))
+        .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_EXCEED_RATE_LIMIT))
+        .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_EXCEED_RATE_LIMIT))
+        .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_EXCEED_RATE_LIMIT))
         .then(done);
     });
     it("3回ログインに失敗すると4回目以降は必ずログインに失敗する。", (done) => {
-      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
-        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => {
-            request(app)
-              .post("/auth/guest")
-              .send({
-                userId: guestId,
-                password,
-              })
-              .expect(STATUS_CODE_UNAUTHORIZED)
-              .end((err, res) => {
-                expect(err).toBeNull();
-                expect(res.text.includes(GUEST_LOGIN_EXCEED_RATE_LIMIT)).toBe(
-                  true
-                );
-                done();
-              });
-          });
-      });
+      testSuccessfulGuestUserCreation(app, true).then(
+        ({ guestId, password }) => {
+          testInvalidGuestLogin(app, GUEST_LOGIN_FAIL)
+            .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_FAIL))
+            .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_FAIL))
+            .then(() => {
+              request(app)
+                .post("/auth/guest")
+                .send({
+                  userId: guestId,
+                  password,
+                })
+                .expect(STATUS_CODE_UNAUTHORIZED)
+                .end((err, res) => {
+                  expect(err).toBeNull();
+                  expect(res.text.includes(GUEST_LOGIN_EXCEED_RATE_LIMIT)).toBe(
+                    true
+                  );
+                  done();
+                });
+            });
+        }
+      );
     });
     it("2回ログインに失敗しても3回目に成功すればログインできる。", (done) => {
-      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
-        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testSuccessfulGuestLogin(guestId, password))
-          .then(done);
-      });
+      testSuccessfulGuestUserCreation(app, true).then(
+        ({ guestId, password }) => {
+          testInvalidGuestLogin(app, GUEST_LOGIN_FAIL)
+            .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_FAIL))
+            .then(() => testSuccessfulGuestLogin(app, guestId, password))
+            .then(done);
+        }
+      );
     });
     it("ログインに成功すればログイン失敗回数の制限がリセットされる。", (done) => {
-      testSuccessfulGuestUserCreation(true).then(({ guestId, password }) => {
-        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testSuccessfulGuestLogin(guestId, password))
-          .then(testSuccessfulLogout)
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testSuccessfulGuestLogin(guestId, password))
-          .then(done);
-      });
+      testSuccessfulGuestUserCreation(app, true).then(
+        ({ guestId, password }) => {
+          testInvalidGuestLogin(app, GUEST_LOGIN_FAIL)
+            .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_FAIL))
+            .then(() => testSuccessfulGuestLogin(app, guestId, password))
+            .then(() => testSuccessfulLogout(app))
+            .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_FAIL))
+            .then(() => testInvalidGuestLogin(app, GUEST_LOGIN_FAIL))
+            .then(() => testSuccessfulGuestLogin(app, guestId, password))
+            .then(done);
+        }
+      );
     });
   });
 });
