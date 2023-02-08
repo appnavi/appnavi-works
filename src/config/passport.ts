@@ -179,6 +179,12 @@ async function preparePassport() {
   const slackStrategy = await createSlackStrategy();
   passport.use(slackStrategy);
   passport.use(localStrategy);
+  const slackStrategyName = z
+    .object({
+      name: z.string(),
+    })
+    .parse(slackStrategy).name;
+  return { slackStrategyName };
 }
 
 export { preparePassport };

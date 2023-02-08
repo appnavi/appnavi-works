@@ -26,8 +26,7 @@ const workId = "work-3";
 describe("POST", () => {
   let app: Express;
   beforeAll(async () => {
-    app = await createApp();
-    await preparePassport();
+    app = await createApp(await preparePassport());
     await connectDatabase("3");
     await ensureUploadFoldersExist();
     login(app, myId);

@@ -127,8 +127,7 @@ const otherGuestId = "guest-other";
 describe("ゲストユーザー", () => {
   let app: Express;
   beforeAll(async () => {
-    app = await createApp();
-    await preparePassport();
+    app = createApp(await preparePassport());
     await connectDatabase("4");
   });
   afterEach(async () => {

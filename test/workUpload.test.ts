@@ -174,8 +174,7 @@ async function testSuccessfulUploadTwice(app: Express): Promise<void> {
 describe("作品のアップロードを伴うテスト", () => {
   let app: Express;
   beforeAll(async () => {
-    app = await createApp();
-    await preparePassport();
+    app = await createApp(await preparePassport());
     await connectDatabase("2");
     await ensureUploadFoldersExist();
   });

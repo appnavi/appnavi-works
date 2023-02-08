@@ -9,7 +9,7 @@ import createError from "http-errors";
 import passport from "passport";
 import * as logger from "./modules/logger";
 import { accountRouter } from "./routes/account";
-import { authRouter } from "./routes/auth";
+import { createAuthRouter } from "./routes/auth";
 import { dbRouter } from "./routes/db";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
@@ -27,7 +27,11 @@ import { env } from "./utils/env";
 import { BadRequestError } from "./utils/errors";
 import { ejsToHtml, ignoreTypescriptFile, render } from "./utils/helpers";
 
-export function createApp() {
+export function createApp({
+  slackStrategyName,
+}: {
+  slackStrategyName: string;
+}) {
   const app = express();
   app.use(
     helmet({
@@ -107,7 +111,7 @@ export function createApp() {
   );
 
   app.use("/", indexRouter);
-  app.use("/auth", authRouter);
+  app.use("/auth", createAuthRouter(slackStrategyName));
   app.use("/account", accountRouter);
   app.use("/upload", uploadRouter);
   app.use("/db", dbRouter);

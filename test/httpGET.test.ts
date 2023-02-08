@@ -38,8 +38,7 @@ function canAccessTo(app: Express, path: string, done: jest.DoneCallback) {
 describe("GET", () => {
   let app: Express;
   beforeAll(async () => {
-    app = await createApp();
-    await preparePassport();
+    app = createApp(await preparePassport());
     await connectDatabase("1");
     await ensureUploadFoldersExist();
   });
