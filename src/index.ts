@@ -17,7 +17,7 @@ async function prepareDatabase() {
 
 prepareDatabase()
   .then(() => preparePassport())
-  .then((slackStrategyName) => createApp(slackStrategyName))
+  .then(({ slackStrategyName }) => createApp({ slackStrategyName }))
   .then((app) => {
     const port = env.PORT;
     app.listen(port, "::0", () => {

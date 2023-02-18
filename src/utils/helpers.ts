@@ -19,17 +19,6 @@ export function generateRandomString(
     .join("");
 }
 
-export const ignoreTypescriptFile = (
-  req: express.Request,
-  _res: express.Response,
-  next: express.NextFunction
-) => {
-  if (req.url.endsWith(".ts")) {
-    next(createError(404));
-  }
-  next();
-};
-
 export const slackUserOnly = (
   req: express.Request,
   _res: express.Response,

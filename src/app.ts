@@ -25,7 +25,18 @@ import {
 } from "./utils/constants";
 import { env } from "./utils/env";
 import { BadRequestError } from "./utils/errors";
-import { ejsToHtml, ignoreTypescriptFile, render } from "./utils/helpers";
+import { ejsToHtml, render } from "./utils/helpers";
+
+const ignoreTypescriptFile = (
+  req: express.Request,
+  _res: express.Response,
+  next: express.NextFunction
+) => {
+  if (req.url.endsWith(".ts")) {
+    next(createError(404));
+  }
+  next();
+};
 
 export function createApp({
   slackStrategyName,
