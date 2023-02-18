@@ -5,7 +5,7 @@ import {
   TokenSet,
   UserinfoResponse,
 } from "openid-client";
-import passport, { Strategy } from "passport";
+import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { z } from "zod";
 import { UserModel } from "../models/database";

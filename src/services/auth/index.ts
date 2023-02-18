@@ -1,5 +1,5 @@
 import express from "express";
-import { UserDocument, UserModel } from "../../models/database";
+import { UserModel } from "../../models/database";
 import { system } from "../../modules/logger";
 import { STATUS_CODE_UNAUTHORIZED } from "../../utils/constants";
 
