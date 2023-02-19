@@ -1,26 +1,59 @@
-import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_FORBIDDEN } from "./constants";
+import {
+  STATUS_CODE_BAD_REQUEST,
+  STATUS_CODE_FORBIDDEN,
+  STATUS_CODE_NOT_FOUND,
+  STATUS_CODE_UNAUTHORIZED,
+} from "./constants";
 
-export class CsrfError extends Error {
-  status: number;
-  constructor(logMessage: string) {
+export class HttpError extends Error {
+  constructor(
+    public status: number,
+    logMessage: string,
+    public logParams: unknown = undefined
+  ) {
     super(logMessage);
-    this.status = STATUS_CODE_FORBIDDEN;
     this.name = new.target.name;
     // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
-export class BadRequestError extends Error {
-  status: number;
+export class UnauthorizedError extends HttpError {
+  constructor(
+    logMessage = "ログインが必要です",
+    logParams: unknown = undefined
+  ) {
+    super(STATUS_CODE_UNAUTHORIZED, logMessage, logParams);
+    this.name = new.target.name;
+    // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+export class NotFoundError extends HttpError {
+  constructor() {
+    super(STATUS_CODE_NOT_FOUND, "ページが見つかりませんでした");
+    this.name = new.target.name;
+    // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+export class CsrfError extends HttpError {
+  constructor(logMessage: string) {
+    super(STATUS_CODE_FORBIDDEN, logMessage);
+    this.name = new.target.name;
+    // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+export class BadRequestError extends HttpError {
   constructor(
     logMessage: string,
     public errors: unknown[] = [],
-    public logParams: unknown = undefined
+    logParams: unknown = undefined
   ) {
-    super(logMessage);
-    this.status = STATUS_CODE_BAD_REQUEST;
-
+    super(STATUS_CODE_BAD_REQUEST, logMessage, logParams);
     this.name = new.target.name;
     // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
     Object.setPrototypeOf(this, new.target.prototype);
@@ -28,10 +61,7 @@ export class BadRequestError extends Error {
 }
 
 export class UploadError extends BadRequestError {
-  constructor(
-    public errors: unknown[] = [],
-    public logParams: unknown = undefined
-  ) {
+  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
     super("アップロードに失敗しました。", errors, logParams);
 
     this.name = new.target.name;
@@ -41,10 +71,7 @@ export class UploadError extends BadRequestError {
 }
 
 export class RenameWorkError extends BadRequestError {
-  constructor(
-    public errors: unknown[] = [],
-    public logParams: unknown = undefined
-  ) {
+  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
     super("作品のリネームに失敗しました。", errors, logParams);
 
     this.name = new.target.name;
@@ -53,10 +80,7 @@ export class RenameWorkError extends BadRequestError {
   }
 }
 export class DeleteWorkError extends BadRequestError {
-  constructor(
-    public errors: unknown[] = [],
-    public logParams: unknown = undefined
-  ) {
+  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
     super("作品のリネームに失敗しました。", errors, logParams);
 
     this.name = new.target.name;
@@ -65,10 +89,7 @@ export class DeleteWorkError extends BadRequestError {
   }
 }
 export class RestoreBackupError extends BadRequestError {
-  constructor(
-    public errors: unknown[] = [],
-    public logParams: unknown = undefined
-  ) {
+  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
     super("バックアップの復元に失敗しました。", errors, logParams);
 
     this.name = new.target.name;
@@ -77,10 +98,7 @@ export class RestoreBackupError extends BadRequestError {
   }
 }
 export class DeleteGuestUserError extends BadRequestError {
-  constructor(
-    public errors: unknown[] = [],
-    public logParams: unknown = undefined
-  ) {
+  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
     super("ゲストユーザー削除に失敗しました。", errors, logParams);
 
     this.name = new.target.name;
