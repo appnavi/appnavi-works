@@ -24,7 +24,7 @@ import {
   STATUS_CODE_NOT_FOUND,
 } from "./utils/constants";
 import { env } from "./utils/env";
-import { BadRequestError, NotFoundError } from "./utils/errors";
+import { BadRequestError, HttpError, NotFoundError } from "./utils/errors";
 import { ejsToHtml, render } from "./utils/helpers";
 
 const ignoreTypescriptFile = (
@@ -140,10 +140,18 @@ export function createApp({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
   ) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.status = err.status;
+    // 開発時のみエラーを描画
     res.locals.error = req.app.get("env") === "development" ? err : {};
+    if (!(err instanceof HttpError)) {
+      res.locals.message = "サーバーでエラーが発生しました。";
+      res.locals.status = STATUS_CODE_SERVER_ERROR;
+      res.status(STATUS_CODE_SERVER_ERROR);
+      render("error", req, res);
+      return;
+    }
+    // set locals, only providing error in development
+    res.locals.message = err.responseMessage;
+    res.locals.status = err.status;
     const status =
       typeof err.status === "number" ? err.status : STATUS_CODE_SERVER_ERROR;
     if (status !== STATUS_CODE_NOT_FOUND) {

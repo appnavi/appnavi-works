@@ -8,10 +8,10 @@ import {
 export class HttpError extends Error {
   constructor(
     public status: number,
-    responseMessage: string,
+    public responseMessage: string,
     public logParams: unknown = undefined
   ) {
-    super(responseMessage);
+    super("エラー");
     this.name = new.target.name;
     // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
     Object.setPrototypeOf(this, new.target.prototype);
@@ -72,5 +72,14 @@ export class RestoreBackupError extends BadRequestError {
 export class DeleteGuestUserError extends BadRequestError {
   constructor(errors: unknown[] = [], logParams: unknown = undefined) {
     super("ゲストユーザー削除に失敗しました。", errors, logParams);
+  }
+}
+
+export class OperationFailedError extends Error {
+  constructor(public message: string) {
+    super(message);
+    this.name = new.target.name;
+    // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }

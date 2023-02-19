@@ -17,7 +17,7 @@ import {
   ERROR_MESSAGE_BACKUP_NOT_FOUND,
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
 } from "../../utils/constants";
-import { BadRequestError, RestoreBackupError } from "../../utils/errors";
+import { OperationFailedError, RestoreBackupError } from "../../utils/errors";
 import { idRegex } from "../../utils/helpers";
 import { updateCreatorIds } from "../auth";
 
@@ -42,11 +42,11 @@ async function findOwnWorkOrThrow(
   });
   switch (works.length) {
     case 0:
-      throw new BadRequestError(ERROR_MESSAGE_WORK_NOT_FOUND);
+      throw new OperationFailedError(ERROR_MESSAGE_WORK_NOT_FOUND);
     case 1: {
       const work = works[0];
       if (work.owner !== userId) {
-        throw new BadRequestError(ERROR_MESSAGE_WORK_DIFFERENT_OWNER);
+        throw new OperationFailedError(ERROR_MESSAGE_WORK_DIFFERENT_OWNER);
       }
       return work;
     }
@@ -200,7 +200,7 @@ export async function renameWork(
   renamedWorkId: string
 ) {
   if (creatorId === renamedCreatorId && workId === renamedWorkId) {
-    throw new BadRequestError(ERROR_MESSAGE_RENAME_TO_SAME);
+    throw new OperationFailedError(ERROR_MESSAGE_RENAME_TO_SAME);
   }
   const work = await findOwnWorkOrThrow(creatorId, workId, userId);
   const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
@@ -210,14 +210,14 @@ export async function renameWork(
     workId: renamedWorkId,
   });
   if (renamedWorks.length > 0) {
-    throw new BadRequestError(ERROR_MESSAGE_RENAME_TO_EXISTING);
+    throw new OperationFailedError(ERROR_MESSAGE_RENAME_TO_EXISTING);
   }
   const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
     renamedCreatorId,
     userId
   );
   if (isUsedByOtherUser) {
-    throw new BadRequestError(ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER);
+    throw new OperationFailedError(ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER);
   }
   const renamedDir = path.join(
     DIRECTORY_NAME_UPLOADS,

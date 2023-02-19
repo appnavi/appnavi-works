@@ -10,8 +10,8 @@ import {
 } from "../../services/works";
 import { STATUS_CODE_SUCCESS } from "../../utils/constants";
 import {
-  BadRequestError,
   DeleteWorkError,
+  OperationFailedError,
   RenameWorkError,
 } from "../../utils/errors";
 import { wrap } from "../../utils/helpers";
@@ -44,7 +44,7 @@ workRouter.post(
         renamedWorkId
       );
     } catch (err) {
-      if (err instanceof BadRequestError) {
+      if (err instanceof OperationFailedError) {
         throw new RenameWorkError([err.message], body);
       }
     }
@@ -71,7 +71,7 @@ workRouter.post(
     try {
       await deleteWork(creatorId, workId, getUserIdOrThrow(req));
     } catch (err) {
-      if (err instanceof BadRequestError) {
+      if (err instanceof OperationFailedError) {
         throw new DeleteWorkError([err.message], body);
       }
     }
