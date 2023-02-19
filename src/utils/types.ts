@@ -10,10 +10,3 @@ const expressUserSchema = z.object({
 export function isUser(x: unknown): x is Express.User {
   return expressUserSchema.safeParse(x).success;
 }
-
-declare module "express-session" {
-  interface SessionData {
-    csrfToken: string | undefined;
-    csrfTokenWithHash: string | undefined;
-  }
-}
