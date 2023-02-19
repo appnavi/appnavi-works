@@ -5,7 +5,6 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import session from "express-session";
 import helmet from "helmet";
-import createError from "http-errors";
 import passport from "passport";
 import * as logger from "./modules/logger";
 import { accountRouter } from "./routes/account";
@@ -25,7 +24,7 @@ import {
   STATUS_CODE_NOT_FOUND,
 } from "./utils/constants";
 import { env } from "./utils/env";
-import { BadRequestError } from "./utils/errors";
+import { BadRequestError, NotFoundError } from "./utils/errors";
 import { ejsToHtml, render } from "./utils/helpers";
 
 const ignoreTypescriptFile = (
@@ -34,7 +33,7 @@ const ignoreTypescriptFile = (
   next: express.NextFunction
 ) => {
   if (req.url.endsWith(".ts")) {
-    next(createError(STATUS_CODE_NOT_FOUND));
+    next(new NotFoundError());
   }
   next();
 };
@@ -130,7 +129,7 @@ export function createApp({
 
   // catch 404 and forward to error handler
   app.use(function (_req, _res, next) {
-    next(createError(STATUS_CODE_NOT_FOUND));
+    next(new NotFoundError());
   });
 
   // error handler

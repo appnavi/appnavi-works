@@ -2,8 +2,8 @@ import crypto from "crypto";
 import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
-import createError from "http-errors";
-import { DIRECTORY_NAME_VIEWS, STATUS_CODE_UNAUTHORIZED } from "./constants";
+import { DIRECTORY_NAME_VIEWS } from "./constants";
+import { UnauthorizedError } from "./errors";
 export const idRegex = /^[0-9a-z-]+$/;
 
 export const randomStringCharacters =
@@ -26,7 +26,7 @@ export const slackUserOnly = (
 ) => {
   const userType = req.user?.type;
   if (userType !== "Slack") {
-    next(createError(STATUS_CODE_UNAUTHORIZED));
+    next(new UnauthorizedError());
     return;
   }
   next();

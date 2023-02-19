@@ -48,10 +48,6 @@ Nodejs 標準の`fs`パッケージの機能を拡充したパッケージ。
 
 セキュリティ対策のための複数のパッケージをまとめたパッケージ。
 
-### `http-errors`
-
-[express-generator](https://www.npmjs.com/package/express-generator)によって生成されたボイラープレートに含まれるパッケージ
-
 ### `jsonwebtoken`
 
 オブジェクトの暗号化を提供するパッケージ。
