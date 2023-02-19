@@ -11,7 +11,7 @@ import {
 import { STATUS_CODE_SUCCESS } from "../../utils/constants";
 import {
   DeleteWorkError,
-  OperationFailedError,
+  WorkError,
   RenameWorkError,
 } from "../../utils/errors";
 import { wrap } from "../../utils/helpers";
@@ -44,7 +44,7 @@ workRouter.post(
         renamedWorkId
       );
     } catch (err) {
-      if (err instanceof OperationFailedError) {
+      if (err instanceof WorkError) {
         throw new RenameWorkError([err.message], body);
       }
     }
@@ -71,7 +71,7 @@ workRouter.post(
     try {
       await deleteWork(creatorId, workId, getUserIdOrThrow(req));
     } catch (err) {
-      if (err instanceof OperationFailedError) {
+      if (err instanceof WorkError) {
         throw new DeleteWorkError([err.message], body);
       }
     }

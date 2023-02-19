@@ -75,7 +75,7 @@ export class DeleteGuestUserError extends BadRequestError {
   }
 }
 
-export class OperationFailedError extends Error {
+export class WorkError extends Error {
   constructor(public message: string) {
     super(message);
     this.name = new.target.name;
