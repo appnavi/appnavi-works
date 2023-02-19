@@ -14,7 +14,7 @@ import { findUserOrThrow } from "../services/auth";
 import { verifyPassword } from "../services/auth/password";
 import { env, getSiteURLWithoutTrailingSlash } from "../utils/env";
 import { randomStringCharacters } from "../utils/helpers";
-import { isUser } from "../utils/types";
+
 export const guestUserIdRegex = new RegExp(
   `^guest-[${randomStringCharacters}]+$`
 );
@@ -142,6 +142,18 @@ async function createSlackStrategy() {
     }
   );
 }
+
+const expressUserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  type: z.enum(["Slack", "Guest"]),
+  avatar_url: z.string().optional(),
+});
+
+export function isUser(x: unknown): x is Express.User {
+  return expressUserSchema.safeParse(x).success;
+}
+
 async function validateUserForDeserialize(user: unknown) {
   if (!isUser(user)) throw new Error("User型として認識できませんでした。");
   const userDocument = await findUserOrThrow(user.id);
