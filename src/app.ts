@@ -22,6 +22,7 @@ import {
   DIRECTORY_NAME_PUBLIC,
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_SERVER_ERROR,
+  STATUS_CODE_NOT_FOUND,
 } from "./utils/constants";
 import { env } from "./utils/env";
 import { BadRequestError } from "./utils/errors";
@@ -33,7 +34,7 @@ const ignoreTypescriptFile = (
   next: express.NextFunction
 ) => {
   if (req.url.endsWith(".ts")) {
-    next(createError(404));
+    next(createError(STATUS_CODE_NOT_FOUND));
   }
   next();
 };
@@ -129,7 +130,7 @@ export function createApp({
 
   // catch 404 and forward to error handler
   app.use(function (_req, _res, next) {
-    next(createError(404));
+    next(createError(STATUS_CODE_NOT_FOUND));
   });
 
   // error handler
@@ -146,7 +147,7 @@ export function createApp({
     res.locals.error = req.app.get("env") === "development" ? err : {};
     const status =
       typeof err.status === "number" ? err.status : STATUS_CODE_SERVER_ERROR;
-    if (status !== 404) {
+    if (status !== STATUS_CODE_NOT_FOUND) {
       logger.system.error("エラーが発生しました。", err);
     }
 
