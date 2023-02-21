@@ -4,28 +4,19 @@ import { fromZodError } from "zod-validation-error";
 
 // Inspired by https://github.com/t3-oss/create-t3-app
 
-const nonSecretEnvKeys = [
-  "SITE_URL",
-  "WORK_STORAGE_SIZE_BYTES",
-  "PORT",
-  "NODE_ENV",
-] as const;
-const secretEnvKeys = [
-  "DATABASE_URL",
-  "SESSION_DATABASE_URL",
-  "SLACK_CLIENT_ID",
-  "SLACK_CLIENT_SECRET",
-  "SLACK_WORKSPACE_ID",
-  "COOKIE_SECRET",
-  "CSRF_TOKEN_SECRET",
-] as const;
-
 const nonSecretEnvsSchema = z.object({
   SITE_URL: z.string().url(),
   WORK_STORAGE_SIZE_BYTES: z.coerce.number().nonnegative(),
   PORT: z.coerce.number().nonnegative(),
   NODE_ENV: z.enum(["development", "production", "test"]),
 });
+const nonSecretEnvsObject = Object.fromEntries(
+  nonSecretEnvsSchema.keyof().options.map((key) => [key, process.env[key]])
+);
+const nonSecretEnvsParsed = nonSecretEnvsSchema.safeParse(nonSecretEnvsObject);
+if (!nonSecretEnvsParsed.success) {
+  throw fromZodError(nonSecretEnvsParsed.error);
+}
 
 const secretEnvsSchema = z.object({
   DATABASE_URL: z.string().url(),
@@ -36,16 +27,11 @@ const secretEnvsSchema = z.object({
   COOKIE_SECRET: z.string(),
   CSRF_TOKEN_SECRET: z.string(),
 });
-
-const nonSecretEnvsParsed = nonSecretEnvsSchema.safeParse(
-  Object.fromEntries(nonSecretEnvKeys.map((key) => [key, process.env[key]]))
+const secretEnvsSchemaObject = Object.fromEntries(
+  secretEnvsSchema.keyof().options.map((key) => [key, getSecret(key)])
 );
-if (!nonSecretEnvsParsed.success) {
-  throw fromZodError(nonSecretEnvsParsed.error);
-}
-
 const secretEnvsSchemaParsed = secretEnvsSchema.safeParse(
-  Object.fromEntries(secretEnvKeys.map((key) => [key, getSecret(key)]))
+  secretEnvsSchemaObject
 );
 if (!secretEnvsSchemaParsed.success) {
   throw fromZodError(secretEnvsSchemaParsed.error);
