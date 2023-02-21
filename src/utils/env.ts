@@ -56,7 +56,7 @@ export const env = {
   ...secretEnvsSchemaParsed.data,
 };
 
-export function getSecret(key: string): string {
+export function getSecret(key: string) {
   try {
     return fs.readFileSync(`/run/secrets/${key}`, "utf-8");
   } catch {
@@ -64,7 +64,7 @@ export function getSecret(key: string): string {
   }
 }
 
-export function getSiteURLWithoutTrailingSlash(): string {
+export function getSiteURLWithoutTrailingSlash() {
   let url = env.SITE_URL;
   if (url.endsWith("/")) {
     url = url.slice(0, -1);
