@@ -118,20 +118,7 @@ async function createSlackStrategy() {
         avater_url_key != undefined ? user[avater_url_key] : undefined;
       // アバターURLの取得 終わり
 
-      // IDのチェック
-      // 2022/03/11に行ったユーザーID取得方法の修正により、それ以前にログインした人のIDが変わる可能性があるため、その対策。（おそらく起こりえないが一応）
-      // TODO:2022/03/11以前にログインしたことがあり今後もログインする可能性のあるユーザー全員が一度ログインして、警告（「user.sub(...」）がログに記録されてなければ、このコードを`const id = user.sub;`に置き換え。
-      let id = user.sub;
-      const slack_user_id = user["https://slack.com/user_id"];
-      if (typeof slack_user_id === "string" && id !== slack_user_id) {
-        id = slack_user_id;
-        logger.system.warn(
-          `user.sub(${user.sub})とuser["https://slack.com/user_id"](${slack_user_id})が異なっています。
-          互換性のため、user.subの代わりにuser["https://slack.com/user_id"]をユーザーIDとしました。`,
-          user
-        );
-      }
-      // IDのチェック 終わり
+      const id = user.sub;
 
       return done(null, {
         id,
