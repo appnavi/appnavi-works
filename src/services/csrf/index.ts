@@ -50,8 +50,17 @@ function getCsrfTokenFromRequest(req: Request) {
   }
   return val;
 }
-export function getCsrfTokenFromSession(req: Request) {
+export function getCsrfTokenWithHashFromSession(req: Request) {
   return req.session.csrfTokenWithHash;
+}
+
+export async function createCsrfTokenInSession(req: Request) {
+  const csrfToken = randomString(32);
+  const csrfTokenHash = await createHash(
+    `${csrfToken}${env.CSRF_TOKEN_SECRET}`
+  );
+  req.session.csrfToken = csrfToken;
+  req.session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
 }
 
 async function csrfOnGET(req: Request, res: Response, next: NextFunction) {
@@ -59,17 +68,12 @@ async function csrfOnGET(req: Request, res: Response, next: NextFunction) {
     req.session.csrfToken === undefined ||
     req.session.csrfTokenWithHash === undefined
   ) {
-    const csrfToken = randomString(32);
-    const csrfTokenHash = await createHash(
-      `${csrfToken}${env.CSRF_TOKEN_SECRET}`
-    );
-    req.session.csrfToken = csrfToken;
-    req.session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
+    await createCsrfTokenInSession(req);
   }
   next();
 }
 async function csrfOnPOST(req: Request, res: Response, next: NextFunction) {
-  const csrfTokenFromSession = getCsrfTokenFromSession(req);
+  const csrfTokenFromSession = getCsrfTokenWithHashFromSession(req);
   if (csrfTokenFromSession === undefined) {
     next(new CsrfError("セッションからcsrfトークンを取得できませんでした。"));
     return;
