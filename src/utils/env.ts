@@ -51,9 +51,9 @@ export function getSecret(key: string) {
 }
 
 export function getSiteURLWithoutTrailingSlash() {
-  let url = env.SITE_URL;
+  const url = env.SITE_URL;
   if (url.endsWith("/")) {
-    url = url.slice(0, -1);
+    return url.slice(0, -1);
   }
   return url;
 }
