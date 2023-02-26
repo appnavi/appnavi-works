@@ -50,9 +50,6 @@ function getCsrfTokenFromRequest(req: Request) {
   }
   return val;
 }
-export function getCsrfTokenWithHashFromSession(session: Request["session"]) {
-  return session.csrfTokenWithHash;
-}
 
 export async function createCsrfTokenInSession(session: Request["session"]) {
   const csrfToken = randomString(32);
@@ -61,6 +58,32 @@ export async function createCsrfTokenInSession(session: Request["session"]) {
   );
   session.csrfToken = csrfToken;
   session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
+}
+
+export async function getCsrfTokenFromSessionOrError(session: Request["session"]) {
+  const csrfTokenFromSession = session.csrfTokenWithHash;
+  if (csrfTokenFromSession === undefined) {
+    return {
+      csrfToken: null,
+      error: new CsrfError(
+        "セッションからcsrfトークンを取得できませんでした。"
+      ),
+    };
+  }
+  const [csrfToken, csrfTokenHash] = csrfTokenFromSession.split("|");
+  const expectedCsrfTokenHash = await createHash(
+    `${csrfToken}${env.CSRF_TOKEN_SECRET}`
+  );
+  if (csrfTokenHash !== expectedCsrfTokenHash) {
+    return {
+      csrfToken: null,
+      error: new CsrfError("csrfトークンが改ざんされた可能性があります。"),
+    };
+  }
+  return {
+    csrfToken,
+    error: null,
+  };
 }
 
 async function csrfOnGET(req: Request, res: Response, next: NextFunction) {
@@ -73,17 +96,11 @@ async function csrfOnGET(req: Request, res: Response, next: NextFunction) {
   next();
 }
 async function csrfOnPOST(req: Request, res: Response, next: NextFunction) {
-  const csrfTokenFromSession = getCsrfTokenWithHashFromSession(req.session);
-  if (csrfTokenFromSession === undefined) {
-    next(new CsrfError("セッションからcsrfトークンを取得できませんでした。"));
-    return;
-  }
-  const [csrfToken, csrfTokenHash] = csrfTokenFromSession.split("|");
-  const expectedCsrfTokenHash = await createHash(
-    `${csrfToken}${env.CSRF_TOKEN_SECRET}`
+  const { csrfToken, error } = await getCsrfTokenFromSessionOrError(
+    req.session
   );
-  if (csrfTokenHash !== expectedCsrfTokenHash) {
-    next(new CsrfError("csrfトークンが改ざんされた可能性があります。"));
+  if (error !== null) {
+    next(error);
     return;
   }
   const incomingCsrfToken = getCsrfTokenFromRequest(req);
