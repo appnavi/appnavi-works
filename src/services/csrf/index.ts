@@ -110,7 +110,6 @@ async function csrfOnPOST(req: Request, res: Response, next: NextFunction) {
   }
   if (csrfToken !== incomingCsrfToken) {
     next(new CsrfError("csrfトークンが異なります。"));
-    console.log(csrfToken, incomingCsrfToken);
     return;
   }
   next();
