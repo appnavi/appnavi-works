@@ -96,22 +96,18 @@ export const unityUpload = multer({
   storage: unityStorage,
   preservePath: true,
   fileFilter: (_req, file, cb) => {
-    switch (file.fieldname) {
-      case UPLOAD_UNITY_FIELD_WINDOWS: {
-        cb(null, path.extname(file.originalname) === ".zip");
-        break;
-      }
-      case UPLOAD_UNITY_FIELD_WEBGL: {
-        const folders = path.dirname(file.originalname).split("/");
-        //隠しフォルダ内のファイルではないか
-        cb(null, !folders.find((f) => f.startsWith(".")));
-        break;
-      }
-      default: {
-        cb(new Error(`fieldname${file.fieldname}は不正です。`));
-        return;
-      }
+    const { fieldname, originalname } = file
+    if (fieldname === UPLOAD_UNITY_FIELD_WINDOWS){
+      cb(null, path.extname(originalname) === ".zip");
+      return;
     }
+    if (fieldname === UPLOAD_UNITY_FIELD_WEBGL){
+      const folders = path.dirname(originalname).split("/");
+      //隠しフォルダ内のファイルではないか
+      cb(null, !folders.find((f) => f.startsWith(".")));
+      return;
+    }
+    cb(new Error(`fieldname${fieldname}は不正です。`));
   },
 });
 
