@@ -10,7 +10,6 @@ import {
   getUserIdOrThrow,
   updateCreatorIds,
 } from "../services/auth";
-import { csrf } from "../services/csrf";
 import {
   calculateWorkFileSize,
   uploadSchema,
@@ -113,10 +112,6 @@ export const unityUpload = multer({
 
 const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
-
-if (env.NODE_ENV !== "test") {
-  uploadRouter.use(csrf);
-}
 
 uploadRouter
   .route("/unity")

@@ -14,6 +14,7 @@ import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
 import { worksRouter } from "./routes/works";
 import { ensureAuthenticated } from "./services/auth";
+import { csrf } from "./services/csrf";
 import {
   URL_PREFIX_PRIVATE,
   URL_PREFIX_WORK,
@@ -120,6 +121,10 @@ export function createApp({
     ensureAuthenticated,
     express.static(path.resolve(DIRECTORY_NAME_PRIVATE))
   );
+
+  if (env.NODE_ENV !== "test") {
+    app.use(csrf);
+  }
 
   app.use("/", indexRouter);
   app.use("/auth", createAuthRouter(slackStrategyName));

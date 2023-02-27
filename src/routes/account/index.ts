@@ -8,14 +8,12 @@ import {
   getDefaultCreatorId,
   getUserIdOrThrow,
 } from "../../services/auth";
-import { csrf } from "../../services/csrf";
 import { creatorIdSchema } from "../../services/works";
 import {
   URL_PREFIX_WORK,
   STATUS_CODE_BAD_REQUEST,
   STATUS_CODE_SUCCESS,
 } from "../../utils/constants";
-import { env } from "../../utils/env";
 import { render, wrap } from "../../utils/helpers";
 import { backupRouter } from "./backup";
 import { guestRouter } from "./guest";
@@ -24,10 +22,6 @@ import { workRouter } from "./work";
 const accountRouter = express.Router();
 
 accountRouter.use(ensureAuthenticated);
-
-if (env.NODE_ENV !== "test") {
-  accountRouter.use(csrf);
-}
 
 accountRouter.get(
   "/",
