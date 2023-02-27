@@ -88,7 +88,7 @@ const unityStorage = multer.diskStorage({
         next(err, "");
       });
   },
-  filename: function (_req, file, callback) {
+  filename: (_req, file, callback) => {
     callback(null, path.basename(file.originalname));
   },
 });
