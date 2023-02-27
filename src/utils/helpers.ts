@@ -40,7 +40,7 @@ export function render(
 ) {
   res.render(view, {
     user: req.user,
-    csrfToken: req.session?.csrfToken ?? "",
+    csrfToken: req.session?.csrfToken,
     ...options,
   });
 }
