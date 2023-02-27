@@ -56,35 +56,37 @@ function getWorkIdFromHeaderOrThrow(req: express.Request) {
   }
   return x;
 }
+async function getFileDestinationOrThrow(
+  req: express.Request,
+  file: Express.Multer.File
+) {
+  const { fieldname } = file;
+  const parentDir = path.resolve(
+    DIRECTORY_NAME_UPLOADS,
+    getCreatorIdFromHeaderOrThrow(req),
+    getWorkIdFromHeaderOrThrow(req),
+    fieldname
+  );
+  if (fieldname === UPLOAD_UNITY_FIELD_WINDOWS) {
+    return parentDir;
+  }
+  if (fieldname === UPLOAD_UNITY_FIELD_WEBGL) {
+    const folders = path.dirname(file.originalname).split("/");
+    folders.shift();
+    return path.join(parentDir, ...folders);
+  }
+  throw new Error(`fieldname${fieldname}は不正です。`);
+}
 const unityStorage = multer.diskStorage({
-  destination: (req, file, next) => {
-    (async () => {
-      const parentDir = path.resolve(
-        DIRECTORY_NAME_UPLOADS,
-        getCreatorIdFromHeaderOrThrow(req),
-        getWorkIdFromHeaderOrThrow(req),
-        file.fieldname
-      );
-      let dir: string;
-      switch (file.fieldname) {
-        case UPLOAD_UNITY_FIELD_WINDOWS: {
-          dir = parentDir;
-          break;
-        }
-        case UPLOAD_UNITY_FIELD_WEBGL: {
-          const folders = path.dirname(file.originalname).split("/");
-          folders.shift();
-          dir = path.join(parentDir, ...folders);
-          break;
-        }
-        default: {
-          next(new Error(`fieldname${file.fieldname}は不正です。`), "");
-          return;
-        }
-      }
-      await fsExtra.ensureDir(dir);
-      next(null, dir);
-    })().catch((err) => next(err, ""));
+  destination: async (req, file, next) => {
+    getFileDestinationOrThrow(req, file)
+      .then(async (destination) => {
+        await fsExtra.ensureDir(destination);
+        next(null, destination);
+      })
+      .catch((err) => {
+        next(err, "");
+      });
   },
   filename: function (_req, file, callback) {
     callback(null, path.basename(file.originalname));
