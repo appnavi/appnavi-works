@@ -129,9 +129,7 @@ export function csrf(req: Request, res: Response, next: NextFunction) {
       await csrfOnPOST(req, res, next);
       return;
     }
-    next(
-      new CsrfError(`csrfはメソッド ${req.method} をサポートしていません。`)
-    );
+    next();
   })(req, res, next);
 }
 declare module "express-session" {
