@@ -60,7 +60,9 @@ export async function createCsrfTokenInSession(session: Request["session"]) {
   session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
 }
 
-export async function getCsrfTokenFromSessionOrError(session: Request["session"]) {
+export async function getCsrfTokenFromSessionOrError(
+  session: Request["session"]
+) {
   const csrfTokenFromSession = session.csrfTokenWithHash;
   if (csrfTokenFromSession === undefined) {
     return {
