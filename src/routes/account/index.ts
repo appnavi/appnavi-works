@@ -1,19 +1,12 @@
 import express from "express";
-import multer from "multer";
-import { z } from "zod";
-import { UserModel, WorkModel } from "../../models/database";
+import { WorkModel } from "../../models/database";
 import {
   ensureAuthenticated,
   findOrCreateUser,
   getDefaultCreatorId,
   getUserIdOrThrow,
 } from "../../services/auth";
-import { creatorIdSchema } from "../../services/works";
-import {
-  URL_PREFIX_WORK,
-  STATUS_CODE_BAD_REQUEST,
-  STATUS_CODE_SUCCESS,
-} from "../../utils/constants";
+import { URL_PREFIX_WORK } from "../../utils/constants";
 import { render, wrap } from "../../utils/helpers";
 import { backupRouter } from "./backup";
 import { guestRouter } from "./guest";
@@ -38,34 +31,6 @@ accountRouter.get(
       urlPrefix: URL_PREFIX_WORK,
       creatorIds: user.creatorIds,
     });
-  })
-);
-const defaultCreatorIdSchema = z.object({
-  default_creator_id: creatorIdSchema,
-});
-accountRouter.post(
-  "/default-creator-id",
-  multer().none(),
-  wrap(async (req, res) => {
-    const parsed = defaultCreatorIdSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(STATUS_CODE_BAD_REQUEST).send({
-        errors: parsed.error.errors.map((x) => x.message),
-      });
-      return;
-    }
-    await UserModel.updateOne(
-      {
-        userId: getUserIdOrThrow(req),
-      },
-      {
-        $set: {
-          defaultCreatorId: parsed.data.default_creator_id,
-        },
-      },
-      { upsert: true }
-    );
-    res.status(STATUS_CODE_SUCCESS).end();
   })
 );
 accountRouter.use("/backup", backupRouter);

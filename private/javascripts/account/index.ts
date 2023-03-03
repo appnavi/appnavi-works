@@ -13,7 +13,7 @@ document
     )!.value;
     const data = new FormData();
     data.append("default_creator_id", defaultCreatorId);
-    postRequest("/account/default-creator-id", data, {
+    postRequest("/api/account/default-creator-id", data, {
       dialogMessage: "デフォルトの作者IDを設定しました。",
     });
   });
