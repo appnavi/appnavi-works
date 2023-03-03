@@ -172,7 +172,7 @@ form.addEventListener("submit", async function (event) {
   setUploading(true);
   const data = new FormData(form);
   const token = getCsrfTokenFromPage();
-  const res = await fetch("", {
+  const res = await fetch("/api/upload/unity", {
     credentials: "same-origin",
     method: "POST",
     body: data,

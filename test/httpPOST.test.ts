@@ -39,7 +39,7 @@ describe("POST", () => {
     describe("Unity作品のアップロード", () => {
       it("作品がなければアップロードできない", (done) => {
         request(app)
-          .post("/upload/unity")
+          .post("/api/upload/unity")
           .set(HEADER_CREATOR_ID, creatorId)
           .set(HEADER_WORK_ID, workId)
           .expect(STATUS_CODE_BAD_REQUEST)

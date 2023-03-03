@@ -151,7 +151,7 @@ function attachUploadFiles(req: Test) {
 async function testSuccessfulUpload(app: Express): Promise<void> {
   return new Promise((resolve) => {
     const req = request(app)
-      .post("/upload/unity")
+      .post("/api/upload/unity")
       .set(HEADER_CREATOR_ID, creatorId)
       .set(HEADER_WORK_ID, workId);
     attachUploadFiles(req);
@@ -183,7 +183,7 @@ describe("作品のアップロードを伴うテスト", () => {
   });
   describe("非ログイン時", () => {
     it("非ログイン時にはアップロードができない", (done) => {
-      request(app).post("/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
+      request(app).post("/api/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
     });
     it("非ログイン時にはリネームできない", (done) => {
       request(app)
@@ -213,7 +213,7 @@ describe("作品のアップロードを伴うテスト", () => {
     describe("Unity作品のアップロード（ファイルあり）", () => {
       it("作者IDが設定されていないとアップロードできない", (done) => {
         request(app)
-          .post("/upload/unity")
+          .post("/api/upload/unity")
           .set(HEADER_WORK_ID, workId)
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
@@ -221,7 +221,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作者IDが不適切だとアップロードできない", (done) => {
         request(app)
-          .post("/upload/unity")
+          .post("/api/upload/unity")
           .set(HEADER_CREATOR_ID, encodeURI(INVALID_ID))
           .set(HEADER_WORK_ID, workId)
           .expect(STATUS_CODE_BAD_REQUEST)
@@ -238,7 +238,7 @@ describe("作品のアップロードを伴うテスト", () => {
             () =>
               new Promise<void>((resolve) => {
                 request(app)
-                  .post("/upload/unity")
+                  .post("/api/upload/unity")
                   .set(HEADER_CREATOR_ID, creatorId)
                   .set(HEADER_WORK_ID, "their-work")
                   .expect(STATUS_CODE_BAD_REQUEST)
@@ -262,7 +262,7 @@ describe("作品のアップロードを伴うテスト", () => {
           creatorIds: [creatorId],
         }).then(() => {
           request(app)
-            .post("/upload/unity")
+            .post("/api/upload/unity")
             .set(HEADER_CREATOR_ID, creatorId)
             .set(HEADER_WORK_ID, workId)
             .expect(STATUS_CODE_BAD_REQUEST)
@@ -276,7 +276,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作品IDが設定されていないとアップロードできない", (done) => {
         request(app)
-          .post("/upload/unity")
+          .post("/api/upload/unity")
           .set(HEADER_CREATOR_ID, creatorId)
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
@@ -284,7 +284,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作品IDが不適切だとアップロードできない", (done) => {
         request(app)
-          .post("/upload/unity")
+          .post("/api/upload/unity")
           .set(HEADER_CREATOR_ID, creatorId)
           .set(HEADER_WORK_ID, encodeURI(INVALID_ID))
           .expect(STATUS_CODE_BAD_REQUEST)
@@ -299,7 +299,7 @@ describe("作品のアップロードを伴うテスト", () => {
           fileSize: env.WORK_STORAGE_SIZE_BYTES,
         }).then(() => {
           request(app)
-            .post("/upload/unity")
+            .post("/api/upload/unity")
             .set(HEADER_CREATOR_ID, creatorId)
             .set(HEADER_WORK_ID, workId)
             .expect(STATUS_CODE_BAD_REQUEST)
