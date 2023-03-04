@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { createApp } from "./app";
-import { preparePassport } from "./config/passport";
+import { app } from "./app";
+import { createSlackStrategy, preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
 import { env } from "./utils/env";
 
@@ -14,11 +14,10 @@ async function prepareDatabase() {
     logger.system.error("データベース関連のエラーが発生しました。", error);
   });
 }
-
 prepareDatabase()
-  .then(() => preparePassport())
-  .then(({ slackStrategyName }) => createApp({ slackStrategyName }))
-  .then((app) => {
+  .then(createSlackStrategy)
+  .then(preparePassport)
+  .then(() => {
     const port = env.PORT;
     app.listen(port, "::0", () => {
       logger.system.info(`Listening on port ${port}`);

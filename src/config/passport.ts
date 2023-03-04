@@ -68,7 +68,7 @@ const localStrategy = new LocalStrategy(
       });
   }
 );
-async function createSlackStrategy() {
+export async function createSlackStrategy() {
   const issuer = await Issuer.discover("https://slack.com");
   const client = new issuer.Client({
     client_id: env.SLACK_CLIENT_ID,
@@ -130,6 +130,8 @@ async function createSlackStrategy() {
   );
 }
 
+export type SlackStrategy = Awaited<ReturnType<typeof createSlackStrategy>>;
+
 const expressUserSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -150,8 +152,10 @@ async function validateUserForDeserialize(user: unknown) {
     throw new Error("Guestユーザーとしては不適切なユーザーです。");
   return user;
 }
+export const STRATEGY_NAME_GUEST = "guest";
+export const STRATEGY_NAME_SLACK = "slack";
 
-async function preparePassport() {
+async function preparePassport(slackStrategy: passport.Strategy) {
   passport.serializeUser(function (user, done) {
     done(null, user);
   });
@@ -175,15 +179,8 @@ async function preparePassport() {
         });
       });
   });
-  const slackStrategy = await createSlackStrategy();
-  passport.use(slackStrategy);
-  passport.use(localStrategy);
-  const slackStrategyName = z
-    .object({
-      name: z.string(),
-    })
-    .parse(slackStrategy).name;
-  return { slackStrategyName };
+  passport.use(STRATEGY_NAME_GUEST, localStrategy);
+  passport.use(STRATEGY_NAME_SLACK, slackStrategy);
 }
 
 export { preparePassport };

@@ -1,6 +1,6 @@
 import request from "supertest";
-import { createApp } from "../src/app";
-import { preparePassport } from "../src/config/passport";
+import { app } from "../src/app";
+import { createSlackStrategy, preparePassport } from "../src/config/passport";
 import {
   STATUS_CODE_BAD_REQUEST,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
@@ -25,9 +25,8 @@ const creatorId = "creator-3";
 const workId = "work-3";
 
 describe("POST", () => {
-  let app: Express;
   beforeAll(async () => {
-    app = await createApp(await preparePassport());
+    await preparePassport(await createSlackStrategy());
     await connectDatabase("3");
     await ensureUploadFoldersExist();
     login(app, myId);

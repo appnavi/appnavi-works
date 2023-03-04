@@ -1,6 +1,7 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
 import passport from "passport";
+import { STRATEGY_NAME_GUEST } from "../../config/passport";
 import * as logger from "../../modules/logger";
 import { afterGuestLogIn, logLastLogin } from "../../services/auth";
 import {
@@ -34,7 +35,7 @@ guestRouter
   })
   .post(
     guestLoginRateLimiter,
-    passport.authenticate("local", { failWithError: true }),
+    passport.authenticate(STRATEGY_NAME_GUEST, { failWithError: true }),
     afterGuestLogIn,
     logLastLogin,
     (req, res) => {
