@@ -2,7 +2,11 @@ import { Router } from "express";
 import multer from "multer";
 import { z } from "zod";
 import { UserModel, WorkModel } from "../../../models/database";
-import { findOrCreateUser, getUserIdOrThrow } from "../../../services/auth";
+import {
+  ensureAuthenticated,
+  findOrCreateUser,
+  getUserIdOrThrow,
+} from "../../../services/auth";
 import { creatorIdSchema } from "../../../services/works";
 import {
   STATUS_CODE_BAD_REQUEST,
@@ -10,6 +14,7 @@ import {
 } from "../../../utils/constants";
 import { wrap } from "../../../utils/helpers";
 const accountRouter = Router();
+accountRouter.use(ensureAuthenticated);
 
 const defaultCreatorIdSchema = z.object({
   default_creator_id: creatorIdSchema,
