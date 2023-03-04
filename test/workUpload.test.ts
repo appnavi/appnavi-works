@@ -183,7 +183,9 @@ describe("作品のアップロードを伴うテスト", () => {
   });
   describe("非ログイン時", () => {
     it("非ログイン時にはアップロードができない", (done) => {
-      request(app).post("/api/upload/unity").expect(STATUS_CODE_UNAUTHORIZED, done);
+      request(app)
+        .post("/api/upload/unity")
+        .expect(STATUS_CODE_UNAUTHORIZED, done);
     });
     it("非ログイン時にはリネームできない", (done) => {
       request(app)
@@ -830,7 +832,7 @@ describe("作品のアップロードを伴うテスト", () => {
     describe("使用していない作者IDの削除", () => {
       it("一つも作品を投稿していない状態では、何も起こらない", (done) => {
         request(app)
-          .post("/account/cleanup-creator-ids")
+          .post("/api/account/cleanup-creator-ids")
           .expect(STATUS_CODE_SUCCESS)
           .end(async (err) => {
             expect(err).toBeNull();
@@ -842,7 +844,7 @@ describe("作品のアップロードを伴うテスト", () => {
       it("使用中の作者IDは削除されない", (done) => {
         testSuccessfulUploadTwice(app).then(() => {
           request(app)
-            .post("/account/cleanup-creator-ids")
+            .post("/api/account/cleanup-creator-ids")
             .expect(STATUS_CODE_SUCCESS)
             .end(async (err) => {
               expect(err).toBeNull();
@@ -858,7 +860,7 @@ describe("作品のアップロードを伴うテスト", () => {
           creatorIds: [creatorId],
         }).then(() => {
           request(app)
-            .post("/account/cleanup-creator-ids")
+            .post("/api/account/cleanup-creator-ids")
             .expect(STATUS_CODE_SUCCESS)
             .end(async (err) => {
               expect(err).toBeNull();
@@ -880,7 +882,7 @@ describe("作品のアップロードを伴うテスト", () => {
           ],
         }).then(() => {
           request(app)
-            .post("/account/cleanup-creator-ids")
+            .post("/api/account/cleanup-creator-ids")
             .expect(STATUS_CODE_SUCCESS)
             .end(async (err) => {
               expect(err).toBeNull();

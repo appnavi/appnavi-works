@@ -243,7 +243,7 @@ async function deleteWork(creatorId: string, workId: string) {
 
 async function cleanupCreatorIds() {
   postRequest(
-    "/account/cleanup-creator-ids",
+    "/api/account/cleanup-creator-ids",
     new FormData(),
     {
       dialogTitle: "使用していない作者IDの削除に成功しました。",

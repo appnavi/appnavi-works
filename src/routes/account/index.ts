@@ -37,18 +37,4 @@ accountRouter.use("/backup", backupRouter);
 accountRouter.use("/work", workRouter);
 accountRouter.use("/guest", guestRouter);
 
-accountRouter.post(
-  "/cleanup-creator-ids",
-  wrap(async (req, res) => {
-    const user = await findOrCreateUser(getUserIdOrThrow(req));
-    const works = await WorkModel.find();
-    const usedCreatorIds = user.creatorIds.filter((id) => {
-      return works.find((w) => w.creatorId === id) !== undefined;
-    });
-    await user.update({
-      creatorIds: usedCreatorIds,
-    });
-    res.status(200).end();
-  })
-);
 export { accountRouter };
