@@ -14,6 +14,9 @@
         <% } %> 
         <div class="row">
           <form class="col s12"  method="POST" enctype="application/x-www-form-urlencoded">
+            <% if (typeof csrfToken !== "undefined") { %> 
+              <input name="_csrf" value="<%- csrfToken %>" type="hidden">
+            <% } %> 
             <div class="row">
               <div class="input-field col s12">
                 <input id="userId" name="userId" type="text" class="validate" required>
