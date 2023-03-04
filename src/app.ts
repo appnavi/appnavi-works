@@ -8,6 +8,7 @@ import helmet from "helmet";
 import passport from "passport";
 import * as logger from "./modules/logger";
 import { accountRouter } from "./routes/account";
+import { apiRouter } from "./routes/api";
 import { createAuthRouter } from "./routes/auth";
 import { dbRouter } from "./routes/db";
 import { indexRouter } from "./routes/index";
@@ -127,6 +128,7 @@ export function createApp({
   }
 
   app.use("/", indexRouter);
+  app.use("/api", apiRouter);
   app.use("/auth", createAuthRouter(slackStrategyName));
   app.use("/account", accountRouter);
   app.use("/upload", uploadRouter);

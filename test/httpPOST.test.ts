@@ -40,7 +40,7 @@ describe("POST", () => {
     describe("Unity作品のアップロード", () => {
       it("作品がなければアップロードできない", (done) => {
         request(app)
-          .post("/upload/unity")
+          .post("/api/upload/unity")
           .set(HEADER_CREATOR_ID, creatorId)
           .set(HEADER_WORK_ID, workId)
           .expect(STATUS_CODE_BAD_REQUEST)
@@ -54,7 +54,7 @@ describe("POST", () => {
       it("ログインしていなければデフォルトの作者IDを設定できない", (done) => {
         logout();
         request(app)
-          .post("/account/default-creator-id")
+          .post("/api/account/default-creator-id")
           .type("form")
           .field("default_creator_id", creatorId)
           .expect(STATUS_CODE_UNAUTHORIZED)
@@ -66,7 +66,7 @@ describe("POST", () => {
       });
       it("作者IDが設定されていないとデフォルトの作者IDを設定できない", (done) => {
         request(app)
-          .post("/account/default-creator-id")
+          .post("/api/account/default-creator-id")
           .type("form")
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
@@ -74,7 +74,7 @@ describe("POST", () => {
       });
       it("作者IDが不適切だとデフォルトの作者IDを設定できない", (done) => {
         request(app)
-          .post("/account/default-creator-id")
+          .post("/api/account/default-creator-id")
           .type("form")
           .field("default_creator_id", INVALID_ID)
           .expect(STATUS_CODE_BAD_REQUEST)
@@ -83,7 +83,7 @@ describe("POST", () => {
       });
       it("条件を満たしていればデフォルトの作者IDを設定できる", (done) => {
         request(app)
-          .post("/account/default-creator-id")
+          .post("/api/account/default-creator-id")
           .type("form")
           .field("default_creator_id", creatorId)
           .expect(STATUS_CODE_SUCCESS)

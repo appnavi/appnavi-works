@@ -13,7 +13,7 @@ document
     )!.value;
     const data = new FormData();
     data.append("default_creator_id", defaultCreatorId);
-    postRequest("/account/default-creator-id", data, {
+    postRequest("/api/account/default-creator-id", data, {
       dialogMessage: "デフォルトの作者IDを設定しました。",
     });
   });
@@ -174,7 +174,7 @@ async function restoreBackup(
   data.append("creatorId", creatorId);
   data.append("workId", workId);
   data.append("backupName", backupName);
-  postRequest("/account/backup/restore", data, {
+  postRequest("/api/account/backup/restore", data, {
     dialogMessage: `バックアップ${backupName}を復元しました。`,
     onDialogClosed: () => {
       location.reload();
@@ -190,7 +190,7 @@ async function deleteBackup(
   data.append("creatorId", creatorId);
   data.append("workId", workId);
   data.append("backupName", backupName);
-  postRequest("/account/backup/delete", data, {
+  postRequest("/api/account/backup/delete", data, {
     dialogMessage: `バックアップ${backupName}を削除しました。`,
     onDialogClosed: () => {
       location.reload();
@@ -209,7 +209,7 @@ async function renameWork(
   data.append("renamedCreatorId", renamedCreatorId);
   data.append("renamedWorkId", renamedWorkId);
   postRequest(
-    "/account/work/rename",
+    "/api/account/work/rename",
     data,
     {
       dialogTitle: "編集に成功しました",
@@ -227,7 +227,7 @@ async function deleteWork(creatorId: string, workId: string) {
   data.append("creatorId", creatorId);
   data.append("workId", workId);
   postRequest(
-    "/account/work/delete",
+    "/api/account/work/delete",
     data,
     {
       dialogTitle: "削除しました",
@@ -243,7 +243,7 @@ async function deleteWork(creatorId: string, workId: string) {
 
 async function cleanupCreatorIds() {
   postRequest(
-    "/account/cleanup-creator-ids",
+    "/api/account/cleanup-creator-ids",
     new FormData(),
     {
       dialogTitle: "使用していない作者IDの削除に成功しました。",
