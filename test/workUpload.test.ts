@@ -199,12 +199,12 @@ describe("作品のアップロードを伴うテスト", () => {
     });
     it("非ログイン時にはバックアップを復元できない", (done) => {
       request(app)
-        .post("/account/backup/restore")
+        .post("/api/account/backup/restore")
         .expect(STATUS_CODE_UNAUTHORIZED, done);
     });
     it("非ログイン時にはバックアップを削除できない", (done) => {
       request(app)
-        .post("/account/backup/delete")
+        .post("/api/account/backup/delete")
         .expect(STATUS_CODE_UNAUTHORIZED, done);
     });
   });
@@ -655,7 +655,7 @@ describe("作品のアップロードを伴うテスト", () => {
       describe("バックアップ復元", () => {
         it("作者IDが設定されていないとバックアップを復元できない", (done) => {
           request(app)
-            .post("/account/backup/restore")
+            .post("/api/account/backup/restore")
             .type("form")
             .field("workId", workId)
             .field("backupName", "1")
@@ -665,7 +665,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("作者IDが不適切だとバックアップを復元できない", (done) => {
           request(app)
-            .post("/account/backup/restore")
+            .post("/api/account/backup/restore")
             .type("form")
             .field("creatorId", INVALID_ID)
             .field("workId", workId)
@@ -676,7 +676,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("作品IDが設定されていないとバックアップを復元できない", (done) => {
           request(app)
-            .post("/account/backup/restore")
+            .post("/api/account/backup/restore")
             .type("form")
             .field("creatorId", creatorId)
             .field("backupName", "1")
@@ -686,7 +686,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("作品IDが不適切だとバックアップを復元できない", (done) => {
           request(app)
-            .post("/account/backup/restore")
+            .post("/api/account/backup/restore")
             .type("form")
             .field("creatorId", creatorId)
             .field("workId", INVALID_ID)
@@ -697,7 +697,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("バックアップ名が設定されていないとバックアップを復元できない", (done) => {
           request(app)
-            .post("/account/backup/restore")
+            .post("/api/account/backup/restore")
             .type("form")
             .field("creatorId", creatorId)
             .field("workId", workId)
@@ -707,7 +707,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("バックアップ名が不適切だとバックアップを復元できない", (done) => {
           request(app)
-            .post("/account/backup/restore")
+            .post("/api/account/backup/restore")
             .type("form")
             .field("creatorId", creatorId)
             .field("workId", workId)
@@ -722,7 +722,7 @@ describe("作品のアップロードを伴うテスト", () => {
               () =>
                 new Promise<void>((resolve) => {
                   request(app)
-                    .post("/account/backup/restore")
+                    .post("/api/account/backup/restore")
                     .type("form")
                     .field("creatorId", creatorId)
                     .field("workId", workId)
@@ -743,7 +743,7 @@ describe("作品のアップロードを伴うテスト", () => {
       describe("バックアップ削除", () => {
         it("作者IDが設定されていないとバックアップを削除できない", (done) => {
           request(app)
-            .post("/account/backup/delete")
+            .post("/api/account/backup/delete")
             .type("form")
             .field("workId", workId)
             .field("backupName", "1")
@@ -753,7 +753,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("作者IDが不適切だとバックアップを削除できない", (done) => {
           request(app)
-            .post("/account/backup/delete")
+            .post("/api/account/backup/delete")
             .type("form")
             .field("creatorId", INVALID_ID)
             .field("workId", workId)
@@ -764,7 +764,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("作品IDが設定されていないとバックアップを削除できない", (done) => {
           request(app)
-            .post("/account/backup/delete")
+            .post("/api/account/backup/delete")
             .type("form")
             .field("creatorId", creatorId)
             .field("backupName", "1")
@@ -774,7 +774,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("作品IDが不適切だとバックアップを削除できない", (done) => {
           request(app)
-            .post("/account/backup/delete")
+            .post("/api/account/backup/delete")
             .type("form")
             .field("creatorId", creatorId)
             .field("workId", INVALID_ID)
@@ -785,7 +785,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("バックアップ名が設定されていないとバックアップを削除できない", (done) => {
           request(app)
-            .post("/account/backup/delete")
+            .post("/api/account/backup/delete")
             .type("form")
             .field("creatorId", creatorId)
             .field("workId", workId)
@@ -795,7 +795,7 @@ describe("作品のアップロードを伴うテスト", () => {
         });
         it("バックアップ名が不適切だとバックアップを削除できない", (done) => {
           request(app)
-            .post("/account/backup/delete")
+            .post("/api/account/backup/delete")
             .type("form")
             .field("creatorId", creatorId)
             .field("workId", workId)
@@ -810,7 +810,7 @@ describe("作品のアップロードを伴うテスト", () => {
               () =>
                 new Promise<void>((resolve) => {
                   request(app)
-                    .post("/account/backup/delete")
+                    .post("/api/account/backup/delete")
                     .type("form")
                     .field("creatorId", creatorId)
                     .field("workId", workId)

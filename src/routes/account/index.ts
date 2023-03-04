@@ -8,7 +8,6 @@ import {
 } from "../../services/auth";
 import { URL_PREFIX_WORK } from "../../utils/constants";
 import { render, wrap } from "../../utils/helpers";
-import { backupRouter } from "./backup";
 import { guestRouter } from "./guest";
 import { workRouter } from "./work";
 
@@ -33,7 +32,6 @@ accountRouter.get(
     });
   })
 );
-accountRouter.use("/backup", backupRouter);
 accountRouter.use("/work", workRouter);
 accountRouter.use("/guest", guestRouter);
 

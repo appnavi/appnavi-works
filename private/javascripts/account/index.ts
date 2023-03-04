@@ -174,7 +174,7 @@ async function restoreBackup(
   data.append("creatorId", creatorId);
   data.append("workId", workId);
   data.append("backupName", backupName);
-  postRequest("/account/backup/restore", data, {
+  postRequest("/api/account/backup/restore", data, {
     dialogMessage: `バックアップ${backupName}を復元しました。`,
     onDialogClosed: () => {
       location.reload();
@@ -190,7 +190,7 @@ async function deleteBackup(
   data.append("creatorId", creatorId);
   data.append("workId", workId);
   data.append("backupName", backupName);
-  postRequest("/account/backup/delete", data, {
+  postRequest("/api/account/backup/delete", data, {
     dialogMessage: `バックアップ${backupName}を削除しました。`,
     onDialogClosed: () => {
       location.reload();

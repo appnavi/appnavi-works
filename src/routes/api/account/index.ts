@@ -13,8 +13,11 @@ import {
   STATUS_CODE_SUCCESS,
 } from "../../../utils/constants";
 import { wrap } from "../../../utils/helpers";
+import { backupRouter } from "./backup";
 const accountRouter = Router();
 accountRouter.use(ensureAuthenticated);
+
+accountRouter.use("/backup", backupRouter);
 
 const defaultCreatorIdSchema = z.object({
   default_creator_id: creatorIdSchema,
