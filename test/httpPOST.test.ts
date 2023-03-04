@@ -9,6 +9,7 @@ import {
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
   STATUS_CODE_SUCCESS,
+  STATUS_CODE_UNAUTHORIZED,
 } from "../src/utils/constants";
 import { login, logout, myId } from "./auth";
 import {
@@ -50,6 +51,18 @@ describe("POST", () => {
   });
   describe("accountRouter", () => {
     describe("デフォルトの作者ID", () => {
+      it("ログインしていなければデフォルトの作者IDを設定できない", (done) => {
+        logout();
+        request(app)
+          .post("/account/default-creator-id")
+          .type("form")
+          .field("default_creator_id", creatorId)
+          .expect(STATUS_CODE_UNAUTHORIZED)
+          .end(() => {
+            login(app, myId);
+            done();
+          });
+      });
       it("作者IDが設定されていないとデフォルトの作者IDを設定できない", (done) => {
         request(app)
           .post("/account/default-creator-id")
