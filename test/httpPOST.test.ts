@@ -58,8 +58,9 @@ describe("POST", () => {
           .type("form")
           .field("default_creator_id", creatorId)
           .expect(STATUS_CODE_UNAUTHORIZED)
-          .end(() => {
+          .end((err) => {
             login(app, myId);
+            if (err) throw err;
             done();
           });
       });
