@@ -14,9 +14,11 @@ import {
 } from "../../../utils/constants";
 import { wrap } from "../../../utils/helpers";
 import { backupRouter } from "./backup";
+import { workRouter } from "./work";
 const accountRouter = Router();
 accountRouter.use(ensureAuthenticated);
 
+accountRouter.use("/work", workRouter);
 accountRouter.use("/backup", backupRouter);
 
 const defaultCreatorIdSchema = z.object({

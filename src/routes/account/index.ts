@@ -9,7 +9,6 @@ import {
 import { URL_PREFIX_WORK } from "../../utils/constants";
 import { render, wrap } from "../../utils/helpers";
 import { guestRouter } from "./guest";
-import { workRouter } from "./work";
 
 const accountRouter = express.Router();
 
@@ -32,7 +31,6 @@ accountRouter.get(
     });
   })
 );
-accountRouter.use("/work", workRouter);
 accountRouter.use("/guest", guestRouter);
 
 export { accountRouter };

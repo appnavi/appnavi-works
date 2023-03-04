@@ -209,7 +209,7 @@ async function renameWork(
   data.append("renamedCreatorId", renamedCreatorId);
   data.append("renamedWorkId", renamedWorkId);
   postRequest(
-    "/account/work/rename",
+    "/api/account/work/rename",
     data,
     {
       dialogTitle: "編集に成功しました",
@@ -227,7 +227,7 @@ async function deleteWork(creatorId: string, workId: string) {
   data.append("creatorId", creatorId);
   data.append("workId", workId);
   postRequest(
-    "/account/work/delete",
+    "/api/account/work/delete",
     data,
     {
       dialogTitle: "削除しました",

@@ -189,12 +189,12 @@ describe("作品のアップロードを伴うテスト", () => {
     });
     it("非ログイン時にはリネームできない", (done) => {
       request(app)
-        .post("/account/work/rename")
+        .post("/api/account/work/rename")
         .expect(STATUS_CODE_UNAUTHORIZED, done);
     });
     it("非ログイン時には削除できない", (done) => {
       request(app)
-        .post("/account/work/delete")
+        .post("/api/account/work/delete")
         .expect(STATUS_CODE_UNAUTHORIZED, done);
     });
     it("非ログイン時にはバックアップを復元できない", (done) => {
@@ -321,7 +321,7 @@ describe("作品のアップロードを伴うテスト", () => {
     describe("Unity作品のリネーム", () => {
       it("作者IDが設定されていないとリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("workId", workId)
           .field("renamedCreatorId", creatorId + "-2")
@@ -332,7 +332,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作者IDが不適切だとリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", INVALID_ID)
           .field("workId", workId)
@@ -344,7 +344,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作品IDが設定されていないとリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("renamedCreatorId", creatorId + "-2")
@@ -355,7 +355,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作品IDが不適切だとリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", INVALID_ID)
@@ -367,7 +367,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("リネーム後の作者IDが設定されていないとリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
@@ -378,7 +378,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("リネーム後の作者IDが不適切だとリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", creatorId + "-2")
           .field("workId", workId)
@@ -390,7 +390,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("リネーム後の作品IDが設定されていないとリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
@@ -401,7 +401,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("リネーム後の作品IDが不適切だとリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId + "-2")
@@ -413,7 +413,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("リネーム前とリネーム後が同じだとはリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
@@ -425,7 +425,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("存在しない作品はリネームできない", (done) => {
         request(app)
-          .post("/account/work/rename")
+          .post("/api/account/work/rename")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
@@ -450,7 +450,7 @@ describe("作品のアップロードを伴うテスト", () => {
           })
           .then(() => {
             request(app)
-              .post("/account/work/rename")
+              .post("/api/account/work/rename")
               .type("form")
               .field("creatorId", creatorId)
               .field("workId", workId)
@@ -474,7 +474,7 @@ describe("作品のアップロードを伴うテスト", () => {
           )
           .then(() => {
             request(app)
-              .post("/account/work/rename")
+              .post("/api/account/work/rename")
               .type("form")
               .field("creatorId", creatorId)
               .field("workId", workId)
@@ -492,7 +492,7 @@ describe("作品のアップロードを伴うテスト", () => {
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(() => {
             request(app)
-              .post("/account/work/rename")
+              .post("/api/account/work/rename")
               .type("form")
               .field("creatorId", creatorId)
               .field("workId", workId)
@@ -507,7 +507,7 @@ describe("作品のアップロードを伴うテスト", () => {
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(() => {
             request(app)
-              .post("/account/work/rename")
+              .post("/api/account/work/rename")
               .type("form")
               .field("creatorId", creatorId)
               .field("workId", workId)
@@ -522,7 +522,7 @@ describe("作品のアップロードを伴うテスト", () => {
           .then(() => expectStorageSizeSameToActualSize(0))
           .then(() => {
             request(app)
-              .post("/account/work/rename")
+              .post("/api/account/work/rename")
               .type("form")
               .field("creatorId", creatorId)
               .field("workId", workId)
@@ -536,7 +536,7 @@ describe("作品のアップロードを伴うテスト", () => {
     describe("Unity作品の削除", () => {
       it("作者IDが設定されていないと削除できない", (done) => {
         request(app)
-          .post("/account/work/delete")
+          .post("/api/account/work/delete")
           .type("form")
           .field("workId", workId)
           .expect(STATUS_CODE_BAD_REQUEST)
@@ -545,7 +545,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作者IDが不適切だと削除できない", (done) => {
         request(app)
-          .post("/account/work/delete")
+          .post("/api/account/work/delete")
           .type("form")
           .field("creatorId", INVALID_ID)
           .field("workId", workId)
@@ -555,7 +555,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作品IDが設定されていないと削除できない", (done) => {
         request(app)
-          .post("/account/work/delete")
+          .post("/api/account/work/delete")
           .type("form")
           .field("creatorId", creatorId)
           .expect(STATUS_CODE_BAD_REQUEST)
@@ -564,7 +564,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("作品IDが不適切だと削除できない", (done) => {
         request(app)
-          .post("/account/work/delete")
+          .post("/api/account/work/delete")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", INVALID_ID)
@@ -574,7 +574,7 @@ describe("作品のアップロードを伴うテスト", () => {
       });
       it("存在しない作品は削除できない", (done) => {
         request(app)
-          .post("/account/work/delete")
+          .post("/api/account/work/delete")
           .type("form")
           .field("creatorId", creatorId)
           .field("workId", workId)
@@ -597,7 +597,7 @@ describe("作品のアップロードを伴うテスト", () => {
           })
           .then(() => {
             request(app)
-              .post("/account/work/delete")
+              .post("/api/account/work/delete")
               .type("form")
               .field("creatorId", creatorId)
               .field("workId", workId)
@@ -613,7 +613,7 @@ describe("作品のアップロードを伴うテスト", () => {
             () =>
               new Promise<void>((resolve) => {
                 request(app)
-                  .post("/account/work/delete")
+                  .post("/api/account/work/delete")
                   .type("form")
                   .field("creatorId", creatorId)
                   .field("workId", workId)
@@ -634,7 +634,7 @@ describe("作品のアップロードを伴うテスト", () => {
             () =>
               new Promise<void>((resolve) => {
                 request(app)
-                  .post("/account/work/delete")
+                  .post("/api/account/work/delete")
                   .type("form")
                   .field("creatorId", creatorId)
                   .field("workId", workId)

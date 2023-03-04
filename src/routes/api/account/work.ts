@@ -1,20 +1,20 @@
 import express from "express";
 import multer from "multer";
 import { z } from "zod";
-import { getUserIdOrThrow } from "../../services/auth";
+import { getUserIdOrThrow } from "../../../services/auth";
 import {
   creatorIdSchema,
   deleteWork,
   renameWork,
   workIdSchema,
-} from "../../services/works";
-import { STATUS_CODE_SUCCESS } from "../../utils/constants";
+} from "../../../services/works";
+import { STATUS_CODE_SUCCESS } from "../../../utils/constants";
 import {
   DeleteWorkError,
   WorkError,
   RenameWorkError,
-} from "../../utils/errors";
-import { wrap } from "../../utils/helpers";
+} from "../../../utils/errors";
+import { wrap } from "../../../utils/helpers";
 const workRouter = express.Router();
 const renameWorkSchema = z.object({
   creatorId: creatorIdSchema,
