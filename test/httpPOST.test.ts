@@ -54,7 +54,7 @@ describe("POST", () => {
       it("ログインしていなければデフォルトの作者IDを設定できない", (done) => {
         logout();
         request(app)
-          .post("/account/default-creator-id")
+          .post("/api/account/default-creator-id")
           .type("form")
           .field("default_creator_id", creatorId)
           .expect(STATUS_CODE_UNAUTHORIZED)
