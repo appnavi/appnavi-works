@@ -35,7 +35,7 @@ document
 async function deleteGuest(guestId: string) {
   const data = new FormData();
   data.append("guestId", guestId);
-  postRequest("/account/guest/delete", data, {
+  postRequest("/api/account/guest/delete", data, {
     dialogTitle: `ゲストユーザー${guestId}を削除しました。`,
     onDialogClosed: () => {
       location.reload();

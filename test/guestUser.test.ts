@@ -148,14 +148,14 @@ describe("ゲストユーザー", () => {
   describe("ゲストユーザーの削除", () => {
     it("ログインしていなければゲストユーザーを削除できない。", (done) => {
       request(app)
-        .post("/account/guest/delete")
+        .post("/api/account/guest/delete")
         .expect(STATUS_CODE_UNAUTHORIZED)
         .end(done);
     });
     it("IDが設定されていないとゲストユーザーを削除できない。", (done) => {
       login(app, myId);
       request(app)
-        .post("/account/guest/delete")
+        .post("/api/account/guest/delete")
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(JSON.stringify({ errors: [GUEST_ID_REQUIRED] }))
         .end(done);
@@ -163,7 +163,7 @@ describe("ゲストユーザー", () => {
     it("IDが不適切だとゲストユーザーを削除できない。", (done) => {
       login(app, myId);
       request(app)
-        .post("/account/guest/delete")
+        .post("/api/account/guest/delete")
         .send({ guestId: INVALID_ID })
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(JSON.stringify({ errors: [GUEST_ID_INVALID] }))
@@ -172,7 +172,7 @@ describe("ゲストユーザー", () => {
     it("存在しないゲストユーザーを削除できない。", (done) => {
       login(app, myId);
       request(app)
-        .post("/account/guest/delete")
+        .post("/api/account/guest/delete")
         .send({ guestId: otherGuestId })
         .expect(STATUS_CODE_BAD_REQUEST)
         .expect(JSON.stringify({ errors: [GUEST_NOT_FOUND] }))
@@ -184,7 +184,7 @@ describe("ゲストユーザー", () => {
       }).then(() => {
         login(app, myId);
         request(app)
-          .post("/account/guest/delete")
+          .post("/api/account/guest/delete")
           .send({ guestId: otherGuestId })
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [NOT_GUEST_USER] }))
@@ -195,7 +195,7 @@ describe("ゲストユーザー", () => {
       testSuccessfulGuestUserCreation(app, true).then(({ guestId }) => {
         login(app, theirId);
         request(app)
-          .post("/account/guest/delete")
+          .post("/api/account/guest/delete")
           .send({ guestId })
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [GUEST_DIFFERENT_CREATOR] }))
@@ -211,7 +211,7 @@ describe("ゲストユーザー", () => {
           fileSize: 1,
         }).then(() => {
           request(app)
-            .post("/account/guest/delete")
+            .post("/api/account/guest/delete")
             .send({ guestId: guestId })
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [GUEST_WORKS_NOT_EMPTY] }))
@@ -222,7 +222,7 @@ describe("ゲストユーザー", () => {
     it("条件を満たしていればゲストユーザーの削除に成功する。", (done) => {
       testSuccessfulGuestUserCreation(app, false).then(({ guestId }) => {
         request(app)
-          .post("/account/guest/delete")
+          .post("/api/account/guest/delete")
           .send({ guestId })
           .expect(STATUS_CODE_SUCCESS)
           .end(done);
@@ -329,7 +329,7 @@ describe("ゲストユーザー", () => {
     it("ゲストユーザーはゲストユーザーを削除できない。", (done) => {
       login(app, myId, "Guest");
       request(app)
-        .post("/account/guest/delete")
+        .post("/api/account/guest/delete")
         .expect(STATUS_CODE_UNAUTHORIZED)
         .end(done);
     });
