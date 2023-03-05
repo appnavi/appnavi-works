@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@materializecss/materialize": "^1.2.1",
+    "material-icons": "^1.13.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
