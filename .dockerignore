@@ -3,5 +3,6 @@ node_modules
 dist
 docs
 .git/
-.husky/
 secrets/
+uploads/
+backups/
