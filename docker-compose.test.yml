@@ -23,8 +23,8 @@ services:
       - MONGO_ROOT_PASSWORD
     command: "yarn run test"
     volumes: 
-      - ./test:/app/test
-      - ./src:/app/src
+      - ./server/test:/app/server/test
+      - ./server/src:/app/server/src
   mongo:
     image: "mongo:6.0.2"
     expose:

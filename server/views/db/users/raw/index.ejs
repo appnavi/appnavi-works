@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>データベースの内容（ユーザー一覧）</title>
+    <%- include('common/head') %>
+  </head>
+  <body>
+    <%- include('common/navbar') %>
+    <main class="container">
+      <h3 class="header">データベースの内容（ユーザー一覧）</h3>
+      <div class="card">
+        <div class="card-content" style="overflow: auto;">
+          <pre><%- (typeof users !== "undefined") ? JSON.stringify(users, null, 2) : "" %></pre>
+        </div>
+      </div>
+    </main>
+    <%- include('common/footer') %>
+    <%- include('common/scripts') %>
+  </body>
+</html>

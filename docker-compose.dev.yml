@@ -7,10 +7,10 @@ services:
     ports:
       - "3000:3000"
     volumes: 
-      - ./private:/app/private
-      - ./public:/app/public
-      - ./src:/app/src
-      - ./views:/app/views
+      - ./server/private:/app/server/private
+      - ./server/public:/app/server/public
+      - ./server/src:/app/server/src
+      - ./server/views:/app/server/views
     environment: 
       - NODE_ENV=development
       - SITE_URL=${SITE_URL_DEVELOPMENT}

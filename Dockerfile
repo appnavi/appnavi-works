@@ -1,14 +1,14 @@
 FROM node:18.14.0-alpine3.17
 
-RUN mkdir /app && chown node:node /app
+RUN mkdir -p /app/server && chown node:node /app/server
 
-WORKDIR /app
+WORKDIR /app/server
 
-COPY --chown=node:node package.json yarn.lock ./
+COPY --chown=node:node server/package.json server/yarn.lock ./
 
 RUN yarn install
 
-COPY --chown=node:node . .
+COPY --chown=node:node server/ .
 
 EXPOSE 3000
 
