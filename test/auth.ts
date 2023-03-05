@@ -1,21 +1,34 @@
-import { Express } from "express";
+import request from "supertest";
 
-const passportStub = require("passport-stub");
+import { app } from "../src/app";
+import { STATUS_CODE_REDIRECT_TEMPORARY } from "../src/utils/constants";
+import supertest from "supertest";
 
-const myId = "userABC";
-const theirId = "userDEF";
+export const myId = "userABC";
+export const theirId = "userDEF";
 
-function login(app: Express, userId: string, type: string = "Slack"): void {
-  passportStub.install(app);
-  passportStub.login({
-    id: userId,
-    name: "test_name",
-    type,
-  });
+export async function createLogin(userId: string, type: string = "Slack") {
+  return new Promise<{ login: (req: supertest.Test) => supertest.Test }>(
+    (resolve, reject) => {
+      request(app)
+        .post("/auth/test")
+        .send({
+          id: userId,
+          name: "",
+          avatar_url: "",
+          type,
+        })
+        .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+        .expect("set-cookie", /connect.sid/)
+        .end((err, res) => {
+          if (err) reject(err);
+          resolve({
+            login(req) {
+              req.set("Cookie", res.headers["set-cookie"]);
+              return req;
+            },
+          });
+        });
+    }
+  );
 }
-function logout() {
-  passportStub.logout();
-  passportStub.uninstall();
-}
-
-export { myId, theirId, login, logout };

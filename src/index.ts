@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { app } from "./app";
-import { createSlackStrategy, preparePassport } from "./config/passport";
+import { preparePassport } from "./config/passport";
 import * as logger from "./modules/logger";
 import { env } from "./utils/env";
 
@@ -15,7 +15,6 @@ async function prepareDatabase() {
   });
 }
 prepareDatabase()
-  .then(createSlackStrategy)
   .then(preparePassport)
   .then(() => {
     const port = env.PORT;

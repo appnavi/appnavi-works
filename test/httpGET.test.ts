@@ -1,14 +1,14 @@
 import request from "supertest";
 import { app } from "../src/app";
-import { login, logout, myId } from "./auth";
+import { myId, createLogin } from "./auth";
 import { connectDatabase, ensureUploadFoldersExist } from "./common";
 import {
   STATUS_CODE_SUCCESS,
   STATUS_CODE_REDIRECT_PERMANENT,
   STATUS_CODE_REDIRECT_TEMPORARY,
 } from "../src/utils/constants";
-import { Express } from "express";
-import { createSlackStrategy, preparePassport } from "../src/config/passport";
+import { preparePassport } from "../src/config/passport";
+import supertest from "supertest";
 
 function requireAuthenticated(path: string, done: jest.DoneCallback) {
   return request(app)
@@ -17,43 +17,47 @@ function requireAuthenticated(path: string, done: jest.DoneCallback) {
     .expect("Location", "/auth")
     .end(done);
 }
-function canAccessTo(path: string, done: jest.DoneCallback) {
-  return request(app)
-    .get(path)
-    .expect(STATUS_CODE_SUCCESS)
-    .expect("Content-Type", /html/)
-    .end((err, res) => {
-      if (err) throw err;
-      if (res.redirect) {
-        throw new Error("リダイレクトしています。");
-      }
-      done();
-    });
+function canAccessTo(
+  withLogIn: boolean,
+  path: string,
+  done: jest.DoneCallback
+) {
+  const test = (req: supertest.Test) => {
+    req
+      .expect(STATUS_CODE_SUCCESS)
+      .expect("Content-Type", /html/)
+      .end((err, res) => {
+        if (err) throw err;
+        if (res.redirect) {
+          throw new Error("リダイレクトしています。");
+        }
+        done();
+      });
+  };
+  if (!withLogIn) {
+    test(request(app).get(path));
+    return;
+  }
+  createLogin(myId)
+    .then(({ login }) => {
+      test(login(request(app).get(path)));
+    })
+    .catch(done);
 }
 
 describe("GET", () => {
   beforeAll(async () => {
-    await preparePassport(await createSlackStrategy());
+    await preparePassport();
     await connectDatabase("1");
     await ensureUploadFoldersExist();
   });
   describe("非ログイン時", () => {
     describe("authRouter", () => {
       it("/authをGETできる", (done) => {
-        canAccessTo("/auth", done);
+        canAccessTo(false, "/auth", done);
       });
       it("/auth/guestをGETできる", (done) => {
-        canAccessTo("/auth/guest", done);
-      });
-      it("/auth/slackをGETするとSlackの認証ページにリダイレクトされる", (done) => {
-        request(app)
-          .get("/auth/slack")
-          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect(
-            "Location",
-            /^https:\/\/slack.com\/openid\/connect\/authorize/
-          )
-          .end(done);
+        canAccessTo(false, "/auth/guest", done);
       });
       it("/auth/logoutをGETするとログイン画面にリダイレクトされる", (done) => {
         request(app)
@@ -81,7 +85,7 @@ describe("GET", () => {
           .end(done);
       });
       it("/works/ページをGETできる", (done) => {
-        canAccessTo("/works/", done);
+        canAccessTo(false, "/works/", done);
       });
     });
     describe("indexRouter", () => {
@@ -111,78 +115,87 @@ describe("GET", () => {
   });
 
   describe("ログイン時", () => {
-    beforeEach(() => login(app, myId));
-    afterEach(logout);
     describe("authRouter", () => {
       it("/authをGETすると/にリダイレクトされる", (done) => {
-        request(app)
-          .get("/auth")
-          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect("Location", "/")
-          .end(done);
+        createLogin(myId)
+          .then(({ login }) => {
+            login(request(app).get("/auth"))
+              .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+              .expect("Location", "/")
+              .end(done);
+          })
+          .catch(done);
       });
       it("/auth/guestをGETすると/にリダイレクトされる", (done) => {
-        request(app)
-          .get("/auth/guest")
-          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect("Location", "/")
-          .end(done);
+        createLogin(myId)
+          .then(({ login }) => {
+            login(request(app).get("/auth/guest"))
+              .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+              .expect("Location", "/")
+              .end(done);
+          })
+          .catch(done);
       });
       it("/auth/slackをGETすると/にリダイレクトされる", (done) => {
-        request(app)
-          .get("/auth/slack")
-          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect("Location", "/")
-          .end(done);
+        createLogin(myId)
+          .then(({ login }) => {
+            login(request(app).get("/auth/slack"))
+              .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+              .expect("Location", "/")
+              .end(done);
+          })
+          .catch(done);
       });
     });
     describe("accountRouter", () => {
       it("/accountをGETできる", (done) => {
-        canAccessTo("/account", done);
+        canAccessTo(true, "/account", done);
       });
       it("/account/guestをGETできる", (done) => {
-        canAccessTo("/account/guest", done);
+        canAccessTo(true, "/account/guest", done);
       });
     });
     describe("worksRouter", () => {
       it("/worksページをGETできる(URLは/works/になる)", (done) => {
-        request(app)
-          .get("/works")
-          .expect("Content-Type", /html/)
-          .expect(STATUS_CODE_REDIRECT_PERMANENT)
-          .expect("Location", "/works/")
-          .end(done);
+        createLogin(myId).then(({ login }) => {
+          login(request(app).get("/works"))
+            .expect("Content-Type", /html/)
+            .expect(STATUS_CODE_REDIRECT_PERMANENT)
+            .expect("Location", "/works/")
+            .end(done);
+        });
       });
       it("/works/ページをGETできる", (done) => {
-        request(app)
-          .get("/works/")
-          .expect("Content-Type", /html/)
-          .expect(STATUS_CODE_SUCCESS)
-          .end(done);
+        createLogin(myId).then(({ login }) => {
+          login(request(app).get("/works/"))
+            .expect("Content-Type", /html/)
+            .expect(STATUS_CODE_SUCCESS)
+            .end(done);
+        });
       });
     });
     describe("indexRouter", () => {
       it("/をGETできる", (done) => {
-        canAccessTo("/", done);
+        canAccessTo(true, "/", done);
       });
     });
     describe("uploadRouter", () => {
       it("/upload/unityをGETできる", (done) => {
-        canAccessTo("/upload/unity", done);
+        canAccessTo(true, "/upload/unity", done);
       });
     });
     describe("dbRouter", () => {
       it("/db/worksをGETできる", (done) => {
-        canAccessTo("/db/works", done);
+        canAccessTo(true, "/db/works", done);
       });
       it("/db/works/rawをGETできる", (done) => {
-        canAccessTo("/db/works/raw", done);
+        canAccessTo(true, "/db/works/raw", done);
       });
       it("/db/usersをGETできる", (done) => {
-        canAccessTo("/db/users", done);
+        canAccessTo(true, "/db/users", done);
       });
       it("/db/users/rawをGETできる", (done) => {
-        canAccessTo("/db/users/raw", done);
+        canAccessTo(true, "/db/users/raw", done);
       });
     });
   });

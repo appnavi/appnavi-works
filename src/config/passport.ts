@@ -6,6 +6,7 @@ import {
   UserinfoResponse,
 } from "openid-client";
 import passport from "passport";
+import passportCustom from "passport-custom";
 import { Strategy as LocalStrategy } from "passport-local";
 import { z } from "zod";
 import { UserModel } from "../models/database";
@@ -68,7 +69,7 @@ const localStrategy = new LocalStrategy(
       });
   }
 );
-export async function createSlackStrategy() {
+async function createSlackStrategy() {
   const issuer = await Issuer.discover("https://slack.com");
   const client = new issuer.Client({
     client_id: env.SLACK_CLIENT_ID,
@@ -152,8 +153,9 @@ async function validateUserForDeserialize(user: unknown) {
 }
 export const STRATEGY_NAME_GUEST = "guest";
 export const STRATEGY_NAME_SLACK = "slack";
+export const STRATEGY_NAME_TEST = "test";
 
-async function preparePassport(slackStrategy: passport.Strategy) {
+async function preparePassport() {
   passport.serializeUser(function (user, done) {
     done(null, user);
   });
@@ -177,8 +179,26 @@ async function preparePassport(slackStrategy: passport.Strategy) {
         });
       });
   });
+  const slackStrategy = await createSlackStrategy();
   passport.use(STRATEGY_NAME_GUEST, localStrategy);
   passport.use(STRATEGY_NAME_SLACK, slackStrategy);
+  if (env.NODE_ENV === "test") {
+    const testStrategyInput = z.object({
+      id: z.string(),
+      name: z.string(),
+      avatar_url: z.string(),
+      type: z.enum(["Slack", "Guest"]),
+    });
+    const testStrategy = new passportCustom.Strategy((req, callback) => {
+      const parsed = testStrategyInput.safeParse(req.body);
+      if (parsed.success) {
+        callback(null, parsed.data);
+      } else {
+        callback(parsed.error);
+      }
+    });
+    passport.use(STRATEGY_NAME_TEST, testStrategy);
+  }
 }
 
 export { preparePassport };
