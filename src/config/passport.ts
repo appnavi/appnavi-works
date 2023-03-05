@@ -130,8 +130,6 @@ export async function createSlackStrategy() {
   );
 }
 
-export type SlackStrategy = Awaited<ReturnType<typeof createSlackStrategy>>;
-
 const expressUserSchema = z.object({
   id: z.string(),
   name: z.string(),
