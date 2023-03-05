@@ -17,9 +17,9 @@ import {
   connectDatabase,
   ensureUploadFoldersExist,
   INVALID_ID,
+  wrap,
 } from "./common";
 import { UserModel } from "../src/models/database";
-import { Express } from "express";
 
 const creatorId = "creator-3";
 const workId = "work-3";
@@ -35,16 +35,18 @@ describe("POST", () => {
   });
   describe("uploadRouter", () => {
     describe("Unity作品のアップロード", () => {
-      it("作品がなければアップロードできない", (done) => {
-        createLogin(myId).then(({ login }) => {
+      it(
+        "作品がなければアップロードできない",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))
             .set(HEADER_CREATOR_ID, creatorId)
             .set(HEADER_WORK_ID, workId)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [NO_FILES] }))
             .end(done);
-        });
-      });
+        })
+      );
     });
   });
   describe("accountRouter", () => {
@@ -57,27 +59,33 @@ describe("POST", () => {
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
       });
-      it("作者IDが設定されていないとデフォルトの作者IDを設定できない", (done) => {
-        createLogin(myId).then(({ login }) => {
+      it(
+        "作者IDが設定されていないとデフォルトの作者IDを設定できない",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
           login(request(app).post("/api/account/default-creator-id"))
             .type("form")
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
             .end(done);
-        });
-      });
-      it("作者IDが不適切だとデフォルトの作者IDを設定できない", (done) => {
-        createLogin(myId).then(({ login }) => {
+        })
+      );
+      it(
+        "作者IDが不適切だとデフォルトの作者IDを設定できない",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
           login(request(app).post("/api/account/default-creator-id"))
             .type("form")
             .field("default_creator_id", INVALID_ID)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
             .end(done);
-        });
-      });
-      it("条件を満たしていればデフォルトの作者IDを設定できる", (done) => {
-        createLogin(myId).then(({ login }) => {
+        })
+      );
+      it(
+        "条件を満たしていればデフォルトの作者IDを設定できる",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
           login(request(app).post("/api/account/default-creator-id"))
             .type("form")
             .field("default_creator_id", creatorId)
@@ -90,8 +98,8 @@ describe("POST", () => {
                 done();
               });
             });
-        });
-      });
+        })
+      );
     });
   });
 });

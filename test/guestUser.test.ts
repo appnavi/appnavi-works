@@ -16,7 +16,7 @@ import {
   ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT as GUEST_LOGIN_EXCEED_RATE_LIMIT,
 } from "../src/utils/constants";
 import { createLogin, myId, theirId } from "./auth";
-import { connectDatabase, clearDatabase, INVALID_ID } from "./common";
+import { connectDatabase, clearDatabase, INVALID_ID, wrap } from "./common";
 import { UserModel, WorkModel } from "../src/models/database";
 import { guestLoginRateLimiter } from "../src/routes/auth/guest";
 import { verifyPassword } from "../src/services/auth/password";
@@ -141,101 +141,100 @@ describe("ゲストユーザー", () => {
         .expect(STATUS_CODE_UNAUTHORIZED)
         .end(done);
     });
-    it("IDが設定されていないとゲストユーザーを削除できない。", (done) => {
-      createLogin(myId).then(({ login }) => {
+    it(
+      "IDが設定されていないとゲストユーザーを削除できない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId);
         login(request(app).post("/api/account/guest/delete"))
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [GUEST_ID_REQUIRED] }))
           .end(done);
-      });
-    });
-    it("IDが不適切だとゲストユーザーを削除できない。", (done) => {
-      createLogin(myId).then(({ login }) => {
+      })
+    );
+    it(
+      "IDが不適切だとゲストユーザーを削除できない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId);
         login(request(app).post("/api/account/guest/delete"))
           .send({ guestId: INVALID_ID })
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [GUEST_ID_INVALID] }))
           .end(done);
-      });
-    });
-    it("存在しないゲストユーザーを削除できない。", (done) => {
-      createLogin(myId).then(({ login }) => {
+      })
+    );
+    it(
+      "存在しないゲストユーザーを削除できない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId);
         login(request(app).post("/api/account/guest/delete"))
           .send({ guestId: otherGuestId })
           .expect(STATUS_CODE_BAD_REQUEST)
           .expect(JSON.stringify({ errors: [GUEST_NOT_FOUND] }))
           .end(done);
-      });
-    });
-    it("ゲストユーザーではないユーザーを削除できない。", (done) => {
-      UserModel.create({
-        userId: otherGuestId,
       })
-        .then(() => createLogin(myId))
-        .then(({ login }) => {
-          login(request(app).post("/api/account/guest/delete"))
-            .send({ guestId: otherGuestId })
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [NOT_GUEST_USER] }))
-            .end(done);
+    );
+    it(
+      "ゲストユーザーではないユーザーを削除できない。",
+      wrap(async (done) => {
+        await UserModel.create({
+          userId: otherGuestId,
         });
-    });
-    it("別のユーザーが作成したゲストユーザーを削除できない。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId }) => {
-        createLogin(theirId).then(({ login }) => {
-          login(request(app).post("/api/account/guest/delete"))
-            .send({ guestId })
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [GUEST_DIFFERENT_CREATOR] }))
-            .end(done);
-        });
-      });
-    });
-    it("作品が存在するゲストユーザーを削除できない。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId }) => {
-        WorkModel.create({
+        const { login } = await createLogin(myId);
+        login(request(app).post("/api/account/guest/delete"))
+          .send({ guestId: otherGuestId })
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [NOT_GUEST_USER] }))
+          .end(done);
+      })
+    );
+    it(
+      "別のユーザーが作成したゲストユーザーを削除できない。",
+      wrap(async (done) => {
+        const { guestId } = await testSuccessfulGuestUserCreation();
+        const { login } = await createLogin(theirId);
+        login(request(app).post("/api/account/guest/delete"))
+          .send({ guestId })
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [GUEST_DIFFERENT_CREATOR] }))
+          .end(done);
+      })
+    );
+    it(
+      "作品が存在するゲストユーザーを削除できない。",
+      wrap(async (done) => {
+        const { guestId } = await testSuccessfulGuestUserCreation();
+        await WorkModel.create({
           creatorId: "test",
           workId: "test",
           owner: guestId,
           fileSize: 1,
-        }).then(() => {
-          createLogin(myId).then(({ login }) => {
-            login(request(app).post("/api/account/guest/delete"))
-              .send({ guestId: guestId })
-              .expect(STATUS_CODE_BAD_REQUEST)
-              .expect(JSON.stringify({ errors: [GUEST_WORKS_NOT_EMPTY] }))
-              .end(done);
-          });
         });
-      });
-    });
-    it("条件を満たしていればゲストユーザーの削除に成功する。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId }) => {
-        createLogin(myId).then(({ login }) => {
-          login(request(app).post("/api/account/guest/delete"))
-            .send({ guestId })
-            .expect(STATUS_CODE_SUCCESS)
-            .end(done);
-        });
-      });
-    });
+        const { login } = await createLogin(myId);
+        login(request(app).post("/api/account/guest/delete"))
+          .send({ guestId: guestId })
+          .expect(STATUS_CODE_BAD_REQUEST)
+          .expect(JSON.stringify({ errors: [GUEST_WORKS_NOT_EMPTY] }))
+          .end(done);
+      })
+    );
+    it(
+      "条件を満たしていればゲストユーザーの削除に成功する。",
+      wrap(async (done) => {
+        const { guestId } = await testSuccessfulGuestUserCreation();
+        const { login } = await createLogin(myId);
+        login(request(app).post("/api/account/guest/delete"))
+          .send({ guestId })
+          .expect(STATUS_CODE_SUCCESS)
+          .end(done);
+      })
+    );
   });
   describe("ゲストユーザーのログイン", () => {
     beforeEach(resetRateLimit);
-    it("存在しないゲストユーザーとしてログインすることはできない。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        request(app)
-          .post("/auth/guest")
-          .send({
-            userId: "admin",
-            password,
-          })
-          .expect(STATUS_CODE_UNAUTHORIZED)
-          .end(done);
-      });
-    });
-    it("存在しないゲストユーザーとしてログインすることはできない。その2", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
+    it(
+      "存在しないゲストユーザーとしてログインすることはできない。",
+      wrap(async (done) => {
+        const { guestId, password } = await testSuccessfulGuestUserCreation();
         request(app)
           .post("/auth/guest")
           .send({
@@ -244,22 +243,26 @@ describe("ゲストユーザー", () => {
           })
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
-    it("パスワードが異なる場合はログインできない。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
+      })
+    );
+    it(
+      "パスワードが異なる場合はログインできない。",
+      wrap(async (done) => {
+        const { guestId, password } = await testSuccessfulGuestUserCreation();
         request(app)
           .post("/auth/guest")
           .send({
             userId: guestId,
-            password: `${password}-1`,
+            password: `${password}1`,
           })
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
-    it("作成されたゲストユーザーでログインできる。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
+      })
+    );
+    it(
+      "作成されたゲストユーザーでログインできる。",
+      wrap(async (done) => {
+        const { guestId, password } = await testSuccessfulGuestUserCreation();
         request(app)
           .post("/auth/guest")
           .send({
@@ -269,113 +272,133 @@ describe("ゲストユーザー", () => {
           .expect(STATUS_CODE_REDIRECT_TEMPORARY)
           .expect("Location", "/")
           .end(done);
-      });
-    });
+      })
+    );
   });
   describe("ゲストユーザーの権限", () => {
-    it("ゲストユーザーは作成したゲストユーザー一覧ページにアクセスできない。", (done) => {
-      createLogin(myId, "Guest").then(({ login }) => {
+    it(
+      "ゲストユーザーは作成したゲストユーザー一覧ページにアクセスできない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId, "Guest");
         login(request(app).get("/account/guest"))
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
-    it("ゲストユーザーは作品一覧ページにアクセスできない。", (done) => {
-      createLogin(myId, "Guest").then(({ login }) => {
+      })
+    );
+    it(
+      "ゲストユーザーは作品一覧ページにアクセスできない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId, "Guest");
         login(request(app).get("/db/works"))
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
-    it("ゲストユーザーはユーザー一覧ページにアクセスできない。", (done) => {
-      createLogin(myId, "Guest").then(({ login }) => {
+      })
+    );
+    it(
+      "ゲストユーザーはユーザー一覧ページにアクセスできない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId, "Guest");
         login(request(app).get("/db/users"))
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
-    it("ゲストユーザーはデータベース内容の出力(WORKS)ページにアクセスできない。", (done) => {
-      createLogin(myId, "Guest").then(({ login }) => {
+      })
+    );
+    it(
+      "ゲストユーザーはデータベース内容の出力(WORKS)ページにアクセスできない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId, "Guest");
         login(request(app).get("/db/works/raw"))
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
-    it("ゲストユーザーはデータベース内容の出力(USER)ページにアクセスできない。", (done) => {
-      createLogin(myId, "Guest").then(({ login }) => {
+      })
+    );
+    it(
+      "ゲストユーザーはデータベース内容の出力(USER)ページにアクセスできない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId, "Guest");
         login(request(app).get("/db/users/raw"))
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
-    it("ゲストユーザーはゲストユーザーを作成できない。", (done) => {
-      createLogin(myId, "Guest").then(({ login }) => {
+      })
+    );
+    it(
+      "ゲストユーザーはゲストユーザーを作成できない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId, "Guest");
         login(request(app).post("/account/guest/create"))
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
-    it("ゲストユーザーはゲストユーザーを削除できない。", (done) => {
-      createLogin(myId, "Guest").then(({ login }) => {
+      })
+    );
+    it(
+      "ゲストユーザーはゲストユーザーを削除できない。",
+      wrap(async (done) => {
+        const { login } = await createLogin(myId, "Guest");
         login(request(app).post("/api/account/guest/delete"))
           .expect(STATUS_CODE_UNAUTHORIZED)
           .end(done);
-      });
-    });
+      })
+    );
   });
   describe("ゲストログインの総当たり攻撃対策", () => {
     beforeEach(resetRateLimit);
-    it("3回ログインに失敗すると4回目以降はログインできないメッセージを表示", (done) => {
-      testInvalidGuestLogin(GUEST_LOGIN_FAIL)
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
-        .then(() => testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT))
-        .then(done);
-    });
-    it("3回ログインに失敗すると4回目以降は必ずログインに失敗する。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => {
-            request(app)
-              .post("/auth/guest")
-              .send({
-                userId: guestId,
-                password,
-              })
-              .expect(STATUS_CODE_UNAUTHORIZED)
-              .end((err, res) => {
-                expect(err).toBeNull();
-                expect(res.text.includes(GUEST_LOGIN_EXCEED_RATE_LIMIT)).toBe(
-                  true
-                );
-                done();
-              });
+    it(
+      "3回ログインに失敗すると4回目以降はログインできないメッセージを表示",
+      wrap(async (done) => {
+        for (let i = 1; i <= 3; ++i) {
+          await testInvalidGuestLogin(GUEST_LOGIN_FAIL);
+        }
+        for (let i = 1; i <= 4; ++i) {
+          await testInvalidGuestLogin(GUEST_LOGIN_EXCEED_RATE_LIMIT);
+        }
+        done();
+      })
+    );
+    it(
+      "3回ログインに失敗すると4回目以降は必ずログインに失敗する。",
+      wrap(async (done) => {
+        const { guestId, password } = await testSuccessfulGuestUserCreation();
+        for (let i = 1; i <= 3; ++i) {
+          await testInvalidGuestLogin(GUEST_LOGIN_FAIL);
+        }
+        request(app)
+          .post("/auth/guest")
+          .send({
+            userId: guestId,
+            password,
+          })
+          .expect(STATUS_CODE_UNAUTHORIZED)
+          .end((err, res) => {
+            if (err) {
+              done(err);
+            }
+            expect(res.text.includes(GUEST_LOGIN_EXCEED_RATE_LIMIT)).toBe(true);
+            done();
           });
-      });
-    });
-    it("2回ログインに失敗しても3回目に成功すればログインできる。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testSuccessfulGuestLogin(guestId, password))
-          .then(done);
-      });
-    });
-    it("ログインに成功すればログイン失敗回数の制限がリセットされる。", (done) => {
-      testSuccessfulGuestUserCreation().then(({ guestId, password }) => {
-        testInvalidGuestLogin(GUEST_LOGIN_FAIL)
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testSuccessfulGuestLogin(guestId, password))
-          .then(() => testSuccessfulLogout())
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testInvalidGuestLogin(GUEST_LOGIN_FAIL))
-          .then(() => testSuccessfulGuestLogin(guestId, password))
-          .then(done);
-      });
-    });
+      })
+    );
+    it(
+      "2回ログインに失敗しても3回目に成功すればログインできる。",
+      wrap(async (done) => {
+        const { guestId, password } = await testSuccessfulGuestUserCreation();
+        await testInvalidGuestLogin(GUEST_LOGIN_FAIL);
+        await testInvalidGuestLogin(GUEST_LOGIN_FAIL);
+        await testSuccessfulGuestLogin(guestId, password);
+        done();
+      })
+    );
+    it(
+      "ログインに成功すればログイン失敗回数の制限がリセットされる。",
+      wrap(async (done) => {
+        const { guestId, password } = await testSuccessfulGuestUserCreation();
+        for (let i = 1; i <= 2; ++i) {
+          await testInvalidGuestLogin(GUEST_LOGIN_FAIL);
+          await testInvalidGuestLogin(GUEST_LOGIN_FAIL);
+          await testSuccessfulGuestLogin(guestId, password);
+          await testSuccessfulLogout();
+        }
+        done();
+      })
+    );
   });
 });

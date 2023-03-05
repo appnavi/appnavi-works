@@ -53,3 +53,11 @@ export async function clearData(creatorId: string, workId: string) {
   await clearFolders(creatorId, workId);
   await clearDatabase();
 }
+
+// Callback(done) と async / await を同時に使うとメモリリークが発生するため、その対策
+// https://jestjs.io/docs/asynchronous#:~:text=expect(data).-,CAUTION,-Jest%20will%20throw
+export function wrap(handler: (done: jest.DoneCallback) => Promise<void>) {
+  return (done: jest.DoneCallback) => {
+    handler(done).catch(done);
+  };
+}

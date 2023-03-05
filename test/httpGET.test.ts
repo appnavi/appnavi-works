@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../src/app";
 import { myId, createLogin } from "./auth";
-import { connectDatabase, ensureUploadFoldersExist } from "./common";
+import { connectDatabase, ensureUploadFoldersExist, wrap } from "./common";
 import {
   STATUS_CODE_SUCCESS,
   STATUS_CODE_REDIRECT_PERMANENT,
@@ -116,36 +116,36 @@ describe("GET", () => {
 
   describe("ログイン時", () => {
     describe("authRouter", () => {
-      it("/authをGETすると/にリダイレクトされる", (done) => {
-        createLogin(myId)
-          .then(({ login }) => {
-            login(request(app).get("/auth"))
-              .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-              .expect("Location", "/")
-              .end(done);
-          })
-          .catch(done);
-      });
-      it("/auth/guestをGETすると/にリダイレクトされる", (done) => {
-        createLogin(myId)
-          .then(({ login }) => {
-            login(request(app).get("/auth/guest"))
-              .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-              .expect("Location", "/")
-              .end(done);
-          })
-          .catch(done);
-      });
-      it("/auth/slackをGETすると/にリダイレクトされる", (done) => {
-        createLogin(myId)
-          .then(({ login }) => {
-            login(request(app).get("/auth/slack"))
-              .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-              .expect("Location", "/")
-              .end(done);
-          })
-          .catch(done);
-      });
+      it(
+        "/authをGETすると/にリダイレクトされる",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
+          login(request(app).get("/auth"))
+            .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+            .expect("Location", "/")
+            .end(done);
+        })
+      );
+      it(
+        "/auth/guestをGETすると/にリダイレクトされる",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
+          login(request(app).get("/auth/guest"))
+            .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+            .expect("Location", "/")
+            .end(done);
+        })
+      );
+      it(
+        "/auth/slackをGETすると/にリダイレクトされる",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
+          login(request(app).get("/auth/slack"))
+            .expect(STATUS_CODE_REDIRECT_TEMPORARY)
+            .expect("Location", "/")
+            .end(done);
+        })
+      );
     });
     describe("accountRouter", () => {
       it("/accountをGETできる", (done) => {
@@ -156,23 +156,27 @@ describe("GET", () => {
       });
     });
     describe("worksRouter", () => {
-      it("/worksページをGETできる(URLは/works/になる)", (done) => {
-        createLogin(myId).then(({ login }) => {
+      it(
+        "/worksページをGETできる(URLは/works/になる)",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
           login(request(app).get("/works"))
             .expect("Content-Type", /html/)
             .expect(STATUS_CODE_REDIRECT_PERMANENT)
             .expect("Location", "/works/")
             .end(done);
-        });
-      });
-      it("/works/ページをGETできる", (done) => {
-        createLogin(myId).then(({ login }) => {
+        })
+      );
+      it(
+        "/works/ページをGETできる",
+        wrap(async (done) => {
+          const { login } = await createLogin(myId);
           login(request(app).get("/works/"))
             .expect("Content-Type", /html/)
             .expect(STATUS_CODE_SUCCESS)
             .end(done);
-        });
-      });
+        })
+      );
     });
     describe("indexRouter", () => {
       it("/をGETできる", (done) => {
