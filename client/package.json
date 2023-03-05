@@ -16,9 +16,9 @@
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@materializecss/materialize": "^1.2.1",
-    "material-icons": "^1.13.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0",
     "react-router-dom": "^6.8.2"
   },
   "devDependencies": {

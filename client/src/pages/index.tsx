@@ -1,7 +1,5 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUnity } from '@fortawesome/free-brands-svg-icons';
-
+import { FaUnity } from 'react-icons/fa';
 export const IndexPage = () => {
   return (
     <>
@@ -9,7 +7,7 @@ export const IndexPage = () => {
       <div className="section">
         <h4 className="header">アップロード</h4>
         <a className="btn-large" href="/upload/unity">
-          <FontAwesomeIcon icon={faUnity} size="2x" className="pr-3" />
+          <FaUnity size="2x" className="pr-3" />
           Unityゲームのアップロード
         </a>
       </div>

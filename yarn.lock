@@ -4729,11 +4729,6 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-material-icons@^1.13.2:
-  version "1.13.2"
-  resolved "https://registry.yarnpkg.com/material-icons/-/material-icons-1.13.2.tgz#18678e8192dff96435bbcffea7919092b0566fa6"
-  integrity sha512-aCh4u9U5LNjePNSpN4uNOaMlVwfE/BmJIYiFxJw5FxFfCJIBW5GSymnF6QrHIti4hIxvMtM3vFR7t4yrZJC1SQ==
-
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
@@ -5498,6 +5493,11 @@ react-dom@^18.2.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
+
+react-icons@^4.8.0:
+  version "4.8.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.8.0.tgz#621e900caa23b912f737e41be57f27f6b2bff445"
+  integrity sha512-N6+kOLcihDiAnj5Czu637waJqSnwlMNROzVZMhfX68V/9bu9qHaMIJC4UdozWoOk57gahFCNHwVvWzm0MTzRjg==
 
 react-is@^16.13.1:
   version "16.13.1"

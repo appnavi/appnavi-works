@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import M from '@materializecss/materialize';
+import { MdArrowDropDown } from 'react-icons/md';
 
 // TODO：本物のユーザー情報へ置換
 export const Navbar = () => {
@@ -46,7 +47,7 @@ export const Navbar = () => {
                 className="circle responsive-img navbar-avatar"
               />
               username
-              <i className="material-icons right">arrow_drop_down</i>
+              <MdArrowDropDown size={35} />
             </a>
           </li>
         </ul>
