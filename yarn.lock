@@ -1460,6 +1460,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@materializecss/materialize@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@materializecss/materialize/-/materialize-1.2.1.tgz#0a4fe54702dabf7fdee6d73234cfb5ca92338568"
+  integrity sha512-/PsNu1OaMp+XdymdeM49/OynB5uE1gCNcuRCPjtei1BVrj9eJ1ZYxotbPiejSCB2zFr9BIAuxcvaT+8rupJfxA==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -1711,6 +1716,14 @@
   dependencies:
     "@types/jquery" "*"
     cash-dom "*"
+
+"@types/materializecss__materialize@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/materializecss__materialize/-/materializecss__materialize-1.2.0.tgz#ab9a8a733db85ef829b337ee483fce87c020474c"
+  integrity sha512-hAnPZTkFE5NxHhrAm2TeAdOir0ENFsieVgKyHi1ndScurt+IJ2RZajFFiBlAddRvuHsCPsSIVXI0b8GtdrZ1fw==
+  dependencies:
+    "@types/jquery" "*"
+    cash-dom "^8.1.1"
 
 "@types/migrate-mongo@^8.1.1":
   version "8.2.0"
@@ -2378,7 +2391,7 @@ caniuse-lite@^1.0.30001449:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001460.tgz#31d2e26f0a2309860ed3eff154e03890d9d851a7"
   integrity sha512-Bud7abqjvEjipUkpLs4D7gR0l8hBYBHoa+tGtKJHvT2AYzLp1z7EmVkUT4ERpVUfca8S2HGIVs883D8pUH1ZzQ==
 
-cash-dom@*:
+cash-dom@*, cash-dom@^8.1.1:
   version "8.1.3"
   resolved "https://registry.yarnpkg.com/cash-dom/-/cash-dom-8.1.3.tgz#58920fd61d85235121682dac09c6b01f8671e550"
   integrity sha512-+W6A9GrgH6do57T/2QLlobr8Q3nwvRoLf74HQRu8zFsyP8hBAjg0RJsubIP+uoV7MYknnugrEdEW5HHH0hJB7Q==
