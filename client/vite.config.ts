@@ -5,4 +5,13 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
+  server: {
+    port: 3000,
+    host: true,
+    proxy: {
+      '/api': 'http://localhost:5000',
+      '/auth': 'http://localhost:5000',
+      // "/upload": "http://localhost:5000",
+    },
+  },
 });
