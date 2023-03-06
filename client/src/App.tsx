@@ -1,4 +1,3 @@
-import { User } from '@common/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import { useState } from 'react';
@@ -29,14 +28,6 @@ function App() {
           url: '/api',
         }),
       ],
-    }),
-  );
-  console.log(
-    User.parse({
-      id: 'a',
-      name: 'b',
-      avatar_url: 'http://example.com',
-      type: 'Slack',
     }),
   );
   return (
