@@ -6,8 +6,10 @@ export const IndexPage = () => {
       <h3 className="header">HOME</h3>
       <div className="section">
         <h4 className="header">アップロード</h4>
-        <a className="btn-large" href="/upload/unity">
-          <FaUnity size="2x" className="pr-3" />
+        <a className="btn-large flex" href="/upload/unity">
+          <i className="left h-full flex">
+            <FaUnity size={30} className="my-auto" />
+          </i>
           Unityゲームのアップロード
         </a>
       </div>
