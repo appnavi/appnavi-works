@@ -1,5 +1,5 @@
 {
-  "name": "appnavi-works",
+  "name": "works",
   "private": true,
   "workspaces": [
     "client",
