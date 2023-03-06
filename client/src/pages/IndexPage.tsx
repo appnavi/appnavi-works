@@ -1,8 +1,6 @@
 import { FaUnity } from 'react-icons/fa';
-import { trpc } from '../trpc';
+
 export const IndexPage = () => {
-  const test = trpc.test.useQuery();
-  console.log(test.data);
   return (
     <div className="container">
       <h3 className="header">HOME</h3>

@@ -2,7 +2,7 @@ import { t, publicProcedure } from "../../../utils/trpc";
 
 
 export const trpcRouter = t.router({
-  test: publicProcedure.query(() => "Hello, World!")
+  me: publicProcedure.query(({ ctx }) => ctx.user)
 });
 
 export type TRPCRouter = typeof trpcRouter
