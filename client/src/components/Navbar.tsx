@@ -37,7 +37,7 @@ export const Navbar = () => {
         </li>
       </ul>
       <div>
-        <Link className="brand-logo left-1/2 -translate-x-1/2" to="/">
+        <Link className="brand-logo center" to="/">
           アプリNavi
         </Link>
         <ul id="nav-mobile" className="right">
