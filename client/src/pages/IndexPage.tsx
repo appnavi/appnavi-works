@@ -1,7 +1,13 @@
+import { useContext } from 'react';
 import { FaUnity } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
 
 export const IndexPage = () => {
+  const user = useContext(UserContext);
+  if (user === null) {
+    return <Navigate to="/auth" />;
+  }
   return (
     <div className="container">
       <h3 className="header">HOME</h3>

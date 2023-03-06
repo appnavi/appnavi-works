@@ -1,4 +1,12 @@
+import { useContext } from 'react';
+import { Navigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
+
 export const AuthPage = () => {
+  const user = useContext(UserContext);
+  if (user !== null) {
+    return <Navigate to="/" />;
+  }
   return (
     <div className="container">
       <h3 className="header">ログイン</h3>
