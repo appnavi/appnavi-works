@@ -32,7 +32,7 @@ export const Navbar = () => {
         </li>
         <li className="divider"></li>
         <li>
-          <Link to="/auth/logout">ログアウト</Link>
+          <a href="/auth/logout">ログアウト</a>
         </li>
       </ul>
       <div>
