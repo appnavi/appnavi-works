@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
+import { UserProvider } from './context/UserContext';
 import { AuthPage } from './pages/AuthPage';
 import { IndexPage } from './pages/IndexPage';
 import { trpc } from './trpc';
@@ -41,11 +42,13 @@ function App() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <Navbar />
-        <main className="flex-grow flex-shrink-0 basis-auto">
-          <RouterProvider router={router} />
-        </main>
-        <Footer />
+        <UserProvider>
+          <Navbar />
+          <main className="flex-grow flex-shrink-0 basis-auto">
+            <RouterProvider router={router} />
+          </main>
+          <Footer />
+        </UserProvider>
       </QueryClientProvider>
     </trpc.Provider>
   );

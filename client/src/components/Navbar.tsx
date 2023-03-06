@@ -1,9 +1,11 @@
 import M from '@materializecss/materialize';
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
+import { UserContext } from '../context/UserContext';
 
 // TODO：本物のユーザー情報へ置換
 export const Navbar = () => {
+  const user = useContext(UserContext);
   // 参考
   // - https://zenn.dev/service_503/articles/b7668a820b5856
   // - https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
@@ -15,6 +17,9 @@ export const Navbar = () => {
     },
     [],
   );
+  if (user === null) {
+    return <nav />;
+  }
   return (
     <nav>
       <ul id="navbar-dropdown" className="dropdown-content">
@@ -42,12 +47,12 @@ export const Navbar = () => {
               data-target="navbar-dropdown"
             >
               <img
-                src="/favicon-32x32.png"
+                src={user.avatar_url}
                 alt="User Avatar"
-                className="circle responsive-img navbar-avatar"
+                className="circle responsive-img navbar-avatar mr-3"
               />
-              username
-              <MdArrowDropDown size={35} />
+              {user.name}
+              <MdArrowDropDown size={25} className="ml-3" />
             </a>
           </li>
         </ul>
