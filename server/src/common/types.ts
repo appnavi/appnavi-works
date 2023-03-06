@@ -5,3 +5,4 @@ export const User = z.object({
   avatar_url: z.string().url(),
   type: z.enum(["Slack", "Guest"]),
 })
+export const UserOrUndefined = User.optional()
