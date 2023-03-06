@@ -5,4 +5,6 @@ export const User = z.object({
   avatar_url: z.string().url(),
   type: z.enum(["Slack", "Guest"]),
 })
+export type User = z.infer<typeof User>
 export const UserOrUndefined = User.optional()
+export type UserOrUndefined = z.infer<typeof UserOrUndefined>
