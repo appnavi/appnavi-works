@@ -1,4 +1,5 @@
 import { FaUnity } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 export const IndexPage = () => {
   return (
@@ -18,23 +19,23 @@ export const IndexPage = () => {
         <div className="section">
           <h5>一覧</h5>
           <div className="flex gap-2">
-            <a className="btn-large" href="/db/works">
+            <Link className="btn-large" to="/db/works">
               作品一覧
-            </a>
-            <a className="btn-large" href="/db/users">
+            </Link>
+            <Link className="btn-large" to="/db/users">
               ユーザー一覧
-            </a>
+            </Link>
           </div>
         </div>
         <div className="section">
           <h5 className="header">データベース内容の出力</h5>
           <div className="flex gap-2">
-            <a className="btn-large" href="/db/works/raw">
+            <Link className="btn-large" to="/db/works/raw">
               works
-            </a>
-            <a className="btn-large" href="/db/users/raw">
+            </Link>
+            <Link className="btn-large" to="/db/users/raw">
               users
-            </a>
+            </Link>
           </div>
         </div>
       </div>

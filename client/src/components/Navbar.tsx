@@ -1,6 +1,7 @@
 import M from '@materializecss/materialize';
 import { useCallback, useContext } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
 // TODO：本物のユーザー情報へ置換
@@ -24,20 +25,20 @@ export const Navbar = () => {
     <nav>
       <ul id="navbar-dropdown" className="dropdown-content">
         <li>
-          <a href="/account">アカウント</a>
+          <Link to="/account">アカウント</Link>
         </li>
         <li>
-          <a href="/account/guest">ゲストユーザー</a>
+          <Link to="/account/guest">ゲストユーザー</Link>
         </li>
         <li className="divider"></li>
         <li>
-          <a href="/auth/logout">ログアウト</a>
+          <Link to="/auth/logout">ログアウト</Link>
         </li>
       </ul>
       <div>
-        <a className="brand-logo left-1/2 -translate-x-1/2" href="/">
+        <Link className="brand-logo left-1/2 -translate-x-1/2" to="/">
           アプリNavi
-        </a>
+        </Link>
         <ul id="nav-mobile" className="right">
           <li>
             <a
