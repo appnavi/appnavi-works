@@ -29,6 +29,7 @@
     "migrate": "ts-node node_modules/.bin/migrate-mongo up -f migrate-mongo/migrate-mongo-config.ts"
   },
   "dependencies": {
+    "@trpc/server": "^10.14.0",
     "compression": "^1.7.4",
     "connect-mongo": "^4.5.0",
     "cookie-parser": "^1.4.5",
