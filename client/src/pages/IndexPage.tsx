@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaUnity } from 'react-icons/fa';
 import { trpc } from '../trpc';
 export const IndexPage = () => {

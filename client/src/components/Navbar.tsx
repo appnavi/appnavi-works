@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import M from '@materializecss/materialize';
 import { MdArrowDropDown } from 'react-icons/md';
 
