@@ -4,7 +4,6 @@ import { MdArrowDropDown } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
-// TODO：本物のユーザー情報へ置換
 export const Navbar = () => {
   const user = useContext(UserContext);
   // 参考
