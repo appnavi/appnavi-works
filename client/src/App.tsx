@@ -23,7 +23,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <main className="container flex-grow flex-shrink-0 basis-auto">
+      <main className="flex-grow flex-shrink-0 basis-auto">
         <RouterProvider router={router} />
       </main>
       <Footer />

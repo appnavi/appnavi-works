@@ -2,7 +2,7 @@ import React from 'react';
 import { FaUnity } from 'react-icons/fa';
 export const IndexPage = () => {
   return (
-    <>
+    <div className="container">
       <h3 className="header">HOME</h3>
       <div className="section">
         <h4 className="header">アップロード</h4>
@@ -38,6 +38,6 @@ export const IndexPage = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
