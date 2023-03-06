@@ -7,6 +7,7 @@ import { Navbar } from './components/Navbar';
 import { UserProvider } from './context/UserContext';
 import { AuthPage } from './pages/AuthPage';
 import { IndexPage } from './pages/IndexPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { trpc } from './trpc';
 
 const PageRoot = () => {
@@ -20,25 +21,20 @@ const PageRoot = () => {
     </>
   );
 };
-const ErrorRoute = () => {
-  return (
-    <>
-      <Navbar />
-      <main className="flex-grow flex-shrink-0 basis-auto">404</main>
-      <Footer />
-    </>
-  );
-};
+
 const router = createBrowserRouter([
   {
     path: '/',
     element: <PageRoot />,
-    errorElement: <ErrorRoute />,
     children: [
       { path: '/', element: <IndexPage /> },
       {
         path: '/auth',
         element: <AuthPage />,
+      },
+      {
+        path: '*',
+        element: <NotFoundPage />,
       },
     ],
   },
