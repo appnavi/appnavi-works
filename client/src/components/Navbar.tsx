@@ -1,22 +1,18 @@
 import M from '@materializecss/materialize';
-import { useCallback, useContext } from 'react';
+import { useRef, useContext, useEffect } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
 export const Navbar = () => {
   const user = useContext(UserContext);
-  // 参考
-  // - https://zenn.dev/service_503/articles/b7668a820b5856
-  // - https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
-  const navbarDropdownTrigerRef = useCallback(
-    (element: HTMLAnchorElement | null) => {
-      if (element !== null) {
-        M.Dropdown.init(element);
-      }
-    },
-    [],
-  );
+  const navbarDropdownTrigerRef = useRef<HTMLAnchorElement | null>(null);
+  useEffect(() => {
+    const element = navbarDropdownTrigerRef.current;
+    if (element !== null) {
+      M.Dropdown.init(element);
+    }
+  }, [user]);
   if (user === null) {
     return (
       <nav>
