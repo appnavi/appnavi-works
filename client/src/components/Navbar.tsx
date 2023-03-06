@@ -19,7 +19,13 @@ export const Navbar = () => {
     [],
   );
   if (user === null) {
-    return <nav />;
+    return (
+      <nav>
+        <Link className="brand-logo center" to="/">
+          アプリNavi
+        </Link>
+      </nav>
+    );
   }
   return (
     <nav>
