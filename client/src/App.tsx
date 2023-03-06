@@ -3,6 +3,7 @@ import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { IndexPage } from './pages';
+import { User } from '@common/types';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -11,6 +12,14 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  console.log(
+    User.parse({
+      id: 'a',
+      name: 'b',
+      avatar_url: 'http://example.com',
+      type: 'Slack',
+    }),
+  );
   return (
     <>
       <Navbar />
