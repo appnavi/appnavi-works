@@ -4,10 +4,15 @@ import { Navbar } from './components/Navbar';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { IndexPage } from './pages/IndexPage';
 import { User } from '@common/types';
+import { AuthPage } from './pages/AuthPage';
 const router = createBrowserRouter([
   {
     path: '/',
     element: <IndexPage />,
+  },
+  {
+    path: '/auth',
+    element: <AuthPage />,
   },
 ]);
 

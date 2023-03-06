@@ -13,7 +13,8 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': 'http://localhost:5000',
-      '/auth': 'http://localhost:5000',
+      '/auth/slack': 'http://localhost:5000',
+      '/auth/slack/redirect': 'http://localhost:5000',
       // "/upload": "http://localhost:5000",
     },
   },
