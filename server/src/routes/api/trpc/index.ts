@@ -1,9 +1,8 @@
-import { initTRPC } from "@trpc/server";
+import { t, publicProcedure } from "../../../utils/trpc";
 
-const t = initTRPC.create();
 
 export const trpcRouter = t.router({
-  test: t.procedure.query(() => "Hello, World!")
+  test: publicProcedure.query(() => "Hello, World!")
 });
 
 export type TRPCRouter = typeof trpcRouter
