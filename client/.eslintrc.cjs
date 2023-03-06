@@ -18,9 +18,18 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react', '@typescript-eslint', "import"],
   rules: {
     "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    'sort-imports': 0,
+    'import/order': [
+      2,
+      {
+        'alphabetize': {
+          'order': 'asc'
+        }
+      }
+    ]
   },
 };

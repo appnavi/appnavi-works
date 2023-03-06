@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { User } from '@common/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
+import { useState } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { IndexPage } from './pages/IndexPage';
-import { User } from '@common/types';
 import { AuthPage } from './pages/AuthPage';
+import { IndexPage } from './pages/IndexPage';
 import { trpc } from './trpc';
 const router = createBrowserRouter([
   {
