@@ -15,7 +15,6 @@ const Response = z.object({
   errors: z.array(z.string()).optional(),
 });
 
-// TODO：defaultCreatorIdの取得、表示
 // TODO：コード分割
 const Page = () => {
   const navigate = useNavigate();
