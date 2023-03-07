@@ -5,6 +5,7 @@ import { RequireAuth } from '../../../components/RequireAuth';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { useQueryContext } from '../../../context/QueryContext';
 import { FilesPicker } from './FilesPicker';
+import { CreatorIdInput, WorkIdInput } from './Inputs';
 import { PreventPageLeave } from './PreventPageLeave';
 import { Preview } from './Preview';
 
@@ -131,44 +132,8 @@ const Page = () => {
         ref={formRef}
       >
         <div className="row card-panel">
-          <div className="input-field">
-            <input
-              id="creator_id"
-              type="text"
-              className="validate"
-              name="creator_id"
-              pattern="^[0-9a-z\-]+$"
-              required
-              aria-required
-              value={creatorId}
-              onChange={(e) => setCreatorId(e.target.value)}
-            />
-            <label htmlFor="creator_id">作者ID</label>
-            <span
-              className="helper-text"
-              data-error="数字・アルファベット小文字・ハイフンのみで入力してください"
-              data-success="問題なし"
-            ></span>
-          </div>
-          <div className="input-field">
-            <input
-              id="work_id"
-              type="text"
-              className="validate"
-              name="work_id"
-              pattern="^[0-9a-z\-]+$"
-              required
-              aria-required
-              value={workId}
-              onChange={(e) => setWorkId(e.target.value)}
-            />
-            <label htmlFor="work_id">作品ID</label>
-            <span
-              className="helper-text"
-              data-error="数字・アルファベット小文字・ハイフンのみで入力してください"
-              data-success="問題なし"
-            ></span>
-          </div>
+          <CreatorIdInput value={creatorId} onChange={setCreatorId} />
+          <WorkIdInput value={workId} onChange={setWorkId} />
         </div>
         <FilesPicker
           title="WebGL(フォルダ)"

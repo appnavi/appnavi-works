@@ -23,10 +23,15 @@ export function createContext({ req }: CreateExpressContextOptions) {
 export const t = initTRPC.context<inferAsyncReturnType<typeof createContext>>().create();
 
 const requireAuth = t.middleware(({ ctx, next }) => {
-  if (ctx.user === undefined) {
+  const user = ctx.user
+  if (user === undefined) {
     throw new TRPCError({ code: "UNAUTHORIZED" })
   }
-  return next()
+  return next({
+    ctx: {
+      user
+    }
+  })
 })
 
 export const publicProcedure = t.procedure;
