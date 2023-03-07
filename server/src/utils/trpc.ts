@@ -10,11 +10,13 @@ export function createContext({ req }: CreateExpressContextOptions) {
   if (!parsed.success) {
     system.error("ユーザーが不正です", fromZodError(parsed.error))
     return {
-      user: undefined
+      user: undefined,
+      req
     }
   }
   return {
-    user: parsed.data
+    user: parsed.data,
+    req
   }
 }
 
