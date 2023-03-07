@@ -1,7 +1,7 @@
 import { type User } from '@common/types';
 import { FaUnity } from 'react-icons/fa';
-import { Link, Navigate } from 'react-router-dom';
-import { useQueryContext } from '../context/QueryContext';
+import { Link } from 'react-router-dom';
+import { RequireAuth } from '../components/RequireAuth';
 
 const DatabaseSection = ({ user }: { user: User }) => {
   if (user.type === 'Guest') {
@@ -35,12 +35,7 @@ const DatabaseSection = ({ user }: { user: User }) => {
     </div>
   );
 };
-
-export const IndexPage = () => {
-  const { user } = useQueryContext();
-  if (user === null) {
-    return <Navigate to="/auth" />;
-  }
+const Page = ({ user }: { user: User }) => {
   return (
     <div className="container">
       <h3 className="header">HOME</h3>
@@ -56,4 +51,8 @@ export const IndexPage = () => {
       <DatabaseSection user={user} />
     </div>
   );
+};
+
+export const IndexPage = () => {
+  return <RequireAuth>{(user) => <Page user={user} />}</RequireAuth>;
 };
