@@ -1,9 +1,8 @@
-import { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
-import { UserContext } from '../../context/UserContext';
+import { useQueryContext } from '../../context/QueryContext';
 
 export const AuthPage = () => {
-  const user = useContext(UserContext);
+  const { user } = useQueryContext();
   if (user !== null) {
     return <Navigate to="/" />;
   }

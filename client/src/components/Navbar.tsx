@@ -1,11 +1,11 @@
 import M from '@materializecss/materialize';
-import { useRef, useContext, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import { UserContext } from '../context/UserContext';
+import { useQueryContext } from '../context/QueryContext';
 
 export const Navbar = () => {
-  const user = useContext(UserContext);
+  const { user } = useQueryContext();
   const navbarDropdownTrigerRef = useRef<HTMLAnchorElement | null>(null);
   useEffect(() => {
     const element = navbarDropdownTrigerRef.current;

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
-import { UserProvider } from './context/UserContext';
+import { QueryContextProvider } from './context/QueryContext';
 import { IndexPage } from './pages';
 import { NotFoundPage } from './pages/NotFound';
 import { AuthPage } from './pages/auth';
@@ -54,9 +54,9 @@ function App() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <UserProvider>
+        <QueryContextProvider>
           <RouterProvider router={router} />
-        </UserProvider>
+        </QueryContextProvider>
       </QueryClientProvider>
     </trpc.Provider>
   );

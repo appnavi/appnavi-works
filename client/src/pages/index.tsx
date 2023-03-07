@@ -1,8 +1,7 @@
 import { type User } from '@common/types';
-import { useContext } from 'react';
 import { FaUnity } from 'react-icons/fa';
 import { Link, Navigate } from 'react-router-dom';
-import { UserContext } from '../context/UserContext';
+import { useQueryContext } from '../context/QueryContext';
 
 const DatabaseSection = ({ user }: { user: User }) => {
   if (user.type === 'Guest') {
@@ -38,7 +37,7 @@ const DatabaseSection = ({ user }: { user: User }) => {
 };
 
 export const IndexPage = () => {
-  const user = useContext(UserContext);
+  const { user } = useQueryContext();
   if (user === null) {
     return <Navigate to="/auth" />;
   }
