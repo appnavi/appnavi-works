@@ -1,4 +1,5 @@
 import { type User } from '@common/types';
+import { Helmet } from 'react-helmet-async';
 import { FaUnity } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { RequireAuth } from '../components/RequireAuth';
@@ -54,5 +55,16 @@ const Page = ({ user }: { user: User }) => {
 };
 
 export const IndexPage = () => {
-  return <RequireAuth>{(user) => <Page user={user} />}</RequireAuth>;
+  return (
+    <RequireAuth>
+      {(user) => (
+        <>
+          <Helmet>
+            <title>HOME</title>
+          </Helmet>
+          <Page user={user} />
+        </>
+      )}
+    </RequireAuth>
+  );
 };

@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import { useState } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
@@ -67,7 +68,9 @@ function App() {
         <MessageDialogContextProvider>
           <ConfirmDialogContextProvider>
             <QueryContextProvider>
-              <RouterProvider router={router} />
+              <HelmetProvider>
+                <RouterProvider router={router} />
+              </HelmetProvider>
             </QueryContextProvider>
           </ConfirmDialogContextProvider>
         </MessageDialogContextProvider>

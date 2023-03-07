@@ -1,4 +1,5 @@
 import { FormEvent, useRef, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { RequireAuth } from '../../../components/RequireAuth';
@@ -168,5 +169,16 @@ const Page = () => {
 };
 
 export const UploadUnityPage = () => {
-  return <RequireAuth>{() => <Page />}</RequireAuth>;
+  return (
+    <RequireAuth>
+      {() => (
+        <>
+          <Helmet>
+            <title>アップロード</title>
+          </Helmet>
+          <Page />
+        </>
+      )}
+    </RequireAuth>
+  );
 };
