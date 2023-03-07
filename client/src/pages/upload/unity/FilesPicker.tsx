@@ -48,6 +48,10 @@ export const FilesPicker = ({
   const [dragging, setDragging] = useState(false);
   const [hasHiddenFolderDropped, setHasHiddenFolderDropped] = useState(false);
   const onFilesDrop = (e: ChangeEvent<HTMLInputElement>) => {
+    const fileInput = fileInputRef.current;
+    if (fileInput === null) {
+      return;
+    }
     setHasHiddenFolderDropped(false);
     const fileList = e.currentTarget.files;
     if (fileList === null) {
@@ -59,6 +63,7 @@ export const FilesPicker = ({
       setHasHiddenFolderDropped(true);
     }
     onChange(transformed);
+    fileInput.files = transformed;
   };
   const startDrag = () => setDragging(true);
   const finishDrag = () => setDragging(false);
