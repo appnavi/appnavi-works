@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
+import { ConfirmDialogContextProvider } from './context/DialogsContext/ConfirmDialog';
+import { MessageDialogContextProvider } from './context/DialogsContext/MessageDialog';
 import { QueryContextProvider } from './context/QueryContext';
 import { IndexPage } from './pages';
 import { NotFoundPage } from './pages/NotFound';
 import { AuthPage } from './pages/auth';
+import { UploadUnityPage } from './pages/upload/unity';
 import { trpc } from './trpc';
 
 const PageRoot = () => {
@@ -27,10 +30,17 @@ const router = createBrowserRouter([
     path: '/',
     element: <PageRoot />,
     children: [
-      { path: '/', element: <IndexPage /> },
+      {
+        path: '/',
+        element: <IndexPage />,
+      },
       {
         path: '/auth',
         element: <AuthPage />,
+      },
+      {
+        path: '/upload/unity',
+        element: <UploadUnityPage />,
       },
       {
         path: '*',
@@ -54,9 +64,13 @@ function App() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <QueryContextProvider>
-          <RouterProvider router={router} />
-        </QueryContextProvider>
+        <MessageDialogContextProvider>
+          <ConfirmDialogContextProvider>
+            <QueryContextProvider>
+              <RouterProvider router={router} />
+            </QueryContextProvider>
+          </ConfirmDialogContextProvider>
+        </MessageDialogContextProvider>
       </QueryClientProvider>
     </trpc.Provider>
   );
