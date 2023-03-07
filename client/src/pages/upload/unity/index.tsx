@@ -1,6 +1,7 @@
 import { FormEvent, useRef, useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { z } from 'zod';
+import { RequireAuth } from '../../../components/RequireAuth';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { useQueryContext } from '../../../context/QueryContext';
 import { FilesPicker } from './FilesPicker';
@@ -34,11 +35,7 @@ const PreventPageLeave = ({
 
 // TODO：defaultCreatorIdの取得、表示
 // TODO：コード分割
-export const UploadUnityPage = () => {
-  const { user } = useQueryContext();
-  if (user === null) {
-    return <Navigate to="/auth" />;
-  }
+const Page = () => {
   const navigate = useNavigate();
   const { showMessageDialog } = useMessageDialogContext();
   const { csrfToken } = useQueryContext();
@@ -223,4 +220,8 @@ export const UploadUnityPage = () => {
       </div>
     </div>
   );
+};
+
+export const UploadUnityPage = () => {
+  return <RequireAuth>{() => <Page />}</RequireAuth>;
 };
