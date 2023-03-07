@@ -14,6 +14,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': 'http://localhost:5000',
+      '/works': 'http://localhost:5000',
       // TODO：以下のルートを/apiルート下に移動
       '/auth/slack': 'http://localhost:5000',
       '/auth/slack/redirect': 'http://localhost:5000',
