@@ -1,7 +1,53 @@
 import M from '@materializecss/materialize';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
 import { UploadType } from './common';
+type FileTreeNode = {
+  segment: string;
+  children: FileTreeNode[];
+};
+// type FileTreeObject = {
+//   [key: string]: File | FileTreeObject
+// }
+
+function filesToTree(files: File[]) {
+  const tree: FileTreeNode = {
+    segment: '',
+    children: [],
+  };
+  for (const file of files) {
+    const segments = file.webkitRelativePath.split('/');
+    segments.shift();
+    let children = tree.children;
+    for (let i = 0; i < segments.length; ++i) {
+      const segment = segments[i];
+      let child = children.find((x) => x.segment === segment);
+      if (child === undefined) {
+        child = {
+          segment: segment,
+          children: [],
+        };
+        children.push(child);
+      }
+      children = child.children;
+    }
+  }
+  return tree;
+}
+
+const FileTreeWebGLNode = ({ tree }: { tree: FileTreeNode }) => {
+  const { segment, children } = tree;
+  return (
+    <FileTreeLi>
+      {segment}
+      <FileTreeUl>
+        {children.map((child) => (
+          <FileTreeWebGLNode key={child.segment} tree={child} />
+        ))}
+      </FileTreeUl>
+    </FileTreeLi>
+  );
+};
 
 const FileTreeWebGL = ({
   files,
@@ -10,20 +56,18 @@ const FileTreeWebGL = ({
   files: File[];
   uploadType: UploadType;
 }) => {
+  const { children } = filesToTree(files);
   return (
-    <li className="ml-4">
-      {uploadType}/
-      <ul>
-        {files.map((f) => {
-          const name = f.webkitRelativePath?.replace(/^[^/]+\//, '');
-          return (
-            <li key={name} className="ml-4">
-              {name}
-            </li>
-          );
-        })}
-      </ul>
-    </li>
+    <FileTreeLi>
+      {uploadType}
+      {children.length > 0 ? (
+        <FileTreeUl>
+          {children.map((child) => (
+            <FileTreeWebGLNode key={child.segment} tree={child} />
+          ))}
+        </FileTreeUl>
+      ) : null}
+    </FileTreeLi>
   );
 };
 
@@ -34,15 +78,27 @@ const FileTreeWindows = ({
   files: File[];
   uploadType: UploadType;
 }) => {
-  const name = files.length > 0 ? files[0].name : '';
   return (
-    <li className="ml-4">
-      {uploadType}/
-      <ul>
-        <li key={name} className="ml-4">
-          {name}
-        </li>
-      </ul>
+    <FileTreeLi>
+      {uploadType}
+      {files.length > 0 ? (
+        <FileTreeUl>
+          <FileTreeLi>{files[0].name}</FileTreeLi>
+        </FileTreeUl>
+      ) : null}
+    </FileTreeLi>
+  );
+};
+
+// http://kachibito.net/css/file-tree-css を参考に作成
+const FileTreeUl = ({ children }: { children: ReactNode }) => {
+  return <ul className="pl-[5px] list-none">{children}</ul>;
+};
+// http://kachibito.net/css/file-tree-css を参考に作成
+const FileTreeLi = ({ children }: { children: ReactNode }) => {
+  return (
+    <li className="relative py-[5px] pl-[15px] box-border before:absolute before:top-[15px] before:left-0 before:w-[10px] before:h-[1px] before:m-auto before:content-[''] before:bg-gray-500 after:absolute after:top-0 after:bottom-0 after:left-0 after:w-[1px] after:h-full after:content-[''] after:bg-gray-500 last:after:h-[15px]">
+      {children}
     </li>
   );
 };
@@ -103,8 +159,8 @@ export const Preview = ({
             </span>
             /
           </div>
-          <div className="file-list">
-            <ul>
+          <div className="relative bg-white leading-6">
+            <FileTreeUl>
               <FileTree
                 files={Array.from(webglFiles ?? [])}
                 uploadType="webgl"
@@ -113,7 +169,7 @@ export const Preview = ({
                 files={Array.from(windowsFiles ?? [])}
                 uploadType="windows"
               />
-            </ul>
+            </FileTreeUl>
           </div>
         </div>
       </li>
