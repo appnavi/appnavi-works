@@ -22,15 +22,18 @@ export const Navbar = () => {
       </nav>
     );
   }
+  const { avatar_url, type } = user;
   return (
     <nav>
       <ul id="navbar-dropdown" className="dropdown-content">
         <li>
           <Link to="/account">アカウント</Link>
         </li>
-        <li>
-          <Link to="/account/guest">ゲストユーザー</Link>
-        </li>
+        {type === 'Slack' ? (
+          <li>
+            <Link to="/account/guest">ゲストユーザー</Link>
+          </li>
+        ) : null}
         <li className="divider"></li>
         <li>
           <a href="/auth/logout">ログアウト</a>
@@ -48,11 +51,13 @@ export const Navbar = () => {
               href="#!"
               data-target="navbar-dropdown"
             >
-              <img
-                src={user.avatar_url}
-                alt="User Avatar"
-                className="circle responsive-img navbar-avatar mr-3"
-              />
+              {avatar_url !== undefined ? (
+                <img
+                  src={avatar_url}
+                  alt="User Avatar"
+                  className="circle responsive-img navbar-avatar mr-3"
+                />
+              ) : null}
               {user.name}
               <MdArrowDropDown size={25} className="ml-3" />
             </a>
