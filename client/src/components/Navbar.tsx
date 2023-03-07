@@ -39,7 +39,7 @@ export const Navbar = () => {
           <a href="/auth/logout">ログアウト</a>
         </li>
       </ul>
-      <div>
+      <div className="nav-wrapper">
         <Link className="brand-logo center" to="/">
           アプリNavi
         </Link>
@@ -59,7 +59,9 @@ export const Navbar = () => {
                 />
               ) : null}
               {user.name}
-              <MdArrowDropDown size={25} className="ml-3" />
+              <i className="right flex">
+                <MdArrowDropDown className="my-auto" />
+              </i>
             </a>
           </li>
         </ul>
