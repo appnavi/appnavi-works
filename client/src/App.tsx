@@ -5,9 +5,9 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { UserProvider } from './context/UserContext';
-import { AuthPage } from './pages/AuthPage';
-import { IndexPage } from './pages/IndexPage';
-import { NotFoundPage } from './pages/NotFoundPage';
+import { IndexPage } from './pages';
+import { NotFoundPage } from './pages/NotFound';
+import { AuthPage } from './pages/auth';
 import { trpc } from './trpc';
 
 const PageRoot = () => {
