@@ -1,5 +1,5 @@
 import { FormEvent, useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { z } from 'zod';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { useQueryContext } from '../../../context/QueryContext';
@@ -35,6 +35,10 @@ const PreventPageLeave = ({
 // TODO：defaultCreatorIdの取得、表示
 // TODO：コード分割
 export const UploadUnityPage = () => {
+  const { user } = useQueryContext();
+  if (user === null) {
+    return <Navigate to="/auth" />;
+  }
   const navigate = useNavigate();
   const { showMessageDialog } = useMessageDialogContext();
   const { csrfToken } = useQueryContext();
