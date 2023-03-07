@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
 import { UploadType } from './common';
 
-const FileTree = ({
+const FileTreeWebGL = ({
   files,
   uploadType,
 }: {
@@ -15,10 +15,7 @@ const FileTree = ({
       {uploadType}/
       <ul>
         {files.map((f) => {
-          const name =
-            uploadType === 'webgl'
-              ? f.webkitRelativePath?.replace(/^[^/]+\//, '')
-              : f.name;
+          const name = f.webkitRelativePath?.replace(/^[^/]+\//, '');
           return (
             <li key={name} className="ml-4">
               {name}
@@ -28,6 +25,39 @@ const FileTree = ({
       </ul>
     </li>
   );
+};
+
+const FileTreeWindows = ({
+  files,
+  uploadType,
+}: {
+  files: File[];
+  uploadType: UploadType;
+}) => {
+  const name = files.length > 0 ? files[0].name : '';
+  return (
+    <li className="ml-4">
+      {uploadType}/
+      <ul>
+        <li key={name} className="ml-4">
+          {name}
+        </li>
+      </ul>
+    </li>
+  );
+};
+
+const FileTree = ({
+  files,
+  uploadType,
+}: {
+  files: File[];
+  uploadType: UploadType;
+}) => {
+  if (uploadType === 'windows') {
+    return <FileTreeWindows files={files} uploadType={uploadType} />;
+  }
+  return <FileTreeWebGL files={files} uploadType={uploadType} />;
 };
 
 export const Preview = ({
