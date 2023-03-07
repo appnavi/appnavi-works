@@ -1,37 +1,17 @@
-import { FormEvent, useRef, useState, useEffect } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { RequireAuth } from '../../../components/RequireAuth';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { useQueryContext } from '../../../context/QueryContext';
 import { FilesPicker } from './FilesPicker';
+import { PreventPageLeave } from './PreventPageLeave';
 import { Preview } from './Preview';
 
 const Response = z.object({
   paths: z.array(z.string()).optional(),
   errors: z.array(z.string()).optional(),
 });
-
-function alertBeforeLeave(event: BeforeUnloadEvent) {
-  event.preventDefault();
-  event.returnValue = '';
-}
-
-const PreventPageLeave = ({
-  shouldPreventLeave: shouldPrevent,
-}: {
-  shouldPreventLeave: boolean;
-}) => {
-  useEffect(() => {
-    if (shouldPrevent) {
-      window.addEventListener('beforeunload', alertBeforeLeave);
-      return () => {
-        window.removeEventListener('beforeunload', alertBeforeLeave);
-      };
-    }
-  }, [shouldPrevent]);
-  return null;
-};
 
 // TODO：defaultCreatorIdの取得、表示
 // TODO：コード分割
