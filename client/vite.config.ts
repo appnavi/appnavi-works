@@ -14,10 +14,15 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': 'http://localhost:5000',
+      // TODO：以下のルートを/apiルート下に移動
       '/auth/slack': 'http://localhost:5000',
       '/auth/slack/redirect': 'http://localhost:5000',
       '/auth/logout': 'http://localhost:5000',
-      // "/upload": "http://localhost:5000",
+      // TODO終わり
+
+      // TODO：以下のproxyを削除
+      '/auth/guest': 'http://localhost:5000',
+      '/account/guest': 'http://localhost:5000',
     },
   },
 });
