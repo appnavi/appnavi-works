@@ -3,6 +3,20 @@ import { useRef, useEffect } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { useQueryContext } from '../context/QueryContext';
+import { trpc } from '../trpc';
+
+const LogoutButton = () => {
+  const trpcContext = trpc.useContext();
+  const onClick = async () => {
+    await fetch('/api/auth/logout');
+    await trpcContext.me.invalidate();
+  };
+  return (
+    <a href="#!" onClick={onClick}>
+      ログアウト
+    </a>
+  );
+};
 
 export const Navbar = () => {
   const { user } = useQueryContext();
@@ -36,7 +50,7 @@ export const Navbar = () => {
         ) : null}
         <li className="divider"></li>
         <li>
-          <a href="/api/auth/logout">ログアウト</a>
+          <LogoutButton />
         </li>
       </ul>
       <div className="nav-wrapper">
