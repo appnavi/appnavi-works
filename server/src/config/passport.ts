@@ -74,7 +74,7 @@ async function createSlackStrategy() {
   const client = new issuer.Client({
     client_id: env.SLACK_CLIENT_ID,
     client_secret: env.SLACK_CLIENT_SECRET,
-    redirect_uris: [`${getSiteURLWithoutTrailingSlash()}/auth/slack/redirect`],
+    redirect_uris: [`${getSiteURLWithoutTrailingSlash()}/api/auth/slack/redirect`],
     response_types: ["code"],
   });
   return new OpenIdStrategy(

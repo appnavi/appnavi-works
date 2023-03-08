@@ -9,7 +9,6 @@ import passport from "passport";
 import * as logger from "./modules/logger";
 import { accountRouter } from "./routes/account";
 import { apiRouter } from "./routes/api";
-import { authRouter } from "./routes/auth";
 import { dbRouter } from "./routes/db";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
@@ -124,7 +123,6 @@ if (env.NODE_ENV !== "test") {
 
 app.use("/", indexRouter);
 app.use("/api", apiRouter);
-app.use("/auth", authRouter);
 app.use("/account", accountRouter);
 app.use("/upload", uploadRouter);
 app.use("/db", dbRouter);

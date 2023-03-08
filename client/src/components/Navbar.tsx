@@ -36,7 +36,7 @@ export const Navbar = () => {
         ) : null}
         <li className="divider"></li>
         <li>
-          <a href="/auth/logout">ログアウト</a>
+          <a href="/api/auth/logout">ログアウト</a>
         </li>
       </ul>
       <div className="nav-wrapper">

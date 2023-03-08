@@ -1,15 +1,16 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
 import passport from "passport";
-import { STRATEGY_NAME_GUEST } from "../../config/passport";
-import * as logger from "../../modules/logger";
-import { afterGuestLogIn, logLastLogin } from "../../services/auth";
+import { STRATEGY_NAME_GUEST } from "../../../config/passport";
+import * as logger from "../../../modules/logger";
+import { afterGuestLogIn, logLastLogin } from "../../../services/auth";
 import {
   ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
   ERROR_MESSAGE_GUEST_LOGIN_FAIL,
+  STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
-} from "../../utils/constants";
-import { render } from "../../utils/helpers";
+} from "../../../utils/constants";
+import { render } from "../../../utils/helpers";
 
 // ゲストログインの失敗は1時間に3回まで
 export const guestLoginRateLimiter = rateLimit({
@@ -30,9 +31,6 @@ const guestRouter = express.Router();
 
 guestRouter
   .route("/")
-  .get((req, res) => {
-    render("auth/guest", req, res);
-  })
   .post(
     guestLoginRateLimiter,
     passport.authenticate(STRATEGY_NAME_GUEST, { failWithError: true }),
@@ -40,7 +38,7 @@ guestRouter
     logLastLogin,
     (req, res) => {
       guestLoginRateLimiter.resetKey(req.ip);
-      res.redirect("/");
+      res.status(STATUS_CODE_SUCCESS).end();
     }
   );
 
@@ -56,9 +54,7 @@ guestRouter.use(
       typeof err.status === "number" &&
       err.status === STATUS_CODE_UNAUTHORIZED
     ) {
-      render("auth/guest", req, res, {
-        error: ERROR_MESSAGE_GUEST_LOGIN_FAIL,
-      });
+      res.status(STATUS_CODE_UNAUTHORIZED).send({ error: ERROR_MESSAGE_GUEST_LOGIN_FAIL, })
       return;
     }
     next(err);

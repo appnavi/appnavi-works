@@ -23,7 +23,7 @@ export const AuthPage = () => {
           </p>
           <div className="center-align">
             <a
-              href="/auth/slack"
+              href="/api/auth/slack"
               style={{
                 alignItems: 'center',
                 color: '#000',

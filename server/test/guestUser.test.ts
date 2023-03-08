@@ -18,7 +18,7 @@ import {
 import { createLogin, myId, theirId } from "./auth";
 import { connectDatabase, clearDatabase, INVALID_ID, wrap } from "./common";
 import { UserModel, WorkModel } from "../src/models/database";
-import { guestLoginRateLimiter } from "../src/routes/auth/guest";
+import { guestLoginRateLimiter } from "../src/routes/api/auth/guest";
 import { verifyPassword } from "../src/services/auth/password";
 
 function getIdAndPassFromCreateGuestHtml(html: string): {
@@ -76,7 +76,7 @@ async function testInvalidGuestLogin(
 ): Promise<void> {
   return new Promise((resolve) => {
     request(app)
-      .post("/auth/guest")
+      .post("/api/auth/guest")
       .send({
         userId: "invalid-guest-id",
         password: "password",
@@ -95,7 +95,7 @@ async function testSuccessfulGuestLogin(
 ): Promise<void> {
   return new Promise<void>((resolve) => {
     request(app)
-      .post("/auth/guest")
+      .post("/api/auth/guest")
       .send({
         userId,
         password,
@@ -236,7 +236,7 @@ describe("ゲストユーザー", () => {
       wrap(async (done) => {
         const { guestId, password } = await testSuccessfulGuestUserCreation();
         request(app)
-          .post("/auth/guest")
+          .post("/api/auth/guest")
           .send({
             userId: `${guestId}1`,
             password,
@@ -250,7 +250,7 @@ describe("ゲストユーザー", () => {
       wrap(async (done) => {
         const { guestId, password } = await testSuccessfulGuestUserCreation();
         request(app)
-          .post("/auth/guest")
+          .post("/api/auth/guest")
           .send({
             userId: guestId,
             password: `${password}1`,
@@ -264,13 +264,12 @@ describe("ゲストユーザー", () => {
       wrap(async (done) => {
         const { guestId, password } = await testSuccessfulGuestUserCreation();
         request(app)
-          .post("/auth/guest")
+          .post("/api/auth/guest")
           .send({
             userId: guestId,
             password,
           })
-          .expect(STATUS_CODE_REDIRECT_TEMPORARY)
-          .expect("Location", "/")
+          .expect(STATUS_CODE_SUCCESS)
           .end(done);
       })
     );
@@ -362,7 +361,7 @@ describe("ゲストユーザー", () => {
           await testInvalidGuestLogin(GUEST_LOGIN_FAIL);
         }
         request(app)
-          .post("/auth/guest")
+          .post("/api/auth/guest")
           .send({
             userId: guestId,
             password,

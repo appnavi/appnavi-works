@@ -1,10 +1,10 @@
 import express from "express";
 import passport from "passport";
-import { STRATEGY_NAME_TEST } from "../../config/passport";
-import { findOrCreateUser, isAuthenticated } from "../../services/auth";
-import { env } from "../../utils/env";
-import { UnauthorizedError } from "../../utils/errors";
-import { render, wrap } from "../../utils/helpers";
+import { STRATEGY_NAME_TEST } from "../../../config/passport";
+import { findOrCreateUser } from "../../../services/auth";
+import { env } from "../../../utils/env";
+import { UnauthorizedError } from "../../../utils/errors";
+import { wrap } from "../../../utils/helpers";
 import { guestRouter } from "./guest";
 import { slackRouter } from "./slack";
 const authRouter = express.Router();
@@ -21,17 +21,6 @@ authRouter.get("/logout", (req, res) => {
   });
 });
 
-authRouter.use("/", (req, res, next) => {
-  if (isAuthenticated(req)) {
-    res.redirect("/");
-    return;
-  }
-  next();
-});
-
-authRouter.get("/", function (req, res) {
-  render("auth", req, res);
-});
 authRouter.use("/slack", slackRouter);
 authRouter.use("/guest", guestRouter);
 

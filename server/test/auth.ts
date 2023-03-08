@@ -11,7 +11,7 @@ export async function createLogin(userId: string, type: string = "Slack") {
   return new Promise<{ login: (req: supertest.Test) => supertest.Test }>(
     (resolve, reject) => {
       request(app)
-        .post("/auth/test")
+        .post("/api/auth/test")
         .send({
           id: userId,
           name: "",

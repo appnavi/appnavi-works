@@ -11,6 +11,7 @@ import { QueryContextProvider } from './context/QueryContext';
 import { IndexPage } from './pages';
 import { NotFoundPage } from './pages/NotFound';
 import { AuthPage } from './pages/auth';
+import { AuthGuestPage } from './pages/auth/guest';
 import { UploadUnityPage } from './pages/upload/unity';
 import { trpc } from './trpc';
 
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: '/auth',
         element: <AuthPage />,
+      },
+      {
+        path: '/auth/guest',
+        element: <AuthGuestPage />,
       },
       {
         path: '/upload/unity',

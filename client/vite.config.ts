@@ -22,7 +22,6 @@ export default defineConfig({
       // TODO終わり
 
       // TODO：以下のproxyを削除
-      '/auth/guest': 'http://localhost:5000',
       '/account/guest': 'http://localhost:5000',
     },
   },
