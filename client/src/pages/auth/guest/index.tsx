@@ -3,12 +3,14 @@ import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
 import { UnauthorizedOnly } from '../../../components/UnauthorizedOnly';
 import { useQueryContext } from '../../../context/QueryContext';
+import { trpc } from '../../../trpc';
 
 const Response = z.object({
   error: z.string(),
 });
 
 const Page = () => {
+  const trpcContext = trpc.useContext();
   const { csrfToken } = useQueryContext();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
@@ -26,7 +28,7 @@ const Page = () => {
       body: params,
     });
     if (response.status === 200) {
-      location.href = '/';
+      trpcContext.me.invalidate();
       return;
     }
     const error = Response.safeParse(JSON.parse(await response.text()));

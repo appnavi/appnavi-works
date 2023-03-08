@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { UnauthorizedOnly } from '../../components/UnauthorizedOnly';
 import { useQueryContext } from '../../context/QueryContext';
 
@@ -72,9 +72,9 @@ const Page = () => {
             ゲストとしてログインするには下のボタンを押してください。
           </p>
           <div className="center-align">
-            <a href="/auth/guest" className="btn-large">
+            <Link to="/auth/guest" className="btn-large">
               ゲストとしてログインする
-            </a>
+            </Link>
           </div>
         </div>
       </div>
