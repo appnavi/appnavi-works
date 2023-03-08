@@ -1,8 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 import { Navigate } from 'react-router-dom';
+import { UnauthorizedOnly } from '../../components/UnauthorizedOnly';
 import { useQueryContext } from '../../context/QueryContext';
 
-export const AuthPage = () => {
+const Page = () => {
   const { user } = useQueryContext();
   if (user !== null) {
     return <Navigate to="/" />;
@@ -78,5 +79,13 @@ export const AuthPage = () => {
         </div>
       </div>
     </>
+  );
+};
+
+export const AuthPage = () => {
+  return (
+    <UnauthorizedOnly>
+      <Page />
+    </UnauthorizedOnly>
   );
 };

@@ -1,13 +1,14 @@
 import { FormEvent, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
+import { UnauthorizedOnly } from '../../../components/UnauthorizedOnly';
 import { useQueryContext } from '../../../context/QueryContext';
 
 const Response = z.object({
   error: z.string(),
 });
 
-export const AuthGuestPage = () => {
+const Page = () => {
   const { csrfToken } = useQueryContext();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
@@ -78,5 +79,13 @@ export const AuthGuestPage = () => {
         </div>
       </div>
     </>
+  );
+};
+
+export const AuthGuestPage = () => {
+  return (
+    <UnauthorizedOnly>
+      <Page />
+    </UnauthorizedOnly>
   );
 };

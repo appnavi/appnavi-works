@@ -2,7 +2,7 @@ import { FormEvent, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
-import { RequireAuth } from '../../../components/RequireAuth';
+import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { useQueryContext } from '../../../context/QueryContext';
 import { FilesPicker } from './FilesPicker';
@@ -169,7 +169,7 @@ const Page = () => {
 
 export const UploadUnityPage = () => {
   return (
-    <RequireAuth>
+    <AuthorizedOnly>
       {() => (
         <>
           <Helmet>
@@ -178,6 +178,6 @@ export const UploadUnityPage = () => {
           <Page />
         </>
       )}
-    </RequireAuth>
+    </AuthorizedOnly>
   );
 };

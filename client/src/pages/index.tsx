@@ -2,7 +2,7 @@ import { type User } from '@common/types';
 import { Helmet } from 'react-helmet-async';
 import { FaUnity } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { RequireAuth } from '../components/RequireAuth';
+import { AuthorizedOnly } from '../components/AuthorizedOnly';
 
 const DatabaseSection = ({ user }: { user: User }) => {
   if (user.type === 'Guest') {
@@ -56,7 +56,7 @@ const Page = ({ user }: { user: User }) => {
 
 export const IndexPage = () => {
   return (
-    <RequireAuth>
+    <AuthorizedOnly>
       {(user) => (
         <>
           <Helmet>
@@ -65,6 +65,6 @@ export const IndexPage = () => {
           <Page user={user} />
         </>
       )}
-    </RequireAuth>
+    </AuthorizedOnly>
   );
 };

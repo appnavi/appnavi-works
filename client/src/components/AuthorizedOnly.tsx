@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useQueryContext } from '../context/QueryContext';
 
-export const RequireAuth = ({
+export const AuthorizedOnly = ({
   children,
 }: {
   children: (user: User) => ReactNode;
