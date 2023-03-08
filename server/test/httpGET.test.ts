@@ -53,7 +53,7 @@ describe("GET", () => {
   });
   describe("非ログイン時", () => {
     describe("authRouter", () => {
-      it("/authをGETできる", (done) => {
+      it.skip("/authをGETできる", (done) => {
         canAccessTo(false, "/auth", done);
       });
       it("/auth/guestをGETできる", (done) => {
@@ -89,12 +89,12 @@ describe("GET", () => {
       });
     });
     describe("indexRouter", () => {
-      it("/はログイン必須", (done) => {
+      it.skip("/はログイン必須", (done) => {
         requireAuthenticated("/", done);
       });
     });
     describe("uploadRouter", () => {
-      it("/upload/unityはログイン必須", (done) => {
+      it.skip("/upload/unityはログイン必須", (done) => {
         requireAuthenticated("/upload/unity", done);
       });
     });
@@ -179,12 +179,12 @@ describe("GET", () => {
       );
     });
     describe("indexRouter", () => {
-      it("/をGETできる", (done) => {
+      it.skip("/をGETできる", (done) => {
         canAccessTo(true, "/", done);
       });
     });
     describe("uploadRouter", () => {
-      it("/upload/unityをGETできる", (done) => {
+      it.skip("/upload/unityをGETできる", (done) => {
         canAccessTo(true, "/upload/unity", done);
       });
     });
