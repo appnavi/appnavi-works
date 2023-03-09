@@ -44,7 +44,6 @@ export function randomString(size: number) {
 // ---------------------------------------------------------------------
 
 function getCsrfTokenFromRequest(req: Request) {
-  console.log(req.body);
   const val = req.body?.["_csrf"] ?? req.headers["csrf-token"];
   if (typeof val !== "string") {
     return undefined;
