@@ -1,6 +1,7 @@
 import { createCsrfTokenInSession } from "../../../services/csrf";
 import { t, publicProcedure } from "../../../utils/trpc";
 import { accountRouter } from "./account";
+import { dbRouter } from "./db";
 
 
 export const trpcRouter = t.router({
@@ -13,7 +14,8 @@ export const trpcRouter = t.router({
     }
     return await createCsrfTokenInSession(req.session);
   }),
-  account: accountRouter
+  account: accountRouter,
+  db: dbRouter
 });
 
 export type TRPCRouter = typeof trpcRouter

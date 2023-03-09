@@ -13,6 +13,10 @@ import { IndexPage } from './pages';
 import { NotFoundPage } from './pages/NotFound';
 import { AuthPage } from './pages/auth';
 import { AuthGuestPage } from './pages/auth/guest';
+import { DbUsersPage } from './pages/db/users';
+import { DbUsersRawPage } from './pages/db/users/raw';
+import { DbWorksPage } from './pages/db/works';
+import { DbWorksRawPage } from './pages/db/works/raw';
 import { UploadUnityPage } from './pages/upload/unity';
 import { trpc } from './trpc';
 
@@ -48,6 +52,22 @@ const router = createBrowserRouter([
       {
         path: '/upload/unity',
         element: <UploadUnityPage />,
+      },
+      {
+        path: '/db/users',
+        element: <DbUsersPage />,
+      },
+      {
+        path: '/db/users/raw',
+        element: <DbUsersRawPage />,
+      },
+      {
+        path: '/db/works',
+        element: <DbWorksPage />,
+      },
+      {
+        path: '/db/works/raw',
+        element: <DbWorksRawPage />,
       },
       {
         path: '*',
