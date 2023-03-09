@@ -3,6 +3,7 @@ import { httpBatchLink } from '@trpc/client';
 import { useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import superjson from 'superjson';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { ConfirmDialogContextProvider } from './context/DialogsContext/ConfirmDialog';
@@ -60,6 +61,7 @@ function App() {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({
+      transformer: superjson,
       links: [
         httpBatchLink({
           url: '/api',

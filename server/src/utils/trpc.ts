@@ -1,5 +1,6 @@
 import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 import { CreateExpressContextOptions } from "@trpc/server/adapters/express";
+import superjson from 'superjson';
 import { fromZodError } from "zod-validation-error";
 import { UserOrUndefined } from "../common/types"
 import { system } from "../modules/logger";
@@ -20,7 +21,9 @@ export function createContext({ req }: CreateExpressContextOptions) {
   }
 }
 
-export const t = initTRPC.context<inferAsyncReturnType<typeof createContext>>().create();
+export const t = initTRPC.context<inferAsyncReturnType<typeof createContext>>().create({
+  transformer: superjson
+});
 
 const requireAuth = t.middleware(({ ctx, next }) => {
   const user = ctx.user
