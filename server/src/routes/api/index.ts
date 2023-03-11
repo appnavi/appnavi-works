@@ -3,7 +3,6 @@ import { Router } from "express";
 import { ZodError } from "zod";
 import { ErrorResponse } from "../../common/types";
 import { createContext } from "../../utils/trpc";
-import { accountRouter } from "./account";
 import { authRouter } from "./auth";
 import { trpcRouter } from "./trpc";
 import { uploadRouter } from "./upload";
@@ -11,7 +10,6 @@ import { uploadRouter } from "./upload";
 const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
-apiRouter.use("/account", accountRouter);
 apiRouter.use("/upload", uploadRouter);
 apiRouter.use(
   createExpressMiddleware({
