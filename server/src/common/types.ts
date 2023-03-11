@@ -8,3 +8,34 @@ export const User = z.object({
 export type User = z.infer<typeof User>
 export const UserOrUndefined = User.optional()
 export type UserOrUndefined = z.infer<typeof UserOrUndefined>
+
+export const UserDB = z.object({
+  userId: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  lastLogIn: z.date(),
+  defaultCreatorId: z.string().optional(),
+  creatorIds: z.string().array(),
+  guest: z.object({
+    hashedPassword: z.string(),
+    createdBy: z.string()
+  }).optional()
+}).transform(user => ({
+  ...user,
+  guest: user.guest !== undefined
+}))
+export type UserDB = z.infer<typeof UserDB>
+
+export const WorkDB = z.object({
+  creatorId: z.string(),
+  workId: z.string(),
+  owner: z.string(),
+  fileSize: z.number(),
+  uploadedAt: z.date().optional(),
+  backups: z.array(z.object({
+    name: z.string(),
+    fileSize: z.number(),
+    uploadedAt: z.date().optional()
+  }))
+})
+export type WorkDB = z.infer<typeof WorkDB>

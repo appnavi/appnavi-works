@@ -1,10 +1,10 @@
+import { WorkDB } from '@common/types';
 import { Helmet } from 'react-helmet-async';
 import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
 import { FormatDate } from '../../../components/FormatDate';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
-import { trpc, RouterOutput } from '../../../trpc';
-type Works = RouterOutput['db']['fetchAllWorks'];
-const WorksOfUser = ({ worksOfUser }: { worksOfUser: Works }) => {
+import { trpc } from '../../../trpc';
+const WorksOfUser = ({ worksOfUser }: { worksOfUser: WorkDB[] }) => {
   return (
     <ul className="collection with-header">
       <li className="collection-header">
