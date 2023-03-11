@@ -1,8 +1,6 @@
 export const URL_PREFIX_WORK = "/works";
-export const URL_PREFIX_PRIVATE = "/private";
 
 //srcディレクトリからのフォルダの相対パス
-export const DIRECTORY_NAME_PRIVATE = "private";
 export const DIRECTORY_NAME_PUBLIC = "public";
 export const DIRECTORY_NAME_VIEWS = "views";
 export const DIRECTORY_NAME_UPLOADS = "uploads";

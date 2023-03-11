@@ -12,12 +12,9 @@ import { apiRouter } from "./routes/api";
 import { indexRouter } from "./routes/index";
 import { uploadRouter } from "./routes/upload";
 import { worksRouter } from "./routes/works";
-import { ensureAuthenticated } from "./services/auth";
 import { csrf } from "./services/csrf";
 import {
-  URL_PREFIX_PRIVATE,
   URL_PREFIX_WORK,
-  DIRECTORY_NAME_PRIVATE,
   DIRECTORY_NAME_PUBLIC,
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_SERVER_ERROR,
@@ -109,11 +106,6 @@ app.use(
 app.use(
   ignoreTypescriptFile,
   express.static(path.resolve(DIRECTORY_NAME_PUBLIC))
-);
-app.use(
-  URL_PREFIX_PRIVATE,
-  ensureAuthenticated,
-  express.static(path.resolve(DIRECTORY_NAME_PRIVATE))
 );
 
 if (env.NODE_ENV !== "test") {
