@@ -1,11 +1,11 @@
-.fas{
+.material-icons {
   font-size: 10em;
-  @media screen and (max-width: 400px){
+  @media screen and (max-width: 400px) {
     font-size: 20vw;
   }
 }
-.breadcrumb{
-  @media screen and (max-width: 400px){
+.breadcrumb {
+  @media screen and (max-width: 400px) {
     display: block;
     white-space: nowrap;
     overflow: hidden;
