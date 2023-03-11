@@ -7,11 +7,13 @@ import superjson from 'superjson';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { ConfirmDialogContextProvider } from './context/DialogsContext/ConfirmDialog';
+import { ErrorDialogContextProvider } from './context/DialogsContext/ErrorDialog';
 import { MessageDialogContextProvider } from './context/DialogsContext/MessageDialog';
 import { UserContextProvider } from './context/UserContext';
-import { CsrfTokenProvider } from './csrf';
+import { csrfToken, CsrfTokenProvider } from './csrf';
 import { IndexPage } from './pages';
 import { NotFoundPage } from './pages/NotFound';
+import { AccountPage } from './pages/account';
 import { AuthPage } from './pages/auth';
 import { AuthGuestPage } from './pages/auth/guest';
 import { DbUsersPage } from './pages/db/users';
@@ -41,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <IndexPage />,
+      },
+      {
+        path: '/account',
+        element: <AccountPage />,
       },
       {
         path: '/auth',
@@ -86,6 +92,11 @@ function App() {
       links: [
         httpBatchLink({
           url: '/api',
+          headers() {
+            return {
+              'csrf-token': csrfToken,
+            };
+          },
         }),
       ],
     }),
@@ -94,15 +105,17 @@ function App() {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <CsrfTokenProvider>
-          <MessageDialogContextProvider>
-            <ConfirmDialogContextProvider>
-              <UserContextProvider>
-                <HelmetProvider>
-                  <RouterProvider router={router} />
-                </HelmetProvider>
-              </UserContextProvider>
-            </ConfirmDialogContextProvider>
-          </MessageDialogContextProvider>
+          <ErrorDialogContextProvider>
+            <MessageDialogContextProvider>
+              <ConfirmDialogContextProvider>
+                <UserContextProvider>
+                  <HelmetProvider>
+                    <RouterProvider router={router} />
+                  </HelmetProvider>
+                </UserContextProvider>
+              </ConfirmDialogContextProvider>
+            </MessageDialogContextProvider>
+          </ErrorDialogContextProvider>
         </CsrfTokenProvider>
       </QueryClientProvider>
     </trpc.Provider>
