@@ -6,7 +6,7 @@ import { ERROR_MESSAGE_BACKUP_NAME_INVALID, ERROR_MESSAGE_BACKUP_NAME_REQUIRED }
 import { RestoreBackupError } from "../../../../../utils/errors";
 import { authenticatedProcedure, t } from "../../../../../utils/trpc";
 
-const accountBacupProcedure = authenticatedProcedure.input(z.object({
+const accountBackupProcedure = authenticatedProcedure.input(z.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
   backupName: z
@@ -15,7 +15,7 @@ const accountBacupProcedure = authenticatedProcedure.input(z.object({
 }))
 
 export const accountBackupRouter = t.router({
-  restore: accountBacupProcedure.mutation(async ({ ctx, input }) => {
+  restore: accountBackupProcedure.mutation(async ({ ctx, input }) => {
     const { creatorId, workId, backupName } = input;
     try {
       await restoreBackup(creatorId, workId, ctx.user.id, backupName)
@@ -30,7 +30,7 @@ export const accountBackupRouter = t.router({
       throw new TRPCError({ code: "UNAUTHORIZED", cause: err })
     }
   }),
-  delete: accountBacupProcedure.mutation(async ({ ctx, input }) => {
+  delete: accountBackupProcedure.mutation(async ({ ctx, input }) => {
     const { creatorId, workId, backupName } = input;
     try {
       await deleteBackup(creatorId, workId, ctx.user.id, backupName);
