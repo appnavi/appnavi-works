@@ -8,7 +8,8 @@ import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { ConfirmDialogContextProvider } from './context/DialogsContext/ConfirmDialog';
 import { MessageDialogContextProvider } from './context/DialogsContext/MessageDialog';
-import { QueryContextProvider } from './context/QueryContext';
+import { UserContextProvider } from './context/UserContext';
+import { CsrfTokenProvider } from './csrf';
 import { IndexPage } from './pages';
 import { NotFoundPage } from './pages/NotFound';
 import { AuthPage } from './pages/auth';
@@ -92,15 +93,17 @@ function App() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <MessageDialogContextProvider>
-          <ConfirmDialogContextProvider>
-            <QueryContextProvider>
-              <HelmetProvider>
-                <RouterProvider router={router} />
-              </HelmetProvider>
-            </QueryContextProvider>
-          </ConfirmDialogContextProvider>
-        </MessageDialogContextProvider>
+        <CsrfTokenProvider>
+          <MessageDialogContextProvider>
+            <ConfirmDialogContextProvider>
+              <UserContextProvider>
+                <HelmetProvider>
+                  <RouterProvider router={router} />
+                </HelmetProvider>
+              </UserContextProvider>
+            </ConfirmDialogContextProvider>
+          </MessageDialogContextProvider>
+        </CsrfTokenProvider>
       </QueryClientProvider>
     </trpc.Provider>
   );

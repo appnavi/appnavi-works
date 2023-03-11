@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
-import { useQueryContext } from '../../../context/QueryContext';
+import { csrfToken } from '../../../csrf';
 import { FilesPicker } from './FilesPicker';
 import { CreatorIdInput, WorkIdInput } from './Inputs';
 import { PreventPageLeave } from './PreventPageLeave';
@@ -19,7 +19,6 @@ const Response = z.object({
 const Page = () => {
   const navigate = useNavigate();
   const { showMessageDialog } = useMessageDialogContext();
-  const { csrfToken } = useQueryContext();
   const [uploading, setUploading] = useState(false);
   const [creatorId, setCreatorId] = useState<string>('');
   const [workId, setWorkId] = useState<string>('');
@@ -42,7 +41,8 @@ const Page = () => {
   const handleSubit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formElement = formRef.current;
-    if (formElement === null) {
+    const _csrfToken = csrfToken;
+    if (formElement === null || _csrfToken === undefined) {
       return;
     }
     setUploading(true);
@@ -52,7 +52,7 @@ const Page = () => {
       method: 'POST',
       body: formData,
       headers: {
-        'CSRF-Token': csrfToken,
+        'CSRF-Token': _csrfToken,
         'x-creator-id': creatorId,
         'x-work-id': workId,
       },

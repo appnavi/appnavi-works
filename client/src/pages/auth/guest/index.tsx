@@ -2,7 +2,7 @@ import { FormEvent, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
 import { UnauthorizedOnly } from '../../../components/UnauthorizedOnly';
-import { useQueryContext } from '../../../context/QueryContext';
+import { csrfToken } from '../../../csrf';
 import { trpc } from '../../../trpc';
 
 const Response = z.object({
@@ -11,15 +11,17 @@ const Response = z.object({
 
 const Page = () => {
   const trpcContext = trpc.useContext();
-  const { csrfToken } = useQueryContext();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const _csrfToken = csrfToken;
+    if (_csrfToken === undefined) {
+      return;
+    }
     const params = new URLSearchParams();
-    params.append('_csrf', csrfToken);
+    params.append('_csrf', _csrfToken);
     params.append('userId', userId);
     params.append('password', password);
 

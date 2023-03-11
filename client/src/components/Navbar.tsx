@@ -2,7 +2,7 @@ import M from '@materializecss/materialize';
 import { useRef, useEffect } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import { useQueryContext } from '../context/QueryContext';
+import { useUserContext } from '../context/UserContext';
 import { trpc } from '../trpc';
 
 const LogoutButton = () => {
@@ -19,7 +19,7 @@ const LogoutButton = () => {
 };
 
 export const Navbar = () => {
-  const { user } = useQueryContext();
+  const { user } = useUserContext();
   const navbarDropdownTrigerRef = useRef<HTMLAnchorElement | null>(null);
   useEffect(() => {
     const element = navbarDropdownTrigerRef.current;

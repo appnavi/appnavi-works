@@ -1,10 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import { Link, Navigate } from 'react-router-dom';
 import { UnauthorizedOnly } from '../../components/UnauthorizedOnly';
-import { useQueryContext } from '../../context/QueryContext';
+import { useUserContext } from '../../context/UserContext';
 
 const Page = () => {
-  const { user } = useQueryContext();
+  const { user } = useUserContext();
   if (user !== null) {
     return <Navigate to="/" />;
   }
