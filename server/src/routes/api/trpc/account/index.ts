@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { UserModel } from "../../../../models/database";
+import { UserModel, WorkModel } from "../../../../models/database";
 import { creatorIdSchema } from "../../../../services/works";
 import { t, authenticatedProcedure } from "../../../../utils/trpc";
 import { accountBackupRouter } from "./backup";
@@ -45,6 +45,16 @@ export const accountRouter = t.router({
         { upsert: true }
       )
     }),
+  cleanupCreatorIds: authenticatedProcedure.mutation(async ({ ctx }) => {
+    const user = await findUserByIdOrThrow(ctx.user.id);
+    const works = await WorkModel.find();
+    const usedCreatorIds = user.creatorIds.filter((id) => {
+      return works.find((w) => w.creatorId === id) !== undefined;
+    });
+    await user.update({
+      creatorIds: usedCreatorIds,
+    });
+  }),
   work: accountWorkRouter,
   backup: accountBackupRouter
 });
