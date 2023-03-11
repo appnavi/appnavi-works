@@ -14,6 +14,7 @@ import { csrfToken, CsrfTokenProvider } from './csrf';
 import { IndexPage } from './pages';
 import { NotFoundPage } from './pages/NotFound';
 import { AccountPage } from './pages/account';
+import { AccountGuestPage } from './pages/account/guest';
 import { AuthPage } from './pages/auth';
 import { AuthGuestPage } from './pages/auth/guest';
 import { DbUsersPage } from './pages/db/users';
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: '/account',
         element: <AccountPage />,
+      },
+      {
+        path: '/account/guest',
+        element: <AccountGuestPage />,
       },
       {
         path: '/auth',

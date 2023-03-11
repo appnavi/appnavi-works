@@ -3,6 +3,7 @@ import { UserModel, WorkModel } from "../../../../models/database";
 import { creatorIdSchema } from "../../../../services/works";
 import { t, authenticatedProcedure } from "../../../../utils/trpc";
 import { accountBackupRouter } from "./backup";
+import { accountGuestRouter } from "./guest";
 import { accountWorkRouter } from "./work";
 
 async function findUserByIdOrNull(userId: string) {
@@ -56,7 +57,8 @@ export const accountRouter = t.router({
     });
   }),
   work: accountWorkRouter,
-  backup: accountBackupRouter
+  backup: accountBackupRouter,
+  guest: accountGuestRouter
 });
 
 

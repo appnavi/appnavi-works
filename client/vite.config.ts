@@ -15,9 +15,6 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:5000',
       '/works': 'http://localhost:5000',
-
-      // TODO：以下のproxyを削除
-      '/account/guest': 'http://localhost:5000',
     },
   },
 });
