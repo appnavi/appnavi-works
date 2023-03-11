@@ -6,13 +6,13 @@ import express from "express";
 import session from "express-session";
 import helmet from "helmet";
 import passport from "passport";
+import { URL_PREFIX_WORK } from "./common/constants";
 import * as logger from "./modules/logger";
 import { apiRouter } from "./routes/api";
 import { indexRouter } from "./routes/index";
 import { worksRouter } from "./routes/works";
 import { csrf } from "./services/csrf";
 import {
-  URL_PREFIX_WORK,
   DIRECTORY_NAME_PUBLIC,
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_SERVER_ERROR,

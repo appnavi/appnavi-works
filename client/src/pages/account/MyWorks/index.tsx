@@ -1,3 +1,4 @@
+import { URL_PREFIX_WORK } from '@common/constants';
 import { User } from '@common/types';
 import { MdOpenInNew } from 'react-icons/md';
 import { FormatDate } from '../../../components/FormatDate';
@@ -38,7 +39,7 @@ export const MyWorks = ({ user }: { user: User }) => {
             </ul>
             <div className="flex gap-2">
               <a
-                href={`${location.origin}/works/${creatorId}/${workId}`}
+                href={`${location.origin}${URL_PREFIX_WORK}/${creatorId}/${workId}`}
                 className="btn"
                 target="_blank"
                 rel="noreferrer"

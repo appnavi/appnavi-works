@@ -2,6 +2,11 @@ import path from "path";
 import express from "express";
 import fsExtra from "fs-extra";
 import multer from "multer";
+import {
+  HEADER_CREATOR_ID,
+  HEADER_WORK_ID,
+  URL_PREFIX_WORK,
+} from "../../../common/constants";
 import { WorkDocument } from "../../../models/database";
 import * as logger from "../../../modules/logger";
 import {
@@ -20,11 +25,8 @@ import {
   getAbsolutePathOfWork,
 } from "../../../services/works";
 import {
-  URL_PREFIX_WORK,
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
   ERROR_MESSAGE_NO_FILES as NO_FILES,
-  HEADER_CREATOR_ID,
-  HEADER_WORK_ID,
   UPLOAD_UNITY_FIELD_WINDOWS,
   UPLOAD_UNITY_FIELD_WEBGL,
   UPLOAD_UNITY_FIELDS,

@@ -1,3 +1,4 @@
+import { URL_PREFIX_WORK } from '@common/constants';
 import M from '@materializecss/materialize';
 import { useEffect, useRef, useState, ReactNode } from 'react';
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
@@ -149,7 +150,8 @@ export const Preview = ({
         </div>
         <div className="collapsible-body">
           <div className="file-list-header">
-            {location.origin}/works/
+            {location.origin}
+            {URL_PREFIX_WORK}/
             <span className="creator_id">
               {creatorId.length === 0 ? '(作者ID)' : creatorId}
             </span>

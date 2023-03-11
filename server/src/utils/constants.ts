@@ -1,11 +1,6 @@
-export const URL_PREFIX_WORK = "/works";
-
 //srcディレクトリからのフォルダの相対パス
 export const DIRECTORY_NAME_PUBLIC = "public";
 export const DIRECTORY_NAME_VIEWS = "views";
-
-export const HEADER_CREATOR_ID = "x-creator-id";
-export const HEADER_WORK_ID = "x-work-id";
 
 export const STATUS_CODE_SUCCESS = 200;
 export const STATUS_CODE_REDIRECT_PERMANENT = 301;

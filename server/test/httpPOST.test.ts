@@ -6,8 +6,6 @@ import {
   ERROR_MESSAGE_CREATOR_ID_REQUIRED as CREATOR_ID_REQUIRED,
   ERROR_MESSAGE_CREATOR_ID_INVALID as CREATOR_ID_INVALID,
   ERROR_MESSAGE_NO_FILES as NO_FILES,
-  HEADER_CREATOR_ID,
-  HEADER_WORK_ID,
   STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
 } from "../src/utils/constants";
@@ -20,6 +18,7 @@ import {
   wrap,
 } from "./common";
 import { UserModel } from "../src/models/database";
+import { HEADER_CREATOR_ID, HEADER_WORK_ID } from "../src/common/constants";
 
 const creatorId = "creator-3";
 const workId = "work-3";

@@ -1,3 +1,4 @@
+import { URL_PREFIX_WORK } from '@common/constants';
 import { MdOpenInNew } from 'react-icons/md';
 import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
 import { FormatDate } from '../../../components/FormatDate';
@@ -34,7 +35,7 @@ const Page = () => {
             </div>
             <div className="card-action">
               <a
-                href={`${location.origin}/works/${creatorId}/${workId}`}
+                href={`${location.origin}${URL_PREFIX_WORK}/${creatorId}/${workId}`}
                 className="teal-text"
                 rel="noreferrer"
                 target="_blank"
