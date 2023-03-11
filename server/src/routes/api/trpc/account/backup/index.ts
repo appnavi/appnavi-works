@@ -37,7 +37,7 @@ export const accountBackupRouter = t.router({
         };
         throw new TRPCError({ code: "BAD_REQUEST", cause });
       }
-      throw new TRPCError({ code: "UNAUTHORIZED", cause: err });
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", cause: err });
     }
   }),
   delete: accountBackupProcedure.mutation(async ({ ctx, input }) => {
@@ -52,7 +52,7 @@ export const accountBackupRouter = t.router({
         };
         throw new TRPCError({ code: "BAD_REQUEST", cause });
       }
-      throw new TRPCError({ code: "UNAUTHORIZED", cause: err });
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", cause: err });
     }
   }),
 });
