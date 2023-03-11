@@ -19,14 +19,16 @@ export type MessageDialogContextProps = {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const doNothing = () => {};
 
-const DialogsContext = createContext<MessageDialogContextProps | null>(null);
+const MessageDialogContext = createContext<MessageDialogContextProps | null>(
+  null,
+);
 
 export const useMessageDialogContext = () => {
-  const dialogs = useContext(DialogsContext);
-  if (dialogs === null) {
+  const dialog = useContext(MessageDialogContext);
+  if (dialog === null) {
     throw new Error('MessageDialogContextProvider が見つかりません。');
   }
-  return dialogs;
+  return dialog;
 };
 
 export const MessageDialogContextProvider = ({
@@ -64,7 +66,7 @@ export const MessageDialogContextProvider = ({
     modalInstance.open();
   };
   return (
-    <DialogsContext.Provider value={{ showMessageDialog }}>
+    <MessageDialogContext.Provider value={{ showMessageDialog }}>
       {children}
       <div className="modal" ref={modalRef}>
         <div className="modal-content">
@@ -80,6 +82,6 @@ export const MessageDialogContextProvider = ({
           </a>
         </div>
       </div>
-    </DialogsContext.Provider>
+    </MessageDialogContext.Provider>
   );
 };

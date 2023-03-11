@@ -33,11 +33,11 @@ const ConfirmDialogContext = createContext<ConfirmDialogContextProps | null>(
 );
 
 export const useConfirmDialogContext = () => {
-  const dialogs = useContext(ConfirmDialogContext);
-  if (dialogs === null) {
+  const dialog = useContext(ConfirmDialogContext);
+  if (dialog === null) {
     throw new Error('ConfirmDialogContextProvider が見つかりません。');
   }
-  return dialogs;
+  return dialog;
 };
 
 export const ConfirmDialogContextProvider = ({
