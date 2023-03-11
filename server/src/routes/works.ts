@@ -1,10 +1,8 @@
 import path from "path";
 import express from "express";
 import serveIndex from "serve-index";
-import {
-  DIRECTORY_NAME_VIEWS,
-  DIRECTORY_NAME_UPLOADS,
-} from "../utils/constants";
+import { absolutePathOfWorkFolder } from "../services/works";
+import { DIRECTORY_NAME_VIEWS } from "../utils/constants";
 import { ejsToHtml } from "../utils/helpers";
 const worksRouter = express.Router();
 worksRouter.use(
@@ -12,7 +10,7 @@ worksRouter.use(
     res.removeHeader("x-frame-options");
     next();
   },
-  express.static(path.resolve(DIRECTORY_NAME_UPLOADS), {
+  express.static(absolutePathOfWorkFolder, {
     setHeaders: (res, path) => {
       // Brotli
       if (path.endsWith(".br")) {
@@ -32,7 +30,7 @@ worksRouter.use(
       }
     },
   }),
-  serveIndex(DIRECTORY_NAME_UPLOADS, {
+  serveIndex(absolutePathOfWorkFolder, {
     template: (
       locals: serveIndex.Locals,
       callback: serveIndex.TemplateCallback

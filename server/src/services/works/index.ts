@@ -3,17 +3,44 @@ import fsExtra from "fs-extra";
 import { z } from "zod";
 import { UserModel, WorkDocument, WorkModel } from "../../models/database";
 import {
-  DIRECTORY_NAME_UPLOADS,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
   ERROR_MESSAGE_CREATOR_ID_INVALID,
   ERROR_MESSAGE_WORK_ID_REQUIRED,
   ERROR_MESSAGE_WORK_ID_INVALID,
-  DIRECTORY_NAME_BACKUPS,
   ERROR_MESSAGE_WORK_NOT_FOUND,
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
   ERROR_MESSAGE_MULTIPLE_WORKS_FOUND,
 } from "../../utils/constants";
 import { idRegex } from "../../utils/helpers";
+
+const DIRECTORY_NAME_UPLOADS = "uploads";
+const DIRECTORY_NAME_BACKUPS = "backups";
+
+export const absolutePathOfWorkFolder = path.join(
+  __dirname,
+  "../../../../",
+  DIRECTORY_NAME_UPLOADS
+);
+export function getAbsolutePathOfWork(creatorId: string, workId: string) {
+  return path.join(absolutePathOfWorkFolder, creatorId, workId);
+}
+
+export const absolutePathOfBackupFolder = path.join(
+  __dirname,
+  "../../../../",
+  DIRECTORY_NAME_BACKUPS,
+  DIRECTORY_NAME_UPLOADS
+);
+export function getAbsolutePathOfAllBackups(creatorId: string, workId: string) {
+  return path.join(absolutePathOfBackupFolder, creatorId, workId);
+}
+export function getAbsolutePathOfBackup(
+  creatorId: string,
+  workId: string,
+  backupName: string
+) {
+  return path.join(getAbsolutePathOfAllBackups(creatorId, workId), backupName);
+}
 
 export const creatorIdSchema = z
   .string({ required_error: ERROR_MESSAGE_CREATOR_ID_REQUIRED })
@@ -93,8 +120,7 @@ export async function isCreatorIdUsedByOtherUser(
 }
 
 export async function listBackupFolderNames(creatorId: string, workId: string) {
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
-  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
+  const backupFolderPath = getAbsolutePathOfAllBackups(creatorId, workId);
   const backupExists = await fsExtra.pathExists(backupFolderPath);
   if (!backupExists) {
     return [];
@@ -123,12 +149,11 @@ export async function backupWork(
   workId: string,
   work: WorkDocument
 ) {
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
+  const workDir = getAbsolutePathOfWork(creatorId, workId);
   const workPath = path.resolve(workDir);
-  const backupFolderPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
   const latestBackupIndex = await getLatestBackupIndex(creatorId, workId);
   const backupIndex = (latestBackupIndex + 1).toString();
-  const backupToPath = path.join(backupFolderPath, backupIndex);
+  const backupToPath = getAbsolutePathOfBackup(creatorId, workId, backupIndex);
   await fsExtra.move(workPath, backupToPath);
   work.backups.push({
     name: backupIndex,

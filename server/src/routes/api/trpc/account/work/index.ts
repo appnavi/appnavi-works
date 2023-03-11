@@ -9,12 +9,12 @@ import { updateCreatorIds } from "../../../../../services/auth";
 import {
   creatorIdSchema,
   findOwnWorkOrError,
+  getAbsolutePathOfAllBackups,
+  getAbsolutePathOfWork,
   isCreatorIdUsedByOtherUser,
   workIdSchema,
 } from "../../../../../services/works";
 import {
-  DIRECTORY_NAME_BACKUPS,
-  DIRECTORY_NAME_UPLOADS,
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
 } from "../../../../../utils/constants";
@@ -79,8 +79,8 @@ async function deleteWork(creatorId: string, workId: string, userId: string) {
       errors: [error],
     };
   }
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
-  const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
+  const workDir = getAbsolutePathOfWork(creatorId, workId);
+  const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
   await fsExtra.rm(path.resolve(workDir), { recursive: true, force: true });
   await fsExtra.rm(backupPath, { recursive: true, force: true });
   await work.delete();
@@ -105,8 +105,8 @@ async function renameWork(
       errors: [error],
     };
   }
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
-  const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
+  const workDir = getAbsolutePathOfWork(creatorId, workId);
+  const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
   const renamedWorks = await WorkModel.find({
     creatorId: renamedCreatorId,
     workId: renamedWorkId,
@@ -125,16 +125,14 @@ async function renameWork(
       errors: [ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER],
     };
   }
-  const renamedDir = path.join(
-    DIRECTORY_NAME_UPLOADS,
-    renamedCreatorId,
-    renamedWorkId
-  );
-  const renamedPath = path.resolve(renamedDir);
+  const renamedPath = getAbsolutePathOfWork(renamedCreatorId, renamedWorkId);
   await fsExtra.ensureDir(path.resolve(renamedPath, ".."));
   await fsExtra.move(path.resolve(workDir), renamedPath);
   if (await fsExtra.pathExists(backupPath)) {
-    const renamedBackupPath = path.resolve(DIRECTORY_NAME_BACKUPS, renamedDir);
+    const renamedBackupPath = getAbsolutePathOfAllBackups(
+      renamedCreatorId,
+      renamedWorkId
+    );
     await fsExtra.ensureDir(path.resolve(renamedBackupPath, ".."));
     await fsExtra.move(backupPath, renamedBackupPath);
   }

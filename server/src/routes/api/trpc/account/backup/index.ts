@@ -1,4 +1,3 @@
-import path from "path";
 import { TRPCError } from "@trpc/server";
 import fsExtra from "fs-extra";
 import { z } from "zod";
@@ -7,11 +6,11 @@ import {
   backupWork,
   creatorIdSchema,
   findOwnWorkOrError,
+  getAbsolutePathOfBackup,
+  getAbsolutePathOfWork,
   workIdSchema,
 } from "../../../../../services/works";
 import {
-  DIRECTORY_NAME_BACKUPS,
-  DIRECTORY_NAME_UPLOADS,
   ERROR_MESSAGE_BACKUP_NAME_INVALID,
   ERROR_MESSAGE_BACKUP_NAME_REQUIRED,
   ERROR_MESSAGE_BACKUP_NOT_FOUND,
@@ -68,11 +67,10 @@ async function restoreBackup(
     };
   }
   await backupWork(creatorId, workId, work);
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
-  const workPath = path.resolve(workDir);
-  const backupToRestorePath = path.resolve(
-    DIRECTORY_NAME_BACKUPS,
-    workDir,
+  const workPath = getAbsolutePathOfWork(creatorId, workId);
+  const backupToRestorePath = getAbsolutePathOfBackup(
+    creatorId,
+    workId,
     backupName
   );
   const backupToRestore = work.backups.find((it) => it.name === backupName);
@@ -102,9 +100,7 @@ async function deleteBackup(
       errors: [error],
     };
   }
-  const backupToDeletePath = path.resolve(
-    DIRECTORY_NAME_BACKUPS,
-    DIRECTORY_NAME_UPLOADS,
+  const backupToDeletePath = getAbsolutePathOfBackup(
     creatorId,
     workId,
     backupName

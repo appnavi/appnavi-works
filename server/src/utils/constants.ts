@@ -4,10 +4,6 @@ export const URL_PREFIX_WORK = "/works";
 export const DIRECTORY_NAME_PUBLIC = "public";
 export const DIRECTORY_NAME_VIEWS = "views";
 
-//serverディレクトリからのフォルダの相対パス
-export const DIRECTORY_NAME_UPLOADS = "uploads";
-export const DIRECTORY_NAME_BACKUPS = "backups";
-
 export const HEADER_CREATOR_ID = "x-creator-id";
 export const HEADER_WORK_ID = "x-work-id";
 

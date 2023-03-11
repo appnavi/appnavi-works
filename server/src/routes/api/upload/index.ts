@@ -17,10 +17,10 @@ import {
   backupWork,
   findOrCreateWork,
   isCreatorIdUsedByOtherUser,
+  getAbsolutePathOfWork,
 } from "../../../services/works";
 import {
   URL_PREFIX_WORK,
-  DIRECTORY_NAME_UPLOADS,
   ERROR_MESSAGE_STORAGE_FULL as STORAGE_FULL,
   ERROR_MESSAGE_NO_FILES as NO_FILES,
   HEADER_CREATOR_ID,
@@ -60,10 +60,11 @@ async function getFileDestinationOrThrow(
   file: Express.Multer.File
 ) {
   const { fieldname } = file;
-  const parentDir = path.resolve(
-    DIRECTORY_NAME_UPLOADS,
-    getCreatorIdFromHeaderOrThrow(req),
-    getWorkIdFromHeaderOrThrow(req),
+  const parentDir = path.join(
+    getAbsolutePathOfWork(
+      getCreatorIdFromHeaderOrThrow(req),
+      getWorkIdFromHeaderOrThrow(req)
+    ),
     fieldname
   );
   if (fieldname === UPLOAD_UNITY_FIELD_WINDOWS) {
@@ -219,7 +220,7 @@ function validateDestination(
   return wrap(async (req, res, next) => {
     const creatorId = getCreatorIdFromHeaderOrThrow(req);
     const workId = getWorkIdFromHeaderOrThrow(req);
-    const workPath = path.resolve(DIRECTORY_NAME_UPLOADS, creatorId, workId);
+    const workPath = getAbsolutePathOfWork(creatorId, workId);
     const exists = await fsExtra.pathExists(workPath);
     if (!exists) {
       next();

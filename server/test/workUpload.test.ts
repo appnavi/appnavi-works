@@ -12,10 +12,13 @@ import {
 import { app } from "../src/app";
 import { preparePassport } from "../src/config/passport";
 import { UserDocument, UserModel, WorkModel } from "../src/models/database";
-import { calculateCurrentStorageSizeBytes } from "../src/services/works";
+import {
+  calculateCurrentStorageSizeBytes,
+  getAbsolutePathOfBackup,
+  getAbsolutePathOfWork,
+} from "../src/services/works";
 import {
   URL_PREFIX_WORK,
-  DIRECTORY_NAME_UPLOADS,
   STATUS_CODE_BAD_REQUEST,
   STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
@@ -32,7 +35,6 @@ import {
   HEADER_CREATOR_ID,
   HEADER_WORK_ID,
   UPLOAD_UNITY_FIELD_WINDOWS,
-  DIRECTORY_NAME_BACKUPS,
   ERROR_MESSAGE_RENAME_TO_SAME,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
 } from "../src/utils/constants";
@@ -88,9 +90,7 @@ async function expectUploadedFilesExists(
   uploadFiles.forEach(async (uploadFile) => {
     const exists = await fsExtra.pathExists(
       path.join(
-        DIRECTORY_NAME_UPLOADS,
-        creatorId,
-        workId,
+        getAbsolutePathOfWork(creatorId, workId),
         uploadFile.fieldname,
         uploadFile.foldername,
         uploadFile.subfoldername,
@@ -119,11 +119,7 @@ async function expectBackupFilesExists(
   uploadFiles.forEach(async (uploadFile) => {
     const actualExists = await fsExtra.pathExists(
       path.join(
-        DIRECTORY_NAME_BACKUPS,
-        DIRECTORY_NAME_UPLOADS,
-        creatorId,
-        workId,
-        backupName,
+        getAbsolutePathOfBackup(creatorId, workId, backupName),
         uploadFile.fieldname,
         uploadFile.subfoldername,
         uploadFile.filename
