@@ -10,7 +10,7 @@ import {
 import { WorkError } from "../../../../../utils/errors";
 import { authenticatedProcedure, t } from "../../../../../utils/trpc";
 
-const accountWorkProcedure = authenticatedProcedure.input(
+const modifyWorkProcedure = authenticatedProcedure.input(
   z.object({
     creatorId: creatorIdSchema,
     workId: workIdSchema,
@@ -18,7 +18,7 @@ const accountWorkProcedure = authenticatedProcedure.input(
 );
 
 export const accountWorkRouter = t.router({
-  rename: accountWorkProcedure
+  rename: modifyWorkProcedure
     .input(
       z.object({
         renamedCreatorId: creatorIdSchema,
@@ -44,7 +44,7 @@ export const accountWorkRouter = t.router({
         }
       }
     }),
-  delete: accountWorkProcedure.mutation(async ({ ctx, input }) => {
+  delete: modifyWorkProcedure.mutation(async ({ ctx, input }) => {
     const { creatorId, workId } = input;
     try {
       await deleteWork(creatorId, workId, ctx.user.id);
