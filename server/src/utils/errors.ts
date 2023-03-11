@@ -69,11 +69,6 @@ export class RestoreBackupError extends BadRequestError {
     super("バックアップの復元に失敗しました。", errors, logParams);
   }
 }
-export class DeleteGuestUserError extends BadRequestError {
-  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
-    super("ゲストユーザー削除に失敗しました。", errors, logParams);
-  }
-}
 
 export class WorkError extends Error {
   constructor(public message: string) {

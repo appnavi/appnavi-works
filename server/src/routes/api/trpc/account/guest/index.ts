@@ -13,7 +13,6 @@ import {
   ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND,
   ERROR_MESSAGE_NOT_GUEST_USER,
 } from "../../../../../utils/constants";
-import { DeleteGuestUserError } from "../../../../../utils/errors";
 import { generateRandomString } from "../../../../../utils/helpers";
 import { slackUserOnlyProcedure, t } from "../../../../../utils/trpc";
 
@@ -54,48 +53,47 @@ export const accountGuestRouter = t.router({
     )
     .mutation(async ({ ctx, input }) => {
       const { guestId } = input;
-      try {
-        await deleteGuestUser(ctx.user.id, guestId);
-      } catch (err) {
-        if (err instanceof DeleteGuestUserError) {
-          const cause: ErrorResponse = {
-            errors: err.errors.map((x) => String(x)),
-          };
-          throw new TRPCError({ code: "BAD_REQUEST", cause });
-        }
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", cause: err });
+      const errorResponse = await deleteGuestUser(ctx.user.id, guestId);
+      if (errorResponse === null) {
+        return;
       }
+      throw new TRPCError({ code: "BAD_REQUEST", cause: errorResponse });
     }),
 });
 
 async function deleteGuestUser(userId: string, guestId: string) {
   const guestUsers = await UserModel.find({ userId: guestId });
   if (guestUsers.length === 0) {
-    throw new DeleteGuestUserError(
-      [ERROR_MESSAGE_GUEST_NOT_FOUND],
-      [guestId, guestUsers.length]
-    );
+    return <ErrorResponse>{
+      errors: [ERROR_MESSAGE_GUEST_NOT_FOUND],
+    };
   }
   if (guestUsers.length > 1) {
-    throw new Error(ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND);
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND,
+    });
   }
   const guestUser = guestUsers[0];
   const guest = guestUser.guest;
   if (guest === undefined) {
-    throw new DeleteGuestUserError([ERROR_MESSAGE_NOT_GUEST_USER], { guestId });
+    return <ErrorResponse>{
+      errors: [ERROR_MESSAGE_NOT_GUEST_USER],
+    };
   }
   if (guest.createdBy !== userId) {
-    throw new DeleteGuestUserError([ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR], {
-      guestId,
-    });
+    return <ErrorResponse>{
+      errors: [ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR],
+    };
   }
   const worksByGuest = await WorkModel.find({
     owner: guestUser.userId,
   });
   if (worksByGuest.length !== 0) {
-    throw new DeleteGuestUserError([ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY], {
-      guestId,
-    });
+    return <ErrorResponse>{
+      errors: [ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY],
+    };
   }
   await guestUser.delete();
+  return null;
 }
