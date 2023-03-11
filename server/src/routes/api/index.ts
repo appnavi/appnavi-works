@@ -13,6 +13,6 @@ const apiRouter = Router();
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/account", accountRouter);
 apiRouter.use("/upload", uploadRouter);
-apiRouter.use(createExpressMiddleware({ router: trpcRouter, createContext: createContext }))
+apiRouter.use(createExpressMiddleware({ router: trpcRouter, createContext }))
 
 export { apiRouter };
