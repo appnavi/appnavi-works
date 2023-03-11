@@ -7,10 +7,8 @@ import session from "express-session";
 import helmet from "helmet";
 import passport from "passport";
 import * as logger from "./modules/logger";
-import { accountRouter } from "./routes/account";
 import { apiRouter } from "./routes/api";
 import { indexRouter } from "./routes/index";
-import { uploadRouter } from "./routes/upload";
 import { worksRouter } from "./routes/works";
 import { csrf } from "./services/csrf";
 import {
@@ -114,8 +112,6 @@ if (env.NODE_ENV !== "test") {
 
 app.use("/", indexRouter);
 app.use("/api", apiRouter);
-app.use("/account", accountRouter);
-app.use("/upload", uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function (_req, _res, next) {
