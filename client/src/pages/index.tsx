@@ -42,12 +42,12 @@ const Page = ({ user }: { user: User }) => {
       <h3 className="header">HOME</h3>
       <div className="section">
         <h4 className="header">アップロード</h4>
-        <a className="btn-large flex" href="/upload/unity">
+        <Link className="btn-large flex" to="/upload/unity">
           <i className="left h-full flex">
             <FaUnity className="my-auto" />
           </i>
           Unityゲームのアップロード
-        </a>
+        </Link>
       </div>
       <DatabaseSection user={user} />
     </div>
