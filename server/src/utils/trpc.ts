@@ -39,10 +39,17 @@ const requireAuth = t.middleware(({ ctx, next }) => {
 
 const slackUserOnly = t.middleware(({ ctx, next }) => {
   const user = ctx.user;
-  if (user?.type !== "Slack") {
+  if (user === undefined) {
+    throw new TRPCError({ code: "UNAUTHORIZED" })
+  }
+  if (user.type !== "Slack") {
     throw new TRPCError({ code: "FORBIDDEN" });
   }
-  return next()
+  return next({
+    ctx: {
+      user
+    }
+  })
 })
 
 export const publicProcedure = t.procedure;
