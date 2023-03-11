@@ -26,7 +26,7 @@ const Page = () => {
   const [windowsFiles, setWindowsFiles] = useState<FileList | undefined>(
     undefined,
   );
-  const formRef = useRef<HTMLFormElement | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const showUnknownErrorDialog = (errorText: string) => {
     showMessageDialog({
       title: 'アップロードに失敗しました',

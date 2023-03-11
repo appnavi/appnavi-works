@@ -35,7 +35,7 @@ export const ErrorDialogContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const modalRef = useRef<HTMLDivElement | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const [modalTitle, setModalTitle] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
   useEffect(() => {

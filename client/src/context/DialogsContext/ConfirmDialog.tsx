@@ -45,7 +45,7 @@ export const ConfirmDialogContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const modalRef = useRef<HTMLDivElement | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const [modalTitle, setModalTitle] = useState('');
   const [modalContent, setModalContent] = useState<ReactNode | null>(null);
   const [positiveButtonLabel, setPositiveButtonLabel] = useState('はい');

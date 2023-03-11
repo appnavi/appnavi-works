@@ -44,7 +44,7 @@ export const FilesPicker = ({
   onChange: (fileList: FileList) => void;
 }) => {
   const uploadName = uploadType === 'webgl' ? 'フォルダ' : 'Zipファイル';
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [hasHiddenFolderDropped, setHasHiddenFolderDropped] = useState(false);
   const onFilesDrop = (e: ChangeEvent<HTMLInputElement>) => {

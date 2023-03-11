@@ -127,7 +127,7 @@ export const Preview = ({
   webglFiles: FileList | undefined;
   windowsFiles: FileList | undefined;
 }) => {
-  const collapsibleRef = useRef<HTMLUListElement | null>(null);
+  const collapsibleRef = useRef<HTMLUListElement>(null);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   useEffect(() => {
     const collapsibleElement = collapsibleRef.current;

@@ -20,7 +20,7 @@ const LogoutButton = () => {
 
 export const Navbar = () => {
   const { user } = useUserContext();
-  const navbarDropdownTrigerRef = useRef<HTMLAnchorElement | null>(null);
+  const navbarDropdownTrigerRef = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
     const element = navbarDropdownTrigerRef.current;
     if (element !== null) {
