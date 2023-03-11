@@ -16,7 +16,7 @@ export const DeleteWorkButton = ({ work }: { work: WorkDB }) => {
         title: '削除に成功しました',
         content: <></>,
         onClose() {
-          trpcContext.db.fetchAllWorks.invalidate();
+          trpcContext.account.work.list.invalidate();
         },
       });
     },

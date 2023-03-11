@@ -8,7 +8,7 @@ import { DeleteWorkButton } from './DeleteWorkButton';
 import { RenameWorkButton } from './RenameWorkButton';
 
 export const MyWorks = ({ user }: { user: User }) => {
-  const { data: works } = trpc.db.fetchAllWorks.useQuery();
+  const { data: works } = trpc.account.work.list.useQuery();
   if (works === undefined) {
     return (
       <div className="grid place-items-center">

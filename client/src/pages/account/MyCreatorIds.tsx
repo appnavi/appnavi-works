@@ -1,4 +1,3 @@
-import { User } from '@common/types';
 import { MdDeleteSweep } from 'react-icons/md';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { useConfirmDialogContext } from '../../context/DialogsContext/ConfirmDialog';
@@ -17,7 +16,7 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
         title: '使用していない作者IDの削除に成功しました。',
         content: <></>,
         onClose() {
-          trpcContext.db.fetchAllUsers.invalidate();
+          trpcContext.account.getUserData.invalidate();
         },
       });
     },
@@ -75,16 +74,16 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
   );
 };
 
-export const MyCreatorIds = ({ user }: { user: User }) => {
-  const { data: users } = trpc.db.fetchAllUsers.useQuery();
-  if (users === undefined) {
+export const MyCreatorIds = () => {
+  const { data: userDB } = trpc.account.getUserData.useQuery();
+  if (userDB === undefined) {
     return (
       <div className="w-full grid place-items-center">
         <LoadingSpinner />
       </div>
     );
   }
-  const creatorIds = users.find((u) => u.userId === user.id)?.creatorIds ?? [];
+  const creatorIds = userDB.creatorIds ?? [];
   return (
     <div className="section">
       <h3 className="header">保有している作者ID一覧</h3>

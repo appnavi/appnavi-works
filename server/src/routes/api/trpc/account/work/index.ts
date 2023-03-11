@@ -1,6 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { ErrorResponse } from "../../../../../common/types";
+import { fromZodError } from "zod-validation-error";
+import { ErrorResponse, WorkDB } from "../../../../../common/types";
+import { WorkModel } from "../../../../../models/database";
 import {
   creatorIdSchema,
   deleteWork,
@@ -17,7 +19,22 @@ const modifyWorkProcedure = authenticatedProcedure.input(
   })
 );
 
+const WorksDB = WorkDB.array();
+
 export const accountWorkRouter = t.router({
+  list: authenticatedProcedure.query(async ({ ctx }) => {
+    const myWorks = await WorkModel.find({
+      owner: ctx.user.id,
+    });
+    const parsed = WorksDB.safeParse(myWorks);
+    if (parsed.success) {
+      return parsed.data;
+    }
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: fromZodError(parsed.error),
+    });
+  }),
   rename: modifyWorkProcedure
     .input(
       z.object({

@@ -15,7 +15,7 @@ const Page = ({ user }: { user: User }) => {
       </div>
       <MyWorks user={user} />
       <div className="divider"></div>
-      <MyCreatorIds user={user} />
+      <MyCreatorIds />
     </div>
   );
 };

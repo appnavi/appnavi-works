@@ -17,7 +17,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
         title: '復元に成功しました。',
         content: <></>,
         onClose() {
-          trpcContext.db.fetchAllWorks.invalidate();
+          trpcContext.account.work.list.invalidate();
         },
       });
     },
@@ -34,7 +34,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
         title: '削除に成功しました。',
         content: <></>,
         onClose() {
-          trpcContext.db.fetchAllWorks.invalidate();
+          trpcContext.account.work.list.invalidate();
         },
       });
     },

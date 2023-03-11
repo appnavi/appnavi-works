@@ -1,4 +1,6 @@
 import { TRPCError } from "@trpc/server";
+import { fromZodError } from "zod-validation-error";
+import { UserDB } from "../../../../common/types";
 import { UserModel, WorkModel } from "../../../../models/database";
 import { creatorIdSchema } from "../../../../services/works";
 import { t, authenticatedProcedure } from "../../../../utils/trpc";
@@ -29,6 +31,17 @@ async function findUserByIdOrThrow(userId: string) {
 }
 
 export const accountRouter = t.router({
+  getUserData: authenticatedProcedure.query(async ({ ctx }) => {
+    const user = await findUserByIdOrThrow(ctx.user.id);
+    const parsed = UserDB.safeParse(user);
+    if (parsed.success) {
+      return parsed.data;
+    }
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: fromZodError(parsed.error),
+    });
+  }),
   getDefaultCreatorId: authenticatedProcedure.query(async ({ ctx }) => {
     const userId = ctx.user.id;
     const user = await findUserByIdOrNull(userId);
