@@ -50,8 +50,10 @@ export const ConfirmDialogContextProvider = ({
   const [modalContent, setModalContent] = useState<ReactNode | null>(null);
   const [positiveButtonLabel, setPositiveButtonLabel] = useState('はい');
   const [negativeButtonLabel, setNegativeButtonLabel] = useState('いいえ');
-  let onPositiveButtonClick: (() => void) | undefined = undefined;
-  let onNegativeButtonClick: (() => void) | undefined = undefined;
+  const [positiveClasses, setPositiveClasses] = useState<string[]>([]);
+  const [negativeClasses, setNegativeClasses] = useState<string[]>([]);
+  const onPositiveButtonClick = useRef<(() => void) | undefined>(undefined);
+  const onNegativeButtonClick = useRef<(() => void) | undefined>(undefined);
   useEffect(() => {
     const modalElement = modalRef.current;
     if (modalElement === null) {
@@ -86,8 +88,10 @@ export const ConfirmDialogContextProvider = ({
     setModalContent(content);
     setPositiveButtonLabel(positiveButton.label);
     setNegativeButtonLabel(negativeButton.label);
-    onPositiveButtonClick = positiveButton.onPresed;
-    onNegativeButtonClick = negativeButton.onPresed;
+    onPositiveButtonClick.current = positiveButton.onPresed;
+    onNegativeButtonClick.current = negativeButton.onPresed;
+    setPositiveClasses(positiveButton.classes ?? []);
+    setNegativeClasses(negativeButton.classes ?? []);
     const modalInstance = M.Modal.getInstance(modalElement);
     modalInstance.options.onCloseEnd = doNothing;
     modalInstance.open();
@@ -101,10 +105,18 @@ export const ConfirmDialogContextProvider = ({
           <div className="content">{modalContent}</div>
         </div>
         <div className="modal-footer">
-          <a href="#!" className="modal-close" onClick={onPositiveButtonClick}>
+          <a
+            href="#!"
+            className={`modal-close ${negativeClasses.join(' ')}`}
+            onClick={() => onNegativeButtonClick.current?.()}
+          >
             {negativeButtonLabel}
           </a>
-          <a href="#!" className="modal-close" onClick={onNegativeButtonClick}>
+          <a
+            href="#!"
+            className={`modal-close ${positiveClasses.join(' ')}`}
+            onClick={() => onPositiveButtonClick.current?.()}
+          >
             {positiveButtonLabel}
           </a>
         </div>
