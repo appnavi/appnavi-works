@@ -54,7 +54,9 @@ guestRouter.use(
       typeof err.status === "number" &&
       err.status === STATUS_CODE_UNAUTHORIZED
     ) {
-      res.status(STATUS_CODE_UNAUTHORIZED).send({ error: ERROR_MESSAGE_GUEST_LOGIN_FAIL, })
+      res
+        .status(STATUS_CODE_UNAUTHORIZED)
+        .send({ error: ERROR_MESSAGE_GUEST_LOGIN_FAIL });
       return;
     }
     next(err);

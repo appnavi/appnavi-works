@@ -58,7 +58,7 @@ export async function createCsrfTokenInSession(session: Request["session"]) {
   );
   session.csrfToken = csrfToken;
   session.csrfTokenWithHash = `${csrfToken}|${csrfTokenHash}`;
-  return csrfToken
+  return csrfToken;
 }
 
 export async function getCsrfTokenFromSessionOrError(

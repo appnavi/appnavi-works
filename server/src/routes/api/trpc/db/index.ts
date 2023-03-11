@@ -14,24 +14,21 @@ export const dbRouter = t.router({
     const works = await WorkModel.find();
     const parsed = Works.safeParse(works);
     if (!parsed.success) {
-      console.log(fromZodError(parsed.error))
-      return []
+      console.log(fromZodError(parsed.error));
+      return [];
     }
-    return parsed.data
+    return parsed.data;
   }),
   fetchAllUsers: slackUserOnlyProcedure.query(async () => {
     const users = await UserModel.find();
     const parsed = Users.safeParse(users);
     if (!parsed.success) {
-      console.log(fromZodError(parsed.error))
-      return []
+      console.log(fromZodError(parsed.error));
+      return [];
     }
-    return parsed.data
+    return parsed.data;
   }),
   fetchAllUsersRaw: slackUserOnlyProcedure.query(() => {
     return UserModel.find();
   }),
 });
-
-
-

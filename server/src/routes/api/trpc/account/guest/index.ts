@@ -4,13 +4,21 @@ import { ErrorResponse } from "../../../../../common/types";
 import { guestUserIdRegex } from "../../../../../config/passport";
 import { UserModel, WorkModel } from "../../../../../models/database";
 import { hashPassword } from "../../../../../services/auth/password";
-import { ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR, ERROR_MESSAGE_GUEST_ID_INVALID, ERROR_MESSAGE_GUEST_ID_REQUIRED, ERROR_MESSAGE_GUEST_NOT_FOUND, ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY, ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND, ERROR_MESSAGE_NOT_GUEST_USER } from "../../../../../utils/constants";
+import {
+  ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR,
+  ERROR_MESSAGE_GUEST_ID_INVALID,
+  ERROR_MESSAGE_GUEST_ID_REQUIRED,
+  ERROR_MESSAGE_GUEST_NOT_FOUND,
+  ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY,
+  ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND,
+  ERROR_MESSAGE_NOT_GUEST_USER,
+} from "../../../../../utils/constants";
 import { DeleteGuestUserError } from "../../../../../utils/errors";
 import { generateRandomString } from "../../../../../utils/helpers";
 import { slackUserOnlyProcedure, t } from "../../../../../utils/trpc";
 
 async function generateGuestId() {
-  for (; ;) {
+  for (;;) {
     const guestId = `guest-${generateRandomString(6)}`;
     const users = await UserModel.find({ userId: guestId });
     if (users.length == 0) {
@@ -18,7 +26,6 @@ async function generateGuestId() {
     }
   }
 }
-
 
 export const accountGuestRouter = t.router({
   create: slackUserOnlyProcedure.mutation(async ({ ctx }) => {
@@ -34,28 +41,32 @@ export const accountGuestRouter = t.router({
     });
     return {
       guestId,
-      password
-    }
+      password,
+    };
   }),
-  delete: slackUserOnlyProcedure.input(z.object({
-    guestId: z
-      .string({ required_error: ERROR_MESSAGE_GUEST_ID_REQUIRED })
-      .regex(guestUserIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID),
-  })).mutation(async ({ ctx, input }) => {
-    const { guestId } = input;
-    try {
-      await deleteGuestUser(ctx.user.id, guestId);
-    } catch (err) {
-      if (err instanceof DeleteGuestUserError) {
-        const cause: ErrorResponse = {
-          errors: err.errors.map(x => String(x))
+  delete: slackUserOnlyProcedure
+    .input(
+      z.object({
+        guestId: z
+          .string({ required_error: ERROR_MESSAGE_GUEST_ID_REQUIRED })
+          .regex(guestUserIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { guestId } = input;
+      try {
+        await deleteGuestUser(ctx.user.id, guestId);
+      } catch (err) {
+        if (err instanceof DeleteGuestUserError) {
+          const cause: ErrorResponse = {
+            errors: err.errors.map((x) => String(x)),
+          };
+          throw new TRPCError({ code: "BAD_REQUEST", cause });
         }
-        throw new TRPCError({ code: "BAD_REQUEST", cause })
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", cause: err });
       }
-      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", cause: err })
-    }
-  })
-})
+    }),
+});
 
 async function deleteGuestUser(userId: string, guestId: string) {
   const guestUsers = await UserModel.find({ userId: guestId });

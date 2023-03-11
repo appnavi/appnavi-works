@@ -8,8 +8,6 @@ import { authRouter } from "./auth";
 import { trpcRouter } from "./trpc";
 import { uploadRouter } from "./upload";
 
-
-
 const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
@@ -20,19 +18,20 @@ apiRouter.use(
     router: trpcRouter,
     createContext,
     onError({ error }) {
-      const { cause } = error
+      const { cause } = error;
       if (cause instanceof ZodError) {
         const message: ErrorResponse = {
-          errors: cause.issues.map(i => i.message)
-        }
+          errors: cause.issues.map((i) => i.message),
+        };
         error.message = JSON.stringify(message);
         return;
       }
       if (ErrorResponse.safeParse(cause).success) {
-        error.message = JSON.stringify(cause)
+        error.message = JSON.stringify(cause);
         return;
       }
-    }
-  }))
+    },
+  })
+);
 
 export { apiRouter };

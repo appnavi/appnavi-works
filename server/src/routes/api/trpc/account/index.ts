@@ -12,7 +12,7 @@ async function findUserByIdOrNull(userId: string) {
     throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
   }
   if (users.length === 0) {
-    return null
+    return null;
   }
   return users[0];
 }
@@ -20,17 +20,19 @@ async function findUserByIdOrNull(userId: string) {
 async function findUserByIdOrThrow(userId: string) {
   const user = await findUserByIdOrNull(userId);
   if (user === null) {
-    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "存在しないユーザーです" });
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "存在しないユーザーです",
+    });
   }
   return user;
 }
-
 
 export const accountRouter = t.router({
   getDefaultCreatorId: authenticatedProcedure.query(async ({ ctx }) => {
     const userId = ctx.user.id;
     const user = await findUserByIdOrNull(userId);
-    return user?.defaultCreatorId ?? null
+    return user?.defaultCreatorId ?? null;
   }),
   setDefaultCreatorId: authenticatedProcedure
     .input(creatorIdSchema)
@@ -44,7 +46,7 @@ export const accountRouter = t.router({
           },
         },
         { upsert: true }
-      )
+      );
     }),
   cleanupCreatorIds: authenticatedProcedure.mutation(async ({ ctx }) => {
     const user = await findUserByIdOrThrow(ctx.user.id);
@@ -58,8 +60,5 @@ export const accountRouter = t.router({
   }),
   work: accountWorkRouter,
   backup: accountBackupRouter,
-  guest: accountGuestRouter
+  guest: accountGuestRouter,
 });
-
-
-
