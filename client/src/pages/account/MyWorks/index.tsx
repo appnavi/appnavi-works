@@ -3,6 +3,7 @@ import { MdOpenInNew } from 'react-icons/md';
 import { FormatDate } from '../../../components/FormatDate';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { trpc } from '../../../trpc';
+import { Backups } from './Backups';
 import { DeleteWorkButton } from './DeleteWorkButton';
 import { RenameWorkButton } from './RenameWorkButton';
 
@@ -50,6 +51,7 @@ export const MyWorks = ({ user }: { user: User }) => {
               <RenameWorkButton work={work} />
               <DeleteWorkButton work={work} />
             </div>
+            <Backups work={work} />
           </div>
         );
       })}

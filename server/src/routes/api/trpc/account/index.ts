@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { UserModel } from "../../../../models/database";
 import { creatorIdSchema } from "../../../../services/works";
 import { t, authenticatedProcedure } from "../../../../utils/trpc";
+import { accountBackupRouter } from "./backup";
 import { accountWorkRouter } from "./work";
 
 async function findUserByIdOrNull(userId: string) {
@@ -44,7 +45,8 @@ export const accountRouter = t.router({
         { upsert: true }
       )
     }),
-  work: accountWorkRouter
+  work: accountWorkRouter,
+  backup: accountBackupRouter
 });
 
 
