@@ -13,17 +13,26 @@ export const UserDB = z.object({
   userId: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  lastLogIn: z.date(),
+  lastLogIn: z.date().optional(),
   defaultCreatorId: z.string().optional(),
   creatorIds: z.string().array(),
   guest: z.object({
     hashedPassword: z.string(),
     createdBy: z.string()
   }).optional()
-}).transform(user => ({
-  ...user,
-  guest: user.guest !== undefined
-}))
+}).transform(user => {
+  const { guest } = user;
+  let newGuest = undefined;
+  if (guest !== undefined) {
+    newGuest = {
+      createdBy: guest.createdBy
+    }
+  }
+  return ({
+    ...user,
+    guest: newGuest
+  })
+})
 export type UserDB = z.infer<typeof UserDB>
 
 export const WorkDB = z.object({

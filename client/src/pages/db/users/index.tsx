@@ -43,16 +43,19 @@ const Page = () => {
     <div className="container">
       <h3 className="header">ユーザー一覧</h3>
       {users.map((user) => {
+        const { lastLogIn } = user;
         const worksOfUser = works.filter((work) => work.owner === user.userId);
         return (
           <div className="card" key={user.userId}>
             <div className="card-content">
               <div>ユーザーID：{user.userId}</div>
               <div>デフォルトの作者ID：{user.defaultCreatorId ?? '未設定'}</div>
-              <div>
-                最終ログイン：
-                <FormatDate date={user.lastLogIn} />
-              </div>
+              {lastLogIn !== undefined ? (
+                <div>
+                  最終ログイン：
+                  <FormatDate date={lastLogIn} />
+                </div>
+              ) : null}
               {worksOfUser.length > 0 ? (
                 <WorksOfUser worksOfUser={worksOfUser} />
               ) : null}
