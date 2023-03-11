@@ -12,9 +12,7 @@ import {
   ERROR_MESSAGE_WORK_NOT_FOUND,
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
   ERROR_MESSAGE_MULTIPLE_WORKS_FOUND,
-  ERROR_MESSAGE_BACKUP_NOT_FOUND,
 } from "../../utils/constants";
-import { WorkError, RestoreBackupError } from "../../utils/errors";
 import { idRegex } from "../../utils/helpers";
 
 export const creatorIdSchema = z
@@ -51,29 +49,6 @@ export async function findOwnWorkOrError(
         };
       }
       return { work, error: null };
-    }
-    default:
-      throw new Error(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
-  }
-}
-async function findOwnWorkOrThrow(
-  creatorId: string,
-  workId: string,
-  userId: string
-) {
-  const works = await WorkModel.find({
-    creatorId,
-    workId,
-  });
-  switch (works.length) {
-    case 0:
-      throw new WorkError(ERROR_MESSAGE_WORK_NOT_FOUND);
-    case 1: {
-      const work = works[0];
-      if (work.owner !== userId) {
-        throw new WorkError(ERROR_MESSAGE_WORK_DIFFERENT_OWNER);
-      }
-      return work;
     }
     default:
       throw new Error(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
@@ -160,62 +135,6 @@ export async function backupWork(
     fileSize: work.fileSize,
     uploadedAt: work.uploadedAt,
   });
-}
-
-export async function restoreBackup(
-  creatorId: string,
-  workId: string,
-  userId: string,
-  backupName: string
-) {
-  const work = await findOwnWorkOrThrow(creatorId, workId, userId);
-  await backupWork(creatorId, workId, work);
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
-  const workPath = path.resolve(workDir);
-  const backupToRestorePath = path.resolve(
-    DIRECTORY_NAME_BACKUPS,
-    workDir,
-    backupName
-  );
-  const backupToRestore = work.backups.find((it) => it.name === backupName);
-  if (
-    backupToRestore === undefined ||
-    !(await fsExtra.pathExists(backupToRestorePath))
-  ) {
-    throw new RestoreBackupError(
-      [ERROR_MESSAGE_BACKUP_NOT_FOUND],
-      [creatorId, workId, userId, backupName]
-    );
-  }
-  await fsExtra.move(backupToRestorePath, workPath);
-  work.fileSize = backupToRestore.fileSize;
-  work.backups.remove(backupToRestore);
-  await work.save();
-}
-export async function deleteBackup(
-  creatorId: string,
-  workId: string,
-  userId: string,
-  backupName: string
-) {
-  const work = await findOwnWorkOrThrow(creatorId, workId, userId);
-  const backupToDeletePath = path.resolve(
-    DIRECTORY_NAME_BACKUPS,
-    DIRECTORY_NAME_UPLOADS,
-    creatorId,
-    workId,
-    backupName
-  );
-  const backupToDelete = work.backups.find((it) => it.name === backupName);
-  if (
-    backupToDelete === undefined ||
-    !(await fsExtra.pathExists(backupToDeletePath))
-  ) {
-    throw new Error(`バックアップ${backupName}が見つかりませんでした。`);
-  }
-  await fsExtra.remove(backupToDeletePath);
-  work.backups.remove(backupToDelete);
-  await work.save();
 }
 
 export async function calculateCurrentStorageSizeBytes() {

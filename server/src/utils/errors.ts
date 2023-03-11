@@ -59,12 +59,3 @@ export class RestoreBackupError extends BadRequestError {
     super("バックアップの復元に失敗しました。", errors, logParams);
   }
 }
-
-export class WorkError extends Error {
-  constructor(public message: string) {
-    super(message);
-    this.name = new.target.name;
-    // 下記の行はTypeScriptの出力ターゲットがES2015より古い場合(ES3, ES5)のみ必要
-    Object.setPrototypeOf(this, new.target.prototype);
-  }
-}
