@@ -12,7 +12,7 @@
     "dev": "run-p dev:*",
     "dev:client": "yarn workspace client run dev",
     "dev:server": "yarn workspace server run dev",
-    "lint-staged": "run-p lint-staged:*",
+    "lint-staged": "run-s lint-staged:*",
     "lint-staged:client": "yarn workspace client lint-staged",
     "lint-staged:server": "yarn workspace server lint-staged"
   }
