@@ -54,16 +54,6 @@ export class UploadError extends BadRequestError {
   }
 }
 
-export class RenameWorkError extends BadRequestError {
-  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
-    super("作品のリネームに失敗しました。", errors, logParams);
-  }
-}
-export class DeleteWorkError extends BadRequestError {
-  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
-    super("作品のリネームに失敗しました。", errors, logParams);
-  }
-}
 export class RestoreBackupError extends BadRequestError {
   constructor(errors: unknown[] = [], logParams: unknown = undefined) {
     super("バックアップの復元に失敗しました。", errors, logParams);

@@ -12,14 +12,10 @@ import {
   ERROR_MESSAGE_WORK_NOT_FOUND,
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
   ERROR_MESSAGE_MULTIPLE_WORKS_FOUND,
-  ERROR_MESSAGE_RENAME_TO_SAME,
-  ERROR_MESSAGE_RENAME_TO_EXISTING,
   ERROR_MESSAGE_BACKUP_NOT_FOUND,
-  ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
 } from "../../utils/constants";
 import { WorkError, RestoreBackupError } from "../../utils/errors";
 import { idRegex } from "../../utils/helpers";
-import { updateCreatorIds } from "../auth";
 
 export const creatorIdSchema = z
   .string({ required_error: ERROR_MESSAGE_CREATOR_ID_REQUIRED })
@@ -31,6 +27,35 @@ export const uploadSchema = z.object({
   creatorId: creatorIdSchema,
   workId: workIdSchema,
 });
+export async function findOwnWorkOrError(
+  creatorId: string,
+  workId: string,
+  userId: string
+) {
+  const works = await WorkModel.find({
+    creatorId,
+    workId,
+  });
+  switch (works.length) {
+    case 0:
+      return {
+        work: null,
+        error: ERROR_MESSAGE_WORK_NOT_FOUND,
+      };
+    case 1: {
+      const work = works[0];
+      if (work.owner !== userId) {
+        return {
+          work: null,
+          error: ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
+        };
+      }
+      return { work, error: null };
+    }
+    default:
+      throw new Error(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
+  }
+}
 async function findOwnWorkOrThrow(
   creatorId: string,
   workId: string,
@@ -191,65 +216,6 @@ export async function deleteBackup(
   await fsExtra.remove(backupToDeletePath);
   work.backups.remove(backupToDelete);
   await work.save();
-}
-export async function renameWork(
-  creatorId: string,
-  workId: string,
-  userId: string,
-  renamedCreatorId: string,
-  renamedWorkId: string
-) {
-  if (creatorId === renamedCreatorId && workId === renamedWorkId) {
-    throw new WorkError(ERROR_MESSAGE_RENAME_TO_SAME);
-  }
-  const work = await findOwnWorkOrThrow(creatorId, workId, userId);
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
-  const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
-  const renamedWorks = await WorkModel.find({
-    creatorId: renamedCreatorId,
-    workId: renamedWorkId,
-  });
-  if (renamedWorks.length > 0) {
-    throw new WorkError(ERROR_MESSAGE_RENAME_TO_EXISTING);
-  }
-  const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
-    renamedCreatorId,
-    userId
-  );
-  if (isUsedByOtherUser) {
-    throw new WorkError(ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER);
-  }
-  const renamedDir = path.join(
-    DIRECTORY_NAME_UPLOADS,
-    renamedCreatorId,
-    renamedWorkId
-  );
-  const renamedPath = path.resolve(renamedDir);
-  await fsExtra.ensureDir(path.resolve(renamedPath, ".."));
-  await fsExtra.move(path.resolve(workDir), renamedPath);
-  if (await fsExtra.pathExists(backupPath)) {
-    const renamedBackupPath = path.resolve(DIRECTORY_NAME_BACKUPS, renamedDir);
-    await fsExtra.ensureDir(path.resolve(renamedBackupPath, ".."));
-    await fsExtra.move(backupPath, renamedBackupPath);
-  }
-  if (work.creatorId !== renamedCreatorId) {
-    await updateCreatorIds(userId, renamedCreatorId);
-  }
-  work.creatorId = renamedCreatorId;
-  work.workId = renamedWorkId;
-  await work.save();
-}
-export async function deleteWork(
-  creatorId: string,
-  workId: string,
-  userId: string
-) {
-  const work = await findOwnWorkOrThrow(creatorId, workId, userId);
-  const workDir = path.join(DIRECTORY_NAME_UPLOADS, creatorId, workId);
-  const backupPath = path.resolve(DIRECTORY_NAME_BACKUPS, workDir);
-  await fsExtra.rm(path.resolve(workDir), { recursive: true, force: true });
-  await fsExtra.rm(backupPath, { recursive: true, force: true });
-  await work.delete();
 }
 
 export async function calculateCurrentStorageSizeBytes() {
