@@ -32,7 +32,7 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
       title: '確認',
       content: (
         <div>
-          <h5>使用していない作者IDを一覧から削除してもよろしいですか？`</h5>
+          <h5>使用していない作者IDを一覧から削除してもよろしいですか？</h5>
           <p>
             これにより、他のユーザーがその作者IDを利用できるようになります。
           </p>
