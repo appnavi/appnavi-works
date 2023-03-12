@@ -7,11 +7,13 @@ declare module 'react' {
   }
 }
 function transformFileListWindows(fileList: FileList) {
-  if (fileList.length === 0) {
-    return new FileList();
-  }
   const dt = new DataTransfer();
-  dt.items.add(fileList[0]);
+  if (fileList.length > 0) {
+    const file = fileList[0];
+    if (file.name.endsWith('.zip')) {
+      dt.items.add(file);
+    }
+  }
   return dt.files;
 }
 function isHiddenFile(file: File) {
