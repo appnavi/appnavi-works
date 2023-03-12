@@ -17,6 +17,7 @@ import {
 import {
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
+  ERROR_MESSAGE_RENAME_TO_SAME,
 } from "../../../../../utils/constants";
 import { authenticatedProcedure, t } from "../../../../../utils/trpc";
 
@@ -93,7 +94,7 @@ async function renameWork(
   renamedWorkId: string
 ) {
   if (creatorId === renamedCreatorId && workId === renamedWorkId) {
-    return ERROR_MESSAGE_RENAME_TO_EXISTING;
+    return ERROR_MESSAGE_RENAME_TO_SAME;
   }
   const { work, error } = await findOwnWorkOrError(creatorId, workId, userId);
   if (error !== null) {
