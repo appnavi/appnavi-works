@@ -1,6 +1,5 @@
 import express from "express";
 import { UserModel } from "../../models/database";
-import { system } from "../../modules/logger";
 import { STATUS_CODE_UNAUTHORIZED } from "../../utils/constants";
 
 export function ensureAuthenticated(
@@ -83,25 +82,5 @@ export async function logLastLogin(
       lastLogIn: new Date(),
     },
   });
-  next();
-}
-
-export function afterSlackLogin(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const user = req.user;
-  if (user === undefined) {
-    system.error(`ログインできていません。`, req.user);
-    res.redirect("/auth/error");
-    return;
-  }
-  if (user.type !== "Slack") {
-    system.error(`Slackによるログインではありません。`, req.user);
-    res.redirect("/auth/error");
-    return;
-  }
-  system.info(`ユーザー${user.id}がSlack認証でログインしました。`);
   next();
 }
