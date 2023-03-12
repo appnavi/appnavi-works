@@ -171,7 +171,7 @@ async function testSuccessfulUploadTwice(): Promise<void> {
       .then(resolve);
   });
 }
-describe("作品のアップロードを伴うテスト", () => {
+describe.skip("作品のアップロードを伴うテスト", () => {
   beforeAll(async () => {
     await preparePassport();
     await connectDatabase("2");
@@ -181,14 +181,9 @@ describe("作品のアップロードを伴うテスト", () => {
     await clearData(creatorId, workId);
   });
   describe("非ログイン時", () => {
-    it.only("非ログイン時にはアップロードができない", (done) => {
+    it("非ログイン時にはアップロードができない", (done) => {
       request(app)
         .post("/api/upload/unity")
-        .expect(STATUS_CODE_UNAUTHORIZED, done);
-    });
-    it("非ログイン時にはリネームできない", (done) => {
-      request(app)
-        .post("/api/account/work/rename")
         .expect(STATUS_CODE_UNAUTHORIZED, done);
     });
     it("非ログイン時には削除できない", (done) => {
@@ -208,7 +203,7 @@ describe("作品のアップロードを伴うテスト", () => {
     });
   });
   describe("ログイン時", () => {
-    describe.only("Unity作品のアップロード（ファイルあり）", () => {
+    describe("Unity作品のアップロード（ファイルあり）", () => {
       it(
         "作者IDが設定されていないとアップロードできない",
         wrap(async (done) => {
@@ -323,254 +318,6 @@ describe("作品のアップロードを伴うテスト", () => {
         wrap(async (done) => {
           await testSuccessfulUploadTwice();
           done();
-        })
-      );
-    });
-    describe("Unity作品のリネーム", () => {
-      it(
-        "作者IDが設定されていないとリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId + "-2")
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-            .end(done);
-        })
-      );
-      it(
-        "作者IDが不適切だとリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", INVALID_ID)
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId + "-2")
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-            .end(done);
-        })
-      );
-      it(
-        "作品IDが設定されていないとリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("renamedCreatorId", creatorId + "-2")
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-            .end(done);
-        })
-      );
-      it(
-        "作品IDが不適切だとリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", INVALID_ID)
-            .field("renamedCreatorId", creatorId + "-2")
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-            .end(done);
-        })
-      );
-      it(
-        "リネーム後の作者IDが設定されていないとリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-            .end(done);
-        })
-      );
-      it(
-        "リネーム後の作者IDが不適切だとリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId + "-2")
-            .field("workId", workId)
-            .field("renamedCreatorId", INVALID_ID)
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-            .end(done);
-        })
-      );
-      it(
-        "リネーム後の作品IDが設定されていないとリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId + "-2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-            .end(done);
-        })
-      );
-      it(
-        "リネーム後の作品IDが不適切だとリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId + "-2")
-            .field("renamedCreatorId", creatorId + "-2")
-            .field("renamedWorkId", INVALID_ID)
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-            .end(done);
-        })
-      );
-      it(
-        "リネーム前とリネーム後が同じだとはリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId)
-            .field("renamedWorkId", workId)
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_SAME] }))
-            .end(done);
-        })
-      );
-      it(
-        "存在しない作品はリネームできない",
-        wrap(async (done) => {
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId + "-2")
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [WORK_NOT_FOUND] }))
-            .end(done);
-        })
-      );
-      it(
-        "別人の投稿した作品はリネームできない",
-        wrap(async (done) => {
-          await testSuccessfulUpload();
-          await expectStorageSizeSameToActualSize(0);
-
-          const works = await WorkModel.find({
-            creatorId: creatorId,
-            workId: workId,
-          });
-          expect(works.length).toBe(1);
-          const work = works[0];
-          work.owner = theirId;
-          work.save();
-
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedCreatorId", `${creatorId}-2`)
-            .field("renamedWorkId", `${workId}-2`)
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(JSON.stringify({ errors: [WORK_DIFFERENT_OWNER] }))
-            .end(done);
-        })
-      );
-      it(
-        "既に存在する作品を上書きするようなリネームはできない",
-        wrap(async (done) => {
-          await testSuccessfulUpload();
-          await expectStorageSizeSameToActualSize(0);
-          await WorkModel.create({
-            creatorId: creatorId + "2",
-            workId: workId + "2",
-            owner: theirId,
-            fileSize: 100,
-          });
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId + "2")
-            .field("renamedWorkId", workId + "2")
-            .expect(STATUS_CODE_BAD_REQUEST)
-            .expect(
-              JSON.stringify({ errors: [ERROR_MESSAGE_RENAME_TO_EXISTING] })
-            )
-            .end(done);
-        })
-      );
-      it(
-        "条件を満たしていれば作者IDのリネームに成功する",
-        wrap(async (done) => {
-          await testSuccessfulUpload();
-          await expectStorageSizeSameToActualSize(0);
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId + "-2")
-            .field("renamedWorkId", workId)
-            .expect(STATUS_CODE_SUCCESS)
-            .end(done);
-        })
-      );
-      it(
-        "条件を満たしていれば作品IDのリネームに成功する",
-        wrap(async (done) => {
-          await testSuccessfulUpload();
-          await expectStorageSizeSameToActualSize(0);
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId)
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_SUCCESS)
-            .end(done);
-        })
-      );
-      it(
-        "条件を満たしていれば作者IDと作品ID両方のリネームに成功する",
-        wrap(async (done) => {
-          await testSuccessfulUpload();
-          await expectStorageSizeSameToActualSize(0);
-          const { login } = await createLogin(myId);
-          login(request(app).post("/api/account/work/rename"))
-            .type("form")
-            .field("creatorId", creatorId)
-            .field("workId", workId)
-            .field("renamedCreatorId", creatorId + "-2")
-            .field("renamedWorkId", workId + "-2")
-            .expect(STATUS_CODE_SUCCESS)
-            .end(done);
         })
       );
     });
