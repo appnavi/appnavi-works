@@ -9,7 +9,6 @@ import passport from "passport";
 import { URL_PREFIX_WORK } from "./common/constants";
 import * as logger from "./modules/logger";
 import { apiRouter } from "./routes/api";
-import { indexRouter } from "./routes/index";
 import { worksRouter } from "./routes/works";
 import { csrf } from "./services/csrf";
 import {
@@ -110,7 +109,6 @@ if (env.NODE_ENV !== "test") {
   app.use(csrf);
 }
 
-app.use("/", indexRouter);
 app.use("/api", apiRouter);
 
 // catch 404 and forward to error handler
