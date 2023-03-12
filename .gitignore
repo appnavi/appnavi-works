@@ -63,9 +63,6 @@ typings/
 /server/dist/
 /uploads/
 /backups/
-/server/private/javascripts/**/*.js
-/server/private/stylesheets/**/*.css
-/server/private/stylesheets/**/*.css.map
 /server/public/javascripts/**/*.js
 /server/public/stylesheets/**/*.css
 /server/public/stylesheets/**/*.css.map
