@@ -21,13 +21,7 @@ export const DefaultCreatorIdForm = () => {
       onError(error) {
         showMessageDialog({
           title: 'エラー',
-          content: (
-            <div>
-              {error.message.split('\n').map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
-          ),
+          text: error.message,
         });
       },
     });

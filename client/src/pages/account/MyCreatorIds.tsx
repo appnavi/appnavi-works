@@ -12,7 +12,6 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
     onSuccess() {
       showMessageDialog({
         title: '使用していない作者IDの削除に成功しました。',
-        content: <></>,
         onClose() {
           trpcContext.account.getUserData.invalidate();
         },
@@ -21,13 +20,7 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
     onError(error) {
       showMessageDialog({
         title: '使用していない作者IDの削除に失敗しました。',
-        content: (
-          <div>
-            {error.message.split('\n').map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        ),
+        text: error.message,
       });
     },
   });

@@ -12,7 +12,6 @@ export const DeleteWorkButton = ({ work }: { work: WorkDB }) => {
     onSuccess() {
       showMessageDialog({
         title: '削除に成功しました',
-        content: <></>,
         onClose() {
           trpcContext.account.work.list.invalidate();
         },
@@ -21,13 +20,7 @@ export const DeleteWorkButton = ({ work }: { work: WorkDB }) => {
     onError(error) {
       showMessageDialog({
         title: '削除に失敗しました',
-        content: (
-          <div>
-            {error.message.split('\n').map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        ),
+        text: error.message,
       });
     },
   });

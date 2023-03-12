@@ -13,7 +13,6 @@ export const Backups = ({ work }: { work: WorkDB }) => {
     onSuccess() {
       showMessageDialog({
         title: '復元に成功しました。',
-        content: <></>,
         onClose() {
           trpcContext.account.work.list.invalidate();
         },
@@ -22,13 +21,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
     onError(error) {
       showMessageDialog({
         title: '復元に失敗しました',
-        content: (
-          <div>
-            {error.message.split('\n').map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        ),
+        text: error.message,
       });
     },
   });
@@ -36,7 +29,6 @@ export const Backups = ({ work }: { work: WorkDB }) => {
     onSuccess() {
       showMessageDialog({
         title: '削除に成功しました。',
-        content: <></>,
         onClose() {
           trpcContext.account.work.list.invalidate();
         },
@@ -45,13 +37,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
     onError(error) {
       showMessageDialog({
         title: '削除に失敗しました',
-        content: (
-          <div>
-            {error.message.split('\n').map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        ),
+        text: error.message,
       });
     },
   });

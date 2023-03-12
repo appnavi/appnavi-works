@@ -30,7 +30,6 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
     onSuccess() {
       showMessageDialog({
         title: '編集に成功しました',
-        content: <></>,
         onClose() {
           trpcContext.account.work.list.invalidate();
         },
@@ -39,13 +38,7 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
     onError(error) {
       showMessageDialog({
         title: '編集に失敗しました',
-        content: (
-          <div>
-            {error.message.split('\n').map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        ),
+        text: error.message,
       });
     },
   });

@@ -13,7 +13,6 @@ const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
     onSuccess() {
       showMessageDialog({
         title: `ゲストユーザー${guestId}を削除しました。`,
-        content: <></>,
         onClose() {
           trpcContext.db.fetchAllUsers.invalidate();
         },
@@ -22,13 +21,7 @@ const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
     onError(error) {
       showMessageDialog({
         title: `ゲストユーザー${guestId}の削除に失敗しました。`,
-        content: (
-          <div>
-            {error.message.split('\n').map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        ),
+        text: error.message,
       });
     },
   });

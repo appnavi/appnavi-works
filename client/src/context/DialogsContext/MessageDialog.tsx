@@ -11,7 +11,8 @@ import {
 export type MessageDialogContextProps = {
   showMessageDialog: (params: {
     title: string;
-    content: ReactNode;
+    text?: string;
+    content?: ReactNode;
     onClose?: () => void;
   }) => void;
 };
@@ -48,11 +49,13 @@ export const MessageDialogContextProvider = ({
   }, []);
   const showMessageDialog = ({
     title,
+    text,
     content,
     onClose,
   }: {
     title: string;
-    content: ReactNode;
+    text?: string;
+    content?: ReactNode;
     onClose?: () => void;
   }) => {
     const modalElement = modalRef.current;
@@ -60,7 +63,19 @@ export const MessageDialogContextProvider = ({
       return;
     }
     setModalTitle(title);
-    setModalContent(content);
+    if (text) {
+      setModalContent(
+        <>
+          {text.split('\n').map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </>,
+      );
+    } else if (content) {
+      setModalContent(content);
+    } else {
+      setModalContent(null);
+    }
     const modalInstance = M.Modal.getInstance(modalElement);
     modalInstance.options.onCloseEnd = onClose ?? doNothing;
     modalInstance.open();

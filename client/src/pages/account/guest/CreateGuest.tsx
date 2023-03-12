@@ -94,13 +94,7 @@ export const CreateGuest = () => {
     onError(error) {
       showMessageDialog({
         title: 'ゲストユーザー作成に失敗しました',
-        content: (
-          <div>
-            {error.message.split('\n').map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        ),
+        text: error.message,
       });
     },
   });
