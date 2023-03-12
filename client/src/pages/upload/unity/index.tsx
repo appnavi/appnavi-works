@@ -130,7 +130,12 @@ const Page = () => {
         action="webgl"
         method="POST"
         encType="multipart/form-data"
-        onSubmit={handleSubit}
+        onSubmit={(e) =>
+          handleSubit(e).catch(() => {
+            setUploading(false);
+            showUnknownErrorDialog('');
+          })
+        }
         ref={formRef}
       >
         <div className="row card-panel">
