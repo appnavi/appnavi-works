@@ -20,7 +20,7 @@ const BaseInput = ({
         type="text"
         className="validate"
         name={name}
-        pattern="^[0-9a-z\-]+$"
+        pattern="^[0-9a-z-]+$"
         required
         aria-required
         value={value}

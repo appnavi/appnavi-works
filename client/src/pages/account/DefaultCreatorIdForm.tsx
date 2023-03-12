@@ -52,7 +52,7 @@ export const DefaultCreatorIdForm = () => {
             type="text"
             name="default_creator_id"
             id="default_creator_id"
-            pattern="^[0-9a-z\-]+$"
+            pattern="^[0-9a-z-]+$"
             required
             className="validate"
             defaultValue={defaultCreatorId ?? ''}

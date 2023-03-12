@@ -88,7 +88,7 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
                       name="renamedCreatorId"
                       type="text"
                       className="validate"
-                      pattern="^[0-9a-z\-]+$"
+                      pattern="^[0-9a-z-]+$"
                       required
                       value={renamedCreatorId}
                       onChange={(e) =>
@@ -108,7 +108,7 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
                       name="renamedWorkId"
                       type="text"
                       className="validate"
-                      pattern="^[0-9a-z\-]+$"
+                      pattern="^[0-9a-z-]+$"
                       required
                       value={renamedWorkId}
                       onChange={(e) => setRenamedWorkId(e.currentTarget.value)}
