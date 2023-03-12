@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { ErrorResponse } from "../../../../../common/types";
 import { guestUserIdRegex } from "../../../../../config/passport";
 import { UserModel, WorkModel } from "../../../../../models/database";
 import { hashPassword } from "../../../../../services/auth/password";
@@ -53,20 +52,17 @@ export const accountGuestRouter = t.router({
     )
     .mutation(async ({ ctx, input }) => {
       const { guestId } = input;
-      const errorResponse = await deleteGuestUser(ctx.user.id, guestId);
-      if (errorResponse === null) {
-        return;
+      const errorMessage = await deleteGuestUser(ctx.user.id, guestId);
+      if (errorMessage !== null) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: errorMessage });
       }
-      throw new TRPCError({ code: "BAD_REQUEST", cause: errorResponse });
     }),
 });
 
 async function deleteGuestUser(userId: string, guestId: string) {
   const guestUsers = await UserModel.find({ userId: guestId });
   if (guestUsers.length === 0) {
-    return <ErrorResponse>{
-      errors: [ERROR_MESSAGE_GUEST_NOT_FOUND],
-    };
+    return ERROR_MESSAGE_GUEST_NOT_FOUND;
   }
   if (guestUsers.length > 1) {
     throw new TRPCError({
@@ -77,22 +73,16 @@ async function deleteGuestUser(userId: string, guestId: string) {
   const guestUser = guestUsers[0];
   const guest = guestUser.guest;
   if (guest === undefined) {
-    return <ErrorResponse>{
-      errors: [ERROR_MESSAGE_NOT_GUEST_USER],
-    };
+    return ERROR_MESSAGE_NOT_GUEST_USER;
   }
   if (guest.createdBy !== userId) {
-    return <ErrorResponse>{
-      errors: [ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR],
-    };
+    return ERROR_MESSAGE_GUEST_DIFFERENT_CREATOR;
   }
   const worksByGuest = await WorkModel.find({
     owner: guestUser.userId,
   });
   if (worksByGuest.length !== 0) {
-    return <ErrorResponse>{
-      errors: [ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY],
-    };
+    return ERROR_MESSAGE_GUEST_WORKS_NOT_EMPTY;
   }
   await guestUser.delete();
   return null;

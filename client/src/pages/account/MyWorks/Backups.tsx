@@ -2,14 +2,12 @@ import { WorkDB } from '@common/types';
 import { MdDeleteForever, MdRestore } from 'react-icons/md';
 import { FormatDate } from '../../../components/FormatDate';
 import { useConfirmDialogContext } from '../../../context/DialogsContext/ConfirmDialog';
-import { useErrorDialogContext } from '../../../context/DialogsContext/ErrorDialog';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
 
 export const Backups = ({ work }: { work: WorkDB }) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
-  const { showErrorDialog } = useErrorDialogContext();
   const { showConfirmDialog } = useConfirmDialogContext();
   const { mutate: restoreBackup } = trpc.account.backup.restore.useMutation({
     onSuccess() {
@@ -22,9 +20,15 @@ export const Backups = ({ work }: { work: WorkDB }) => {
       });
     },
     onError(error) {
-      showErrorDialog({
+      showMessageDialog({
         title: '復元に失敗しました',
-        errorMessage: error.message,
+        content: (
+          <div>
+            {error.message.split('\n').map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ),
       });
     },
   });
@@ -39,9 +43,15 @@ export const Backups = ({ work }: { work: WorkDB }) => {
       });
     },
     onError(error) {
-      showErrorDialog({
+      showMessageDialog({
         title: '削除に失敗しました',
-        errorMessage: error.message,
+        content: (
+          <div>
+            {error.message.split('\n').map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ),
       });
     },
   });

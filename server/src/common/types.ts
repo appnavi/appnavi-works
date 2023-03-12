@@ -54,8 +54,3 @@ export const WorkDB = z.object({
   ),
 });
 export type WorkDB = z.infer<typeof WorkDB>;
-
-export const ErrorResponse = z.object({
-  errors: z.string().array(),
-});
-export type ErrorResponse = z.infer<typeof ErrorResponse>;

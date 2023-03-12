@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import fsExtra from "fs-extra";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { ErrorResponse, WorkDB } from "../../../../../common/types";
+import { WorkDB } from "../../../../../common/types";
 import { WorkModel } from "../../../../../models/database";
 import { updateCreatorIds } from "../../../../../services/auth";
 import {
@@ -52,22 +52,22 @@ export const accountWorkRouter = t.router({
     )
     .mutation(async ({ ctx, input }) => {
       const { creatorId, workId, renamedCreatorId, renamedWorkId } = input;
-      const errorResponse = await renameWork(
+      const errorMessage = await renameWork(
         creatorId,
         workId,
         ctx.user.id,
         renamedCreatorId,
         renamedWorkId
       );
-      if (errorResponse !== null) {
-        throw new TRPCError({ code: "BAD_REQUEST", cause: errorResponse });
+      if (errorMessage !== null) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: errorMessage });
       }
     }),
   delete: modifyWorkProcedure.mutation(async ({ ctx, input }) => {
     const { creatorId, workId } = input;
-    const errorResponse = await deleteWork(creatorId, workId, ctx.user.id);
-    if (errorResponse !== null) {
-      throw new TRPCError({ code: "BAD_REQUEST", cause: errorResponse });
+    const errorMessage = await deleteWork(creatorId, workId, ctx.user.id);
+    if (errorMessage !== null) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: errorMessage });
     }
   }),
 });
@@ -75,9 +75,7 @@ export const accountWorkRouter = t.router({
 async function deleteWork(creatorId: string, workId: string, userId: string) {
   const { work, error } = await findOwnWorkOrError(creatorId, workId, userId);
   if (error !== null) {
-    return <ErrorResponse>{
-      errors: [error],
-    };
+    return error;
   }
   const workDir = getAbsolutePathOfWork(creatorId, workId);
   const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
@@ -95,15 +93,11 @@ async function renameWork(
   renamedWorkId: string
 ) {
   if (creatorId === renamedCreatorId && workId === renamedWorkId) {
-    return <ErrorResponse>{
-      errors: [ERROR_MESSAGE_RENAME_TO_EXISTING],
-    };
+    return ERROR_MESSAGE_RENAME_TO_EXISTING;
   }
   const { work, error } = await findOwnWorkOrError(creatorId, workId, userId);
   if (error !== null) {
-    return <ErrorResponse>{
-      errors: [error],
-    };
+    return error;
   }
   const workDir = getAbsolutePathOfWork(creatorId, workId);
   const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
@@ -112,18 +106,14 @@ async function renameWork(
     workId: renamedWorkId,
   });
   if (renamedWorks.length > 0) {
-    return <ErrorResponse>{
-      errors: [ERROR_MESSAGE_RENAME_TO_EXISTING],
-    };
+    return ERROR_MESSAGE_RENAME_TO_EXISTING;
   }
   const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
     renamedCreatorId,
     userId
   );
   if (isUsedByOtherUser) {
-    return <ErrorResponse>{
-      errors: [ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER],
-    };
+    return ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER;
   }
   const renamedPath = getAbsolutePathOfWork(renamedCreatorId, renamedWorkId);
   await fsExtra.ensureDir(path.resolve(renamedPath, ".."));

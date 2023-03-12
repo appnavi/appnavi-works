@@ -3,14 +3,12 @@ import { MdDelete } from 'react-icons/md';
 import { FormatDate } from '../../../components/FormatDate';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { useConfirmDialogContext } from '../../../context/DialogsContext/ConfirmDialog';
-import { useErrorDialogContext } from '../../../context/DialogsContext/ErrorDialog';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
 const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
   const trpcContext = trpc.useContext();
   const { showConfirmDialog } = useConfirmDialogContext();
   const { showMessageDialog } = useMessageDialogContext();
-  const { showErrorDialog } = useErrorDialogContext();
   const { mutate } = trpc.account.guest.delete.useMutation({
     onSuccess() {
       showMessageDialog({
@@ -22,9 +20,15 @@ const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
       });
     },
     onError(error) {
-      showErrorDialog({
+      showMessageDialog({
         title: `ゲストユーザー${guestId}の削除に失敗しました。`,
-        errorMessage: error.message,
+        content: (
+          <div>
+            {error.message.split('\n').map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ),
       });
     },
   });

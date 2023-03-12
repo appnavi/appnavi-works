@@ -1,6 +1,5 @@
 import M from '@materializecss/materialize';
 import { useRef, useEffect } from 'react';
-import { useErrorDialogContext } from '../../../context/DialogsContext/ErrorDialog';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
 
@@ -78,7 +77,6 @@ const CreatedGuestInfo = ({
 export const CreateGuest = () => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
-  const { showErrorDialog } = useErrorDialogContext();
   const { mutate } = trpc.account.guest.create.useMutation({
     onSuccess(data) {
       showMessageDialog({
@@ -90,9 +88,15 @@ export const CreateGuest = () => {
       });
     },
     onError(error) {
-      showErrorDialog({
+      showMessageDialog({
         title: 'ゲストユーザー作成に失敗しました',
-        errorMessage: error.message,
+        content: (
+          <div>
+            {error.message.split('\n').map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ),
       });
     },
   });

@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import fsExtra from "fs-extra";
 import { z } from "zod";
-import { ErrorResponse } from "../../../../../common/types";
 import {
   backupWork,
   creatorIdSchema,
@@ -30,26 +29,26 @@ const accountBackupProcedure = authenticatedProcedure.input(
 export const accountBackupRouter = t.router({
   restore: accountBackupProcedure.mutation(async ({ ctx, input }) => {
     const { creatorId, workId, backupName } = input;
-    const errorResponse = await restoreBackup(
+    const errorMessage = await restoreBackup(
       creatorId,
       workId,
       ctx.user.id,
       backupName
     );
-    if (errorResponse !== null) {
-      throw new TRPCError({ code: "BAD_REQUEST", cause: errorResponse });
+    if (errorMessage !== null) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: errorMessage });
     }
   }),
   delete: accountBackupProcedure.mutation(async ({ ctx, input }) => {
     const { creatorId, workId, backupName } = input;
-    const errorResponse = await deleteBackup(
+    const errorMessage = await deleteBackup(
       creatorId,
       workId,
       ctx.user.id,
       backupName
     );
-    if (errorResponse !== null) {
-      throw new TRPCError({ code: "BAD_REQUEST", cause: errorResponse });
+    if (errorMessage !== null) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: errorMessage });
     }
   }),
 });
@@ -62,9 +61,7 @@ async function restoreBackup(
 ) {
   const { work, error } = await findOwnWorkOrError(creatorId, workId, userId);
   if (error !== null) {
-    return <ErrorResponse>{
-      errors: [error],
-    };
+    return error;
   }
   await backupWork(creatorId, workId, work);
   const workPath = getAbsolutePathOfWork(creatorId, workId);
@@ -78,9 +75,7 @@ async function restoreBackup(
     backupToRestore === undefined ||
     !(await fsExtra.pathExists(backupToRestorePath))
   ) {
-    return <ErrorResponse>{
-      errors: [ERROR_MESSAGE_BACKUP_NOT_FOUND],
-    };
+    return ERROR_MESSAGE_BACKUP_NOT_FOUND;
   }
   await fsExtra.move(backupToRestorePath, workPath);
   work.fileSize = backupToRestore.fileSize;
@@ -96,9 +91,7 @@ async function deleteBackup(
 ) {
   const { work, error } = await findOwnWorkOrError(creatorId, workId, userId);
   if (error !== null) {
-    return <ErrorResponse>{
-      errors: [error],
-    };
+    return error;
   }
   const backupToDeletePath = getAbsolutePathOfBackup(
     creatorId,

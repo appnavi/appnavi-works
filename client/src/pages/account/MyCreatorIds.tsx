@@ -1,14 +1,12 @@
 import { MdDeleteSweep } from 'react-icons/md';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { useConfirmDialogContext } from '../../context/DialogsContext/ConfirmDialog';
-import { useErrorDialogContext } from '../../context/DialogsContext/ErrorDialog';
 import { useMessageDialogContext } from '../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../trpc';
 
 const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
-  const { showErrorDialog } = useErrorDialogContext();
   const { showConfirmDialog } = useConfirmDialogContext();
   const { mutate } = trpc.account.cleanupCreatorIds.useMutation({
     onSuccess() {
@@ -21,9 +19,15 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
       });
     },
     onError(error) {
-      showErrorDialog({
+      showMessageDialog({
         title: '使用していない作者IDの削除に失敗しました。',
-        errorMessage: error.message,
+        content: (
+          <div>
+            {error.message.split('\n').map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ),
       });
     },
   });

@@ -1,13 +1,11 @@
 import M from '@materializecss/materialize';
 import { useEffect, FormEvent, useRef } from 'react';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
-import { useErrorDialogContext } from '../../context/DialogsContext/ErrorDialog';
 import { useMessageDialogContext } from '../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../trpc';
 
 export const DefaultCreatorIdForm = () => {
   const { showMessageDialog } = useMessageDialogContext();
-  const { showErrorDialog } = useErrorDialogContext();
   const trpcContext = trpc.useContext();
   const { data: defaultCreatorId } =
     trpc.account.getDefaultCreatorId.useQuery();
@@ -21,9 +19,15 @@ export const DefaultCreatorIdForm = () => {
         });
       },
       onError(error) {
-        showErrorDialog({
+        showMessageDialog({
           title: 'エラー',
-          errorMessage: error.message,
+          content: (
+            <div>
+              {error.message.split('\n').map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </div>
+          ),
         });
       },
     });

@@ -1,7 +1,6 @@
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { Router } from "express";
 import { ZodError } from "zod";
-import { ErrorResponse } from "../../common/types";
 import * as logger from "../../modules/logger";
 import { createContext } from "../../utils/trpc";
 import { authRouter } from "./auth";
@@ -26,32 +25,19 @@ apiRouter.use(
         cause,
       });
       if (code === "UNAUTHORIZED") {
-        error.message = JSON.stringify(<ErrorResponse>{
-          errors: ["ログインが必要です"],
-        });
+        error.message = "ログインが必要です";
         return;
       }
       if (code === "FORBIDDEN") {
-        error.message = JSON.stringify(<ErrorResponse>{
-          errors: ["許可されていない操作です"],
-        });
+        error.message = "許可されていない操作です";
         return;
       }
       if (code !== "BAD_REQUEST") {
-        error.message = JSON.stringify(<ErrorResponse>{
-          errors: ["想定外のエラーです"],
-        });
+        error.message = "想定外のエラーです";
         return;
       }
       if (cause instanceof ZodError) {
-        const message: ErrorResponse = {
-          errors: cause.issues.map((i) => i.message),
-        };
-        error.message = JSON.stringify(message);
-        return;
-      }
-      if (ErrorResponse.safeParse(cause).success) {
-        error.message = JSON.stringify(cause);
+        error.message = cause.issues.map((x) => x.message).join("\n");
         return;
       }
     },

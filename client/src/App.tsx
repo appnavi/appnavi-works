@@ -7,7 +7,6 @@ import superjson from 'superjson';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { ConfirmDialogContextProvider } from './context/DialogsContext/ConfirmDialog';
-import { ErrorDialogContextProvider } from './context/DialogsContext/ErrorDialog';
 import { MessageDialogContextProvider } from './context/DialogsContext/MessageDialog';
 import { UserContextProvider } from './context/UserContext';
 import { csrfToken, CsrfTokenProvider } from './csrf';
@@ -110,17 +109,15 @@ function App() {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <CsrfTokenProvider>
-          <ErrorDialogContextProvider>
-            <MessageDialogContextProvider>
-              <ConfirmDialogContextProvider>
-                <UserContextProvider>
-                  <HelmetProvider>
-                    <RouterProvider router={router} />
-                  </HelmetProvider>
-                </UserContextProvider>
-              </ConfirmDialogContextProvider>
-            </MessageDialogContextProvider>
-          </ErrorDialogContextProvider>
+          <MessageDialogContextProvider>
+            <ConfirmDialogContextProvider>
+              <UserContextProvider>
+                <HelmetProvider>
+                  <RouterProvider router={router} />
+                </HelmetProvider>
+              </UserContextProvider>
+            </ConfirmDialogContextProvider>
+          </MessageDialogContextProvider>
         </CsrfTokenProvider>
       </QueryClientProvider>
     </trpc.Provider>

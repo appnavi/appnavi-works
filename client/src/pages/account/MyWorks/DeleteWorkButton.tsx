@@ -1,7 +1,6 @@
 import { WorkDB } from '@common/types';
 import { MdDelete } from 'react-icons/md';
 import { useConfirmDialogContext } from '../../../context/DialogsContext/ConfirmDialog';
-import { useErrorDialogContext } from '../../../context/DialogsContext/ErrorDialog';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
 
@@ -9,7 +8,6 @@ export const DeleteWorkButton = ({ work }: { work: WorkDB }) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
   const { showConfirmDialog } = useConfirmDialogContext();
-  const { showErrorDialog } = useErrorDialogContext();
   const { mutate } = trpc.account.work.delete.useMutation({
     onSuccess() {
       showMessageDialog({
@@ -21,9 +19,15 @@ export const DeleteWorkButton = ({ work }: { work: WorkDB }) => {
       });
     },
     onError(error) {
-      showErrorDialog({
+      showMessageDialog({
         title: '削除に失敗しました',
-        errorMessage: error.message,
+        content: (
+          <div>
+            {error.message.split('\n').map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ),
       });
     },
   });

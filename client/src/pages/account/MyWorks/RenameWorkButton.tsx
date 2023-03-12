@@ -2,7 +2,6 @@ import { WorkDB } from '@common/types';
 import M from '@materializecss/materialize';
 import { useRef, useEffect, useState } from 'react';
 import { MdEdit } from 'react-icons/md';
-import { useErrorDialogContext } from '../../../context/DialogsContext/ErrorDialog';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
 
@@ -27,7 +26,6 @@ function shouldDisableRenameButton(
 export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
-  const { showErrorDialog } = useErrorDialogContext();
   const { mutate } = trpc.account.work.rename.useMutation({
     onSuccess() {
       showMessageDialog({
@@ -39,9 +37,15 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
       });
     },
     onError(error) {
-      showErrorDialog({
+      showMessageDialog({
         title: '編集に失敗しました',
-        errorMessage: error.message,
+        content: (
+          <div>
+            {error.message.split('\n').map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ),
       });
     },
   });
