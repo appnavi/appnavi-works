@@ -4,7 +4,6 @@ import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import { DIRECTORY_NAME_VIEWS } from "./constants";
 import { UnauthorizedError } from "./errors";
-export const idRegex = /^[0-9a-z-]+$/;
 
 export const randomStringCharacters =
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

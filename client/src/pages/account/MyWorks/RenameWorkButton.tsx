@@ -1,3 +1,4 @@
+import { idRegexPattern } from '@common/constants';
 import { WorkDB } from '@common/types';
 import M from '@materializecss/materialize';
 import { useRef, useEffect, useState } from 'react';
@@ -88,7 +89,7 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
                       name="renamedCreatorId"
                       type="text"
                       className="validate"
-                      pattern="^[0-9a-z-]+$"
+                      pattern={idRegexPattern}
                       required
                       value={renamedCreatorId}
                       onChange={(e) =>
@@ -108,7 +109,7 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
                       name="renamedWorkId"
                       type="text"
                       className="validate"
-                      pattern="^[0-9a-z-]+$"
+                      pattern={idRegexPattern}
                       required
                       value={renamedWorkId}
                       onChange={(e) => setRenamedWorkId(e.currentTarget.value)}

@@ -1,3 +1,4 @@
+import { idRegexPattern } from '@common/constants';
 import M from '@materializecss/materialize';
 import { useEffect } from 'react';
 import { trpc } from '../../../trpc';
@@ -20,7 +21,7 @@ const BaseInput = ({
         type="text"
         className="validate"
         name={name}
-        pattern="^[0-9a-z-]+$"
+        pattern={idRegexPattern}
         required
         aria-required
         value={value}

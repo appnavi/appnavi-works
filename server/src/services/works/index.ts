@@ -1,6 +1,7 @@
 import path from "path";
 import fsExtra from "fs-extra";
 import { z } from "zod";
+import { idRegex } from "../../common/constants";
 import { UserModel, WorkDocument, WorkModel } from "../../models/database";
 import {
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
@@ -11,7 +12,6 @@ import {
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
   ERROR_MESSAGE_MULTIPLE_WORKS_FOUND,
 } from "../../utils/constants";
-import { idRegex } from "../../utils/helpers";
 
 const DIRECTORY_NAME_UPLOADS = "uploads";
 const DIRECTORY_NAME_BACKUPS = "backups";

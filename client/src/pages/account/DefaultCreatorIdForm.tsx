@@ -1,3 +1,4 @@
+import { idRegexPattern } from '@common/constants';
 import M from '@materializecss/materialize';
 import { useEffect, FormEvent, useRef } from 'react';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
@@ -52,7 +53,7 @@ export const DefaultCreatorIdForm = () => {
             type="text"
             name="default_creator_id"
             id="default_creator_id"
-            pattern="^[0-9a-z-]+$"
+            pattern={idRegexPattern}
             required
             className="validate"
             defaultValue={defaultCreatorId ?? ''}
