@@ -10,7 +10,6 @@ import {
   STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
 } from "../../../utils/constants";
-import { render } from "../../../utils/helpers";
 
 // ゲストログインの失敗は1時間に3回まで
 export const guestLoginRateLimiter = rateLimit({
@@ -19,8 +18,7 @@ export const guestLoginRateLimiter = rateLimit({
   skipSuccessfulRequests: true,
   handler: (req, res) => {
     logger.system.error(`ログイン失敗回数が制限を超えました。`, req.ip);
-    res.status(STATUS_CODE_UNAUTHORIZED);
-    render("auth/guest", req, res, {
+    res.status(STATUS_CODE_UNAUTHORIZED).send({
       error: ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
     });
   },
