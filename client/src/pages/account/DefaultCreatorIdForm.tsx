@@ -54,6 +54,7 @@ export const DefaultCreatorIdForm = () => {
             id="default_creator_id"
             pattern="^[0-9a-z\-]+$"
             required
+            className="validate"
             defaultValue={defaultCreatorId ?? ''}
           />
           <label htmlFor="default_creator_id">デフォルトの作者ID</label>
