@@ -14,16 +14,20 @@ const ClickToSelectDisplay = ({
 }) => {
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const onClick = () => {
-      element?.select();
-    };
     const element = ref?.current;
     if (element === null) {
       return;
     }
-    element.addEventListener('click', onClick);
+    const controller = new AbortController();
+    element.addEventListener(
+      'click',
+      () => {
+        element.select();
+      },
+      { signal: controller.signal },
+    );
     return () => {
-      element.removeEventListener('click', onClick);
+      controller.abort();
     };
   }, []);
   return (
