@@ -7,16 +7,17 @@ import { system } from "../modules/logger";
 
 export function createContext({ req }: CreateExpressContextOptions) {
   const parsed = UserOrUndefined.safeParse(req.user);
+  const { csrfToken } = req.session;
   if (!parsed.success) {
     system.error("ユーザーが不正です", fromZodError(parsed.error));
     return {
       user: undefined,
-      req,
+      csrfToken,
     };
   }
   return {
     user: parsed.data,
-    req,
+    csrfToken,
   };
 }
 

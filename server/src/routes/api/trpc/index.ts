@@ -1,4 +1,4 @@
-import { createCsrfTokenInSession } from "../../../services/csrf";
+import { TRPCError } from "@trpc/server";
 import { t, publicProcedure } from "../../../utils/trpc";
 import { accountRouter } from "./account";
 import { dbRouter } from "./db";
@@ -6,12 +6,14 @@ import { dbRouter } from "./db";
 export const trpcRouter = t.router({
   me: publicProcedure.query(({ ctx }) => ctx.user ?? null),
   csrf: publicProcedure.query(async ({ ctx }) => {
-    const { req } = ctx;
-    const { csrfToken, csrfTokenWithHash } = req.session;
-    if (csrfToken !== undefined && csrfTokenWithHash !== undefined) {
-      return csrfToken;
+    const { csrfToken } = ctx;
+    if (csrfToken === undefined) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "CSRFトークンが取得できませんでした",
+      });
     }
-    return await createCsrfTokenInSession(req.session);
+    return csrfToken;
   }),
   account: accountRouter,
   db: dbRouter,
