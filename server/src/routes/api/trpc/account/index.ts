@@ -62,11 +62,12 @@ export const accountRouter = t.router({
       );
     }),
   cleanupCreatorIds: authenticatedProcedure.mutation(async ({ ctx }) => {
-    const user = await findUserByIdOrThrow(ctx.user.id);
-    const works = await WorkModel.find();
-    const usedCreatorIds = user.creatorIds.filter((id) => {
-      return works.find((w) => w.creatorId === id) !== undefined;
-    });
+    const userId = ctx.user.id;
+    const user = await findUserByIdOrThrow(userId);
+    const worksByMe = await WorkModel.find({ owner: userId });
+    const usedCreatorIds = Array.from(
+      new Set(worksByMe.map((x) => x.creatorId))
+    );
     await user.update({
       creatorIds: usedCreatorIds,
     });
