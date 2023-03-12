@@ -48,7 +48,6 @@ const Page = () => {
     }
     setUploading(true);
     const formData = new FormData(formElement);
-    // TODO：Zipファイルのほうにフォルダをドロップしていると下のfetchがエラーになる問題を修正
     const response = await fetch('/api/upload/unity', {
       credentials: 'same-origin',
       method: 'POST',
