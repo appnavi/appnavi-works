@@ -53,9 +53,3 @@ export class UploadError extends BadRequestError {
     super("アップロードに失敗しました。", errors, logParams);
   }
 }
-
-export class RestoreBackupError extends BadRequestError {
-  constructor(errors: unknown[] = [], logParams: unknown = undefined) {
-    super("バックアップの復元に失敗しました。", errors, logParams);
-  }
-}
