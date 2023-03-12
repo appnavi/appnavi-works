@@ -7,7 +7,7 @@ import {
   HEADER_WORK_ID,
   URL_PREFIX_WORK,
 } from "../../../common/constants";
-import { WorkDocument } from "../../../models/database";
+import { WorkDocument, WorkModel } from "../../../models/database";
 import * as logger from "../../../modules/logger";
 import {
   ensureAuthenticated,
@@ -20,7 +20,6 @@ import {
   uploadSchema,
   calculateCurrentStorageSizeBytes,
   backupWork,
-  findOrCreateWork,
   isCreatorIdUsedByOtherUser,
   getAbsolutePathOfWork,
 } from "../../../services/works";
@@ -31,18 +30,12 @@ import {
   UPLOAD_UNITY_FIELD_WEBGL,
   UPLOAD_UNITY_FIELDS,
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER as CREATOR_ID_USED_BY_OTHER_USER,
+  ERROR_MESSAGE_MULTIPLE_WORKS_FOUND,
 } from "../../../utils/constants";
 import { env } from "../../../utils/env";
 import { UploadError } from "../../../utils/errors";
-import { wrap } from "../../../utils/helpers";
+import { middlewareToPromise, wrap } from "../../../utils/helpers";
 
-interface Locals {
-  paths: string[];
-  uploadStartedAt: Date;
-  uploadEndedAt: Date;
-  elapsedMillis: number;
-  work: WorkDocument;
-}
 function getCreatorIdFromHeaderOrThrow(req: express.Request) {
   const x = req.headers[HEADER_CREATOR_ID];
   if (typeof x !== "string") {
@@ -122,30 +115,36 @@ if (env.NODE_ENV !== "test") {
 
 uploadRouter.post(
   "/unity",
-  validateParams,
-  ensureStorageSpaceAvailable,
-  preventCreatorIdUsedByMultipleUsers,
-  getWorkDocument,
-  validateDestination,
-  beforeUpload,
-  unityUpload.fields(UPLOAD_UNITY_FIELDS),
-  ensureUploadSuccess,
-  setLocals,
-  saveToDatabase,
-  logUploadSuccess,
-  (_req, res) => {
-    const locals = res.locals as Locals;
+  wrap(async (req, res) => {
+    const userId = getUserIdOrThrow(req);
+    const { creatorId, workId } = parseParams(req);
+    await ensureStorageSpaceAvailable();
+    await preventCreatorIdUsedByMultipleUsers({ userId, creatorId });
+    const work = await findOrCreateWork({ creatorId, workId, userId });
+    await validateDestination({ creatorId, workId, work });
+    const uploadStartedAt = new Date();
+    await middlewareToPromise(
+      unityUpload.fields(UPLOAD_UNITY_FIELDS),
+      req,
+      res
+    );
+    const uploadEndedAt = new Date();
+    ensureUploadSuccess(req);
+    await saveToDatabase({ req, work, creatorId, userId, uploadEndedAt });
+    logUploadSuccess({ creatorId, workId, uploadStartedAt, uploadEndedAt });
+    const files = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+    const paths = UPLOAD_UNITY_FIELDS.filter(
+      ({ name }) => files[name] !== undefined
+    ).map(({ name }) => path.join(URL_PREFIX_WORK, creatorId, workId, name));
     res.json({
-      paths: locals.paths,
+      paths,
     });
-  }
+  })
 );
 
-function validateParams(
-  req: express.Request,
-  _res: express.Response,
-  next: express.NextFunction
-) {
+function parseParams(req: express.Request) {
   const creatorId = req.headers[HEADER_CREATOR_ID];
   const workId = req.headers[HEADER_WORK_ID];
 
@@ -154,166 +153,123 @@ function validateParams(
     workId: workId,
   });
   if (parsed.success) {
-    next();
+    return parsed.data;
   } else {
-    next(
-      new UploadError(
-        parsed.error.errors.map((x) => x.message),
-        [creatorId, workId]
-      )
+    throw new UploadError(
+      parsed.error.errors.map((x) => x.message),
+      [creatorId, workId]
     );
   }
 }
-function ensureStorageSpaceAvailable(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  return wrap(async (_req, _res, next) => {
-    const workStorageSizeBytes = env.WORK_STORAGE_SIZE_BYTES;
-    const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
-    if (workStorageSizeBytes <= currentStorageSizeBytes) {
-      next(new UploadError([STORAGE_FULL]));
-      return;
-    }
-    next();
-  })(req, res, next);
+async function ensureStorageSpaceAvailable() {
+  const workStorageSizeBytes = env.WORK_STORAGE_SIZE_BYTES;
+  const currentStorageSizeBytes = await calculateCurrentStorageSizeBytes();
+  if (workStorageSizeBytes <= currentStorageSizeBytes) {
+    throw new UploadError([STORAGE_FULL]);
+  }
 }
-function getWorkDocument(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  return wrap(async (req, res, next) => {
-    const locals = res.locals as Locals;
-    locals.work = await findOrCreateWork(
-      getCreatorIdFromHeaderOrThrow(req),
-      getWorkIdFromHeaderOrThrow(req),
-      getUserIdOrThrow(req)
-    );
-    next();
-  })(req, res, next);
+async function preventCreatorIdUsedByMultipleUsers({
+  userId,
+  creatorId,
+}: {
+  userId: string;
+  creatorId: string;
+}) {
+  const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(creatorId, userId);
+  if (isUsedByOtherUser) {
+    throw new UploadError([CREATOR_ID_USED_BY_OTHER_USER]);
+  }
 }
-function preventCreatorIdUsedByMultipleUsers(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  return wrap(async (req, _res, next) => {
-    const userId = getUserIdOrThrow(req);
-    const creatorId = getCreatorIdFromHeaderOrThrow(req);
-    const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
-      creatorId,
-      userId
-    );
-    if (isUsedByOtherUser) {
-      next(new UploadError([CREATOR_ID_USED_BY_OTHER_USER]));
-      return;
-    }
-    next();
-  })(req, res, next);
+async function findOrCreateWork({
+  creatorId,
+  workId,
+  userId,
+}: {
+  creatorId: string;
+  workId: string;
+  userId: string;
+}) {
+  const works = await WorkModel.find({
+    creatorId,
+    workId,
+  });
+  switch (works.length) {
+    case 0:
+      return await WorkModel.create({
+        creatorId,
+        workId,
+        owner: userId,
+        fileSize: 0,
+        backupFileSizes: {},
+      });
+    case 1:
+      return works[0];
+    default:
+      throw new Error(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
+  }
 }
 
-function validateDestination(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  return wrap(async (req, res, next) => {
-    const creatorId = getCreatorIdFromHeaderOrThrow(req);
-    const workId = getWorkIdFromHeaderOrThrow(req);
-    const workPath = getAbsolutePathOfWork(creatorId, workId);
-    const exists = await fsExtra.pathExists(workPath);
-    if (!exists) {
-      next();
-      return;
-    }
-    const locals = res.locals as Locals;
-    await backupWork(creatorId, workId, locals.work);
-    next();
-  })(req, res, next);
-}
-function beforeUpload(
-  _req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const locals = res.locals as Locals;
-  locals.uploadStartedAt = new Date();
-  next();
-}
-function ensureUploadSuccess(
-  req: express.Request,
-  _res: express.Response,
-  next: express.NextFunction
-) {
-  if (Object.keys(req.files ?? {}).length === 0) {
-    next(new UploadError([NO_FILES]));
+async function validateDestination({
+  creatorId,
+  workId,
+  work,
+}: {
+  creatorId: string;
+  workId: string;
+  work: WorkDocument;
+}) {
+  const workPath = getAbsolutePathOfWork(creatorId, workId);
+  const exists = await fsExtra.pathExists(workPath);
+  if (!exists) {
     return;
   }
-  next();
+  await backupWork(creatorId, workId, work);
 }
-function setLocals(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const locals = res.locals as Locals;
-  const uploadStartedAt = locals.uploadStartedAt;
-  locals.uploadEndedAt = new Date();
-  locals.elapsedMillis =
-    locals.uploadEndedAt.getTime() - uploadStartedAt.getTime();
+function ensureUploadSuccess(req: express.Request) {
+  if (Object.keys(req.files ?? {}).length === 0) {
+    throw new UploadError([NO_FILES]);
+  }
+}
 
+async function saveToDatabase({
+  req,
+  creatorId,
+  userId,
+  work,
+  uploadEndedAt,
+}: {
+  req: express.Request;
+  creatorId: string;
+  userId: string;
+  work: WorkDocument;
+  uploadEndedAt: Date;
+}) {
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
   };
-  locals.paths = UPLOAD_UNITY_FIELDS.filter(
-    ({ name }) => files[name] !== undefined
-  ).map(({ name }) =>
-    path.join(
-      URL_PREFIX_WORK,
-      getCreatorIdFromHeaderOrThrow(req),
-      getWorkIdFromHeaderOrThrow(req),
-      name
-    )
-  );
-  next();
-}
-function saveToDatabase(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  return wrap(async (req, res, next) => {
-    const locals = res.locals as Locals;
-    const work = locals.work;
-    const files = req.files as {
-      [fieldname: string]: Express.Multer.File[];
-    };
-    work.fileSize = calculateWorkFileSize(files, UPLOAD_UNITY_FIELDS);
-    work.uploadedAt = locals.uploadEndedAt;
-    await work.save();
+  work.fileSize = calculateWorkFileSize(files, UPLOAD_UNITY_FIELDS);
+  work.uploadedAt = uploadEndedAt;
+  await work.save();
 
-    await updateCreatorIds(
-      getUserIdOrThrow(req),
-      getCreatorIdFromHeaderOrThrow(req)
-    );
-    next();
-  })(req, res, next);
+  await updateCreatorIds(userId, creatorId);
 }
-function logUploadSuccess(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const locals = res.locals as Locals;
+function logUploadSuccess({
+  creatorId,
+  workId,
+  uploadStartedAt,
+  uploadEndedAt,
+}: {
+  creatorId: string;
+  workId: string;
+  uploadStartedAt: Date;
+  uploadEndedAt: Date;
+}) {
   logger.system.info("アップロード成功", {
-    creatorId: getCreatorIdFromHeaderOrThrow(req),
-    workId: getWorkIdFromHeaderOrThrow(req),
-    uploadStartedAt: locals.uploadStartedAt,
-    uploadEndedAt: locals.uploadEndedAt,
-    elapsedMillis: locals.elapsedMillis,
+    creatorId,
+    workId,
+    uploadStartedAt,
+    uploadEndedAt,
+    elapsedMillis: uploadEndedAt.getTime() - uploadStartedAt.getTime(),
   });
-  next();
 }
 export { uploadRouter };

@@ -73,13 +73,13 @@ const Page = () => {
     const text = await response.text();
     const responseBody = Response.safeParse(JSON.parse(text));
     if (!responseBody.success) {
-      showUnknownErrorDialog(await response.text());
+      showUnknownErrorDialog(text);
       return;
     }
     const { paths, errors } = responseBody.data;
     if (status === 200) {
       if (errors !== undefined || paths === undefined) {
-        showUnknownErrorDialog(await response.text());
+        showUnknownErrorDialog(text);
         return;
       }
       showMessageDialog({
@@ -103,7 +103,7 @@ const Page = () => {
       return;
     }
     if (errors === undefined || paths !== undefined) {
-      showUnknownErrorDialog(await response.text());
+      showUnknownErrorDialog(text);
       return;
     }
     if (status == 400) {
@@ -119,7 +119,7 @@ const Page = () => {
       });
       return;
     }
-    showUnknownErrorDialog(await response.text());
+    showUnknownErrorDialog(text);
   };
   return (
     <div className="container">

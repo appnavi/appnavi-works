@@ -71,3 +71,22 @@ export function wrap(
     asyncHandler(req, res, next).catch(next);
   };
 }
+export function middlewareToPromise(
+  middleware: (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => void,
+  req: express.Request,
+  res: express.Response
+) {
+  return new Promise<void>((resolve, reject) => {
+    middleware(req, res, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}

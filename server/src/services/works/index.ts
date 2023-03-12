@@ -82,31 +82,6 @@ export async function findOwnWorkOrError(
   }
 }
 
-export async function findOrCreateWork(
-  creatorId: string,
-  workId: string,
-  userId: string
-) {
-  const works = await WorkModel.find({
-    creatorId,
-    workId,
-  });
-  switch (works.length) {
-    case 0:
-      return await WorkModel.create({
-        creatorId,
-        workId,
-        owner: userId,
-        fileSize: 0,
-        backupFileSizes: {},
-      });
-    case 1:
-      return works[0];
-    default:
-      throw new Error(ERROR_MESSAGE_MULTIPLE_WORKS_FOUND);
-  }
-}
-
 export async function isCreatorIdUsedByOtherUser(
   creatorId: string,
   userId: string
