@@ -86,25 +86,6 @@ export async function logLastLogin(
   next();
 }
 
-export function afterGuestLogIn(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const user = req.user;
-  if (user === undefined) {
-    system.error(`ログインできていません。`, req.user);
-    res.redirect("/auth/error");
-    return;
-  }
-  if (user.type !== "Guest") {
-    system.error(`ゲストログインではありません。`, req.user);
-    res.redirect("/auth/error");
-    return;
-  }
-  next();
-}
-
 export function afterSlackLogin(
   req: express.Request,
   res: express.Response,

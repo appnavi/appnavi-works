@@ -3,7 +3,7 @@ import rateLimit from "express-rate-limit";
 import passport from "passport";
 import { STRATEGY_NAME_GUEST } from "../../../config/passport";
 import * as logger from "../../../modules/logger";
-import { afterGuestLogIn, logLastLogin } from "../../../services/auth";
+import { logLastLogin } from "../../../services/auth";
 import {
   ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
   ERROR_MESSAGE_GUEST_LOGIN_FAIL,
@@ -27,23 +27,36 @@ export const guestLoginRateLimiter = rateLimit({
 
 const guestRouter = express.Router();
 
-guestRouter
-  .route("/")
-  .post(
-    guestLoginRateLimiter,
-    passport.authenticate(STRATEGY_NAME_GUEST, { failWithError: true }),
-    afterGuestLogIn,
-    logLastLogin,
-    (req, res) => {
-      guestLoginRateLimiter.resetKey(req.ip);
-      res.status(STATUS_CODE_SUCCESS).end();
+guestRouter.route("/").post(
+  guestLoginRateLimiter,
+  passport.authenticate(STRATEGY_NAME_GUEST, { failWithError: true }),
+  (req, res, next) => {
+    const user = req.user;
+    if (user === undefined) {
+      logger.system.error(`ログインできていません。`, req.user);
+      res.status(STATUS_CODE_UNAUTHORIZED);
+      next(new Error());
+      return;
     }
-  );
+    if (user.type !== "Guest") {
+      logger.system.error(`ゲストログインではありません。`, req.user);
+      res.status(STATUS_CODE_UNAUTHORIZED);
+      next(new Error());
+      return;
+    }
+    next();
+  },
+  logLastLogin,
+  (req, res) => {
+    guestLoginRateLimiter.resetKey(req.ip);
+    res.status(STATUS_CODE_SUCCESS).end();
+  }
+);
 
 guestRouter.use(
   (
     err: Record<string, unknown>,
-    req: express.Request,
+    _req: express.Request,
     res: express.Response,
     next: express.NextFunction
   ) => {
