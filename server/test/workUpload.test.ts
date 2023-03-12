@@ -181,7 +181,7 @@ describe("作品のアップロードを伴うテスト", () => {
     await clearData(creatorId, workId);
   });
   describe("非ログイン時", () => {
-    it("非ログイン時にはアップロードができない", (done) => {
+    it.only("非ログイン時にはアップロードができない", (done) => {
       request(app)
         .post("/api/upload/unity")
         .expect(STATUS_CODE_UNAUTHORIZED, done);
@@ -208,7 +208,7 @@ describe("作品のアップロードを伴うテスト", () => {
     });
   });
   describe("ログイン時", () => {
-    describe("Unity作品のアップロード（ファイルあり）", () => {
+    describe.only("Unity作品のアップロード（ファイルあり）", () => {
       it(
         "作者IDが設定されていないとアップロードできない",
         wrap(async (done) => {

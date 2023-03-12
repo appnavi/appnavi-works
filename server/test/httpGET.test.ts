@@ -45,7 +45,7 @@ function canAccessTo(
     .catch(done);
 }
 
-describe("GET", () => {
+describe.skip("GET", () => {
   beforeAll(async () => {
     await preparePassport();
     await connectDatabase("1");

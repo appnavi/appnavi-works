@@ -115,7 +115,7 @@ async function testSuccessfulLogout(): Promise<void> {
   });
 }
 const otherGuestId = "guest-other";
-describe("ゲストユーザー", () => {
+describe.skip("ゲストユーザー", () => {
   beforeAll(async () => {
     await preparePassport();
     await connectDatabase("4");

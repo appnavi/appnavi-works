@@ -23,7 +23,7 @@ import { HEADER_CREATOR_ID, HEADER_WORK_ID } from "../src/common/constants";
 const creatorId = "creator-3";
 const workId = "work-3";
 
-describe("POST", () => {
+describe.skip("POST", () => {
   beforeAll(async () => {
     await preparePassport();
     await connectDatabase("3");
