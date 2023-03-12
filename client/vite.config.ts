@@ -18,4 +18,7 @@ export default defineConfig({
       '/stylesheets': 'http://localhost:5000',
     },
   },
+  build: {
+    outDir: '../server/dist_client',
+  },
 });

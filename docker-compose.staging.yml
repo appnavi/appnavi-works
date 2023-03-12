@@ -1,25 +1,21 @@
-version: "3"
+version: '3'
 services:
   appnavi-works:
     build:
       dockerfile: docker/production.Dockerfile
       context: .
-    container_name: appnavi-works_production
-    restart: always
-    volumes:
-      - ./uploads:/app/uploads
-      - ./backups:/app/backups
-      - ./logs:/app/logs
+    container_name: appnavi-works_staging
+    ports:
+      - "3000:3000"
     environment:
+      - NODE_ENV=production
+      - SITE_URL=${SITE_URL_DEVELOPMENT}
       - WORK_STORAGE_SIZE_BYTES=53687091200 # 50 * 1024^3 bytes = 50GB
       - PORT=3000
-      - NODE_ENV=production
-      - SITE_URL=https://resources.opuappnavi.com
     depends_on:
       - mongo
     networks:
       - db
-      - https-portal
     secrets:
       - DATABASE_URL
       - SESSION_DATABASE_URL
@@ -30,7 +26,6 @@ services:
       - CSRF_TOKEN_SECRET
   mongo:
     image: "mongo:6.0.2"
-    restart: always
     expose:
       - "27017"
     volumes:
@@ -47,31 +42,25 @@ services:
 volumes:
   db-volume-appnavi-works:
   db-config-volume-appnavi-works:
-
-
 networks:
   db:
     driver: bridge
-  https-portal:
-    name: https-portal
-    external: true
-
 secrets:
   DATABASE_URL:
-    file: ./secrets/production/database_url.txt
+    file: ./secrets/staging/database_url.txt
   SESSION_DATABASE_URL:
-    file: ./secrets/production/session_database_url.txt
+    file: ./secrets/staging/session_database_url.txt
   SLACK_CLIENT_ID:
-    file: ./secrets/production/slack_client_id.txt
+    file: ./secrets/staging/slack_client_id.txt
   SLACK_CLIENT_SECRET:
-    file: ./secrets/production/slack_client_secret.txt
+    file: ./secrets/staging/slack_client_secret.txt
   SLACK_WORKSPACE_ID:
-    file: ./secrets/production/slack_workspace_id.txt
+    file: ./secrets/staging/slack_workspace_id.txt
   COOKIE_SECRET:
-    file: ./secrets/production/cookie_secret.txt
+    file: ./secrets/staging/cookie_secret.txt
   CSRF_TOKEN_SECRET:
-    file: ./secrets/production/csrf_token_secret.txt
+    file: ./secrets/staging/csrf_token_secret.txt
   MONGO_ROOT_USERNAME:
-    file: ./secrets/production/mongo_root_username.txt
+    file: ./secrets/staging/mongo_root_username.txt
   MONGO_ROOT_PASSWORD:
-    file: ./secrets/production/mongo_root_password.txt
+    file: ./secrets/staging/mongo_root_password.txt

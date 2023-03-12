@@ -67,3 +67,4 @@ typings/
 /server/public/stylesheets/**/*.css
 /server/public/stylesheets/**/*.css.map
 /secrets/
+/server/dist_client/

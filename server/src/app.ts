@@ -16,6 +16,7 @@ import {
   DIRECTORY_NAME_VIEWS,
   STATUS_CODE_SERVER_ERROR,
   STATUS_CODE_NOT_FOUND,
+  DIRECTORY_NAME_DIST_CLIENT,
 } from "./utils/constants";
 import { env } from "./utils/env";
 import { BadRequestError, HttpError, NotFoundError } from "./utils/errors";
@@ -111,9 +112,16 @@ if (env.NODE_ENV !== "test") {
 
 app.use("/api", apiRouter);
 
-// catch 404 and forward to error handler
-app.use(function (_req, _res, next) {
-  next(new NotFoundError());
+if (env.NODE_ENV === "production") {
+  app.use(express.static(path.resolve(DIRECTORY_NAME_DIST_CLIENT)));
+}
+app.use(function (_req, res, next) {
+  if (env.NODE_ENV !== "production") {
+    // catch 404 and forward to error handler
+    next(new NotFoundError());
+  } else {
+    res.sendFile(path.resolve(DIRECTORY_NAME_DIST_CLIENT, "index.html"));
+  }
 });
 
 // error handler
