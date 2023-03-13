@@ -63,7 +63,6 @@ async function restoreBackup(
   if (error !== null) {
     return error;
   }
-  await backupWork(creatorId, workId, work);
   const workPath = getAbsolutePathOfWork(creatorId, workId);
   const backupToRestorePath = getAbsolutePathOfBackup(
     creatorId,
@@ -77,6 +76,7 @@ async function restoreBackup(
   ) {
     return ERROR_MESSAGE_BACKUP_NOT_FOUND;
   }
+  await backupWork(creatorId, workId, work);
   await fsExtra.move(backupToRestorePath, workPath);
   work.fileSize = backupToRestore.fileSize;
   work.backups.remove(backupToRestore);
