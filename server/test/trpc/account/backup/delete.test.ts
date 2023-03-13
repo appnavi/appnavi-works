@@ -1,5 +1,5 @@
 import fsExtra from "fs-extra";
-import { inferProcedureInput } from "@trpc/server";
+import { inferProcedureInput, inferProcedureOutput } from "@trpc/server";
 import { preparePassport } from "../../../../src/config/passport";
 import { TRPCRouter } from "../../../../src/routes/api/trpc";
 import {
@@ -24,11 +24,7 @@ import {
 } from "../../../common";
 import { createTrpcCaller, expectTRPCError } from "../../common";
 import { WorkModel } from "../../../../src/models/database";
-import {
-  getAbsolutePathOfAllBackups,
-  getAbsolutePathOfBackup,
-  getAbsolutePathOfWork,
-} from "../../../../src/services/works";
+import { getAbsolutePathOfBackup } from "../../../../src/services/works";
 import { TRPC_ERROR_CODE_KEY } from "@trpc/server/dist/rpc";
 
 const creatorId = "creator-trpc-account-backup-delete";
@@ -36,6 +32,7 @@ const workId = "work-trpc-account-backup-delete";
 const backupName = "1";
 
 type Input = inferProcedureInput<TRPCRouter["account"]["backup"]["delete"]>;
+type Output = inferProcedureOutput<TRPCRouter["account"]["backup"]["delete"]>;
 
 mockFileDestinations("trpc-account-backup-delete");
 
@@ -51,12 +48,13 @@ function testBackupDelete({
     code: TRPC_ERROR_CODE_KEY;
     message?: string;
   };
-  onSuccess?: () => Promise<void>;
+  onSuccess?: (output: Output) => Promise<void>;
 }) {
   return wrap(async (done) => {
     const caller = createTrpcCaller(userId);
+    let output: Output;
     try {
-      await caller.account.backup.delete(input as Input);
+      output = await caller.account.backup.delete(input as Input);
     } catch (e) {
       if (expectedError === undefined) {
         done(e);
@@ -77,7 +75,7 @@ function testBackupDelete({
       done();
       return;
     }
-    onSuccess()
+    onSuccess(output)
       .then(() => done())
       .catch(done);
   });

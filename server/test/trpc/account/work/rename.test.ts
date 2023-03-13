@@ -1,5 +1,5 @@
 import fsExtra from "fs-extra";
-import { inferProcedureInput } from "@trpc/server";
+import { inferProcedureInput, inferProcedureOutput } from "@trpc/server";
 import { preparePassport } from "../../../../src/config/passport";
 import { TRPCRouter } from "../../../../src/routes/api/trpc";
 import {
@@ -39,6 +39,7 @@ const renamedCreatorId = `${creatorId}-1`;
 const renamedWorkId = `${workId}-1`;
 
 type Input = inferProcedureInput<TRPCRouter["account"]["work"]["rename"]>;
+type Output = inferProcedureOutput<TRPCRouter["account"]["work"]["rename"]>;
 
 mockFileDestinations("trpc-account-work-rename");
 
@@ -54,12 +55,13 @@ function testWorkRename({
     code: TRPC_ERROR_CODE_KEY;
     message?: string;
   };
-  onSuccess?: () => Promise<void>;
+  onSuccess?: (output: Output) => Promise<void>;
 }) {
   return wrap(async (done) => {
     const caller = createTrpcCaller(userId);
+    let output: Output;
     try {
-      await caller.account.work.rename(input as Input);
+      output = await caller.account.work.rename(input as Input);
     } catch (e) {
       if (expectedError === undefined) {
         done(e);
@@ -80,7 +82,7 @@ function testWorkRename({
       done();
       return;
     }
-    onSuccess()
+    onSuccess(output)
       .then(() => done())
       .catch(done);
   });

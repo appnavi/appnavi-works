@@ -1,36 +1,23 @@
-import fsExtra from "fs-extra";
-import { inferProcedureInput } from "@trpc/server";
+import { inferProcedureInput, inferProcedureOutput } from "@trpc/server";
 import { preparePassport } from "../../../src/config/passport";
 import { TRPCRouter } from "../../../src/routes/api/trpc";
-import {
-  ERROR_MESSAGE_CREATOR_ID_INVALID,
-  ERROR_MESSAGE_CREATOR_ID_REQUIRED,
-  ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
-  ERROR_MESSAGE_WORK_ID_INVALID,
-  ERROR_MESSAGE_WORK_ID_REQUIRED,
-  ERROR_MESSAGE_WORK_NOT_FOUND,
-} from "../../../src/utils/constants";
-import { myId, theirId } from "../../auth";
+import { myId } from "../../auth";
 import {
   clearDatabase,
   connectDatabase,
   ensureUploadFoldersEmpty,
-  INVALID_ID,
   mockFileDestinations,
   wrap,
 } from "../../common";
 import { createTrpcCaller, expectTRPCError } from "../common";
 import { UserModel, WorkModel } from "../../../src/models/database";
-import {
-  getAbsolutePathOfAllBackups,
-  getAbsolutePathOfWork,
-} from "../../../src/services/works";
 import { TRPC_ERROR_CODE_KEY } from "@trpc/server/dist/rpc";
 
 const creatorId = "creator-trpc-account-cleanupCreatorIds";
 const workId = "work-trpc-account-cleanupCreatorIds";
 
 type Input = inferProcedureInput<TRPCRouter["account"]["cleanupCreatorIds"]>;
+type Output = inferProcedureOutput<TRPCRouter["account"]["cleanupCreatorIds"]>;
 
 mockFileDestinations("trpc-account-cleanupCreatorIds");
 
@@ -46,12 +33,13 @@ function testCleanupCreatorIds({
     code: TRPC_ERROR_CODE_KEY;
     message?: string;
   };
-  onSuccess?: () => Promise<void>;
+  onSuccess?: (output: Output) => Promise<void>;
 }) {
   return wrap(async (done) => {
     const caller = createTrpcCaller(userId);
+    let output: Output;
     try {
-      await caller.account.cleanupCreatorIds(input as Input);
+      output = await caller.account.cleanupCreatorIds(input as Input);
     } catch (e) {
       if (expectedError === undefined) {
         done(e);
@@ -72,7 +60,7 @@ function testCleanupCreatorIds({
       done();
       return;
     }
-    onSuccess()
+    onSuccess(output)
       .then(() => done())
       .catch(done);
   });

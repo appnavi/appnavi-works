@@ -1,5 +1,5 @@
 import fsExtra from "fs-extra";
-import { inferProcedureInput } from "@trpc/server";
+import { inferProcedureInput, inferProcedureOutput } from "@trpc/server";
 import { preparePassport } from "../../../../src/config/passport";
 import { TRPCRouter } from "../../../../src/routes/api/trpc";
 import {
@@ -25,7 +25,6 @@ import {
 import { createTrpcCaller, expectTRPCError } from "../../common";
 import { WorkModel } from "../../../../src/models/database";
 import {
-  getAbsolutePathOfAllBackups,
   getAbsolutePathOfBackup,
   getAbsolutePathOfWork,
 } from "../../../../src/services/works";
@@ -36,6 +35,7 @@ const workId = "work-trpc-account-backup-restore";
 const backupName = "1";
 
 type Input = inferProcedureInput<TRPCRouter["account"]["backup"]["restore"]>;
+type Output = inferProcedureOutput<TRPCRouter["account"]["backup"]["restore"]>;
 
 mockFileDestinations("trpc-account-backup-restore");
 
@@ -51,12 +51,13 @@ function testBackupRestore({
     code: TRPC_ERROR_CODE_KEY;
     message?: string;
   };
-  onSuccess?: () => Promise<void>;
+  onSuccess?: (output: Output) => Promise<void>;
 }) {
   return wrap(async (done) => {
     const caller = createTrpcCaller(userId);
+    let output: Output;
     try {
-      await caller.account.backup.restore(input as Input);
+      output = await caller.account.backup.restore(input as Input);
     } catch (e) {
       if (expectedError === undefined) {
         done(e);
@@ -77,7 +78,7 @@ function testBackupRestore({
       done();
       return;
     }
-    onSuccess()
+    onSuccess(output)
       .then(() => done())
       .catch(done);
   });

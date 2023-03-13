@@ -1,5 +1,5 @@
 import fsExtra from "fs-extra";
-import { inferProcedureInput } from "@trpc/server";
+import { inferProcedureInput, inferProcedureOutput } from "@trpc/server";
 import { preparePassport } from "../../../../src/config/passport";
 import { TRPCRouter } from "../../../../src/routes/api/trpc";
 import {
@@ -31,6 +31,7 @@ const creatorId = "creator-trpc-account-work-delete";
 const workId = "work-trpc-account-work-delete";
 
 type Input = inferProcedureInput<TRPCRouter["account"]["work"]["delete"]>;
+type Output = inferProcedureOutput<TRPCRouter["account"]["work"]["delete"]>;
 
 mockFileDestinations("trpc-account-work-delete");
 
@@ -46,12 +47,13 @@ function testWorkDelete({
     code: TRPC_ERROR_CODE_KEY;
     message?: string;
   };
-  onSuccess?: () => Promise<void>;
+  onSuccess?: (output: Output) => Promise<void>;
 }) {
   return wrap(async (done) => {
     const caller = createTrpcCaller(userId);
+    let output: Output;
     try {
-      await caller.account.work.delete(input as Input);
+      output = await caller.account.work.delete(input as Input);
     } catch (e) {
       if (expectedError === undefined) {
         done(e);
@@ -72,7 +74,7 @@ function testWorkDelete({
       done();
       return;
     }
-    onSuccess()
+    onSuccess(output)
       .then(() => done())
       .catch(done);
   });
