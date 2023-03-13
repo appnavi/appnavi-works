@@ -103,7 +103,7 @@ async function deleteBackup(
     backupToDelete === undefined ||
     !(await fsExtra.pathExists(backupToDeletePath))
   ) {
-    throw new Error(`バックアップ${backupName}が見つかりませんでした。`);
+    return ERROR_MESSAGE_BACKUP_NOT_FOUND;
   }
   await fsExtra.remove(backupToDeletePath);
   work.backups.remove(backupToDelete);
