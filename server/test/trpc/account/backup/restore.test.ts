@@ -5,14 +5,9 @@ import { TRPCRouter } from "../../../../src/routes/api/trpc";
 import {
   ERROR_MESSAGE_BACKUP_NAME_INVALID,
   ERROR_MESSAGE_BACKUP_NAME_REQUIRED,
+  ERROR_MESSAGE_BACKUP_NOT_FOUND,
   ERROR_MESSAGE_CREATOR_ID_INVALID,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
-  ERROR_MESSAGE_RENAMED_CREATOR_ID_INVALID,
-  ERROR_MESSAGE_RENAMED_CREATOR_ID_REQUIRED,
-  ERROR_MESSAGE_RENAMED_WORK_ID_INVALID,
-  ERROR_MESSAGE_RENAMED_WORK_ID_REQUIRED,
-  ERROR_MESSAGE_RENAME_TO_EXISTING,
-  ERROR_MESSAGE_RENAME_TO_SAME,
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
   ERROR_MESSAGE_WORK_ID_INVALID,
   ERROR_MESSAGE_WORK_ID_REQUIRED,
@@ -198,9 +193,67 @@ describe("trpc.account.backup.restore", () => {
       },
     })
   );
-  it.todo("存在しない作品のバックアップは復元できない");
-  it.todo("別人の投稿した作品作品のバックアップは復元できない");
-  it.todo("作品の存在しないバックアップは復元できない");
+  it(
+    "存在しない作品のバックアップは復元できない",
+    testBackupRestore({
+      userId: myId,
+      input: {
+        creatorId,
+        workId,
+        backupName,
+      },
+      expectedError: {
+        code: "BAD_REQUEST",
+        message: ERROR_MESSAGE_WORK_NOT_FOUND,
+      },
+    })
+  );
+  it(
+    "別人の投稿した作品作品のバックアップは復元できない",
+    wrap(async (done) => {
+      await WorkModel.create({
+        creatorId,
+        workId,
+        fileSize: 0,
+        owner: theirId,
+      });
+      testBackupRestore({
+        userId: myId,
+        input: {
+          creatorId,
+          workId,
+          backupName,
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
+        },
+      })(done);
+    })
+  );
+  it(
+    "存在しないバックアップを復元できない",
+    wrap(async (done) => {
+      await WorkModel.create({
+        creatorId,
+        workId,
+        fileSize: 0,
+        owner: myId,
+      });
+      testBackupRestore({
+        userId: myId,
+        input: {
+          creatorId,
+          workId,
+          backupName,
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_BACKUP_NOT_FOUND,
+        },
+      })(done);
+    })
+  );
   it(
     "条件を満たしているとバックアップを復元できる",
     wrap(async (done) => {
