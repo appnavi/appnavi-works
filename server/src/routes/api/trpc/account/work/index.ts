@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import fsExtra from "fs-extra";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { idRegex } from "../../../../../common/constants";
 import { WorkDB } from "../../../../../common/types";
 import { WorkModel } from "../../../../../models/database";
 import { updateCreatorIds } from "../../../../../services/auth";
@@ -16,6 +17,10 @@ import {
 } from "../../../../../services/works";
 import {
   ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
+  ERROR_MESSAGE_RENAMED_CREATOR_ID_INVALID,
+  ERROR_MESSAGE_RENAMED_CREATOR_ID_REQUIRED,
+  ERROR_MESSAGE_RENAMED_WORK_ID_INVALID,
+  ERROR_MESSAGE_RENAMED_WORK_ID_REQUIRED,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
   ERROR_MESSAGE_RENAME_TO_SAME,
 } from "../../../../../utils/constants";
@@ -47,8 +52,12 @@ export const accountWorkRouter = t.router({
   rename: modifyWorkProcedure
     .input(
       z.object({
-        renamedCreatorId: creatorIdSchema,
-        renamedWorkId: workIdSchema,
+        renamedCreatorId: z
+          .string({ required_error: ERROR_MESSAGE_RENAMED_CREATOR_ID_REQUIRED })
+          .regex(idRegex, ERROR_MESSAGE_RENAMED_CREATOR_ID_INVALID),
+        renamedWorkId: z
+          .string({ required_error: ERROR_MESSAGE_RENAMED_WORK_ID_REQUIRED })
+          .regex(idRegex, ERROR_MESSAGE_RENAMED_WORK_ID_INVALID),
       })
     )
     .mutation(async ({ ctx, input }) => {

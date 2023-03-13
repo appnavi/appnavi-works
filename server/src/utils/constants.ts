@@ -30,6 +30,14 @@ export const ERROR_MESSAGE_WORK_DIFFERENT_OWNER =
   "この作品の所有者ではありません。";
 export const ERROR_MESSAGE_MULTIPLE_WORKS_FOUND =
   "同じ作品が複数登録されています。";
+export const ERROR_MESSAGE_RENAMED_CREATOR_ID_REQUIRED =
+  "リネーム後の作者IDは必須です。";
+export const ERROR_MESSAGE_RENAMED_CREATOR_ID_INVALID =
+  "リネーム後の作者IDには数字・アルファベット小文字・ハイフンのみ使用できます。";
+export const ERROR_MESSAGE_RENAMED_WORK_ID_REQUIRED =
+  "リネーム後の作品IDは必須です。";
+export const ERROR_MESSAGE_RENAMED_WORK_ID_INVALID =
+  "リネーム後の作品IDには数字・アルファベット小文字・ハイフンのみ使用できます。";
 export const ERROR_MESSAGE_RENAME_TO_SAME =
   "リネーム前とリネーム後が同じです。";
 export const ERROR_MESSAGE_RENAME_TO_EXISTING =

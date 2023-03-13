@@ -5,6 +5,10 @@ import { TRPCRouter } from "../../../../src/routes/api/trpc";
 import {
   ERROR_MESSAGE_CREATOR_ID_INVALID,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
+  ERROR_MESSAGE_RENAMED_CREATOR_ID_INVALID,
+  ERROR_MESSAGE_RENAMED_CREATOR_ID_REQUIRED,
+  ERROR_MESSAGE_RENAMED_WORK_ID_INVALID,
+  ERROR_MESSAGE_RENAMED_WORK_ID_REQUIRED,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
   ERROR_MESSAGE_RENAME_TO_SAME,
   ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
@@ -168,7 +172,7 @@ describe("trpc.account.work.rename", () => {
       },
       expectedError: {
         code: "BAD_REQUEST",
-        message: ERROR_MESSAGE_CREATOR_ID_REQUIRED,
+        message: ERROR_MESSAGE_RENAMED_CREATOR_ID_REQUIRED,
       },
     })
   );
@@ -184,7 +188,7 @@ describe("trpc.account.work.rename", () => {
       },
       expectedError: {
         code: "BAD_REQUEST",
-        message: ERROR_MESSAGE_CREATOR_ID_INVALID,
+        message: ERROR_MESSAGE_RENAMED_CREATOR_ID_INVALID,
       },
     })
   );
@@ -199,7 +203,7 @@ describe("trpc.account.work.rename", () => {
       },
       expectedError: {
         code: "BAD_REQUEST",
-        message: ERROR_MESSAGE_WORK_ID_REQUIRED,
+        message: ERROR_MESSAGE_RENAMED_WORK_ID_REQUIRED,
       },
     })
   );
@@ -215,7 +219,7 @@ describe("trpc.account.work.rename", () => {
       },
       expectedError: {
         code: "BAD_REQUEST",
-        message: ERROR_MESSAGE_WORK_ID_INVALID,
+        message: ERROR_MESSAGE_RENAMED_WORK_ID_INVALID,
       },
     })
   );
