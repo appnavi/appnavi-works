@@ -25,6 +25,7 @@ import {
 import { createTrpcCaller, expectTRPCError } from "../common";
 import { WorkModel } from "../../../src/models/database";
 import { getAbsolutePathOfWork } from "../../../src/services/works";
+import { TRPC_ERROR_CODE_KEY } from "@trpc/server/dist/rpc";
 
 const creatorId = "creator-trpc-account-work";
 const workId = "work-trpc-account-work";
@@ -34,28 +35,42 @@ const renamedWorkId = `${workId}-1`;
 type RenameInput = inferProcedureInput<TRPCRouter["account"]["work"]["rename"]>;
 
 mockFileDestinations("trpc-account-work");
-jest.mock("../../../src/services/works", () => {
-  const originalModule = jest.requireActual("../../../src/services/works");
-  return {
-    __esModule: true,
-    ...originalModule,
-    absolutePathOfWorkFolder: `/app/server/test-files/trpc-account-work/uploads`,
-    absolutePathOfBackupFolder: `/app/server/test-files/trpc-account-work/backups/uploads`,
-    getAbsolutePathOfWork(creatorId: string, workId: string) {
-      return `/app/server/test-files/trpc-account-work/uploads/${creatorId}/${workId}`;
-    },
-    getAbsolutePathOfAllBackups(creatorId: string, workId: string) {
-      return `/app/server/test-files/trpc-account-work/backups/uploads${creatorId}/${workId}`;
-    },
-    getAbsolutePathOfBackup(
-      creatorId: string,
-      workId: string,
-      backupName: string
-    ) {
-      return `/app/server/test-files/trpc-account-work/backups/uploads${creatorId}/${workId}/${backupName}`;
-    },
+
+function testWorkRename({
+  userId,
+  input,
+  expectedError,
+}: {
+  userId?: string;
+  input: unknown;
+  expectedError?: {
+    code: TRPC_ERROR_CODE_KEY;
+    message?: string;
   };
-});
+}) {
+  return wrap(async (done) => {
+    const caller = createTrpcCaller(userId);
+    try {
+      await caller.account.work.rename(input as RenameInput);
+    } catch (e) {
+      if (expectedError === undefined) {
+        done(e);
+        return;
+      }
+      expectTRPCError(e, done, expectedError.code, expectedError.message);
+      return;
+    }
+    if (expectedError !== undefined) {
+      done(
+        new Error(
+          `想定していたエラー(${expectedError.code}, ${expectedError.message})が発生しませんでした。`
+        )
+      );
+      return;
+    }
+    done();
+  });
+}
 
 describe("/api/trpc/account/work", () => {
   beforeAll(async () => {
@@ -70,246 +85,172 @@ describe("/api/trpc/account/work", () => {
   describe("作品のリネーム", () => {
     it(
       "非ログイン時にはリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller();
-        try {
-          await caller.account.work.rename({
-            creatorId,
-            workId,
-            renamedCreatorId,
-            renamedWorkId,
-          });
-        } catch (e) {
-          expectTRPCError(e, done, "UNAUTHORIZED");
-          return;
-        }
-        done(new Error());
+      testWorkRename({
+        input: {
+          creatorId,
+          workId,
+          renamedCreatorId,
+          renamedWorkId,
+        },
+        expectedError: {
+          code: "UNAUTHORIZED",
+        },
       })
     );
     it(
       "作者IDが設定されていないとリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           workId,
           renamedCreatorId,
           renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_CREATOR_ID_REQUIRED
-          );
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_CREATOR_ID_REQUIRED,
+        },
       })
     );
     it(
       "作者IDが不適切だとリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId: INVALID_ID,
           workId,
           renamedCreatorId,
           renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_CREATOR_ID_INVALID
-          );
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_CREATOR_ID_INVALID,
+        },
       })
     );
     it(
       "作品IDが設定されていないとリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId,
           renamedCreatorId,
           renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_WORK_ID_REQUIRED
-          );
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_WORK_ID_REQUIRED,
+        },
       })
     );
     it(
       "作品IDが不適切だとリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId,
           workId: INVALID_ID,
           renamedCreatorId,
           renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_WORK_ID_INVALID
-          );
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_WORK_ID_INVALID,
+        },
       })
     );
     it(
       "リネーム後の作者IDが設定されていないとリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId,
           workId,
           renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_CREATOR_ID_REQUIRED
-          );
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_CREATOR_ID_REQUIRED,
+        },
       })
     );
     it(
       "リネーム後の作者IDが不適切だとリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId,
           workId,
           renamedCreatorId: INVALID_ID,
           renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_CREATOR_ID_INVALID
-          );
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_CREATOR_ID_INVALID,
+        },
       })
     );
     it(
       "リネーム後の作品IDが設定されていないとリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId,
           workId,
           renamedCreatorId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_WORK_ID_REQUIRED
-          );
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_WORK_ID_REQUIRED,
+        },
       })
     );
     it(
       "リネーム後の作品IDが不適切だとリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId,
           workId,
           renamedCreatorId,
           renamedWorkId: INVALID_ID,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_WORK_ID_INVALID
-          );
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_WORK_ID_INVALID,
+        },
       })
     );
     it(
       "リネーム前とリネーム後が同じだとはリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId,
           workId,
           renamedCreatorId: creatorId,
           renamedWorkId: workId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(e, done, "BAD_REQUEST", ERROR_MESSAGE_RENAME_TO_SAME);
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_RENAME_TO_SAME,
+        },
       })
     );
     it(
       "存在しない作品はリネームできない",
-      wrap(async (done) => {
-        const caller = createTrpcCaller(myId);
-        const input = {
+      testWorkRename({
+        userId: myId,
+        input: {
           creatorId,
           workId,
           renamedCreatorId,
           renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(e, done, "BAD_REQUEST", ERROR_MESSAGE_WORK_NOT_FOUND);
-          return;
-        }
-        done(new Error());
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_WORK_NOT_FOUND,
+        },
       })
     );
     it(
@@ -321,25 +262,19 @@ describe("/api/trpc/account/work", () => {
           fileSize: 0,
           owner: theirId,
         });
-        const caller = createTrpcCaller(myId);
-        const input = {
-          creatorId,
-          workId,
-          renamedCreatorId,
-          renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_WORK_DIFFERENT_OWNER
-          );
-          return;
-        }
-        done(new Error());
+        testWorkRename({
+          userId: myId,
+          input: {
+            creatorId,
+            workId,
+            renamedCreatorId,
+            renamedWorkId,
+          },
+          expectedError: {
+            code: "BAD_REQUEST",
+            message: ERROR_MESSAGE_WORK_DIFFERENT_OWNER,
+          },
+        })(done);
       })
     );
     it(
@@ -357,25 +292,19 @@ describe("/api/trpc/account/work", () => {
           fileSize: 0,
           owner: myId,
         });
-        const caller = createTrpcCaller(myId);
-        const input = {
-          creatorId,
-          workId,
-          renamedCreatorId,
-          renamedWorkId,
-        } as RenameInput;
-        try {
-          await caller.account.work.rename(input);
-        } catch (e) {
-          expectTRPCError(
-            e,
-            done,
-            "BAD_REQUEST",
-            ERROR_MESSAGE_RENAME_TO_EXISTING
-          );
-          return;
-        }
-        done(new Error());
+        testWorkRename({
+          userId: myId,
+          input: {
+            creatorId,
+            workId,
+            renamedCreatorId,
+            renamedWorkId,
+          },
+          expectedError: {
+            code: "BAD_REQUEST",
+            message: ERROR_MESSAGE_RENAME_TO_EXISTING,
+          },
+        })(done);
       })
     );
     it(
@@ -390,15 +319,15 @@ describe("/api/trpc/account/work", () => {
           fileSize: 0,
           owner: myId,
         });
-        const caller = createTrpcCaller(myId);
-        const input = {
-          creatorId,
-          workId,
-          renamedCreatorId,
-          renamedWorkId: workId,
-        } as RenameInput;
-        await caller.account.work.rename(input);
-        done();
+        testWorkRename({
+          userId: myId,
+          input: {
+            creatorId,
+            workId,
+            renamedCreatorId,
+            renamedWorkId,
+          },
+        })(done);
       })
     );
     it(
@@ -413,15 +342,15 @@ describe("/api/trpc/account/work", () => {
           fileSize: 0,
           owner: myId,
         });
-        const caller = createTrpcCaller(myId);
-        const input = {
-          creatorId,
-          workId,
-          renamedCreatorId: creatorId,
-          renamedWorkId,
-        } as RenameInput;
-        await caller.account.work.rename(input);
-        done();
+        testWorkRename({
+          userId: myId,
+          input: {
+            creatorId,
+            workId,
+            renamedCreatorId,
+            renamedWorkId,
+          },
+        })(done);
       })
     );
     it(
@@ -436,15 +365,15 @@ describe("/api/trpc/account/work", () => {
           fileSize: 0,
           owner: myId,
         });
-        const caller = createTrpcCaller(myId);
-        const input = {
-          creatorId,
-          workId,
-          renamedCreatorId,
-          renamedWorkId,
-        } as RenameInput;
-        await caller.account.work.rename(input);
-        done();
+        testWorkRename({
+          userId: myId,
+          input: {
+            creatorId,
+            workId,
+            renamedCreatorId,
+            renamedWorkId,
+          },
+        })(done);
       })
     );
   });
