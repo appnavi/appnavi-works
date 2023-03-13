@@ -11,6 +11,32 @@ import path from "path";
 
 export const INVALID_ID = "テスト";
 
+export function mockFileDestinations(name: string) {
+  absolutePathOfWorkFolder;
+  jest.mock("../src/services/works", () => {
+    const originalModule = jest.requireActual("../src/services/works");
+    return {
+      __esModule: true,
+      ...originalModule,
+      absolutePathOfWorkFolder: `/app/server/test-files/${name}/uploads`,
+      absolutePathOfBackupFolder: `/app/server/test-files/${name}/backups/uploads`,
+      getAbsolutePathOfWork(creatorId: string, workId: string) {
+        return `/app/server/test-files/${name}/uploads/${creatorId}/${workId}`;
+      },
+      getAbsolutePathOfAllBackups(creatorId: string, workId: string) {
+        return `/app/server/test-files/${name}/backups/uploads/${creatorId}/${workId}`;
+      },
+      getAbsolutePathOfBackup(
+        creatorId: string,
+        workId: string,
+        backupName: string
+      ) {
+        return `/app/server/test-files/${name}/backups/uploads${creatorId}/${workId}/${backupName}`;
+      },
+    };
+  });
+}
+
 export async function ensureUploadFoldersEmpty() {
   await fs.rm(absolutePathOfWorkFolder, {
     recursive: true,

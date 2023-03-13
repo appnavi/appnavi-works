@@ -19,6 +19,7 @@ import {
   connectDatabase,
   ensureUploadFoldersEmpty,
   INVALID_ID,
+  mockFileDestinations,
   wrap,
 } from "../../common";
 import { createTrpcCaller, expectTRPCError } from "../common";
@@ -32,6 +33,7 @@ const renamedWorkId = `${workId}-1`;
 
 type RenameInput = inferProcedureInput<TRPCRouter["account"]["work"]["rename"]>;
 
+mockFileDestinations("trpc-account-work");
 jest.mock("../../../src/services/works", () => {
   const originalModule = jest.requireActual("../../../src/services/works");
   return {
@@ -399,7 +401,7 @@ describe("/api/trpc/account/work", () => {
         done();
       })
     );
-    it.only(
+    it(
       "条件を満たしていれば作品IDのリネームに成功する",
       wrap(async (done) => {
         await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {

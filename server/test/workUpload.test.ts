@@ -4,9 +4,11 @@ import request, { Test } from "supertest";
 import { createLogin, myId, theirId } from "./auth";
 import {
   clearData,
+  clearDatabase,
   connectDatabase,
   ensureUploadFoldersEmpty,
   INVALID_ID,
+  mockFileDestinations,
   wrap,
 } from "./common";
 import { app } from "../src/app";
@@ -171,14 +173,16 @@ async function testSuccessfulUploadTwice(): Promise<void> {
       .then(resolve);
   });
 }
-describe.skip("作品のアップロードを伴うテスト", () => {
+mockFileDestinations("workUpload");
+describe("作品のアップロードを伴うテスト", () => {
   beforeAll(async () => {
     await preparePassport();
-    await connectDatabase("2");
+    await connectDatabase("workUpload");
     await ensureUploadFoldersEmpty();
   });
   afterEach(async () => {
-    await clearData(creatorId, workId);
+    await ensureUploadFoldersEmpty();
+    await clearDatabase();
   });
   describe("非ログイン時", () => {
     it("非ログイン時にはアップロードができない", (done) => {
@@ -203,7 +207,7 @@ describe.skip("作品のアップロードを伴うテスト", () => {
     });
   });
   describe("ログイン時", () => {
-    describe("Unity作品のアップロード（ファイルあり）", () => {
+    describe.only("Unity作品のアップロード（ファイルあり）", () => {
       it(
         "作者IDが設定されていないとアップロードできない",
         wrap(async (done) => {
