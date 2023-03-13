@@ -11,7 +11,7 @@ import path from "path";
 
 export const INVALID_ID = "テスト";
 
-export async function ensureUploadFoldersExist() {
+export async function ensureUploadFoldersEmpty() {
   await fs.rm(absolutePathOfWorkFolder, {
     recursive: true,
     force: true,

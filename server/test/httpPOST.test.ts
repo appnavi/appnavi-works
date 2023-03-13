@@ -13,7 +13,7 @@ import { createLogin, myId } from "./auth";
 import {
   clearData,
   connectDatabase,
-  ensureUploadFoldersExist,
+  ensureUploadFoldersEmpty,
   INVALID_ID,
   wrap,
 } from "./common";
@@ -27,7 +27,7 @@ describe.skip("POST", () => {
   beforeAll(async () => {
     await preparePassport();
     await connectDatabase("3");
-    await ensureUploadFoldersExist();
+    await ensureUploadFoldersEmpty();
   });
   afterEach(async () => {
     await clearData(creatorId, workId);

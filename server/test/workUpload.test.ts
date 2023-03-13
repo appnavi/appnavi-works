@@ -5,7 +5,7 @@ import { createLogin, myId, theirId } from "./auth";
 import {
   clearData,
   connectDatabase,
-  ensureUploadFoldersExist,
+  ensureUploadFoldersEmpty,
   INVALID_ID,
   wrap,
 } from "./common";
@@ -175,7 +175,7 @@ describe.skip("作品のアップロードを伴うテスト", () => {
   beforeAll(async () => {
     await preparePassport();
     await connectDatabase("2");
-    await ensureUploadFoldersExist();
+    await ensureUploadFoldersEmpty();
   });
   afterEach(async () => {
     await clearData(creatorId, workId);

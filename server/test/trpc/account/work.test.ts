@@ -17,7 +17,7 @@ import { myId, theirId } from "../../auth";
 import {
   clearDatabase,
   connectDatabase,
-  ensureUploadFoldersExist,
+  ensureUploadFoldersEmpty,
   INVALID_ID,
   wrap,
 } from "../../common";
@@ -59,11 +59,11 @@ describe("/api/trpc/account/work", () => {
   beforeAll(async () => {
     await preparePassport();
     await connectDatabase("api_rpc_account_work");
-    await ensureUploadFoldersExist();
+    await ensureUploadFoldersEmpty();
   });
   afterEach(async () => {
     await clearDatabase();
-    await ensureUploadFoldersExist();
+    await ensureUploadFoldersEmpty();
   });
   describe("作品のリネーム", () => {
     it(

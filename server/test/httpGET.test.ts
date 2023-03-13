@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../src/app";
 import { myId, createLogin } from "./auth";
-import { connectDatabase, ensureUploadFoldersExist, wrap } from "./common";
+import { connectDatabase, ensureUploadFoldersEmpty, wrap } from "./common";
 import {
   STATUS_CODE_SUCCESS,
   STATUS_CODE_REDIRECT_PERMANENT,
@@ -49,7 +49,7 @@ describe.skip("GET", () => {
   beforeAll(async () => {
     await preparePassport();
     await connectDatabase("1");
-    await ensureUploadFoldersExist();
+    await ensureUploadFoldersEmpty();
   });
   describe("非ログイン時", () => {
     describe("API", () => {
