@@ -27,7 +27,10 @@ import {
 } from "../../../common";
 import { createTrpcCaller, expectTRPCError } from "../../common";
 import { WorkModel } from "../../../../src/models/database";
-import { getAbsolutePathOfWork } from "../../../../src/services/works";
+import {
+  getAbsolutePathOfAllBackups,
+  getAbsolutePathOfWork,
+} from "../../../../src/services/works";
 import { TRPC_ERROR_CODE_KEY } from "@trpc/server/dist/rpc";
 
 const creatorId = "creator-trpc-account-work-rename";
@@ -43,6 +46,7 @@ function testWorkRename({
   userId,
   input,
   expectedError,
+  onSuccess,
 }: {
   userId?: string;
   input: unknown;
@@ -50,6 +54,7 @@ function testWorkRename({
     code: TRPC_ERROR_CODE_KEY;
     message?: string;
   };
+  onSuccess?: () => Promise<void>;
 }) {
   return wrap(async (done) => {
     const caller = createTrpcCaller(userId);
@@ -71,7 +76,13 @@ function testWorkRename({
       );
       return;
     }
-    done();
+    if (onSuccess === undefined) {
+      done();
+      return;
+    }
+    onSuccess()
+      .then(() => done())
+      .catch(done);
   });
 }
 
@@ -315,7 +326,10 @@ describe("trpc.account.work.rename", () => {
       await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {
         recursive: true,
       });
-      await WorkModel.create({
+      await fsExtra.mkdir(getAbsolutePathOfAllBackups(creatorId, workId), {
+        recursive: true,
+      });
+      const work = await WorkModel.create({
         creatorId,
         workId,
         fileSize: 0,
@@ -327,7 +341,23 @@ describe("trpc.account.work.rename", () => {
           creatorId,
           workId,
           renamedCreatorId,
-          renamedWorkId,
+          renamedWorkId: workId,
+        },
+        async onSuccess() {
+          expect(
+            fsExtra.exists(getAbsolutePathOfWork(renamedCreatorId, workId))
+          ).resolves.toBe(true);
+          expect(
+            fsExtra.exists(
+              getAbsolutePathOfAllBackups(renamedCreatorId, workId)
+            )
+          ).resolves.toBe(true);
+          const renamedWorks = await WorkModel.find({
+            _id: work._id,
+          });
+          expect(renamedWorks).toHaveLength(1);
+          expect(renamedWorks[0].creatorId).toBe(renamedCreatorId);
+          expect(renamedWorks[0].workId).toBe(workId);
         },
       })(done);
     })
@@ -338,7 +368,52 @@ describe("trpc.account.work.rename", () => {
       await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {
         recursive: true,
       });
-      await WorkModel.create({
+      await fsExtra.mkdir(getAbsolutePathOfAllBackups(creatorId, workId), {
+        recursive: true,
+      });
+      const work = await WorkModel.create({
+        creatorId,
+        workId,
+        fileSize: 0,
+        owner: myId,
+      });
+      testWorkRename({
+        userId: myId,
+        input: {
+          creatorId,
+          workId,
+          renamedCreatorId: creatorId,
+          renamedWorkId,
+        },
+        async onSuccess() {
+          expect(
+            fsExtra.exists(getAbsolutePathOfWork(creatorId, renamedWorkId))
+          ).resolves.toBe(true);
+          expect(
+            fsExtra.exists(
+              getAbsolutePathOfAllBackups(creatorId, renamedWorkId)
+            )
+          ).resolves.toBe(true);
+          const renamedWorks = await WorkModel.find({
+            _id: work._id,
+          });
+          expect(renamedWorks).toHaveLength(1);
+          expect(renamedWorks[0].creatorId).toBe(creatorId);
+          expect(renamedWorks[0].workId).toBe(renamedWorkId);
+        },
+      })(done);
+    })
+  );
+  it(
+    "条件を満たしていれば作者IDと作品ID両方のリネームに成功する",
+    wrap(async (done) => {
+      await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {
+        recursive: true,
+      });
+      await fsExtra.mkdir(getAbsolutePathOfAllBackups(creatorId, workId), {
+        recursive: true,
+      });
+      const work = await WorkModel.create({
         creatorId,
         workId,
         fileSize: 0,
@@ -352,28 +427,23 @@ describe("trpc.account.work.rename", () => {
           renamedCreatorId,
           renamedWorkId,
         },
-      })(done);
-    })
-  );
-  it(
-    "条件を満たしていれば作者IDと作品ID両方のリネームに成功する",
-    wrap(async (done) => {
-      await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {
-        recursive: true,
-      });
-      await WorkModel.create({
-        creatorId,
-        workId,
-        fileSize: 0,
-        owner: myId,
-      });
-      testWorkRename({
-        userId: myId,
-        input: {
-          creatorId,
-          workId,
-          renamedCreatorId,
-          renamedWorkId,
+        async onSuccess() {
+          expect(
+            fsExtra.exists(
+              getAbsolutePathOfWork(renamedCreatorId, renamedWorkId)
+            )
+          ).resolves.toBe(true);
+          expect(
+            fsExtra.exists(
+              getAbsolutePathOfAllBackups(renamedCreatorId, renamedWorkId)
+            )
+          ).resolves.toBe(true);
+          const renamedWorks = await WorkModel.find({
+            _id: work._id,
+          });
+          expect(renamedWorks).toHaveLength(1);
+          expect(renamedWorks[0].creatorId).toBe(renamedCreatorId);
+          expect(renamedWorks[0].workId).toBe(renamedWorkId);
         },
       })(done);
     })
