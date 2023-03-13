@@ -209,7 +209,7 @@ describe("trpc.account.backup.restore", () => {
     })
   );
   it(
-    "別人の投稿した作品作品のバックアップは復元できない",
+    "別人の投稿した作品のバックアップは復元できない",
     wrap(async (done) => {
       await WorkModel.create({
         creatorId,
