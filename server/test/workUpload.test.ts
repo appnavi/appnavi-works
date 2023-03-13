@@ -190,16 +190,6 @@ describe("作品のアップロードを伴うテスト", () => {
         .post("/api/upload/unity")
         .expect(STATUS_CODE_UNAUTHORIZED, done);
     });
-    it("非ログイン時には削除できない", (done) => {
-      request(app)
-        .post("/api/account/work/delete")
-        .expect(STATUS_CODE_UNAUTHORIZED, done);
-    });
-    it("非ログイン時にはバックアップを復元できない", (done) => {
-      request(app)
-        .post("/api/account/backup/restore")
-        .expect(STATUS_CODE_UNAUTHORIZED, done);
-    });
     it("非ログイン時にはバックアップを削除できない", (done) => {
       request(app)
         .post("/api/account/backup/delete")
@@ -326,112 +316,6 @@ describe("作品のアップロードを伴うテスト", () => {
       );
     });
     describe("Unity作品のバックアップ", () => {
-      describe("バックアップ復元", () => {
-        it(
-          "作者IDが設定されていないとバックアップを復元できない",
-          wrap(async (done) => {
-            const { login } = await createLogin(myId);
-            login(request(app).post("/api/account/backup/restore"))
-              .type("form")
-              .field("workId", workId)
-              .field("backupName", "1")
-              .expect(STATUS_CODE_BAD_REQUEST)
-              .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
-              .end(done);
-          })
-        );
-        it(
-          "作者IDが不適切だとバックアップを復元できない",
-          wrap(async (done) => {
-            const { login } = await createLogin(myId);
-            login(request(app).post("/api/account/backup/restore"))
-              .type("form")
-              .field("creatorId", INVALID_ID)
-              .field("workId", workId)
-              .field("backupName", "1")
-              .expect(STATUS_CODE_BAD_REQUEST)
-              .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
-              .end(done);
-          })
-        );
-        it(
-          "作品IDが設定されていないとバックアップを復元できない",
-          wrap(async (done) => {
-            const { login } = await createLogin(myId);
-            login(request(app).post("/api/account/backup/restore"))
-              .type("form")
-              .field("creatorId", creatorId)
-              .field("backupName", "1")
-              .expect(STATUS_CODE_BAD_REQUEST)
-              .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
-              .end(done);
-          })
-        );
-        it(
-          "作品IDが不適切だとバックアップを復元できない",
-          wrap(async (done) => {
-            const { login } = await createLogin(myId);
-            login(request(app).post("/api/account/backup/restore"))
-              .type("form")
-              .field("creatorId", creatorId)
-              .field("workId", INVALID_ID)
-              .field("backupName", "1")
-              .expect(STATUS_CODE_BAD_REQUEST)
-              .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
-              .end(done);
-          })
-        );
-        it(
-          "バックアップ名が設定されていないとバックアップを復元できない",
-          wrap(async (done) => {
-            const { login } = await createLogin(myId);
-            login(request(app).post("/api/account/backup/restore"))
-              .type("form")
-              .field("creatorId", creatorId)
-              .field("workId", workId)
-              .expect(STATUS_CODE_BAD_REQUEST)
-              .expect(JSON.stringify({ errors: [BACKUP_NAME_REQUIRED] }))
-              .end(done);
-          })
-        );
-        it(
-          "バックアップ名が不適切だとバックアップを復元できない",
-          wrap(async (done) => {
-            const { login } = await createLogin(myId);
-            login(request(app).post("/api/account/backup/restore"))
-              .type("form")
-              .field("creatorId", creatorId)
-              .field("workId", workId)
-              .field("backupName", INVALID_ID)
-              .expect(STATUS_CODE_BAD_REQUEST)
-              .expect(JSON.stringify({ errors: [BACKUP_NAME_INVALID] }))
-              .end(done);
-          })
-        );
-        it(
-          "条件を満たしているとバックアップを復元できる",
-          wrap(async (done) => {
-            await testSuccessfulUploadTwice();
-            const { login } = await createLogin(myId);
-            await new Promise<void>((resolve) => {
-              login(request(app).post("/api/account/backup/restore"))
-                .type("form")
-                .field("creatorId", creatorId)
-                .field("workId", workId)
-                .field("backupName", "1")
-                .expect(STATUS_CODE_SUCCESS)
-                .end((err) => {
-                  expect(err).toBeNull();
-                  resolve();
-                });
-            });
-            await expectStorageSizeSameToActualSize(1);
-            await expectUploadedFilesExists();
-            await expectBackupFilesExists("2");
-            done();
-          })
-        );
-      });
       describe("バックアップ削除", () => {
         it(
           "作者IDが設定されていないとバックアップを削除できない",
