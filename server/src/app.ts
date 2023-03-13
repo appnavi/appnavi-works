@@ -59,9 +59,12 @@ app.use(express.json());
 app.use(
   session({
     secret: env.COOKIE_SECRET,
-    store: MongoStore.create({
-      mongoUrl: env.SESSION_DATABASE_URL,
-    }),
+    store:
+      env.NODE_ENV !== "test"
+        ? MongoStore.create({
+            mongoUrl: env.SESSION_DATABASE_URL,
+          })
+        : undefined,
     cookie: {
       maxAge: 1000 * 60 * 30,
       httpOnly: true,
