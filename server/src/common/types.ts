@@ -54,3 +54,9 @@ export const WorkDB = z.object({
   ),
 });
 export type WorkDB = z.infer<typeof WorkDB>;
+declare module "express-session" {
+  interface SessionData {
+    csrfToken: string | undefined;
+    csrfTokenWithHash: string | undefined;
+  }
+}

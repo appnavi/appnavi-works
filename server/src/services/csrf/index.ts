@@ -135,9 +135,3 @@ export function csrf(req: Request, res: Response, next: NextFunction) {
     next();
   })(req, res, next);
 }
-declare module "express-session" {
-  interface SessionData {
-    csrfToken: string | undefined;
-    csrfTokenWithHash: string | undefined;
-  }
-}
