@@ -77,6 +77,15 @@ describe("trpc.account.cleanupCreatorIds", () => {
     await ensureUploadFoldersEmpty();
   });
   it(
+    "非ログイン時はエラーになる",
+    testCleanupCreatorIds({
+      input: undefined,
+      expectedError: {
+        code: "UNAUTHORIZED",
+      },
+    })
+  );
+  it(
     "一つも作品を投稿していない状態では、何も起こらない",
     wrap(async (done) => {
       const user = await UserModel.create({

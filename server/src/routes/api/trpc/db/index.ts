@@ -28,7 +28,8 @@ export const dbRouter = t.router({
     }
     return parsed.data;
   }),
-  fetchAllUsersRaw: slackUserOnlyProcedure.query(() => {
-    return UserModel.find();
+  fetchAllUsersRaw: slackUserOnlyProcedure.query(async () => {
+    const users = await UserModel.find();
+    return users.map((u) => u.toObject());
   }),
 });
