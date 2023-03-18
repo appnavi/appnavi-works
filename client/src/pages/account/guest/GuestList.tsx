@@ -48,7 +48,11 @@ const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
     });
   };
   return (
-    <button className="red-text" onClick={onClick} disabled={isLoading}>
+    <button
+      className="red-text btn-flat"
+      onClick={onClick}
+      disabled={isLoading}
+    >
       <i className="h-full flex">
         <MdDelete className="my-auto" size={24} />
       </i>
