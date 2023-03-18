@@ -1,5 +1,0 @@
-{
-  "watch": ["src", "test"],
-  "ext": "ts",
-  "exec": "jest --verbose"
-}

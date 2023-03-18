@@ -60,13 +60,11 @@ typings/
 # next.js build output
 .next
 
-/dist/
+/server/dist/
 /uploads/
 /backups/
-/private/javascripts/**/*.js
-/private/stylesheets/**/*.css
-/private/stylesheets/**/*.css.map
-/public/javascripts/**/*.js
-/public/stylesheets/**/*.css
-/public/stylesheets/**/*.css.map
+/server/public/javascripts/**/*.js
+/server/public/stylesheets/**/*.css
+/server/public/stylesheets/**/*.css.map
 /secrets/
+/server/dist_client/

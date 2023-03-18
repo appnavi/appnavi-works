@@ -1,10 +1,11 @@
 version: "3"
 services:
   appnavi-works:
-    build: .
+    build:
+      dockerfile: docker/production.Dockerfile
+      context: .
     container_name: appnavi-works_production
     restart: always
-    command: "yarn run start"
     volumes:
       - ./uploads:/app/uploads
       - ./backups:/app/backups
@@ -46,6 +47,7 @@ services:
 volumes:
   db-volume-appnavi-works:
   db-config-volume-appnavi-works:
+
 
 networks:
   db:

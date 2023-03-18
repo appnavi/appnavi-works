@@ -1,7 +1,9 @@
 version: '3'
 services:
   appnavi-works:
-    build: .
+    build:
+      dockerfile: docker/development.Dockerfile
+      context: .
     environment:
       - WORK_STORAGE_SIZE_BYTES=53687091200 # 50 * 1024^3 bytes = 50GB
       - PORT=3000
@@ -21,17 +23,14 @@ services:
       - CSRF_TOKEN_SECRET
       - MONGO_ROOT_USERNAME
       - MONGO_ROOT_PASSWORD
-    command: "yarn run test"
-    volumes: 
-      - ./test:/app/test
-      - ./src:/app/src
+    command: "yarn workspace server run test"
+    volumes:
+      - ./server/test:/app/server/test
+      - ./server/src:/app/server/src
   mongo:
     image: "mongo:6.0.2"
     expose:
       - "27017"
-    volumes:
-      - db-volume-appnavi-works:/data/db
-      - db-config-volume-appnavi-works:/data/configdb
     networks:
       - db
     environment:
@@ -41,18 +40,13 @@ services:
       - MONGO_ROOT_USERNAME
       - MONGO_ROOT_PASSWORD
 
-volumes:
-  db-volume-appnavi-works:
-  db-config-volume-appnavi-works:
-
 networks:
   db:
     driver: bridge
 
-
 secrets:
   DATABASE_URL:
-    file: ./secrets/test/database_url.txt    
+    file: ./secrets/test/database_url.txt
   SESSION_DATABASE_URL:
     file: ./secrets/test/session_database_url.txt
   SLACK_CLIENT_ID:

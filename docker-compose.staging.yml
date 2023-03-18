@@ -1,0 +1,66 @@
+version: '3'
+services:
+  appnavi-works:
+    build:
+      dockerfile: docker/production.Dockerfile
+      context: .
+    container_name: appnavi-works_staging
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - SITE_URL=${SITE_URL_DEVELOPMENT}
+      - WORK_STORAGE_SIZE_BYTES=53687091200 # 50 * 1024^3 bytes = 50GB
+      - PORT=3000
+    depends_on:
+      - mongo
+    networks:
+      - db
+    secrets:
+      - DATABASE_URL
+      - SESSION_DATABASE_URL
+      - SLACK_CLIENT_ID
+      - SLACK_CLIENT_SECRET
+      - SLACK_WORKSPACE_ID
+      - COOKIE_SECRET
+      - CSRF_TOKEN_SECRET
+  mongo:
+    image: "mongo:6.0.2"
+    expose:
+      - "27017"
+    volumes:
+      - db-volume-appnavi-works:/data/db
+      - db-config-volume-appnavi-works:/data/configdb
+    networks:
+      - db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/MONGO_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/MONGO_ROOT_PASSWORD
+    secrets:
+      - MONGO_ROOT_USERNAME
+      - MONGO_ROOT_PASSWORD
+volumes:
+  db-volume-appnavi-works:
+  db-config-volume-appnavi-works:
+networks:
+  db:
+    driver: bridge
+secrets:
+  DATABASE_URL:
+    file: ./secrets/staging/database_url.txt
+  SESSION_DATABASE_URL:
+    file: ./secrets/staging/session_database_url.txt
+  SLACK_CLIENT_ID:
+    file: ./secrets/staging/slack_client_id.txt
+  SLACK_CLIENT_SECRET:
+    file: ./secrets/staging/slack_client_secret.txt
+  SLACK_WORKSPACE_ID:
+    file: ./secrets/staging/slack_workspace_id.txt
+  COOKIE_SECRET:
+    file: ./secrets/staging/cookie_secret.txt
+  CSRF_TOKEN_SECRET:
+    file: ./secrets/staging/csrf_token_secret.txt
+  MONGO_ROOT_USERNAME:
+    file: ./secrets/staging/mongo_root_username.txt
+  MONGO_ROOT_PASSWORD:
+    file: ./secrets/staging/mongo_root_password.txt
