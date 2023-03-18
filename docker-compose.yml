@@ -9,7 +9,7 @@ services:
     volumes:
       - ./uploads:/app/uploads
       - ./backups:/app/backups
-      - ./logs:/app/logs
+      - ./logs:/app/server/logs
     environment:
       - WORK_STORAGE_SIZE_BYTES=53687091200 # 50 * 1024^3 bytes = 50GB
       - PORT=3000
