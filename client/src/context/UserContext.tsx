@@ -21,7 +21,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const { data: user } = trpc.me.useQuery();
   if (user === undefined) {
     return (
-      <div className="w-screen h-screen grid place-items-center">
+      <div className="grid h-screen w-screen place-items-center">
         <LoadingSpinner />
       </div>
     );

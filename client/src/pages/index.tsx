@@ -29,7 +29,7 @@ const Page = ({ user }: { user: User }) => {
       <div className="section">
         <h4 className="header">アップロード</h4>
         <Link className="btn-large flex" to="/upload/unity">
-          <i className="left h-full flex">
+          <i className="left flex h-full">
             <FaUnity className="my-auto" />
           </i>
           Unityゲームのアップロード

@@ -53,7 +53,7 @@ const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
       onClick={onClick}
       disabled={isLoading}
     >
-      <i className="h-full flex">
+      <i className="flex h-full">
         <MdDelete className="my-auto" size={24} />
       </i>
     </button>
@@ -64,7 +64,7 @@ export const GuestList = ({ user }: { user: User }) => {
   const { data: users } = trpc.db.fetchAllUsers.useQuery();
   if (users === undefined) {
     return (
-      <div className="w-full grid place-items-center">
+      <div className="grid w-full place-items-center">
         <LoadingSpinner />
       </div>
     );

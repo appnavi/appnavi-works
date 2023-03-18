@@ -97,7 +97,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
       {backups.map(({ name, fileSize, uploadedAt }) => {
         return (
           <li className="collection-item valign-wrapper" key={name}>
-            <div className="row valign-wrapper w-full mb-0">
+            <div className="row valign-wrapper mb-0 w-full">
               <div className="col s1">{name}</div>
               <div className="col s3">{fileSize}バイト</div>
               <div className="col s4">
@@ -108,7 +108,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
                   </>
                 ) : null}
               </div>
-              <div className="col s4 flex gap-2 justify-end">
+              <div className="col s4 flex justify-end gap-2">
                 <button
                   className="waves-effect waves-light btn"
                   onClick={() => onRestoreBackupButtonClick(name)}

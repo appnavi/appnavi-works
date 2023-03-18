@@ -75,7 +75,7 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
         onClick={onClick}
         disabled={isLoading}
       >
-        <i className="left h-full flex">
+        <i className="left flex h-full">
           <MdEdit className="my-auto" />
         </i>
         作者名・作品名の編集

@@ -93,12 +93,12 @@ const FileTreeWindows = ({
 
 // http://kachibito.net/css/file-tree-css を参考に作成
 const FileTreeUl = ({ children }: { children: ReactNode }) => {
-  return <ul className="pl-[5px] list-none">{children}</ul>;
+  return <ul className="list-none pl-[5px]">{children}</ul>;
 };
 // http://kachibito.net/css/file-tree-css を参考に作成
 const FileTreeLi = ({ children }: { children: ReactNode }) => {
   return (
-    <li className="relative py-[5px] pl-[15px] box-border before:absolute before:top-[15px] before:left-0 before:w-[10px] before:h-[1px] before:m-auto before:content-[''] before:bg-gray-500 after:absolute after:top-0 after:bottom-0 after:left-0 after:w-[1px] after:h-full after:content-[''] after:bg-gray-500 last:after:h-[15px]">
+    <li className="relative box-border py-[5px] pl-[15px] before:absolute before:top-[15px] before:left-0 before:m-auto before:h-[1px] before:w-[10px] before:bg-gray-500 before:content-[''] after:absolute after:top-0 after:bottom-0 after:left-0 after:h-full after:w-[1px] after:bg-gray-500 after:content-[''] last:after:h-[15px]">
       {children}
     </li>
   );

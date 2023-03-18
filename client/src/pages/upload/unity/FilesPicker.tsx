@@ -93,12 +93,12 @@ export const FilesPicker = ({
       <div
         className={`input-field relative h-40 ${
           dragging
-            ? 'bg-cyan-300 border-solid border-4 border-cyan-500'
-            : 'border-dashed border-gray-400 border-2'
+            ? 'border-4 border-solid border-cyan-500 bg-cyan-300'
+            : 'border-2 border-dashed border-gray-400'
         }`}
       >
         <input
-          className="validate opacity-0 w-full h-full cursor-pointer absolute"
+          className="validate absolute h-full w-full cursor-pointer opacity-0"
           type="file"
           name={uploadType}
           ref={fileInputRef}
@@ -107,7 +107,7 @@ export const FilesPicker = ({
             ? { webkitdirectory: '' }
             : { accept: '.zip' })}
         />
-        <div className="w-full h-full flex justify-center items-center flex-col">
+        <div className="flex h-full w-full flex-col items-center justify-center">
           <h6>ここに{uploadName}をドロップ</h6>
           <div>または</div>
           <h6>クリックして{uploadName}を選択</h6>

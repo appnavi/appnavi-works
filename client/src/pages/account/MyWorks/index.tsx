@@ -44,7 +44,7 @@ export const MyWorks = ({ user }: { user: User }) => {
                 target="_blank"
                 rel="noreferrer"
               >
-                <i className="left h-full flex">
+                <i className="left flex h-full">
                   <MdOpenInNew className="my-auto" />
                 </i>
                 作品へ移動

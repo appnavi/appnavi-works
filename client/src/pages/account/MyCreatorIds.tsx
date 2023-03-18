@@ -79,7 +79,7 @@ export const MyCreatorIds = () => {
   const { data: userDB } = trpc.account.getUserData.useQuery();
   if (userDB === undefined) {
     return (
-      <div className="w-full grid place-items-center">
+      <div className="grid w-full place-items-center">
         <LoadingSpinner />
       </div>
     );

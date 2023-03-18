@@ -25,7 +25,7 @@ const PageRoot = () => {
   return (
     <>
       <Navbar />
-      <main className="flex-grow flex-shrink-0 basis-auto">
+      <main className="flex-shrink-0 flex-grow basis-auto">
         <Outlet />
       </main>
       <Footer />
