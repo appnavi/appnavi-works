@@ -27,7 +27,7 @@ function shouldDisableRenameButton(
 export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
-  const { mutate } = trpc.account.work.rename.useMutation({
+  const { mutate, isLoading } = trpc.account.work.rename.useMutation({
     onSuccess() {
       showMessageDialog({
         title: '編集に成功しました',
@@ -70,7 +70,11 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
   );
   return (
     <>
-      <button className="waves-effect waves-light btn" onClick={onClick}>
+      <button
+        className="waves-effect waves-light btn"
+        onClick={onClick}
+        disabled={isLoading}
+      >
         <i className="left h-full flex">
           <MdEdit className="my-auto" />
         </i>

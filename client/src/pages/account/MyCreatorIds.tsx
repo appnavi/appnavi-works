@@ -8,7 +8,7 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
   const { showConfirmDialog } = useConfirmDialogContext();
-  const { mutate } = trpc.account.cleanupCreatorIds.useMutation({
+  const { mutate, isLoading } = trpc.account.cleanupCreatorIds.useMutation({
     onSuccess() {
       showMessageDialog({
         title: '使用していない作者IDの削除に成功しました。',
@@ -61,7 +61,11 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
           </li>
         ))}
       </ul>
-      <button className="waves-effect waves-light btn red" onClick={onClick}>
+      <button
+        className="waves-effect waves-light btn red"
+        onClick={onClick}
+        disabled={isLoading}
+      >
         <i className="left flex h-full">
           <MdDeleteSweep className="my-auto" />
         </i>

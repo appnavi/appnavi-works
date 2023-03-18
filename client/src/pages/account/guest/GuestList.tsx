@@ -9,7 +9,7 @@ const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
   const trpcContext = trpc.useContext();
   const { showConfirmDialog } = useConfirmDialogContext();
   const { showMessageDialog } = useMessageDialogContext();
-  const { mutate } = trpc.account.guest.delete.useMutation({
+  const { mutate, isLoading } = trpc.account.guest.delete.useMutation({
     onSuccess() {
       showMessageDialog({
         title: `ゲストユーザー${guestId}を削除しました。`,
@@ -48,7 +48,7 @@ const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
     });
   };
   return (
-    <button className="red-text" onClick={onClick}>
+    <button className="red-text" onClick={onClick} disabled={isLoading}>
       <i className="h-full flex">
         <MdDelete className="my-auto" size={24} />
       </i>

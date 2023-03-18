@@ -81,7 +81,7 @@ const CreatedGuestInfo = ({
 export const CreateGuest = () => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
-  const { mutate } = trpc.account.guest.create.useMutation({
+  const { mutate, isLoading } = trpc.account.guest.create.useMutation({
     onSuccess(data) {
       showMessageDialog({
         title: 'ゲストユーザーを作成しました',
@@ -105,7 +105,7 @@ export const CreateGuest = () => {
         部員以外の人でも作品をアップロードできるように、ユーザーIDとパスワードでログインできるゲストユーザーを作成できます。
       </p>
       <p>ユーザーIDとパスワードは自動で生成されます。</p>
-      <button className="btn" onClick={() => mutate()}>
+      <button className="btn" onClick={() => mutate()} disabled={isLoading}>
         ゲストユーザーを作成
       </button>
     </div>

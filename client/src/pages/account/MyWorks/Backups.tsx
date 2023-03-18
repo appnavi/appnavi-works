@@ -9,38 +9,40 @@ export const Backups = ({ work }: { work: WorkDB }) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
   const { showConfirmDialog } = useConfirmDialogContext();
-  const { mutate: restoreBackup } = trpc.account.backup.restore.useMutation({
-    onSuccess() {
-      showMessageDialog({
-        title: '復元に成功しました。',
-        onClose() {
-          trpcContext.account.work.list.invalidate();
-        },
-      });
-    },
-    onError(error) {
-      showMessageDialog({
-        title: '復元に失敗しました',
-        text: error.message,
-      });
-    },
-  });
-  const { mutate: deleteBackup } = trpc.account.backup.delete.useMutation({
-    onSuccess() {
-      showMessageDialog({
-        title: '削除に成功しました。',
-        onClose() {
-          trpcContext.account.work.list.invalidate();
-        },
-      });
-    },
-    onError(error) {
-      showMessageDialog({
-        title: '削除に失敗しました',
-        text: error.message,
-      });
-    },
-  });
+  const { mutate: restoreBackup, isLoading: isRestoring } =
+    trpc.account.backup.restore.useMutation({
+      onSuccess() {
+        showMessageDialog({
+          title: '復元に成功しました。',
+          onClose() {
+            trpcContext.account.work.list.invalidate();
+          },
+        });
+      },
+      onError(error) {
+        showMessageDialog({
+          title: '復元に失敗しました',
+          text: error.message,
+        });
+      },
+    });
+  const { mutate: deleteBackup, isLoading: isDeleting } =
+    trpc.account.backup.delete.useMutation({
+      onSuccess() {
+        showMessageDialog({
+          title: '削除に成功しました。',
+          onClose() {
+            trpcContext.account.work.list.invalidate();
+          },
+        });
+      },
+      onError(error) {
+        showMessageDialog({
+          title: '削除に失敗しました',
+          text: error.message,
+        });
+      },
+    });
   const { backups } = work;
   if (backups.length === 0) {
     return null;
@@ -110,6 +112,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
                 <button
                   className="waves-effect waves-light btn"
                   onClick={() => onRestoreBackupButtonClick(name)}
+                  disabled={isRestoring}
                 >
                   <i className="left flex h-full">
                     <MdRestore className="my-auto" />
@@ -119,6 +122,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
                 <button
                   className="waves-effect waves-light btn red"
                   onClick={() => onDeleteBackupButtonClick(name)}
+                  disabled={isDeleting}
                 >
                   <i className="left flex h-full">
                     <MdDeleteForever className="my-auto" />

@@ -8,7 +8,7 @@ export const DeleteWorkButton = ({ work }: { work: WorkDB }) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
   const { showConfirmDialog } = useConfirmDialogContext();
-  const { mutate } = trpc.account.work.delete.useMutation({
+  const { mutate, isLoading } = trpc.account.work.delete.useMutation({
     onSuccess() {
       showMessageDialog({
         title: '削除に成功しました',
@@ -54,7 +54,11 @@ export const DeleteWorkButton = ({ work }: { work: WorkDB }) => {
     });
   };
   return (
-    <button className="waves-effect waves-light btn red" onClick={onClick}>
+    <button
+      className="waves-effect waves-light btn red"
+      onClick={onClick}
+      disabled={isLoading}
+    >
       <i className="left flex h-full">
         <MdDelete className="my-auto" />
       </i>
