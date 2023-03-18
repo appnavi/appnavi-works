@@ -7,9 +7,6 @@ const Users = UserDB.array();
 const Works = WorkDB.array();
 
 export const dbRouter = t.router({
-  fetchAllWorksRaw: slackUserOnlyProcedure.query(() => {
-    return WorkModel.find();
-  }),
   fetchAllWorks: slackUserOnlyProcedure.query(async () => {
     const works = await WorkModel.find();
     const parsed = Works.safeParse(works);
@@ -27,9 +24,5 @@ export const dbRouter = t.router({
       return [];
     }
     return parsed.data;
-  }),
-  fetchAllUsersRaw: slackUserOnlyProcedure.query(async () => {
-    const users = await UserModel.find();
-    return users.map((u) => u.toObject());
   }),
 });
