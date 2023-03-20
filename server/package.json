@@ -10,7 +10,7 @@
     "dev:sass": "sass --style=compressed --update --watch --poll public/stylesheets:public/stylesheets",
     "build": "run-s build:*",
     "build:server": "tsc -p tsconfig.json",
-    "build:sass": "sass public/stylesheets:public/stylesheets --style=compressed --update",
+    "build:sass": "sass public/stylesheets:public/stylesheets --style=compressed --update --no-source-map",
     "check-types": "run-p check-types:*",
     "check-types:server": "tsc -p tsconfig.json --noEmit",
     "eslint:server": "eslint src/**/*.ts",
