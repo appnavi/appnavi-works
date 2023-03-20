@@ -8,17 +8,6 @@ main {
   flex: 1 0 auto;
 }
 
-.file-card{
+.file-card {
   padding: 1rem;
-}
-
-.brand-logo{
-  left: 50%;
-  -webkit-transform: translateX(-50%);
-  transform: translateX(-50%);
-  @media screen and (max-width: 500px){
-    left: 0 !important;
-    -webkit-transform: none !important;
-    transform: none !important;
-  }
 }
