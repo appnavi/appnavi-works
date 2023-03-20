@@ -6,14 +6,14 @@ log4js.configure({
     console: { type: "console" },
     file: {
       type: "file",
-      filename: "logs/system.log",
+      filename: "../logs/system.log",
       backups: 5,
       maxLogSize: maxFileSize,
       compress: true,
     },
     accessFile: {
       type: "file",
-      filename: "logs/access.log",
+      filename: "../logs/access.log",
       backups: 5,
       maxLogSize: maxFileSize,
       compress: true,
