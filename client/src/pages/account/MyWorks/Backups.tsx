@@ -5,90 +5,132 @@ import { useConfirmDialogContext } from '../../../context/DialogsContext/Confirm
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
 
-export const Backups = ({ work }: { work: WorkDB }) => {
+const RestoreBackupButton = ({
+  work,
+  backupName,
+}: {
+  work: WorkDB;
+  backupName: string;
+}) => {
   const trpcContext = trpc.useContext();
   const { showMessageDialog } = useMessageDialogContext();
   const { showConfirmDialog } = useConfirmDialogContext();
-  const { mutate: restoreBackup, isLoading: isRestoring } =
-    trpc.account.backup.restore.useMutation({
-      onSuccess() {
-        showMessageDialog({
-          title: '復元に成功しました。',
-          onClose() {
-            trpcContext.account.work.list.invalidate();
+  const { mutate, isLoading } = trpc.account.backup.restore.useMutation({
+    onSuccess() {
+      showMessageDialog({
+        title: '復元に成功しました。',
+        onClose() {
+          trpcContext.account.work.list.invalidate();
+        },
+      });
+    },
+    onError(error) {
+      showMessageDialog({
+        title: '復元に失敗しました',
+        text: error.message,
+      });
+    },
+  });
+  return (
+    <button
+      className="waves-effect waves-light btn"
+      onClick={() => {
+        showConfirmDialog({
+          title: '確認',
+          content: <p>バックアップ{backupName}を復元しますか？</p>,
+          positiveButton: {
+            label: '復元',
+            classes: ['waves-effect', 'waves-light', 'btn'],
+            onPresed() {
+              mutate({
+                creatorId: work.creatorId,
+                workId: work.workId,
+                backupName,
+              });
+            },
+          },
+          negativeButton: {
+            label: 'キャンセル',
+            classes: ['waves-effect', 'waves-light', 'btn-flat'],
           },
         });
-      },
-      onError(error) {
-        showMessageDialog({
-          title: '復元に失敗しました',
-          text: error.message,
-        });
-      },
-    });
-  const { mutate: deleteBackup, isLoading: isDeleting } =
-    trpc.account.backup.delete.useMutation({
-      onSuccess() {
-        showMessageDialog({
-          title: '削除に成功しました。',
-          onClose() {
-            trpcContext.account.work.list.invalidate();
+      }}
+      disabled={isLoading}
+    >
+      <i className="left flex h-full">
+        <MdRestore className="my-auto" />
+      </i>
+      復元
+    </button>
+  );
+};
+
+const DeleteBackupButton = ({
+  work,
+  backupName,
+}: {
+  work: WorkDB;
+  backupName: string;
+}) => {
+  const trpcContext = trpc.useContext();
+  const { showMessageDialog } = useMessageDialogContext();
+  const { showConfirmDialog } = useConfirmDialogContext();
+  const { mutate, isLoading } = trpc.account.backup.delete.useMutation({
+    onSuccess() {
+      showMessageDialog({
+        title: '削除に成功しました。',
+        onClose() {
+          trpcContext.account.work.list.invalidate();
+        },
+      });
+    },
+    onError(error) {
+      showMessageDialog({
+        title: '削除に失敗しました',
+        text: error.message,
+      });
+    },
+  });
+  return (
+    <button
+      className="waves-effect waves-light btn red"
+      onClick={() => {
+        showConfirmDialog({
+          title: '確認',
+          content: <p>バックアップ{backupName}を削除しますか？</p>,
+          positiveButton: {
+            label: '削除',
+            classes: ['waves-effect', 'waves-light', 'btn', 'red'],
+            onPresed() {
+              mutate({
+                creatorId: work.creatorId,
+                workId: work.workId,
+                backupName,
+              });
+            },
+          },
+          negativeButton: {
+            label: 'キャンセル',
+            classes: ['waves-effect', 'waves-light', 'btn-flat'],
           },
         });
-      },
-      onError(error) {
-        showMessageDialog({
-          title: '削除に失敗しました',
-          text: error.message,
-        });
-      },
-    });
+      }}
+      disabled={isLoading}
+    >
+      <i className="left flex h-full">
+        <MdDeleteForever className="my-auto" />
+      </i>
+      削除
+    </button>
+  );
+};
+
+export const Backups = ({ work }: { work: WorkDB }) => {
   const { backups } = work;
   if (backups.length === 0) {
     return null;
   }
-  const onRestoreBackupButtonClick = (backupName: string) => {
-    showConfirmDialog({
-      title: '確認',
-      content: <p>バックアップ{backupName}を復元しますか？</p>,
-      positiveButton: {
-        label: '復元',
-        classes: ['waves-effect', 'waves-light', 'btn'],
-        onPresed() {
-          restoreBackup({
-            creatorId: work.creatorId,
-            workId: work.workId,
-            backupName,
-          });
-        },
-      },
-      negativeButton: {
-        label: 'キャンセル',
-        classes: ['waves-effect', 'waves-light', 'btn-flat'],
-      },
-    });
-  };
-  const onDeleteBackupButtonClick = (backupName: string) => {
-    showConfirmDialog({
-      title: '確認',
-      content: <p>バックアップ{backupName}を削除しますか？</p>,
-      positiveButton: {
-        label: '削除',
-        classes: ['waves-effect', 'waves-light', 'btn', 'red'],
-        onPresed() {
-          deleteBackup({
-            creatorId: work.creatorId,
-            workId: work.workId,
-            backupName,
-          });
-        },
-      },
-      negativeButton: {
-        label: 'キャンセル',
-        classes: ['waves-effect', 'waves-light', 'btn-flat'],
-      },
-    });
-  };
+
   return (
     <ul className="collection with-header">
       <li className="collection-header">
@@ -109,26 +151,8 @@ export const Backups = ({ work }: { work: WorkDB }) => {
                 ) : null}
               </div>
               <div className="col s4 flex justify-end gap-2">
-                <button
-                  className="waves-effect waves-light btn"
-                  onClick={() => onRestoreBackupButtonClick(name)}
-                  disabled={isRestoring}
-                >
-                  <i className="left flex h-full">
-                    <MdRestore className="my-auto" />
-                  </i>
-                  復元
-                </button>
-                <button
-                  className="waves-effect waves-light btn red"
-                  onClick={() => onDeleteBackupButtonClick(name)}
-                  disabled={isDeleting}
-                >
-                  <i className="left flex h-full">
-                    <MdDeleteForever className="my-auto" />
-                  </i>
-                  削除
-                </button>
+                <RestoreBackupButton work={work} backupName={name} />
+                <DeleteBackupButton work={work} backupName={name} />
               </div>
             </div>
           </li>
