@@ -1,6 +1,7 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
 import passport from "passport";
+import { User } from "../../../common/types";
 import { STRATEGY_NAME_GUEST } from "../../../config/passport";
 import * as logger from "../../../modules/logger";
 import { logLastLogin } from "../../../services/auth";
@@ -31,13 +32,14 @@ guestRouter.route("/").post(
   guestLoginRateLimiter,
   passport.authenticate(STRATEGY_NAME_GUEST, { failWithError: true }),
   (req, res, next) => {
-    const user = req.user;
-    if (user === undefined) {
+    const parsed = User.safeParse(req.user);
+    if (!parsed.success) {
       logger.system.error(`ログインできていません。`, req.user);
       res.status(STATUS_CODE_UNAUTHORIZED);
       next(new Error());
       return;
     }
+    const user = parsed.data;
     if (user.type !== "Guest") {
       logger.system.error(`ゲストログインではありません。`, req.user);
       res.status(STATUS_CODE_UNAUTHORIZED);

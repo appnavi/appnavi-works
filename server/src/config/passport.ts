@@ -9,6 +9,8 @@ import passport from "passport";
 import passportCustom from "passport-custom";
 import { Strategy as LocalStrategy } from "passport-local";
 import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
+import { User } from "../common/types";
 import { UserModel } from "../models/database";
 import * as logger from "../modules/logger";
 import { findUserOrThrow } from "../services/auth";
@@ -25,7 +27,11 @@ export const localLoginInputSchema = z.object({
   password: z.string().regex(guestUserPasswordRegex),
 });
 async function loginLocal(input: { userId: string; password: string }) {
-  const { userId, password } = await localLoginInputSchema.parseAsync(input);
+  const parsed = localLoginInputSchema.safeParse(input);
+  if (!parsed.success) {
+    throw fromZodError(parsed.error);
+  }
+  const { userId, password } = parsed.data;
   const users = await UserModel.find({ userId });
   if (users.length == 0) {
     throw new Error("存在しないユーザーです。");
@@ -42,12 +48,11 @@ async function loginLocal(input: { userId: string; password: string }) {
   if (!isPasswordCorrect) {
     throw new Error("パスワードが異なります。");
   }
-  const resultUser: Express.User = {
+  return {
     id: userId,
     name: "ゲストユーザー",
     type: "Guest",
-  };
-  return resultUser;
+  } as Express.User;
 }
 const localStrategy = new LocalStrategy(
   {
@@ -145,13 +150,14 @@ export function isUser(x: unknown): x is Express.User {
 }
 
 async function validateUserForDeserialize(user: unknown) {
-  if (!isUser(user)) throw new Error("User型として認識できませんでした。");
-  const userDocument = await findUserOrThrow(user.id);
-  if (user.type == "Slack" && userDocument.guest !== undefined)
+  const parsed = User.safeParse(user);
+  if (!parsed.success) throw new Error("User型として認識できませんでした。");
+  const userDocument = await findUserOrThrow(parsed.data.id);
+  if (parsed.data.type == "Slack" && userDocument.guest !== undefined)
     throw new Error("Slackユーザーとしては不適切なユーザーです。");
-  if (user.type == "Guest" && userDocument.guest === undefined)
+  if (parsed.data.type == "Guest" && userDocument.guest === undefined)
     throw new Error("Guestユーザーとしては不適切なユーザーです。");
-  return user;
+  return parsed.data;
 }
 export const STRATEGY_NAME_GUEST = "guest";
 export const STRATEGY_NAME_SLACK = "slack";

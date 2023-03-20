@@ -15,7 +15,7 @@ export async function createLogin(userId: string, type: string = "Slack") {
         .send({
           id: userId,
           name: "",
-          avatar_url: "",
+          avatar_url: "https://example.com",
           type,
         })
         .expect(STATUS_CODE_REDIRECT_TEMPORARY)

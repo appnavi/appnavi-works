@@ -24,11 +24,6 @@
         "../server/src/common/*"
       ]
     },
-    "typeRoots": [
-      "../node_modules/@types",
-      "node_modules/@types",
-      "../server/src/common/@types"
-    ],
   },
   "include": [
     "src",

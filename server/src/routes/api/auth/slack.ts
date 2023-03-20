@@ -1,5 +1,6 @@
 import express from "express";
 import passport from "passport";
+import { User } from "../../../common/types";
 import { STRATEGY_NAME_SLACK } from "../../../config/passport";
 import * as logger from "../../../modules/logger";
 import { logLastLogin } from "../../../services/auth";
@@ -13,12 +14,13 @@ slackRouter.get(
     failureRedirect: "/auth/error",
   }),
   (req, res, next) => {
-    const user = req.user;
-    if (user === undefined) {
+    const parsed = User.safeParse(req.user);
+    if (!parsed.success) {
       logger.system.error(`ログインできていません。`, req.user);
       res.redirect("/api/auth/error");
       return;
     }
+    const user = parsed.data;
     if (user.type !== "Slack") {
       logger.system.error(`Slackによるログインではありません。`, req.user);
       res.redirect("/api/auth/error");

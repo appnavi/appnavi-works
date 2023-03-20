@@ -1,4 +1,5 @@
 import express from "express";
+import { User } from "../../common/types";
 import { UserModel } from "../../models/database";
 import { STATUS_CODE_UNAUTHORIZED } from "../../utils/constants";
 
@@ -50,15 +51,10 @@ export async function findOrCreateUser(userId: string) {
   }
 }
 
-export async function getDefaultCreatorId(req: express.Request) {
-  const userDocument = await findOrCreateUser(getUserIdOrThrow(req));
-  return userDocument.defaultCreatorId;
-}
-
 export function getUserIdOrThrow(req: express.Request) {
-  const userId = req.user?.id;
-  if (userId !== undefined) {
-    return userId;
+  const parsed = User.safeParse(req.user);
+  if (parsed.success) {
+    return parsed.data.id;
   }
   throw new Error("ユーザーIDを取得できませんでした。");
 }

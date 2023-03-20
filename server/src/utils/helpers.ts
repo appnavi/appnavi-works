@@ -3,7 +3,6 @@ import path from "path";
 import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
 import { DIRECTORY_NAME_VIEWS } from "./constants";
-import { UnauthorizedError } from "./errors";
 
 export const randomStringCharacters =
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -18,29 +17,13 @@ export function generateRandomString(
     .join("");
 }
 
-export const slackUserOnly = (
-  req: express.Request,
-  _res: express.Response,
-  next: express.NextFunction
-) => {
-  const userType = req.user?.type;
-  if (userType !== "Slack") {
-    next(new UnauthorizedError());
-    return;
-  }
-  next();
-};
-
 export function render(
   view: string,
   req: express.Request,
   res: express.Response,
   options: Record<string, unknown> = {}
 ) {
-  res.render(view, {
-    user: req.user,
-    ...options,
-  });
+  res.render(view, options);
 }
 
 export function ejsToHtml(

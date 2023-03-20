@@ -1,5 +1,6 @@
 import express from "express";
 import passport from "passport";
+import { User } from "../../../common/types";
 import { STRATEGY_NAME_TEST } from "../../../config/passport";
 import { findOrCreateUser } from "../../../services/auth";
 import { env } from "../../../utils/env";
@@ -29,11 +30,12 @@ if (env.NODE_ENV === "test") {
     "/test",
     passport.authenticate(STRATEGY_NAME_TEST),
     wrap(async (req, _res, next) => {
-      const user = req.user;
-      if (user === undefined) {
+      const parsed = User.safeParse(req.user);
+      if (!parsed.success) {
         next(new Error("テスト用ログインに失敗しました。"));
         return;
       }
+      const user = parsed.data;
       const userDocument = await findOrCreateUser(user.id);
       if (user.type === "Guest") {
         await userDocument.updateOne({
