@@ -59,7 +59,7 @@ const CreatedGuestInfo = ({
     <div className="section">
       <p>
         <b className="red-text">
-          作成されたゲストユーザーのユーザーIDおよびパスワードはこのページを離れると確認できなくなります。
+          作成されたゲストユーザーのユーザーIDおよびパスワードはこのダイアログを閉じると確認できなくなります。
         </b>
       </p>
       <div className="row card-panel">
