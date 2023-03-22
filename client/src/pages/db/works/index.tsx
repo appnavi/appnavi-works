@@ -26,12 +26,10 @@ const Page = () => {
               </span>
               <div>所有者のユーザーID：{owner} </div>
               <div>ファイルサイズ：{fileSize}バイト</div>
-              {uploadedAt !== undefined ? (
-                <div>
-                  <FormatDate date={uploadedAt} />
-                  アップロード
-                </div>
-              ) : null}
+              <div>
+                <FormatDate date={uploadedAt} />
+                アップロード
+              </div>
             </div>
             <div className="card-action">
               <a

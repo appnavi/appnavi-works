@@ -94,6 +94,7 @@ describe("trpc.db.fetchAllWorks", () => {
         workId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       testDbFetchAllWorks({
         userId: myId,

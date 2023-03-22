@@ -217,6 +217,7 @@ describe("trpc.account.backup.restore", () => {
         workId,
         fileSize: 0,
         owner: theirId,
+        uploadedAt: new Date(),
       });
       testBackupRestore({
         userId: myId,
@@ -240,6 +241,7 @@ describe("trpc.account.backup.restore", () => {
         workId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       testBackupRestore({
         userId: myId,
@@ -270,6 +272,7 @@ describe("trpc.account.backup.restore", () => {
             uploadedAt: new Date(),
           },
         ],
+        uploadedAt: new Date(),
       });
       await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {
         recursive: true,

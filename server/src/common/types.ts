@@ -44,7 +44,7 @@ export const WorkDB = z.object({
   workId: z.string(),
   owner: z.string(),
   fileSize: z.number(),
-  uploadedAt: z.date().optional(),
+  uploadedAt: z.date(),
   backups: z.array(
     z.object({
       name: z.string(),

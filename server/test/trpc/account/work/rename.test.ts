@@ -276,6 +276,7 @@ describe("trpc.account.work.rename", () => {
         workId,
         fileSize: 0,
         owner: theirId,
+        uploadedAt: new Date(),
       });
       testWorkRename({
         userId: myId,
@@ -300,12 +301,14 @@ describe("trpc.account.work.rename", () => {
         workId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       await WorkModel.create({
         creatorId: renamedCreatorId,
         workId: renamedWorkId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       testWorkRename({
         userId: myId,
@@ -336,6 +339,7 @@ describe("trpc.account.work.rename", () => {
         workId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       testWorkRename({
         userId: myId,
@@ -378,6 +382,7 @@ describe("trpc.account.work.rename", () => {
         workId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       testWorkRename({
         userId: myId,
@@ -420,6 +425,7 @@ describe("trpc.account.work.rename", () => {
         workId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       testWorkRename({
         userId: myId,

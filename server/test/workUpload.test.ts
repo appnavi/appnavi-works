@@ -284,6 +284,7 @@ describe("作品のアップロードを伴うテスト", () => {
             workId: "large-work",
             owner: theirId,
             fileSize: env.WORK_STORAGE_SIZE_BYTES,
+            uploadedAt: new Date(),
           });
           const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))

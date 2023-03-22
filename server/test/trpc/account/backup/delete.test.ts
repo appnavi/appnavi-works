@@ -214,6 +214,7 @@ describe("trpc.account.backup.delete", () => {
         workId,
         fileSize: 0,
         owner: theirId,
+        uploadedAt: new Date(),
       });
       testBackupDelete({
         userId: myId,
@@ -237,6 +238,7 @@ describe("trpc.account.backup.delete", () => {
         workId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       testBackupDelete({
         userId: myId,
@@ -267,6 +269,7 @@ describe("trpc.account.backup.delete", () => {
             uploadedAt: new Date(),
           },
         ],
+        uploadedAt: new Date(),
       });
       await fsExtra.mkdir(
         getAbsolutePathOfBackup(creatorId, workId, backupName),

@@ -200,6 +200,7 @@ describe("trpc.account.guest.delete", () => {
         workId,
         fileSize: 0,
         owner: guestId,
+        uploadedAt: new Date(),
       });
       testGuestDelete({
         userId: myId,

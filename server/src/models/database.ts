@@ -4,7 +4,7 @@ export interface WorkDocument extends Document {
   workId: string;
   owner: string;
   fileSize: number;
-  uploadedAt?: Date;
+  uploadedAt: Date;
   backups: Types.Array<{ name: string; fileSize: number; uploadedAt: Date }>;
 }
 const workSchema = new Schema(
@@ -25,7 +25,10 @@ const workSchema = new Schema(
       type: Number,
       required: true,
     },
-    uploadedAt: Date,
+    uploadedAt: {
+      type: Date,
+      required: true,
+    },
     backups: [
       {
         name: String,

@@ -178,6 +178,7 @@ describe("trpc.account.work.delete", () => {
         workId,
         fileSize: 0,
         owner: theirId,
+        uploadedAt: new Date(),
       });
       testWorkDelete({
         userId: myId,
@@ -206,6 +207,7 @@ describe("trpc.account.work.delete", () => {
         workId,
         fileSize: 0,
         owner: myId,
+        uploadedAt: new Date(),
       });
       testWorkDelete({
         userId: myId,

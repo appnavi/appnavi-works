@@ -117,6 +117,7 @@ describe("trpc.account.cleanupCreatorIds", () => {
         workId,
         owner: myId,
         fileSize: 0,
+        uploadedAt: new Date(),
       });
       testCleanupCreatorIds({
         userId: myId,

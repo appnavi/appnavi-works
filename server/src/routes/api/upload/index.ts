@@ -120,7 +120,7 @@ uploadRouter.post(
     const { creatorId, workId } = parseParams(req);
     await ensureStorageSpaceAvailable();
     await preventCreatorIdUsedByMultipleUsers({ userId, creatorId });
-    const work = await findOrCreateWork({ creatorId, workId, userId });
+    const work = await findWorkOrUndefined({ creatorId, workId });
     await validateDestination({ creatorId, workId, work });
     const uploadStartedAt = new Date();
     await middlewareToPromise(
@@ -130,7 +130,14 @@ uploadRouter.post(
     );
     const uploadEndedAt = new Date();
     ensureUploadSuccess(req);
-    await saveToDatabase({ req, work, creatorId, userId, uploadEndedAt });
+    await saveToDatabase({
+      req,
+      work,
+      creatorId,
+      workId,
+      userId,
+      uploadEndedAt,
+    });
     logUploadSuccess({ creatorId, workId, uploadStartedAt, uploadEndedAt });
     const files = req.files as {
       [fieldname: string]: Express.Multer.File[];
@@ -180,14 +187,12 @@ async function preventCreatorIdUsedByMultipleUsers({
     throw new UploadError([CREATOR_ID_USED_BY_OTHER_USER]);
   }
 }
-async function findOrCreateWork({
+async function findWorkOrUndefined({
   creatorId,
   workId,
-  userId,
 }: {
   creatorId: string;
   workId: string;
-  userId: string;
 }) {
   const works = await WorkModel.find({
     creatorId,
@@ -195,13 +200,7 @@ async function findOrCreateWork({
   });
   switch (works.length) {
     case 0:
-      return await WorkModel.create({
-        creatorId,
-        workId,
-        owner: userId,
-        fileSize: 0,
-        backupFileSizes: {},
-      });
+      return undefined;
     case 1:
       return works[0];
     default:
@@ -216,11 +215,11 @@ async function validateDestination({
 }: {
   creatorId: string;
   workId: string;
-  work: WorkDocument;
+  work: WorkDocument | undefined;
 }) {
   const workPath = getAbsolutePathOfWork(creatorId, workId);
   const exists = await fsExtra.pathExists(workPath);
-  if (!exists) {
+  if (!exists || work === undefined) {
     return;
   }
   await backupWork(creatorId, workId, work);
@@ -234,22 +233,36 @@ function ensureUploadSuccess(req: express.Request) {
 async function saveToDatabase({
   req,
   creatorId,
+  workId,
   userId,
   work,
   uploadEndedAt,
 }: {
   req: express.Request;
   creatorId: string;
+  workId: string;
   userId: string;
-  work: WorkDocument;
+  work: WorkDocument | undefined;
   uploadEndedAt: Date;
 }) {
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
   };
-  work.fileSize = calculateWorkFileSize(files, UPLOAD_UNITY_FIELDS);
-  work.uploadedAt = uploadEndedAt;
-  await work.save();
+  const fileSize = calculateWorkFileSize(files, UPLOAD_UNITY_FIELDS);
+  const uploadedAt = uploadEndedAt;
+  if (work !== undefined) {
+    work.fileSize = fileSize;
+    work.uploadedAt = uploadedAt;
+    await work.save();
+  } else {
+    await WorkModel.create({
+      creatorId,
+      workId,
+      owner: userId,
+      fileSize,
+      uploadedAt,
+    });
+  }
 
   await updateCreatorIds(userId, creatorId);
 }
