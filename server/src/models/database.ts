@@ -5,12 +5,12 @@ export interface WorkDocument extends Document {
   owner: string;
   fileSize: number;
   uploadedAt: Date;
-  urls: string[];
+  paths: string[];
   backups: Types.Array<{
     name: string;
     fileSize: number;
     uploadedAt: Date;
-    urls: string[];
+    paths: string[];
   }>;
 }
 const workSchema = new Schema(
