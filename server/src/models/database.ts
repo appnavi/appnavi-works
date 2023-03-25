@@ -5,7 +5,13 @@ export interface WorkDocument extends Document {
   owner: string;
   fileSize: number;
   uploadedAt: Date;
-  backups: Types.Array<{ name: string; fileSize: number; uploadedAt: Date }>;
+  urls: string[];
+  backups: Types.Array<{
+    name: string;
+    fileSize: number;
+    uploadedAt: Date;
+    urls: string[];
+  }>;
 }
 const workSchema = new Schema(
   {
@@ -29,11 +35,21 @@ const workSchema = new Schema(
       type: Date,
       required: true,
     },
+    urls: {
+      type: [String],
+      // TODO: remove default
+      default: [],
+    },
     backups: [
       {
         name: String,
         fileSize: Number,
         uploadedAt: Date,
+        urls: {
+          type: [String],
+          // TODO: remove default
+          default: [],
+        },
       },
     ],
   },
