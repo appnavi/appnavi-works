@@ -35,7 +35,7 @@ const workSchema = new Schema(
       type: Date,
       required: true,
     },
-    urls: {
+    paths: {
       type: [String],
     },
     backups: [
@@ -43,7 +43,7 @@ const workSchema = new Schema(
         name: String,
         fileSize: Number,
         uploadedAt: Date,
-        urls: {
+        paths: {
           type: [String],
         },
       },
