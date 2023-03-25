@@ -41,6 +41,7 @@ import {
   UPLOAD_UNITY_FIELD_WINDOWS,
   ERROR_MESSAGE_RENAME_TO_SAME,
   ERROR_MESSAGE_RENAME_TO_EXISTING,
+  UPLOAD_UNITY_FIELD_WEBGL,
 } from "../src/utils/constants";
 import { env } from "../src/utils/env";
 import { Express } from "express";
@@ -57,12 +58,14 @@ type UploadFile = UploadFileInfo & {
   sourcePath: string;
   file: Buffer;
 };
+const uploadedFileName = "unity-zip.zip";
+
 const uploadFileInfos: UploadFileInfo[] = [
   {
     fieldname: UPLOAD_UNITY_FIELD_WINDOWS,
     foldername: "",
     subfoldername: "",
-    filename: "unity-zip.zip",
+    filename: uploadedFileName,
   },
 ];
 const uploadFiles: UploadFile[] = uploadFileInfos.map((info) => {
@@ -106,12 +109,27 @@ async function expectUploadedFilesExists(
 }
 async function expectUploadSucceeded(res: request.Response): Promise<void> {
   const fields = Array.from(new Set(uploadFiles.map((f) => f.fieldname)));
+  const paths = <string[]>[];
+  if (fields.includes(UPLOAD_UNITY_FIELD_WEBGL)) {
+    paths.push(
+      path.join(URL_PREFIX_WORK, creatorId, workId, UPLOAD_UNITY_FIELD_WEBGL)
+    );
+  }
+  if (fields.includes(UPLOAD_UNITY_FIELD_WINDOWS)) {
+    paths.push(
+      path.join(
+        URL_PREFIX_WORK,
+        creatorId,
+        workId,
+        UPLOAD_UNITY_FIELD_WINDOWS,
+        uploadedFileName
+      )
+    );
+  }
   expect(res.status).toBe(STATUS_CODE_SUCCESS);
   expect(res.text).toBe(
     JSON.stringify({
-      paths: fields.map((field) =>
-        path.join(URL_PREFIX_WORK, creatorId, workId, field)
-      ),
+      paths,
     })
   );
   await expectUploadedFilesExists();

@@ -130,12 +130,7 @@ uploadRouter.post(
     );
     const uploadEndedAt = new Date();
     ensureUploadSuccess(req);
-    const files = req.files as {
-      [fieldname: string]: Express.Multer.File[];
-    };
-    const paths = UPLOAD_UNITY_FIELDS.filter(
-      ({ name }) => files[name] !== undefined
-    ).map(({ name }) => path.join(URL_PREFIX_WORK, creatorId, workId, name));
+    const paths = uploadedFilesToPaths({ req, creatorId, workId });
     await saveToDatabase({
       req,
       work,
@@ -229,6 +224,47 @@ function ensureUploadSuccess(req: express.Request) {
   if (Object.keys(req.files ?? {}).length === 0) {
     throw new UploadError([NO_FILES]);
   }
+}
+
+function uploadedFilesToPaths({
+  req,
+  creatorId,
+  workId,
+}: {
+  req: express.Request;
+  creatorId: string;
+  workId: string;
+}) {
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+  const paths = <string[]>[];
+  for (const { name } of UPLOAD_UNITY_FIELDS) {
+    const filesOfField = files[name];
+    if (filesOfField === undefined) {
+      continue;
+    }
+
+    if (name == UPLOAD_UNITY_FIELD_WEBGL) {
+      paths.push(path.join(URL_PREFIX_WORK, creatorId, workId, name));
+    } else if (name === UPLOAD_UNITY_FIELD_WINDOWS) {
+      if (filesOfField.length !== 1) {
+        throw new Error("Windowsのアップロード結果が不正です");
+      }
+      paths.push(
+        path.join(
+          URL_PREFIX_WORK,
+          creatorId,
+          workId,
+          name,
+          filesOfField[0].filename
+        )
+      );
+    } else {
+      throw new Error(`想定外のフィールド名 ${name} です`);
+    }
+  }
+  return paths;
 }
 
 async function saveToDatabase({
