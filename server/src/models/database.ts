@@ -37,8 +37,6 @@ const workSchema = new Schema(
     },
     urls: {
       type: [String],
-      // TODO: remove default
-      default: [],
     },
     backups: [
       {
@@ -47,8 +45,6 @@ const workSchema = new Schema(
         uploadedAt: Date,
         urls: {
           type: [String],
-          // TODO: remove default
-          default: [],
         },
       },
     ],
