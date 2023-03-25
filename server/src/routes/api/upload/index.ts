@@ -130,6 +130,12 @@ uploadRouter.post(
     );
     const uploadEndedAt = new Date();
     ensureUploadSuccess(req);
+    const files = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+    const paths = UPLOAD_UNITY_FIELDS.filter(
+      ({ name }) => files[name] !== undefined
+    ).map(({ name }) => path.join(URL_PREFIX_WORK, creatorId, workId, name));
     await saveToDatabase({
       req,
       work,
@@ -137,14 +143,9 @@ uploadRouter.post(
       workId,
       userId,
       uploadEndedAt,
+      paths,
     });
     logUploadSuccess({ creatorId, workId, uploadStartedAt, uploadEndedAt });
-    const files = req.files as {
-      [fieldname: string]: Express.Multer.File[];
-    };
-    const paths = UPLOAD_UNITY_FIELDS.filter(
-      ({ name }) => files[name] !== undefined
-    ).map(({ name }) => path.join(URL_PREFIX_WORK, creatorId, workId, name));
     res.json({
       paths,
     });
@@ -237,6 +238,7 @@ async function saveToDatabase({
   userId,
   work,
   uploadEndedAt,
+  paths,
 }: {
   req: express.Request;
   creatorId: string;
@@ -244,6 +246,7 @@ async function saveToDatabase({
   userId: string;
   work: WorkDocument | undefined;
   uploadEndedAt: Date;
+  paths: string[];
 }) {
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[];
@@ -261,6 +264,7 @@ async function saveToDatabase({
       owner: userId,
       fileSize,
       uploadedAt,
+      paths,
     });
   }
 

@@ -134,6 +134,7 @@ export async function backupWork(
     name: backupIndex,
     fileSize: work.fileSize,
     uploadedAt: work.uploadedAt,
+    paths: work.paths,
   });
 }
 
