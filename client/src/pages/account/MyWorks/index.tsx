@@ -30,12 +30,10 @@ export const MyWorks = ({ user }: { user: User }) => {
             </h4>
             <ul>
               <li>ファイルサイズ：{fileSize}</li>
-              {uploadedAt ? (
-                <li>
-                  <FormatDate date={uploadedAt} />
-                  アップロード
-                </li>
-              ) : null}
+              <li>
+                <FormatDate date={uploadedAt} />
+                アップロード
+              </li>
             </ul>
             <div className="flex gap-2">
               <a

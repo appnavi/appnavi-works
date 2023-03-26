@@ -49,7 +49,7 @@ export const WorkDB = z.object({
     z.object({
       name: z.string(),
       fileSize: z.number(),
-      uploadedAt: z.date().optional(),
+      uploadedAt: z.date(),
     })
   ),
 });
