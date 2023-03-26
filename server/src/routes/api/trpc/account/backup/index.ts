@@ -78,6 +78,8 @@ async function restoreBackup(
   }
   await backupWork(creatorId, workId, work);
   await fsExtra.move(backupToRestorePath, workPath);
+  work.paths = backupToRestore.paths;
+  work.uploadedAt = backupToRestore.uploadedAt;
   work.fileSize = backupToRestore.fileSize;
   work.backups.remove(backupToRestore);
   await work.save();
