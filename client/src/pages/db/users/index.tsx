@@ -1,4 +1,3 @@
-import { URL_PREFIX_WORK } from '@common/constants';
 import { WorkDB } from '@common/types';
 import { Helmet } from 'react-helmet-async';
 import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
@@ -17,13 +16,7 @@ const WorksOfUser = ({ worksOfUser }: { worksOfUser: WorkDB[] }) => {
             className="collection-item"
             key={`${work.creatorId}/${work.workId}`}
           >
-            <a
-              href={`${location.origin}${URL_PREFIX_WORK}/${work.creatorId}/${work.workId}`}
-              rel="noreferrer"
-              target="_blank"
-            >
-              {work.creatorId}/{work.workId}
-            </a>
+            {work.creatorId}/{work.workId}
           </li>
         );
       })}

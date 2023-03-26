@@ -45,11 +45,13 @@ export const WorkDB = z.object({
   owner: z.string(),
   fileSize: z.number(),
   uploadedAt: z.date(),
+  paths: z.string().array(),
   backups: z.array(
     z.object({
       name: z.string(),
       fileSize: z.number(),
       uploadedAt: z.date(),
+      paths: z.string().array(),
     })
   ),
 });
