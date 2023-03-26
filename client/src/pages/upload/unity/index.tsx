@@ -4,11 +4,11 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
+import { PreventPageLeave } from '../../../components/PreventPageLeave';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { csrfToken } from '../../../csrf';
 import { FilesPicker } from './FilesPicker';
 import { CreatorIdInput, WorkIdInput } from './Inputs';
-import { PreventPageLeave } from './PreventPageLeave';
 import { Preview } from './Preview';
 
 const Response = z.object({
