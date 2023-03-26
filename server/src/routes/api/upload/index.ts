@@ -292,6 +292,7 @@ async function saveToDatabase({
   if (work !== undefined) {
     work.fileSize = fileSize;
     work.uploadedAt = uploadedAt;
+    work.paths = paths;
     await work.save();
   } else {
     await WorkModel.create({
