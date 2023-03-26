@@ -12,26 +12,12 @@ import { apiRouter } from "./routes/api";
 import { worksRouter } from "./routes/works";
 import { csrf } from "./services/csrf";
 import {
-  DIRECTORY_NAME_PUBLIC,
-  DIRECTORY_NAME_VIEWS,
   STATUS_CODE_SERVER_ERROR,
   STATUS_CODE_NOT_FOUND,
   DIRECTORY_NAME_DIST_CLIENT,
 } from "./utils/constants";
 import { env } from "./utils/env";
 import { BadRequestError, HttpError, NotFoundError } from "./utils/errors";
-import { ejsToHtml, render } from "./utils/helpers";
-
-const ignoreTypescriptFile = (
-  req: express.Request,
-  _res: express.Response,
-  next: express.NextFunction
-) => {
-  if (req.url.endsWith(".ts")) {
-    next(new NotFoundError());
-  }
-  next();
-};
 
 const app = express();
 app.use(
@@ -46,15 +32,6 @@ app.use(
 );
 
 app.use(compression());
-// view engine setup
-app.set("views", path.resolve(DIRECTORY_NAME_VIEWS));
-app.engine("ejs", function (filePath, options, callback) {
-  ejsToHtml(filePath, options as Record<string, unknown>)
-    .then((it) => callback(null, it))
-    .catch((err) => callback(err));
-});
-app.set("view engine", "ejs");
-
 app.use(express.json());
 app.use(
   session({
@@ -104,11 +81,6 @@ app.use(
   })
 );
 
-app.use(
-  ignoreTypescriptFile,
-  express.static(path.resolve(DIRECTORY_NAME_PUBLIC))
-);
-
 if (env.NODE_ENV !== "test") {
   app.use(csrf);
 }
@@ -130,37 +102,37 @@ app.use(function (_req, res, next) {
 // error handler
 app.use(function (
   err: Record<string, unknown>,
-  req: express.Request,
+  _req: express.Request,
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: express.NextFunction //この引数を省略すると、views/error.ejsが描画されなくなる
+  _next: express.NextFunction //この引数を省略すると、このerror handler が実行されなくなる
 ) {
-  // 開発時のみエラーを描画
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+  const isDev = env.NODE_ENV === "development";
   if (!(err instanceof HttpError)) {
-    res.locals.message = "サーバーでエラーが発生しました。";
-    res.locals.status = STATUS_CODE_SERVER_ERROR;
-    res.status(STATUS_CODE_SERVER_ERROR);
-    render("error", req, res);
+    res.status(STATUS_CODE_SERVER_ERROR).json({
+      status: STATUS_CODE_SERVER_ERROR,
+      message: "サーバーでエラーが発生しました。",
+      error: isDev ? err : {},
+    });
     return;
   }
-  // set locals, only providing error in development
-  res.locals.message = err.responseMessage;
-  res.locals.status = err.status;
+
   const status =
     typeof err.status === "number" ? err.status : STATUS_CODE_SERVER_ERROR;
   if (status !== STATUS_CODE_NOT_FOUND) {
     logger.system.error("エラーが発生しました。", err);
   }
 
-  // render the error page
-  res.status(status);
   if (err instanceof BadRequestError) {
-    res.json({
+    res.status(status).json({
       errors: err.errors,
     });
-  } else {
-    render("error", req, res);
+    return;
   }
+  res.status(status).json({
+    status: err.status,
+    message: err.responseMessage,
+    error: isDev ? err : {},
+  });
 });
 export { app };

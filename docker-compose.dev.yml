@@ -1,19 +1,17 @@
 version: '3'
 services:
   appnavi-works:
-    build: 
+    build:
       dockerfile: docker/development.Dockerfile
       context: .
     container_name: appnavi-works_development
     command: "yarn run dev"
     ports:
       - "3000:3000"
-    volumes: 
+    volumes:
       - ./client/src:/app/client/src
-      - ./server/public:/app/server/public
       - ./server/src:/app/server/src
-      - ./server/views:/app/server/views
-    environment: 
+    environment:
       - NODE_ENV=development
       - SITE_URL=${SITE_URL_DEVELOPMENT}
       - WORK_STORAGE_SIZE_BYTES=53687091200 # 50 * 1024^3 bytes = 50GB

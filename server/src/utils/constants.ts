@@ -1,6 +1,4 @@
 //srcディレクトリからのフォルダの相対パス
-export const DIRECTORY_NAME_PUBLIC = "public";
-export const DIRECTORY_NAME_VIEWS = "views";
 export const DIRECTORY_NAME_DIST_CLIENT = "dist_client";
 
 export const STATUS_CODE_SUCCESS = 200;

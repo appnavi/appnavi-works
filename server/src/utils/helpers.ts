@@ -1,8 +1,5 @@
 import crypto from "crypto";
-import path from "path";
-import ejs, { Options as EjsOptions } from "ejs";
 import express from "express";
-import { DIRECTORY_NAME_VIEWS } from "./constants";
 
 export const randomStringCharacters =
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -15,26 +12,6 @@ export function generateRandomString(
   return Array.from(crypto.randomFillSync(new Uint8Array(length)))
     .map((n) => S[n % S.length])
     .join("");
-}
-
-export function render(
-  view: string,
-  req: express.Request,
-  res: express.Response,
-  options: Record<string, unknown> = {}
-) {
-  res.render(view, options);
-}
-
-export function ejsToHtml(
-  filePath: string,
-  options: Record<string, unknown>,
-  ejsOptions: EjsOptions = {}
-) {
-  return ejs.renderFile(filePath, options, {
-    views: [path.resolve(DIRECTORY_NAME_VIEWS)],
-    ...ejsOptions,
-  });
 }
 
 // http://expressjs.com/en/advanced/best-practice-performance.html#use-promises
