@@ -14,7 +14,6 @@ export const Dialog = ({
 }) => {
   const modalDivRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    console.log('A');
     const modalDiv = modalDivRef.current;
     if (modalDiv === null) {
       return;
