@@ -1,3 +1,4 @@
+import process from "process";
 import mongoose from "mongoose";
 import { app } from "./app";
 import { preparePassport } from "./config/passport";
@@ -6,12 +7,15 @@ import { env } from "./utils/env";
 
 async function prepareDatabase() {
   await mongoose.connect(env.DATABASE_URL);
-  const db = mongoose.connection;
-  db.once("open", () => {
+  const connection = mongoose.connection;
+  connection.once("open", () => {
     logger.system.info("データベースに接続しました。");
   });
-  db.on("stop", (error) => {
+  connection.on("stop", (error) => {
     logger.system.error("データベース関連のエラーが発生しました。", error);
+  });
+  process.on("SIGINT", () => {
+    mongoose.disconnect();
   });
 }
 prepareDatabase()
