@@ -1,5 +1,6 @@
 import M from '@materializecss/materialize';
 import { useRef, useEffect } from 'react';
+import { PreventPageLeave } from '../../../components/PreventPageLeave';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
 
@@ -108,6 +109,7 @@ export const CreateGuest = () => {
       <button className="btn" onClick={() => mutate()} disabled={isLoading}>
         ゲストユーザーを作成
       </button>
+      <PreventPageLeave shouldPreventLeave={isLoading} />
     </div>
   );
 };

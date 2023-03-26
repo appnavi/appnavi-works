@@ -2,6 +2,7 @@ import { idRegexPattern } from '@common/constants';
 import M from '@materializecss/materialize';
 import { useEffect, FormEvent, useRef } from 'react';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
+import { PreventPageLeave } from '../../components/PreventPageLeave';
 import { useMessageDialogContext } from '../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../trpc';
 
@@ -71,6 +72,7 @@ export const DefaultCreatorIdForm = () => {
           設定する
         </button>
       </div>
+      <PreventPageLeave shouldPreventLeave={isLoading} />
     </form>
   );
 };

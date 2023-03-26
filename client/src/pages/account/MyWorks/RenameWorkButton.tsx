@@ -3,6 +3,7 @@ import { WorkDB } from '@common/types';
 import M from '@materializecss/materialize';
 import { useRef, useEffect, useState } from 'react';
 import { MdEdit } from 'react-icons/md';
+import { PreventPageLeave } from '../../../components/PreventPageLeave';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
 
@@ -153,6 +154,7 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
           </button>
         </div>
       </div>
+      <PreventPageLeave shouldPreventLeave={isLoading} />
     </>
   );
 };

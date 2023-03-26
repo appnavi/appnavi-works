@@ -2,6 +2,7 @@ import { User } from '@common/types';
 import { MdDelete } from 'react-icons/md';
 import { FormatDate } from '../../../components/FormatDate';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { PreventPageLeave } from '../../../components/PreventPageLeave';
 import { useConfirmDialogContext } from '../../../context/DialogsContext/ConfirmDialog';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
@@ -56,6 +57,7 @@ const DeleteUserButton = ({ guestId: guestId }: { guestId: string }) => {
       <i className="flex h-full">
         <MdDelete className="my-auto" size={24} />
       </i>
+      <PreventPageLeave shouldPreventLeave={isLoading} />
     </button>
   );
 };

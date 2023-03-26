@@ -1,5 +1,6 @@
 import { MdDeleteSweep } from 'react-icons/md';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
+import { PreventPageLeave } from '../../components/PreventPageLeave';
 import { useConfirmDialogContext } from '../../context/DialogsContext/ConfirmDialog';
 import { useMessageDialogContext } from '../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../trpc';
@@ -71,6 +72,7 @@ const CreatorIdsList = ({ creatorIds }: { creatorIds: string[] }) => {
         </i>
         使用していない作者IDを削除
       </button>
+      <PreventPageLeave shouldPreventLeave={isLoading} />
     </>
   );
 };

@@ -1,6 +1,7 @@
 import { WorkDB } from '@common/types';
 import { MdDeleteForever, MdRestore } from 'react-icons/md';
 import { FormatDate } from '../../../components/FormatDate';
+import { PreventPageLeave } from '../../../components/PreventPageLeave';
 import { useConfirmDialogContext } from '../../../context/DialogsContext/ConfirmDialog';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
@@ -61,6 +62,7 @@ const RestoreBackupButton = ({
         <MdRestore className="my-auto" />
       </i>
       復元
+      <PreventPageLeave shouldPreventLeave={isLoading} />
     </button>
   );
 };
@@ -121,6 +123,7 @@ const DeleteBackupButton = ({
         <MdDeleteForever className="my-auto" />
       </i>
       削除
+      <PreventPageLeave shouldPreventLeave={isLoading} />
     </button>
   );
 };

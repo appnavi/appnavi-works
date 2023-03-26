@@ -1,5 +1,6 @@
 import { WorkDB } from '@common/types';
 import { MdDelete } from 'react-icons/md';
+import { PreventPageLeave } from '../../../components/PreventPageLeave';
 import { useConfirmDialogContext } from '../../../context/DialogsContext/ConfirmDialog';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { trpc } from '../../../trpc';
@@ -63,6 +64,7 @@ export const DeleteWorkButton = ({ work }: { work: WorkDB }) => {
         <MdDelete className="my-auto" />
       </i>
       作品の削除
+      <PreventPageLeave shouldPreventLeave={isLoading} />
     </button>
   );
 };
