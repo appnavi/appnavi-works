@@ -134,7 +134,7 @@ export const Backups = ({ work }: { work: WorkDB }) => {
   return (
     <ul className="collection with-header">
       <li className="collection-header">
-        <h5>バックアップ</h5>
+        <h6>バックアップ</h6>
       </li>
       {backups.map(({ name, fileSize, uploadedAt }) => {
         return (
