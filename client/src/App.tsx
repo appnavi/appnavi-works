@@ -11,13 +11,13 @@ import { MessageDialogContextProvider } from './context/DialogsContext/MessageDi
 import { UserContextProvider } from './context/UserContext';
 import { csrfToken, CsrfTokenProvider } from './csrf';
 import { IndexPage } from './pages';
-import { NotFoundPage } from './pages/NotFound';
 import { AccountPage } from './pages/account';
 import { AccountGuestPage } from './pages/account/guest';
 import { AuthPage } from './pages/auth';
 import { AuthGuestPage } from './pages/auth/guest';
 import { DbUsersPage } from './pages/db/users';
 import { DbWorksPage } from './pages/db/works';
+import { ErrorPage } from './pages/error';
 import { UploadUnityPage } from './pages/upload/unity';
 import { trpc } from './trpc';
 
@@ -70,11 +70,8 @@ const router = createBrowserRouter([
         path: '/db/works',
         element: <DbWorksPage />,
       },
-      {
-        path: '*',
-        element: <NotFoundPage />,
-      },
     ],
+    errorElement: <ErrorPage />,
   },
 ]);
 
