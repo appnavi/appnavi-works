@@ -8,6 +8,7 @@ import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { ConfirmDialogContextProvider } from './context/DialogsContext/ConfirmDialog';
 import { MessageDialogContextProvider } from './context/DialogsContext/MessageDialog';
+import { PreventPageLeaveContextProvider } from './context/PreventPageLeaveContext';
 import { UserContextProvider } from './context/UserContext';
 import { csrfToken, CsrfTokenProvider } from './csrf';
 import { IndexPage } from './pages';
@@ -99,9 +100,11 @@ function App() {
           <MessageDialogContextProvider>
             <ConfirmDialogContextProvider>
               <UserContextProvider>
-                <HelmetProvider>
-                  <RouterProvider router={router} />
-                </HelmetProvider>
+                <PreventPageLeaveContextProvider>
+                  <HelmetProvider>
+                    <RouterProvider router={router} />
+                  </HelmetProvider>
+                </PreventPageLeaveContextProvider>
               </UserContextProvider>
             </ConfirmDialogContextProvider>
           </MessageDialogContextProvider>

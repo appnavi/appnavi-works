@@ -1,8 +1,8 @@
 import { type User } from '@common/types';
 import { Helmet } from 'react-helmet-async';
 import { FaUnity } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 import { AuthorizedOnly } from '../components/AuthorizedOnly';
+import { Link } from '../components/Link';
 
 const DatabaseSection = ({ user }: { user: User }) => {
   if (user.type === 'Guest') {

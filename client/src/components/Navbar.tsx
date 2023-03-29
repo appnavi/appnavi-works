@@ -1,13 +1,16 @@
 import M from '@materializecss/materialize';
 import { useRef, useEffect } from 'react';
 import { MdArrowDropDown } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { useSetPreventPageLeave } from '../context/PreventPageLeaveContext';
 import { useUserContext } from '../context/UserContext';
 import { trpc } from '../trpc';
+import { Link } from './Link';
 
 const LogoutButton = () => {
   const trpcContext = trpc.useContext();
+  const { preventPageLeave } = useSetPreventPageLeave();
   const onClick = async () => {
+    if (preventPageLeave) return;
     await fetch('/api/auth/logout');
     await trpcContext.me.invalidate();
   };
