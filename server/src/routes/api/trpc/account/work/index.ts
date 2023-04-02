@@ -123,11 +123,15 @@ async function renameWork(
   if (renamedWorks.length > 0) {
     return ERROR_MESSAGE_RENAME_TO_EXISTING;
   }
-  const workDir = getAbsolutePathOfWork(creatorId, workId);
-  const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
+
+  const workPath = getAbsolutePathOfWork(creatorId, workId);
   const renamedPath = getAbsolutePathOfWork(renamedCreatorId, renamedWorkId);
   await fsExtra.ensureDir(path.resolve(renamedPath, ".."));
-  await fsExtra.move(path.resolve(workDir), renamedPath);
+  await fsExtra.move(path.resolve(workPath), renamedPath);
+  work.creatorId = renamedCreatorId;
+  work.workId = renamedWorkId;
+
+  const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
   if (await fsExtra.pathExists(backupPath)) {
     const renamedBackupPath = getAbsolutePathOfAllBackups(
       renamedCreatorId,
@@ -136,11 +140,10 @@ async function renameWork(
     await fsExtra.ensureDir(path.resolve(renamedBackupPath, ".."));
     await fsExtra.move(backupPath, renamedBackupPath);
   }
+
   if (work.creatorId !== renamedCreatorId) {
     await updateCreatorIds(userId, renamedCreatorId);
   }
-  work.creatorId = renamedCreatorId;
-  work.workId = renamedWorkId;
   await work.save();
   return null;
 }
