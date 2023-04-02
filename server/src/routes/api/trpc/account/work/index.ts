@@ -13,6 +13,7 @@ import {
   getAbsolutePathOfAllBackups,
   getAbsolutePathOfWork,
   isCreatorIdUsedByOtherUser,
+  renameWorkPaths,
   workIdSchema,
 } from "../../../../../services/works";
 import {
@@ -130,6 +131,13 @@ async function renameWork(
   await fsExtra.move(path.resolve(workPath), renamedPath);
   work.creatorId = renamedCreatorId;
   work.workId = renamedWorkId;
+  work.paths = renameWorkPaths(
+    work.paths,
+    creatorId,
+    workId,
+    renamedCreatorId,
+    renamedWorkId
+  );
 
   const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
   if (await fsExtra.pathExists(backupPath)) {
@@ -139,6 +147,15 @@ async function renameWork(
     );
     await fsExtra.ensureDir(path.resolve(renamedBackupPath, ".."));
     await fsExtra.move(backupPath, renamedBackupPath);
+    for (const backup of work.backups) {
+      backup.paths = renameWorkPaths(
+        backup.paths,
+        creatorId,
+        workId,
+        renamedCreatorId,
+        renamedWorkId
+      );
+    }
   }
 
   if (work.creatorId !== renamedCreatorId) {

@@ -1,7 +1,7 @@
 import path from "path";
 import fsExtra from "fs-extra";
 import { z } from "zod";
-import { idRegex } from "../../common/constants";
+import { URL_PREFIX_WORK, idRegex } from "../../common/constants";
 import { UserModel, WorkDocument, WorkModel } from "../../models/database";
 import {
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
@@ -162,4 +162,19 @@ export function calculateWorkFileSize(
     })
   );
   return fileSize;
+}
+
+export function renameWorkPaths(
+  paths: string[],
+  creatorId: string,
+  workId: string,
+  renamedCreatorId: string,
+  renamedWorkId: string
+) {
+  return paths.map((x) =>
+    x.replace(
+      `${URL_PREFIX_WORK}/${creatorId}/${workId}`,
+      `${URL_PREFIX_WORK}/${renamedCreatorId}/${renamedWorkId}`
+    )
+  );
 }
