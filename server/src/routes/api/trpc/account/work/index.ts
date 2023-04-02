@@ -109,15 +109,6 @@ async function renameWork(
   if (error !== null) {
     return error;
   }
-  const workDir = getAbsolutePathOfWork(creatorId, workId);
-  const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
-  const renamedWorks = await WorkModel.find({
-    creatorId: renamedCreatorId,
-    workId: renamedWorkId,
-  });
-  if (renamedWorks.length > 0) {
-    return ERROR_MESSAGE_RENAME_TO_EXISTING;
-  }
   const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
     renamedCreatorId,
     userId
@@ -125,6 +116,15 @@ async function renameWork(
   if (isUsedByOtherUser) {
     return ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER;
   }
+  const renamedWorks = await WorkModel.find({
+    creatorId: renamedCreatorId,
+    workId: renamedWorkId,
+  });
+  if (renamedWorks.length > 0) {
+    return ERROR_MESSAGE_RENAME_TO_EXISTING;
+  }
+  const workDir = getAbsolutePathOfWork(creatorId, workId);
+  const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
   const renamedPath = getAbsolutePathOfWork(renamedCreatorId, renamedWorkId);
   await fsExtra.ensureDir(path.resolve(renamedPath, ".."));
   await fsExtra.move(path.resolve(workDir), renamedPath);
