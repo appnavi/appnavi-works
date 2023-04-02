@@ -5,6 +5,7 @@ import { TRPCRouter } from "../../../../src/routes/api/trpc";
 import {
   ERROR_MESSAGE_CREATOR_ID_INVALID,
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
+  ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
   ERROR_MESSAGE_RENAMED_CREATOR_ID_INVALID,
   ERROR_MESSAGE_RENAMED_CREATOR_ID_REQUIRED,
   ERROR_MESSAGE_RENAMED_WORK_ID_INVALID,
@@ -26,7 +27,7 @@ import {
   wrap,
 } from "../../../common";
 import { createTrpcCaller, expectTRPCError } from "../../common";
-import { WorkModel } from "../../../../src/models/database";
+import { UserModel, WorkModel } from "../../../../src/models/database";
 import {
   getAbsolutePathOfAllBackups,
   getAbsolutePathOfWork,
@@ -294,6 +295,35 @@ describe("trpc.account.work.rename", () => {
     })
   );
   it(
+    "別人に使われている作者IDを使うことはできない",
+    wrap(async (done) => {
+      await UserModel.create({
+        userId: theirId,
+        creatorIds: [renamedCreatorId],
+      });
+      await WorkModel.create({
+        creatorId,
+        workId,
+        fileSize: 0,
+        owner: myId,
+        uploadedAt: new Date(),
+      });
+      testWorkRename({
+        userId: myId,
+        input: {
+          creatorId,
+          workId,
+          renamedCreatorId,
+          renamedWorkId,
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
+        },
+      })(done);
+    })
+  );
+  it(
     "既に存在する作品を上書きするようなリネームはできない",
     wrap(async (done) => {
       await WorkModel.create({
@@ -321,6 +351,42 @@ describe("trpc.account.work.rename", () => {
         expectedError: {
           code: "BAD_REQUEST",
           message: ERROR_MESSAGE_RENAME_TO_EXISTING,
+        },
+      })(done);
+    })
+  );
+  it(
+    "リネーム後の作品が存在する場合も別人に使われている作者IDを使うことはできない",
+    wrap(async (done) => {
+      await UserModel.create({
+        userId: theirId,
+        creatorIds: [renamedCreatorId],
+      });
+      await WorkModel.create({
+        creatorId: renamedCreatorId,
+        workId: renamedWorkId,
+        fileSize: 0,
+        owner: theirId,
+        uploadedAt: new Date(),
+      });
+      await WorkModel.create({
+        creatorId,
+        workId,
+        fileSize: 0,
+        owner: myId,
+        uploadedAt: new Date(),
+      });
+      testWorkRename({
+        userId: myId,
+        input: {
+          creatorId,
+          workId,
+          renamedCreatorId,
+          renamedWorkId,
+        },
+        expectedError: {
+          code: "BAD_REQUEST",
+          message: ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER,
         },
       })(done);
     })
