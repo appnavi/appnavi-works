@@ -39,7 +39,7 @@ export const ERROR_MESSAGE_RENAMED_WORK_ID_INVALID =
 export const ERROR_MESSAGE_RENAME_TO_SAME =
   "リネーム前とリネーム後が同じです。";
 export const ERROR_MESSAGE_RENAME_TO_EXISTING =
-  "既に存在する作品を上書きすることはできません。";
+  "指定した作者ID、作品IDの組み合わせは既に使われています。";
 export const ERROR_MESSAGE_BACKUP_NOT_FOUND =
   "バックアップが見つかりませんでした。";
 export const ERROR_MESSAGE_GUEST_ID_REQUIRED =
