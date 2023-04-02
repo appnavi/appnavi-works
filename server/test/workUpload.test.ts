@@ -132,6 +132,9 @@ async function expectUploadSucceeded(res: request.Response): Promise<void> {
       paths,
     })
   );
+  const works = await WorkModel.find({ creatorId, workId });
+  expect(works).toHaveLength(1);
+  expect(works[0].paths).toStrictEqual(paths);
   await expectUploadedFilesExists();
 }
 async function expectBackupFilesExists(

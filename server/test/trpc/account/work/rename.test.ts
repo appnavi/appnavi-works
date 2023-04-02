@@ -33,6 +33,7 @@ import {
   getAbsolutePathOfWork,
 } from "../../../../src/services/works";
 import { TRPC_ERROR_CODE_KEY } from "@trpc/server/dist/rpc";
+import { URL_PREFIX_WORK } from "../../../../src/common/constants";
 
 const creatorId = "creator-trpc-account-work-rename";
 const workId = "work-trpc-account-work-rename";
@@ -406,6 +407,18 @@ describe("trpc.account.work.rename", () => {
         fileSize: 0,
         owner: myId,
         uploadedAt: new Date(),
+        paths: [
+          `${URL_PREFIX_WORK}/${creatorId}/${workId}/test.zip`,
+          `${URL_PREFIX_WORK}/${creatorId}/${workId}/test2.zip`,
+        ],
+        backups: [
+          {
+            fileSize: 0,
+            name: "1",
+            uploadedAt: new Date(),
+            paths: [`${URL_PREFIX_WORK}/${creatorId}/${workId}/backup.zip`],
+          },
+        ],
       });
       testWorkRename({
         userId: myId,
@@ -428,8 +441,18 @@ describe("trpc.account.work.rename", () => {
             _id: work._id,
           });
           expect(renamedWorks).toHaveLength(1);
-          expect(renamedWorks[0].creatorId).toBe(renamedCreatorId);
-          expect(renamedWorks[0].workId).toBe(workId);
+          const renamedWork = renamedWorks[0];
+          expect(renamedWork.creatorId).toBe(renamedCreatorId);
+          expect(renamedWork.workId).toBe(workId);
+          expect(renamedWork.paths).toStrictEqual([
+            `${URL_PREFIX_WORK}/${renamedCreatorId}/${workId}/test.zip`,
+            `${URL_PREFIX_WORK}/${renamedCreatorId}/${workId}/test2.zip`,
+          ]);
+          expect(renamedWork.backups).toHaveLength(1);
+          const backup = renamedWork.backups[0];
+          expect(backup.paths).toStrictEqual([
+            `${URL_PREFIX_WORK}/${renamedCreatorId}/${workId}/backup.zip`,
+          ]);
         },
       })(done);
     })
@@ -449,6 +472,18 @@ describe("trpc.account.work.rename", () => {
         fileSize: 0,
         owner: myId,
         uploadedAt: new Date(),
+        paths: [
+          `${URL_PREFIX_WORK}/${creatorId}/${workId}/test.zip`,
+          `${URL_PREFIX_WORK}/${creatorId}/${workId}/test2.zip`,
+        ],
+        backups: [
+          {
+            fileSize: 0,
+            name: "1",
+            uploadedAt: new Date(),
+            paths: [`${URL_PREFIX_WORK}/${creatorId}/${workId}/backup.zip`],
+          },
+        ],
       });
       testWorkRename({
         userId: myId,
@@ -471,8 +506,18 @@ describe("trpc.account.work.rename", () => {
             _id: work._id,
           });
           expect(renamedWorks).toHaveLength(1);
-          expect(renamedWorks[0].creatorId).toBe(creatorId);
-          expect(renamedWorks[0].workId).toBe(renamedWorkId);
+          const renamedWork = renamedWorks[0];
+          expect(renamedWork.creatorId).toBe(creatorId);
+          expect(renamedWork.workId).toBe(renamedWorkId);
+          expect(renamedWork.paths).toStrictEqual([
+            `${URL_PREFIX_WORK}/${creatorId}/${renamedWorkId}/test.zip`,
+            `${URL_PREFIX_WORK}/${creatorId}/${renamedWorkId}/test2.zip`,
+          ]);
+          expect(renamedWork.backups).toHaveLength(1);
+          const backup = renamedWork.backups[0];
+          expect(backup.paths).toStrictEqual([
+            `${URL_PREFIX_WORK}/${creatorId}/${renamedWorkId}/backup.zip`,
+          ]);
         },
       })(done);
     })
@@ -492,6 +537,18 @@ describe("trpc.account.work.rename", () => {
         fileSize: 0,
         owner: myId,
         uploadedAt: new Date(),
+        paths: [
+          `${URL_PREFIX_WORK}/${creatorId}/${workId}/test.zip`,
+          `${URL_PREFIX_WORK}/${creatorId}/${workId}/test2.zip`,
+        ],
+        backups: [
+          {
+            fileSize: 0,
+            name: "1",
+            uploadedAt: new Date(),
+            paths: [`${URL_PREFIX_WORK}/${creatorId}/${workId}/backup.zip`],
+          },
+        ],
       });
       testWorkRename({
         userId: myId,
@@ -516,8 +573,18 @@ describe("trpc.account.work.rename", () => {
             _id: work._id,
           });
           expect(renamedWorks).toHaveLength(1);
-          expect(renamedWorks[0].creatorId).toBe(renamedCreatorId);
-          expect(renamedWorks[0].workId).toBe(renamedWorkId);
+          const renamedWork = renamedWorks[0];
+          expect(renamedWork.creatorId).toBe(renamedCreatorId);
+          expect(renamedWork.workId).toBe(renamedWorkId);
+          expect(renamedWork.paths).toStrictEqual([
+            `${URL_PREFIX_WORK}/${renamedCreatorId}/${renamedWorkId}/test.zip`,
+            `${URL_PREFIX_WORK}/${renamedCreatorId}/${renamedWorkId}/test2.zip`,
+          ]);
+          expect(renamedWork.backups).toHaveLength(1);
+          const backup = renamedWork.backups[0];
+          expect(backup.paths).toStrictEqual([
+            `${URL_PREFIX_WORK}/${renamedCreatorId}/${renamedWorkId}/backup.zip`,
+          ]);
         },
       })(done);
     })
