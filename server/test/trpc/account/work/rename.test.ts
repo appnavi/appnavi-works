@@ -395,6 +395,10 @@ describe("trpc.account.work.rename", () => {
   it(
     "条件を満たしていれば作者IDのリネームに成功する",
     wrap(async (done) => {
+      await UserModel.create({
+        userId: myId,
+        creatorIds: [creatorId],
+      });
       await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {
         recursive: true,
       });
@@ -453,6 +457,10 @@ describe("trpc.account.work.rename", () => {
           expect(backup.paths).toStrictEqual([
             `${URL_PREFIX_WORK}/${renamedCreatorId}/${workId}/backup.zip`,
           ]);
+          const users = await UserModel.find({ userId: myId });
+          expect(users).toHaveLength(1);
+          const user = users[0];
+          expect(user.creatorIds).toStrictEqual([creatorId, renamedCreatorId]);
         },
       })(done);
     })
@@ -460,6 +468,10 @@ describe("trpc.account.work.rename", () => {
   it(
     "条件を満たしていれば作品IDのリネームに成功する",
     wrap(async (done) => {
+      await UserModel.create({
+        userId: myId,
+        creatorIds: [creatorId],
+      });
       await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {
         recursive: true,
       });
@@ -518,6 +530,10 @@ describe("trpc.account.work.rename", () => {
           expect(backup.paths).toStrictEqual([
             `${URL_PREFIX_WORK}/${creatorId}/${renamedWorkId}/backup.zip`,
           ]);
+          const users = await UserModel.find({ userId: myId });
+          expect(users).toHaveLength(1);
+          const user = users[0];
+          expect(user.creatorIds).toStrictEqual([creatorId]);
         },
       })(done);
     })
@@ -525,6 +541,10 @@ describe("trpc.account.work.rename", () => {
   it(
     "条件を満たしていれば作者IDと作品ID両方のリネームに成功する",
     wrap(async (done) => {
+      await UserModel.create({
+        userId: myId,
+        creatorIds: [creatorId],
+      });
       await fsExtra.mkdir(getAbsolutePathOfWork(creatorId, workId), {
         recursive: true,
       });
@@ -585,6 +605,10 @@ describe("trpc.account.work.rename", () => {
           expect(backup.paths).toStrictEqual([
             `${URL_PREFIX_WORK}/${renamedCreatorId}/${renamedWorkId}/backup.zip`,
           ]);
+          const users = await UserModel.find({ userId: myId });
+          expect(users).toHaveLength(1);
+          const user = users[0];
+          expect(user.creatorIds).toStrictEqual([creatorId, renamedCreatorId]);
         },
       })(done);
     })
