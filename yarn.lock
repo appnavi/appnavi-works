@@ -2410,12 +2410,17 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
-bson@^4.7.0, bson@^4.7.2:
+bson@^4.7.0:
   version "4.7.2"
   resolved "https://registry.yarnpkg.com/bson/-/bson-4.7.2.tgz#320f4ad0eaf5312dd9b45dc369cc48945e2a5f2e"
   integrity sha512-Ry9wCtIZ5kGqkJoi6aD8KjxFZEx78guTQDnpXWiNthsxzrxAK/i8E6pCHAIZTbaEFWcOCvbecMukfK7XUvyLpQ==
   dependencies:
     buffer "^5.6.0"
+
+bson@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-5.2.0.tgz#c81d35dd30e2798203e5422a639780ea98dd25ba"
+  integrity sha512-HevkSpDbpUfsrHWmWiAsNavANKYIErV2ePXllp1bwq5CDreAaFVj6RVlZpJnxK4WWDCJ/5jMUpaY6G526q3Hjg==
 
 buffer-from@^1.0.0:
   version "1.1.2"
@@ -2670,10 +2675,10 @@ concat-stream@^1.5.2:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-connect-mongo@^4.5.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/connect-mongo/-/connect-mongo-4.6.0.tgz#1bf62868efc9f28ecf1459ae9a9d6caaf90ae8a6"
-  integrity sha512-8new4Z7NLP3CGP65Aw6ls3xDBeKVvHRSh39CXuDZTQsvpeeU9oNMzfFgvqmHqZ6gWpxIl663RyoVEmCAGf1yOg==
+connect-mongo@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/connect-mongo/-/connect-mongo-5.0.0.tgz#2a902d293d369a4baff2e988634cda6f8c0bf721"
+  integrity sha512-s93jiP6GkRApn5duComx6RLwtP23YrulPxShz+8peX7svd6Q+MS8nKLhKCCazbP92C13eTVaIOxgeLt0ezIiCg==
   dependencies:
     debug "^4.3.1"
     kruptein "^3.0.0"
@@ -4815,7 +4820,7 @@ mkdirp@^0.5.4:
   dependencies:
     minimist "^1.2.6"
 
-mongodb-connection-string-url@^2.5.4:
+mongodb-connection-string-url@^2.5.4, mongodb-connection-string-url@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/mongodb-connection-string-url/-/mongodb-connection-string-url-2.6.0.tgz#57901bf352372abdde812c81be47b75c6b2ec5cf"
   integrity sha512-WvTZlI9ab0QYtTYnuMLgobULWhokRjtC7db9LtcVfJ+Hsnyr5eo6ZtNAt3Ly24XZScGMelOcGtm7lSn0332tPQ==
@@ -4835,16 +4840,15 @@ mongodb@4.14.0, mongodb@^4.0.1:
     "@aws-sdk/credential-providers" "^3.186.0"
     saslprep "^1.0.3"
 
-mongodb@^4.9.1:
-  version "4.15.0"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-4.15.0.tgz#6d071c39e2b861314dffb2960a343f280f50c2c9"
-  integrity sha512-1iM2fF2fSNVrecOq4pW9zaJHFNuk63RX3SsppIjC2df8JkBv6odGOIu9FuqnI6gQD0KAF2az4zZdQdabqGSLDQ==
+mongodb@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-5.2.0.tgz#58c3688614e793a8e970d797255130db9fd6ddea"
+  integrity sha512-nLgo95eP1acvjBcOdrUV3aqpWwHZCZwhYA2opB8StybbtQL/WoE5pk92qUUfjbKOWcGLYJczTqQbfOQhYtrkKg==
   dependencies:
-    bson "^4.7.2"
-    mongodb-connection-string-url "^2.5.4"
+    bson "^5.2.0"
+    mongodb-connection-string-url "^2.6.0"
     socks "^2.7.1"
   optionalDependencies:
-    "@aws-sdk/credential-providers" "^3.186.0"
     saslprep "^1.0.3"
 
 mongoose@^6.0.8:
@@ -6418,10 +6422,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typescript@^4.4.3, typescript@^4.9.3:
-  version "4.9.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
-  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+typescript@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.3.tgz#fe976f0c826a88d0a382007681cbb2da44afdedf"
+  integrity sha512-xv8mOEDnigb/tN9PSMTwSEqAnUvkoXMQlicOb0IUVDBSQCgBSaAAROUZYy2IcUy5qU6XajK5jjjO7TMWqBTKZA==
 
 uid-safe@~2.1.5:
   version "2.1.5"
@@ -6694,10 +6698,10 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zod-validation-error@^0.3.1:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/zod-validation-error/-/zod-validation-error-0.3.2.tgz#1f09877cd3d671a37d6c0e4e0b7ad42c24d5d8c2"
-  integrity sha512-pBXItXNDup6KF54fdnA+cmB/eEt65HlN5pmahfBTUhufWEnXs4ouU8lLXh01GoAksIR9K7iF7BxXxkKvct+r+A==
+zod-validation-error@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/zod-validation-error/-/zod-validation-error-1.2.1.tgz#3aae5f4b9d0033e8a7d02f233395129ce840c06a"
+  integrity sha512-xsWqzuFukr0C56QSoDCOJPrFOGWSmktNbTSPxV2ntT2ikUf1dOqHuM0Nt8g28Up7Cz889NTX8rc4K8LN7vy0Vw==
 
 zod@^3.20.2, zod@^3.21.4:
   version "3.21.4"
