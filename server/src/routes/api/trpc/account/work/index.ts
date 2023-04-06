@@ -157,8 +157,7 @@ async function renameWork(
       );
     }
   }
-
-  if (work.creatorId !== renamedCreatorId) {
+  if (creatorId !== renamedCreatorId) {
     await updateCreatorIds(userId, renamedCreatorId);
   }
   await work.save();
