@@ -34,6 +34,7 @@ export const RenameWorkButton = ({ work }: { work: WorkDB }) => {
         title: '編集に成功しました',
         onClose() {
           trpcContext.account.work.list.invalidate();
+          trpcContext.account.getUserData.invalidate();
         },
       });
     },
