@@ -23,7 +23,7 @@ services:
       - CSRF_TOKEN_SECRET
       - MONGO_ROOT_USERNAME
       - MONGO_ROOT_PASSWORD
-    command: "yarn workspace server run test"
+    command: "yarn run test"
     volumes:
       - ./server/test:/app/server/test
       - ./server/src:/app/server/src

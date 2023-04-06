@@ -17,6 +17,9 @@
     "lint-staged:server": "yarn workspace server lint-staged",
     "build": "run-p build:*",
     "build:client": "yarn workspace client run build",
-    "build:server": "yarn workspace server run build"
+    "build:server": "yarn workspace server run build",
+    "test": "run-p test:*",
+    "test:client": "yarn workspace client run test",
+    "test:server": "yarn workspace server run test"
   }
 }
