@@ -1,7 +1,7 @@
 import path from "path";
 import fsExtra from "fs-extra";
 import { z } from "zod";
-import { URL_PREFIX_WORK, idRegex } from "../../common/constants";
+import { PROJECT_ROOT, URL_PREFIX_WORK, idRegex } from "../../common/constants";
 import { UserModel, WorkDocument, WorkModel } from "../../models/database";
 import {
   ERROR_MESSAGE_CREATOR_ID_REQUIRED,
@@ -17,8 +17,7 @@ const DIRECTORY_NAME_UPLOADS = "uploads";
 const DIRECTORY_NAME_BACKUPS = "backups";
 
 export const absolutePathOfWorkFolder = path.join(
-  __dirname,
-  "../../../../",
+  PROJECT_ROOT,
   DIRECTORY_NAME_UPLOADS
 );
 export function getAbsolutePathOfWork(creatorId: string, workId: string) {
@@ -26,8 +25,7 @@ export function getAbsolutePathOfWork(creatorId: string, workId: string) {
 }
 
 export const absolutePathOfBackupFolder = path.join(
-  __dirname,
-  "../../../../",
+  PROJECT_ROOT,
   DIRECTORY_NAME_BACKUPS,
   DIRECTORY_NAME_UPLOADS
 );
