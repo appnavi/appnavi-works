@@ -45,12 +45,7 @@ export const WorkIdInput = ({
   onChange: (value: string) => void;
 }) => {
   return (
-    <BaseInput
-      name="work_id"
-      label="作品ID"
-      value={value}
-      onChange={onChange}
-    />
+    <BaseInput name="workId" label="作品ID" value={value} onChange={onChange} />
   );
 };
 
@@ -71,7 +66,7 @@ export const CreatorIdInput = ({
   }, [defaultCreatorId]);
   return (
     <BaseInput
-      name="creator_id"
+      name="creatorId"
       label="作者ID"
       value={value}
       onChange={onChange}

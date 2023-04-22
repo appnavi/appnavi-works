@@ -19,11 +19,7 @@ import {
   getAbsolutePathOfBackup,
   getAbsolutePathOfWork,
 } from "../src/services/works";
-import {
-  URL_PREFIX_WORK,
-  HEADER_CREATOR_ID,
-  HEADER_WORK_ID,
-} from "../src/common/constants";
+import { URL_PREFIX_WORK } from "../src/common/constants";
 import {
   STATUS_CODE_BAD_REQUEST,
   STATUS_CODE_SUCCESS,
@@ -174,8 +170,8 @@ async function testSuccessfulUpload(): Promise<void> {
   return new Promise((resolve) => {
     createLogin(myId).then(({ login }) => {
       const req = login(request(app).post("/api/upload/unity"))
-        .set(HEADER_CREATOR_ID, creatorId)
-        .set(HEADER_WORK_ID, workId);
+        .field("creatorId", creatorId)
+        .field("workId", workId);
       attachUploadFiles(req);
       req.end((err, res) => {
         expect(err).toBeNull();
@@ -219,7 +215,7 @@ describe("作品のアップロードを伴うテスト", () => {
         wrap(async (done) => {
           const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))
-            .set(HEADER_WORK_ID, workId)
+            .field("workId", workId)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [CREATOR_ID_REQUIRED] }))
             .end(done);
@@ -230,8 +226,8 @@ describe("作品のアップロードを伴うテスト", () => {
         wrap(async (done) => {
           const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))
-            .set(HEADER_CREATOR_ID, encodeURI(INVALID_ID))
-            .set(HEADER_WORK_ID, workId)
+            .field("creatorId", encodeURI(INVALID_ID))
+            .field("workId", workId)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [CREATOR_ID_INVALID] }))
             .end(done);
@@ -243,8 +239,8 @@ describe("作品のアップロードを伴うテスト", () => {
           await testSuccessfulUpload();
           const { login } = await createLogin(theirId);
           login(request(app).post("/api/upload/unity"))
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_WORK_ID, "their-work")
+            .field("creatorId", creatorId)
+            .field("workId", "their-work")
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [CREATOR_ID_OTHER_USER] }))
             .end(async () => {
@@ -263,8 +259,8 @@ describe("作品のアップロードを伴うテスト", () => {
           });
           const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_WORK_ID, workId)
+            .field("creatorId", creatorId)
+            .field("workId", workId)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [CREATOR_ID_OTHER_USER] }))
             .end(async () => {
@@ -279,7 +275,7 @@ describe("作品のアップロードを伴うテスト", () => {
         wrap(async (done) => {
           const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))
-            .set(HEADER_CREATOR_ID, creatorId)
+            .field("creatorId", creatorId)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [WORK_ID_REQUIRED] }))
             .end(done);
@@ -290,8 +286,8 @@ describe("作品のアップロードを伴うテスト", () => {
         wrap(async (done) => {
           const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_WORK_ID, encodeURI(INVALID_ID))
+            .field("creatorId", creatorId)
+            .field("workId", encodeURI(INVALID_ID))
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [WORK_ID_INVALID] }))
             .end(done);
@@ -309,8 +305,8 @@ describe("作品のアップロードを伴うテスト", () => {
           });
           const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_WORK_ID, workId)
+            .field("creatorId", creatorId)
+            .field("workId", workId)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [STORAGE_FULL] }))
             .end(done);

@@ -12,7 +12,6 @@ import {
   ensureUploadFoldersEmpty,
   wrap,
 } from "./common";
-import { HEADER_CREATOR_ID, HEADER_WORK_ID } from "../src/common/constants";
 
 const creatorId = "creator-3";
 const workId = "work-3";
@@ -33,8 +32,8 @@ describe("POST", () => {
         wrap(async (done) => {
           const { login } = await createLogin(myId);
           login(request(app).post("/api/upload/unity"))
-            .set(HEADER_CREATOR_ID, creatorId)
-            .set(HEADER_WORK_ID, workId)
+            .field("creatorId", creatorId)
+            .field("workId", workId)
             .expect(STATUS_CODE_BAD_REQUEST)
             .expect(JSON.stringify({ errors: [ERROR_MESSAGE_NO_FILES] }))
             .end(done);

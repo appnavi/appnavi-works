@@ -1,4 +1,3 @@
-import { HEADER_CREATOR_ID, HEADER_WORK_ID } from '@common/constants';
 import { FormEvent, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
@@ -54,8 +53,6 @@ const Page = () => {
       body: formData,
       headers: {
         'CSRF-Token': _csrfToken,
-        [HEADER_CREATOR_ID]: creatorId,
-        [HEADER_WORK_ID]: workId,
       },
     });
     setUploading(false);
