@@ -4,7 +4,6 @@ import { useSetPreventPageLeave } from '../context/PreventPageLeaveContext';
 
 export const Link = (props: ComponentProps<typeof BaseLink>) => {
   const { preventPageLeave } = useSetPreventPageLeave();
-  console.log(props.className);
   return (
     <BaseLink
       {...props}
