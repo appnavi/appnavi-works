@@ -7,11 +7,9 @@ export const Link = (props: ComponentProps<typeof BaseLink>) => {
   return (
     <BaseLink
       {...props}
-      className={
-        preventPageLeave
-          ? `${props.className} pointer-events-none `
-          : props.className
-      }
+      className={`${props.className} ${
+        preventPageLeave ? 'pointer-events-none' : ''
+      }`}
     />
   );
 };
