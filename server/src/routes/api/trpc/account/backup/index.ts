@@ -23,7 +23,7 @@ const accountBackupProcedure = authenticatedProcedure.input(
     backupName: z
       .string({ required_error: ERROR_MESSAGE_BACKUP_NAME_REQUIRED })
       .regex(/^\d+$/, ERROR_MESSAGE_BACKUP_NAME_INVALID),
-  })
+  }),
 );
 
 export const accountBackupRouter = t.router({
@@ -33,7 +33,7 @@ export const accountBackupRouter = t.router({
       creatorId,
       workId,
       ctx.user.id,
-      backupName
+      backupName,
     );
     if (errorMessage !== null) {
       throw new TRPCError({ code: "BAD_REQUEST", message: errorMessage });
@@ -45,7 +45,7 @@ export const accountBackupRouter = t.router({
       creatorId,
       workId,
       ctx.user.id,
-      backupName
+      backupName,
     );
     if (errorMessage !== null) {
       throw new TRPCError({ code: "BAD_REQUEST", message: errorMessage });
@@ -57,7 +57,7 @@ async function restoreBackup(
   creatorId: string,
   workId: string,
   userId: string,
-  backupName: string
+  backupName: string,
 ) {
   const { work, error } = await findOwnWorkOrError(creatorId, workId, userId);
   if (error !== null) {
@@ -67,7 +67,7 @@ async function restoreBackup(
   const backupToRestorePath = getAbsolutePathOfBackup(
     creatorId,
     workId,
-    backupName
+    backupName,
   );
   const backupToRestore = work.backups.find((it) => it.name === backupName);
   if (
@@ -89,7 +89,7 @@ async function deleteBackup(
   creatorId: string,
   workId: string,
   userId: string,
-  backupName: string
+  backupName: string,
 ) {
   const { work, error } = await findOwnWorkOrError(creatorId, workId, userId);
   if (error !== null) {
@@ -98,7 +98,7 @@ async function deleteBackup(
   const backupToDeletePath = getAbsolutePathOfBackup(
     creatorId,
     workId,
-    backupName
+    backupName,
   );
   const backupToDelete = work.backups.find((it) => it.name === backupName);
   if (

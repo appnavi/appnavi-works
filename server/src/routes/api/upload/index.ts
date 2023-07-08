@@ -57,7 +57,7 @@ uploadRouter.post(
     } finally {
       await cleanupTemps({ req });
     }
-  })
+  }),
 );
 async function processUploadedWorks({
   req,
@@ -99,7 +99,7 @@ function parseParams(req: express.Request) {
   } else {
     throw new UploadError(
       parsed.error.errors.map((x) => x.message),
-      req.body
+      req.body,
     );
   }
 }
@@ -174,7 +174,7 @@ async function copyWindowsFiles({
   if (files.length != 1) {
     throw new UploadError(
       ["複数個のWindowsファイルはアップロードできません。"],
-      files
+      files,
     );
   }
   const file = files[0];
@@ -184,7 +184,7 @@ async function copyWindowsFiles({
   const destination = path.join(
     getAbsolutePathOfWork(creatorId, workId),
     UPLOAD_UNITY_FIELD_WINDOWS,
-    path.basename(file.originalname)
+    path.basename(file.originalname),
   );
   await fsExtra.ensureDir(path.dirname(destination));
   await fsExtra.copyFile(file.path, destination);
@@ -213,11 +213,11 @@ function copyWebGLFiles({
         getAbsolutePathOfWork(creatorId, workId),
         UPLOAD_UNITY_FIELD_WEBGL,
         ...folders,
-        path.basename(originalname)
+        path.basename(originalname),
       );
       await fsExtra.ensureDir(path.dirname(destination));
       await fsExtra.copyFile(file.path, destination);
-    })
+    }),
   );
 }
 async function copyUploadedFilesToDestination({
@@ -283,8 +283,8 @@ function uploadedFilesToPaths({
           creatorId,
           workId,
           name,
-          path.basename(filesOfField[0].originalname)
-        )
+          path.basename(filesOfField[0].originalname),
+        ),
       );
     } else {
       throw new Error(`想定外のフィールド名 ${name} です`);
@@ -366,7 +366,7 @@ async function cleanupTemps({ req }: { req: express.Request }) {
       return filesOfField.map(async (file) => {
         fsExtra.rm(file.path);
       });
-    }).flat()
+    }).flat(),
   );
 }
 

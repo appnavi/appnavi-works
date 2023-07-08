@@ -41,7 +41,7 @@ apiRouter.use(
         return;
       }
     },
-  })
+  }),
 );
 
 export { apiRouter };

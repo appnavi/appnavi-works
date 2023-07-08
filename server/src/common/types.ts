@@ -52,7 +52,7 @@ export const WorkDB = z.object({
       fileSize: z.number(),
       uploadedAt: z.date(),
       paths: z.string().array(),
-    })
+    }),
   ),
 });
 export type WorkDB = z.infer<typeof WorkDB>;

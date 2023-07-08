@@ -31,7 +31,7 @@ const modifyWorkProcedure = authenticatedProcedure.input(
   z.object({
     creatorId: creatorIdSchema,
     workId: workIdSchema,
-  })
+  }),
 );
 
 const WorksDB = WorkDB.array();
@@ -59,7 +59,7 @@ export const accountWorkRouter = t.router({
         renamedWorkId: z
           .string({ required_error: ERROR_MESSAGE_RENAMED_WORK_ID_REQUIRED })
           .regex(idRegex, ERROR_MESSAGE_RENAMED_WORK_ID_INVALID),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { creatorId, workId, renamedCreatorId, renamedWorkId } = input;
@@ -68,7 +68,7 @@ export const accountWorkRouter = t.router({
         workId,
         ctx.user.id,
         renamedCreatorId,
-        renamedWorkId
+        renamedWorkId,
       );
       if (errorMessage !== null) {
         throw new TRPCError({ code: "BAD_REQUEST", message: errorMessage });
@@ -101,7 +101,7 @@ async function renameWork(
   workId: string,
   userId: string,
   renamedCreatorId: string,
-  renamedWorkId: string
+  renamedWorkId: string,
 ) {
   if (creatorId === renamedCreatorId && workId === renamedWorkId) {
     return ERROR_MESSAGE_RENAME_TO_SAME;
@@ -112,7 +112,7 @@ async function renameWork(
   }
   const isUsedByOtherUser = await isCreatorIdUsedByOtherUser(
     renamedCreatorId,
-    userId
+    userId,
   );
   if (isUsedByOtherUser) {
     return ERROR_MESSAGE_CREATOR_ID_USED_BY_OTHER_USER;
@@ -136,14 +136,14 @@ async function renameWork(
     creatorId,
     workId,
     renamedCreatorId,
-    renamedWorkId
+    renamedWorkId,
   );
 
   const backupPath = getAbsolutePathOfAllBackups(creatorId, workId);
   if (await fsExtra.pathExists(backupPath)) {
     const renamedBackupPath = getAbsolutePathOfAllBackups(
       renamedCreatorId,
-      renamedWorkId
+      renamedWorkId,
     );
     await fsExtra.ensureDir(path.resolve(renamedBackupPath, ".."));
     await fsExtra.move(backupPath, renamedBackupPath);
@@ -153,7 +153,7 @@ async function renameWork(
         creatorId,
         workId,
         renamedCreatorId,
-        renamedWorkId
+        renamedWorkId,
       );
     }
   }

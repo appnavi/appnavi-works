@@ -6,7 +6,7 @@ import { STATUS_CODE_UNAUTHORIZED } from "../../utils/constants";
 export function ensureAuthenticated(
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) {
   if (isAuthenticated(req)) {
     next();
@@ -70,7 +70,7 @@ export async function updateCreatorIds(userId: string, creatorId: string) {
 export async function logLastLogin(
   req: express.Request,
   _res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) {
   const userDocument = await findOrCreateUser(getUserIdOrThrow(req));
   await userDocument.updateOne({

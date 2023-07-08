@@ -25,7 +25,7 @@ worksRouter.use(
         else res.type("application/octet-stream");
       }
     },
-  })
+  }),
 );
 
 export { worksRouter };

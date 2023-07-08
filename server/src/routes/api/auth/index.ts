@@ -51,7 +51,7 @@ if (env.NODE_ENV === "test") {
     }),
     (_req, res) => {
       res.redirect("/");
-    }
+    },
   );
 }
 

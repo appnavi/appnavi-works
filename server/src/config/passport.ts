@@ -19,7 +19,7 @@ import { env, getSiteURLWithoutTrailingSlash } from "../utils/env";
 import { randomStringCharacters } from "../utils/helpers";
 
 export const guestUserIdRegex = new RegExp(
-  `^guest-[${randomStringCharacters}]+$`
+  `^guest-[${randomStringCharacters}]+$`,
 );
 const guestUserPasswordRegex = new RegExp(`^[${randomStringCharacters}]+$`);
 export const localLoginInputSchema = z.object({
@@ -72,7 +72,7 @@ const localStrategy = new LocalStrategy(
         });
         done(undefined, false, { message: "ログインに失敗しました。" });
       });
-  }
+  },
 );
 async function createSlackStrategy() {
   const issuer = await Issuer.discover("https://slack.com");
@@ -94,7 +94,7 @@ async function createSlackStrategy() {
     (
       _tokenSet: TokenSet,
       user: UserinfoResponse,
-      done: (err: unknown, user?: Record<string, unknown>) => void
+      done: (err: unknown, user?: Record<string, unknown>) => void,
     ) => {
       // Workspace IDのチェック
       // アプリNaviのSlackワークスペース以外からのログインを防止（おそらく起こり得ないが一応）
@@ -102,7 +102,7 @@ async function createSlackStrategy() {
       if (typeof workspaceId !== "string") {
         logger.system.error(
           "ログインしようとした人のワークスペースが不明です。",
-          user
+          user,
         );
         done(new Error("ログイン失敗"), undefined);
         return;
@@ -110,7 +110,7 @@ async function createSlackStrategy() {
       if (workspaceId !== env.SLACK_WORKSPACE_ID) {
         logger.system.error(
           `違うワークスペース${workspaceId}の人がログインしようとしました。`,
-          user
+          user,
         );
         done(new Error("ログイン失敗"), undefined);
         return;
@@ -120,7 +120,7 @@ async function createSlackStrategy() {
       // アバターURLの取得
       // ページ右上に表示するアイコンのURLを取得
       const avater_url_key = Object.keys(user).find((x) =>
-        x.startsWith("https://slack.com/user_image_")
+        x.startsWith("https://slack.com/user_image_"),
       );
       const avatar_url =
         avater_url_key != undefined ? user[avater_url_key] : undefined;
@@ -134,7 +134,7 @@ async function createSlackStrategy() {
         avatar_url,
         type: "Slack",
       });
-    }
+    },
   );
 }
 
@@ -171,7 +171,7 @@ async function preparePassport() {
   passport.deserializeUser(function (
     req: Request,
     user: unknown,
-    done: (err: unknown, user?: Express.User | false | null) => void
+    done: (err: unknown, user?: Express.User | false | null) => void,
   ) {
     validateUserForDeserialize(user)
       .then((validatedUser) => {
@@ -182,7 +182,7 @@ async function preparePassport() {
         req.session.destroy(() => {
           done(
             new Error("認証に問題が発生しました。再度ログインしてください。"),
-            null
+            null,
           );
         });
       });

@@ -18,7 +18,7 @@ const DIRECTORY_NAME_BACKUPS = "backups";
 
 export const absolutePathOfWorkFolder = path.join(
   PROJECT_ROOT,
-  DIRECTORY_NAME_UPLOADS
+  DIRECTORY_NAME_UPLOADS,
 );
 export function getAbsolutePathOfWork(creatorId: string, workId: string) {
   return path.join(absolutePathOfWorkFolder, creatorId, workId);
@@ -27,7 +27,7 @@ export function getAbsolutePathOfWork(creatorId: string, workId: string) {
 export const absolutePathOfBackupFolder = path.join(
   PROJECT_ROOT,
   DIRECTORY_NAME_BACKUPS,
-  DIRECTORY_NAME_UPLOADS
+  DIRECTORY_NAME_UPLOADS,
 );
 export function getAbsolutePathOfAllBackups(creatorId: string, workId: string) {
   return path.join(absolutePathOfBackupFolder, creatorId, workId);
@@ -35,7 +35,7 @@ export function getAbsolutePathOfAllBackups(creatorId: string, workId: string) {
 export function getAbsolutePathOfBackup(
   creatorId: string,
   workId: string,
-  backupName: string
+  backupName: string,
 ) {
   return path.join(getAbsolutePathOfAllBackups(creatorId, workId), backupName);
 }
@@ -53,7 +53,7 @@ export const uploadSchema = z.object({
 export async function findOwnWorkOrError(
   creatorId: string,
   workId: string,
-  userId: string
+  userId: string,
 ) {
   const works = await WorkModel.find({
     creatorId,
@@ -82,7 +82,7 @@ export async function findOwnWorkOrError(
 
 export async function isCreatorIdUsedByOtherUser(
   creatorId: string,
-  userId: string
+  userId: string,
 ) {
   const users = await UserModel.find();
   for (const user of users) {
@@ -120,7 +120,7 @@ export async function getLatestBackupIndex(creatorId: string, workId: string) {
 export async function backupWork(
   creatorId: string,
   workId: string,
-  work: WorkDocument
+  work: WorkDocument,
 ) {
   const workDir = getAbsolutePathOfWork(creatorId, workId);
   const workPath = path.resolve(workDir);
@@ -141,7 +141,7 @@ export async function calculateCurrentStorageSizeBytes() {
   return works.reduce((accumulator, currentValue) => {
     const totalBackupFileSizes = currentValue.backups.reduce(
       (a, c) => a + c.fileSize,
-      0
+      0,
     );
     return accumulator + currentValue.fileSize + totalBackupFileSizes;
   }, 0);
@@ -151,13 +151,13 @@ export function calculateWorkFileSize(
   files: {
     [fieldname: string]: Express.Multer.File[];
   },
-  fields: { name: string }[]
+  fields: { name: string }[],
 ) {
   let fileSize = 0;
   fields.forEach(({ name }) =>
     (files[name] ?? []).forEach((file) => {
       fileSize += file.size;
-    })
+    }),
   );
   return fileSize;
 }
@@ -167,12 +167,12 @@ export function renameWorkPaths(
   creatorId: string,
   workId: string,
   renamedCreatorId: string,
-  renamedWorkId: string
+  renamedWorkId: string,
 ) {
   return paths.map((x) =>
     x.replace(
       `${URL_PREFIX_WORK}/${creatorId}/${workId}`,
-      `${URL_PREFIX_WORK}/${renamedCreatorId}/${renamedWorkId}`
-    )
+      `${URL_PREFIX_WORK}/${renamedCreatorId}/${renamedWorkId}`,
+    ),
   );
 }

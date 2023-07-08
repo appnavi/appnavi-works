@@ -15,7 +15,7 @@ const hashEncoding = "base64";
 function scryptAsync(
   password: crypto.BinaryLike,
   salt: crypto.BinaryLike,
-  keylen: number
+  keylen: number,
 ) {
   return new Promise<Buffer>((resolve, reject) => {
     crypto.scrypt(password, salt, keylen, (err, result) => {
@@ -31,7 +31,7 @@ function scryptAsync(
 export async function hashPassword(
   plainTextPassword: string,
   saltByteSize: number = defaultSaltByteSize,
-  keyLength: number = defaultKeyLength
+  keyLength: number = defaultKeyLength,
 ) {
   const saltBuffer = crypto.randomBytes(saltByteSize);
   const hash = await scryptAsync(plainTextPassword, saltBuffer, keyLength);
@@ -44,7 +44,7 @@ export async function hashPassword(
 
 export async function verifyPassword(
   passwordToVerify: string,
-  correctHashedPassword: string
+  correctHashedPassword: string,
 ) {
   const splitted = correctHashedPassword.split(",");
   if (splitted.length != 3) {
@@ -59,7 +59,7 @@ export async function verifyPassword(
   const hashedPasswordToVerify = await scryptAsync(
     passwordToVerify,
     saltBuffer,
-    keyLength
+    keyLength,
   );
   const correctHashBuffer = Buffer.from(correctHash, hashEncoding);
   return crypto.timingSafeEqual(hashedPasswordToVerify, correctHashBuffer);

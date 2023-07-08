@@ -48,7 +48,7 @@ export const accountGuestRouter = t.router({
         guestId: z
           .string({ required_error: ERROR_MESSAGE_GUEST_ID_REQUIRED })
           .regex(guestUserIdRegex, ERROR_MESSAGE_GUEST_ID_INVALID),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { guestId } = input;

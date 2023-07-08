@@ -32,7 +32,7 @@ slackRouter.get(
   wrap(logLastLogin),
   (_req, res) => {
     res.redirect("/");
-  }
+  },
 );
 
 export { slackRouter };

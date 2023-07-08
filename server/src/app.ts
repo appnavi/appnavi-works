@@ -28,7 +28,7 @@ app.use(
     // crossOriginEmbedderPolicy はアバター画像が表示されなくなるので無効化
     // (有効にしつつアバター画像を表示するには Slack 側の対応が必要)
     crossOriginEmbedderPolicy: false,
-  })
+  }),
 );
 
 app.use(compression());
@@ -52,7 +52,7 @@ app.use(
     saveUninitialized: false,
   }),
   passport.initialize(),
-  passport.session()
+  passport.session(),
 );
 if (env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
@@ -62,7 +62,7 @@ app.use(cookieParser(env.COOKIE_SECRET));
 app.use(
   logger.connectLogger(logger.access, {
     level: "info",
-  })
+  }),
 );
 
 app.use(URL_PREFIX_WORK, worksRouter);
@@ -78,7 +78,7 @@ app.use(
       ],
       "img-src": ["*"],
     },
-  })
+  }),
 );
 
 if (env.NODE_ENV !== "test") {
@@ -105,7 +105,7 @@ app.use(function (
   _req: express.Request,
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: express.NextFunction //この引数を省略すると、このerror handler が実行されなくなる
+  _next: express.NextFunction, //この引数を省略すると、このerror handler が実行されなくなる
 ) {
   const isDev = env.NODE_ENV === "development";
   if (!(err instanceof HttpError)) {

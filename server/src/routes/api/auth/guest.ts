@@ -52,7 +52,7 @@ guestRouter.route("/").post(
   (req, res) => {
     guestLoginRateLimiter.resetKey(req.ip);
     res.status(STATUS_CODE_SUCCESS).end();
-  }
+  },
 );
 
 guestRouter.use(
@@ -60,7 +60,7 @@ guestRouter.use(
     err: Record<string, unknown>,
     _req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ) => {
     // ログイン試行回数を超過した場合にはここは呼ばれない。
     if (
@@ -73,7 +73,7 @@ guestRouter.use(
       return;
     }
     next(err);
-  }
+  },
 );
 
 export { guestRouter };

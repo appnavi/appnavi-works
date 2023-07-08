@@ -11,7 +11,7 @@ const nonSecretEnvsSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]),
 });
 const nonSecretEnvsObject = Object.fromEntries(
-  nonSecretEnvsSchema.keyof().options.map((key) => [key, process.env[key]])
+  nonSecretEnvsSchema.keyof().options.map((key) => [key, process.env[key]]),
 );
 const nonSecretEnvsParsed = nonSecretEnvsSchema.safeParse(nonSecretEnvsObject);
 if (!nonSecretEnvsParsed.success) {
@@ -28,10 +28,10 @@ const secretEnvsSchema = z.object({
   CSRF_TOKEN_SECRET: z.string(),
 });
 const secretEnvsSchemaObject = Object.fromEntries(
-  secretEnvsSchema.keyof().options.map((key) => [key, getSecret(key)])
+  secretEnvsSchema.keyof().options.map((key) => [key, getSecret(key)]),
 );
 const secretEnvsSchemaParsed = secretEnvsSchema.safeParse(
-  secretEnvsSchemaObject
+  secretEnvsSchemaObject,
 );
 if (!secretEnvsSchemaParsed.success) {
   throw fromZodError(secretEnvsSchemaParsed.error);

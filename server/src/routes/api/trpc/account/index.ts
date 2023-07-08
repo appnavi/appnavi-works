@@ -58,7 +58,7 @@ export const accountRouter = t.router({
             defaultCreatorId,
           },
         },
-        { upsert: true }
+        { upsert: true },
       );
     }),
   cleanupCreatorIds: authenticatedProcedure.mutation(async ({ ctx }) => {
@@ -66,7 +66,7 @@ export const accountRouter = t.router({
     const user = await findUserByIdOrThrow(userId);
     const worksByMe = await WorkModel.find({ owner: userId });
     const usedCreatorIds = Array.from(
-      new Set(worksByMe.map((x) => x.creatorId))
+      new Set(worksByMe.map((x) => x.creatorId)),
     );
     await user.update({
       creatorIds: usedCreatorIds,

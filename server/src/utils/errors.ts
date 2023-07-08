@@ -9,7 +9,7 @@ export class HttpError extends Error {
   constructor(
     public status: number,
     public responseMessage: string,
-    public logParams: unknown = undefined
+    public logParams: unknown = undefined,
   ) {
     super("エラー");
     this.name = new.target.name;
@@ -21,7 +21,7 @@ export class HttpError extends Error {
 export class UnauthorizedError extends HttpError {
   constructor(
     responseMessage = "ログインが必要です",
-    logParams: unknown = undefined
+    logParams: unknown = undefined,
   ) {
     super(STATUS_CODE_UNAUTHORIZED, responseMessage, logParams);
   }
@@ -42,7 +42,7 @@ export class BadRequestError extends HttpError {
   constructor(
     responseMessage: string,
     public errors: unknown[] = [],
-    logParams: unknown = undefined
+    logParams: unknown = undefined,
   ) {
     super(STATUS_CODE_BAD_REQUEST, responseMessage, logParams);
   }

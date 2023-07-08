@@ -51,7 +51,7 @@ const workSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 export const WorkModel = model<WorkDocument>("Work", workSchema);
 
@@ -93,6 +93,6 @@ const userSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 export const UserModel = model<UserDocument>("User", userSchema);
