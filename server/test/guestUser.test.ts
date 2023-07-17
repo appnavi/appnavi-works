@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../src/app";
-import { localLoginInputSchema, preparePassport } from "../src/config/passport";
+import { preparePassport } from "../src/config/passport";
 import {
   STATUS_CODE_SUCCESS,
   STATUS_CODE_UNAUTHORIZED,
@@ -8,32 +8,17 @@ import {
   ERROR_MESSAGE_GUEST_LOGIN_FAIL,
   ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
 } from "../src/utils/constants";
-import { createLogin, myId } from "./auth";
 import { connectDatabase, clearDatabase, wrap } from "./common";
 import { UserModel } from "../src/models/database";
 import { guestLoginRateLimiter } from "../src/routes/api/auth/guest";
-import { hashPassword, verifyPassword } from "../src/services/auth/password";
+import { hashPassword } from "../src/services/auth/password";
 
-function getIdAndPassFromCreateGuestHtml(html: string): {
-  guestId: string;
-  password: string;
-} {
-  const regex = /value="([^"]*)"/g;
-  let match = regex.exec(html);
-  const guestId = match![1];
-  match = regex.exec(html);
-  const password = match![1];
-  return {
-    guestId,
-    password,
-  };
-}
 function resetRateLimit(): void {
   guestLoginRateLimiter.resetKey("::ffff:127.0.0.1");
 }
 
 async function testInvalidGuestLogin(
-  textShouldContainInRes: string
+  textShouldContainInRes: string,
 ): Promise<void> {
   return new Promise((resolve) => {
     request(app)
@@ -52,7 +37,7 @@ async function testInvalidGuestLogin(
 }
 async function testSuccessfulGuestLogin(
   userId: string,
-  password: string
+  password: string,
 ): Promise<void> {
   return new Promise<void>((resolve) => {
     request(app)
@@ -102,7 +87,7 @@ describe("ゲストユーザー", () => {
           .expect(STATUS_CODE_UNAUTHORIZED)
           .expect(JSON.stringify({ error: ERROR_MESSAGE_GUEST_LOGIN_FAIL }))
           .end(done);
-      })
+      }),
     );
     it(
       "パスワードが異なる場合はログインできない。",
@@ -117,7 +102,7 @@ describe("ゲストユーザー", () => {
           .expect(STATUS_CODE_UNAUTHORIZED)
           .expect(JSON.stringify({ error: ERROR_MESSAGE_GUEST_LOGIN_FAIL }))
           .end(done);
-      })
+      }),
     );
     it(
       "作成されたゲストユーザーでログインできる。",
@@ -131,7 +116,7 @@ describe("ゲストユーザー", () => {
           })
           .expect(STATUS_CODE_SUCCESS)
           .end(done);
-      })
+      }),
     );
   });
   describe("ゲストログインの総当たり攻撃対策", () => {
@@ -143,11 +128,11 @@ describe("ゲストユーザー", () => {
         }
         for (let i = 1; i <= 4; ++i) {
           await testInvalidGuestLogin(
-            ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT
+            ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT,
           );
         }
         done();
-      })
+      }),
     );
     it(
       "3回ログインに失敗すると4回目以降は必ずログインに失敗する。",
@@ -168,11 +153,11 @@ describe("ゲストユーザー", () => {
               done(err);
             }
             expect(
-              res.text.includes(ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT)
+              res.text.includes(ERROR_MESSAGE_GUEST_LOGIN_EXCEED_RATE_LIMIT),
             ).toBe(true);
             done();
           });
-      })
+      }),
     );
     it(
       "2回ログインに失敗しても3回目に成功すればログインできる。",
@@ -182,7 +167,7 @@ describe("ゲストユーザー", () => {
         await testInvalidGuestLogin(ERROR_MESSAGE_GUEST_LOGIN_FAIL);
         await testSuccessfulGuestLogin(guestId, password);
         done();
-      })
+      }),
     );
     it(
       "ログインに成功すればログイン失敗回数の制限がリセットされる。",
@@ -195,7 +180,7 @@ describe("ゲストユーザー", () => {
           await testSuccessfulLogout();
         }
         done();
-      })
+      }),
     );
   });
 });
