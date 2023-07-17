@@ -1,6 +1,6 @@
 import { User } from '@common/types';
 import { Helmet } from 'react-helmet-async';
-import { AuthorizedOnly } from '../../components/AuthorizedOnly';
+import { AuthenticatedOnly } from '../../components/AuthenticatedOnly';
 import { DefaultCreatorIdForm } from './DefaultCreatorIdForm';
 import { MyCreatorIds } from './MyCreatorIds';
 import { MyWorks } from './MyWorks';
@@ -22,7 +22,7 @@ const Page = ({ user }: { user: User }) => {
 
 export const AccountPage = () => {
   return (
-    <AuthorizedOnly>
+    <AuthenticatedOnly>
       {(user) => (
         <>
           <Helmet>
@@ -31,6 +31,6 @@ export const AccountPage = () => {
           <Page user={user} />
         </>
       )}
-    </AuthorizedOnly>
+    </AuthenticatedOnly>
   );
 };

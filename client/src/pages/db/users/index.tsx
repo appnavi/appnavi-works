@@ -1,6 +1,6 @@
 import { WorkDB } from '@common/types';
 import { Helmet } from 'react-helmet-async';
-import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
+import { AuthenticatedOnly } from '../../../components/AuthenticatedOnly';
 import { FormatDate } from '../../../components/FormatDate';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { trpc } from '../../../trpc';
@@ -63,7 +63,7 @@ const Page = () => {
 
 export const DbUsersPage = () => {
   return (
-    <AuthorizedOnly>
+    <AuthenticatedOnly>
       {() => (
         <>
           <Helmet>
@@ -72,6 +72,6 @@ export const DbUsersPage = () => {
           <Page />
         </>
       )}
-    </AuthorizedOnly>
+    </AuthenticatedOnly>
   );
 };

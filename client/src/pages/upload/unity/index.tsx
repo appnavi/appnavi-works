@@ -2,7 +2,7 @@ import { FormEvent, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
-import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
+import { AuthenticatedOnly } from '../../../components/AuthenticatedOnly';
 import { PreventPageLeave } from '../../../components/PreventPageLeave';
 import { useMessageDialogContext } from '../../../context/DialogsContext/MessageDialog';
 import { csrfToken } from '../../../csrf';
@@ -172,7 +172,7 @@ const Page = () => {
 
 export const UploadUnityPage = () => {
   return (
-    <AuthorizedOnly>
+    <AuthenticatedOnly>
       {() => (
         <>
           <Helmet>
@@ -181,6 +181,6 @@ export const UploadUnityPage = () => {
           <Page />
         </>
       )}
-    </AuthorizedOnly>
+    </AuthenticatedOnly>
   );
 };

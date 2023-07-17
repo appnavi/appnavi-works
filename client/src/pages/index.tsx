@@ -1,7 +1,7 @@
 import { type User } from '@common/types';
 import { Helmet } from 'react-helmet-async';
 import { FaUnity } from 'react-icons/fa';
-import { AuthorizedOnly } from '../components/AuthorizedOnly';
+import { AuthenticatedOnly } from '../components/AuthenticatedOnly';
 import { Link } from '../components/Link';
 
 const DatabaseSection = ({ user }: { user: User }) => {
@@ -42,7 +42,7 @@ const Page = ({ user }: { user: User }) => {
 
 export const IndexPage = () => {
   return (
-    <AuthorizedOnly>
+    <AuthenticatedOnly>
       {(user) => (
         <>
           <Helmet>
@@ -51,6 +51,6 @@ export const IndexPage = () => {
           <Page user={user} />
         </>
       )}
-    </AuthorizedOnly>
+    </AuthenticatedOnly>
   );
 };

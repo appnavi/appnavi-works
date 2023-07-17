@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from '../../components/Link';
-import { UnauthorizedOnly } from '../../components/UnauthorizedOnly';
+import { UnauthenticatedOnly } from '../../components/UnauthenticatedOnly';
 
 const Page = () => {
   return (
@@ -79,8 +79,8 @@ const Page = () => {
 
 export const AuthPage = () => {
   return (
-    <UnauthorizedOnly>
+    <UnauthenticatedOnly>
       <Page />
-    </UnauthorizedOnly>
+    </UnauthenticatedOnly>
   );
 };

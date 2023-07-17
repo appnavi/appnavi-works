@@ -1,4 +1,4 @@
-import { AuthorizedOnly } from '../../../components/AuthorizedOnly';
+import { AuthenticatedOnly } from '../../../components/AuthenticatedOnly';
 import { FormatDate } from '../../../components/FormatDate';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { trpc } from '../../../trpc';
@@ -57,5 +57,5 @@ const Page = () => {
   );
 };
 export const DbWorksPage = () => {
-  return <AuthorizedOnly>{() => <Page />}</AuthorizedOnly>;
+  return <AuthenticatedOnly>{() => <Page />}</AuthenticatedOnly>;
 };

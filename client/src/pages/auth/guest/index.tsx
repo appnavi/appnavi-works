@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
-import { UnauthorizedOnly } from '../../../components/UnauthorizedOnly';
+import { UnauthenticatedOnly } from '../../../components/UnauthenticatedOnly';
 import { csrfToken } from '../../../csrf';
 import { trpc } from '../../../trpc';
 
@@ -88,8 +88,8 @@ const Page = () => {
 
 export const AuthGuestPage = () => {
   return (
-    <UnauthorizedOnly>
+    <UnauthenticatedOnly>
       <Page />
-    </UnauthorizedOnly>
+    </UnauthenticatedOnly>
   );
 };
