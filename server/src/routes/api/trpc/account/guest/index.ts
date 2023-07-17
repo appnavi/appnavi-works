@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { guestUserIdRegex } from "../../../../../config/passport";
 import { UserModel, WorkModel } from "../../../../../models/database";
 import { hashPassword } from "../../../../../services/auth/password";
 import {
@@ -12,7 +11,10 @@ import {
   ERROR_MESSAGE_MULTIPLE_GUESTS_FOUND,
   ERROR_MESSAGE_NOT_GUEST_USER,
 } from "../../../../../utils/constants";
-import { generateRandomString } from "../../../../../utils/helpers";
+import {
+  generateRandomString,
+  randomStringCharacters,
+} from "../../../../../utils/helpers";
 import { slackUserOnlyProcedure, t } from "../../../../../utils/trpc";
 
 async function generateGuestId() {
@@ -24,6 +26,7 @@ async function generateGuestId() {
     }
   }
 }
+const guestUserIdRegex = new RegExp(`^guest-[${randomStringCharacters}]+$`);
 
 export const accountGuestRouter = t.router({
   create: slackUserOnlyProcedure.mutation(async ({ ctx }) => {
