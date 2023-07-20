@@ -1,4 +1,4 @@
-FROM node:18.14.0-alpine3.17
+FROM node:hydrogen-alpine3.17
 
 RUN mkdir /app && chown node:node /app
 
