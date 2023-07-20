@@ -37,23 +37,17 @@ async function loginLocal(
   }
   const { userId, password } = parsed.data;
   const { guest, errorMessage } = await findGuestOrError(userId);
-  console.log("1");
   if (guest === null) {
-    console.log("2");
     // ゲストユーザーが見つからなかったときでもパスワードチェックを行う。
     // これにより、ゲストユーザーが存在するか否かをレスポンス時間の違いで判別不可能にする。
     await verifyPassword(dummyPassword, dummyHashedPassword);
     throw new Error(errorMessage);
   }
-  console.log("3");
   const hashedPassword = guest.hashedPassword;
-  console.log("4");
   const isPasswordCorrect = await verifyPassword(password, hashedPassword);
-  console.log("5");
   if (!isPasswordCorrect) {
     throw new Error("パスワードが異なります。");
   }
-  console.log("6");
   return {
     id: userId,
     name: "ゲストユーザー",
