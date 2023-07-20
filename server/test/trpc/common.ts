@@ -6,7 +6,7 @@ import { trpcRouter } from "../../src/routes/api/trpc";
 
 export function createTrpcCaller(
   userId: string | undefined = undefined,
-  type: "Slack" | "Guest" = "Slack"
+  type: "Slack" | "Guest" = "Slack",
 ) {
   const user: User | undefined =
     userId === undefined
@@ -17,7 +17,7 @@ export function createTrpcCaller(
           name: "",
           avatar_url: "",
         };
-  return trpcRouter.createCaller({ user, csrfToken: undefined });
+  return trpcRouter.createCaller({ user });
 }
 
 const TRPCErrorMessage = z
@@ -30,7 +30,7 @@ export function expectTRPCError(
   error: unknown,
   done: jest.DoneCallback,
   code: TRPC_ERROR_CODE_KEY,
-  message: string | undefined = undefined
+  message: string | undefined = undefined,
 ) {
   if (!(error instanceof TRPCError)) {
     done(new Error("エラーの型が TRPCError ではありません。"));

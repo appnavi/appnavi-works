@@ -52,7 +52,7 @@ const Page = () => {
       method: 'POST',
       body: formData,
       headers: {
-        'CSRF-Token': _csrfToken,
+        'x-csrf-token': _csrfToken,
       },
     });
     setUploading(false);

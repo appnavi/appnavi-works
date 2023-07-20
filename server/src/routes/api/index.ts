@@ -2,12 +2,18 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { Router } from "express";
 import { ZodError } from "zod";
 import * as logger from "../../modules/logger";
+import { generateToken } from "../../services/csrf";
 import { createContext } from "../../utils/trpc";
 import { authRouter } from "./auth";
 import { trpcRouter } from "./trpc";
 import { uploadRouter } from "./upload";
 
 const apiRouter = Router();
+
+apiRouter.get("/csrf", (req, res) => {
+  const csrfToken = generateToken(res, req);
+  res.send(csrfToken);
+});
 
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/upload", uploadRouter);

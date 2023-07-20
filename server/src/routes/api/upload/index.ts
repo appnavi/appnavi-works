@@ -10,7 +10,7 @@ import {
   getUserIdOrThrow,
   updateCreatorIds,
 } from "../../../services/auth";
-import { csrf } from "../../../services/csrf";
+import { doubleCsrfProtection } from "../../../services/csrf";
 import {
   calculateWorkFileSize,
   uploadSchema,
@@ -45,7 +45,7 @@ const uploadRouter = express.Router();
 uploadRouter.use(ensureAuthenticated);
 
 if (env.NODE_ENV !== "test") {
-  uploadRouter.use(csrf);
+  uploadRouter.use(doubleCsrfProtection);
 }
 
 uploadRouter.post(
