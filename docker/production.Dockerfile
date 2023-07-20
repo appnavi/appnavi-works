@@ -1,4 +1,4 @@
-FROM node:18.14.0-alpine3.17 as builder
+FROM node:hydrogen-alpine3.17 as builder
 
 COPY package.json yarn.lock /app/
 COPY client/package.json /app/client/
@@ -12,7 +12,7 @@ COPY client/ /app/client/
 
 RUN yarn run build
 
-FROM node:18.14.0-alpine3.17 as runner
+FROM node:hydrogen-alpine3.17 as runner
 
 RUN mkdir /app && chown node:node /app
 
