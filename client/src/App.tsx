@@ -86,7 +86,7 @@ function App() {
           url: '/api',
           headers() {
             return {
-              'csrf-token': csrfToken,
+              'x-csrf-token': csrfToken,
             };
           },
         }),

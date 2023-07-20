@@ -10,7 +10,7 @@ import { URL_PREFIX_WORK } from "./common/constants";
 import * as logger from "./modules/logger";
 import { apiRouter } from "./routes/api";
 import { worksRouter } from "./routes/works";
-import { csrf } from "./services/csrf";
+import { doubleCsrfProtection } from "./services/csrf";
 import {
   STATUS_CODE_SERVER_ERROR,
   STATUS_CODE_NOT_FOUND,
@@ -82,7 +82,7 @@ app.use(
 );
 
 if (env.NODE_ENV !== "test") {
-  app.use(csrf);
+  app.use(doubleCsrfProtection);
 }
 
 app.use("/api", apiRouter);

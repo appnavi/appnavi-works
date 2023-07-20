@@ -21,13 +21,15 @@ const Page = () => {
       return;
     }
     const params = new URLSearchParams();
-    params.append('_csrf', _csrfToken);
     params.append('userId', userId);
     params.append('password', password);
 
     const response = await fetch('/api/auth/guest', {
       method: 'POST',
       body: params,
+      headers: {
+        'x-csrf-token': _csrfToken,
+      },
     });
     if (response.status === 200) {
       trpcContext.me.invalidate();
