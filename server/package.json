@@ -37,7 +37,7 @@
     "passport-custom": "^1.1.1",
     "passport-local": "^1.0.0",
     "superjson": "^1.12.2",
-    "zod": "^3.20.2",
+    "zod": "^3.22.3",
     "zod-validation-error": "^1.2.1"
   },
   "devDependencies": {
