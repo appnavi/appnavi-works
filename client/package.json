@@ -40,7 +40,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-react": "^7.32.2",
     "lint-staged": "^13.1.2",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.31",
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.3.0",
     "rollup-plugin-visualizer": "^5.9.0",
